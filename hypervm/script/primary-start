@@ -1,0 +1,4 @@
+#!/bin/zsh
+cd /usr/local/lxlabs/hypervm/httpdocs/
+sh ../bin/common/csyncdb.sh hypervm "$@"
+

@@ -1,0 +1,20 @@
+04:08 Jun/02/2009: Unable to open /proc/vz/veinfo
+Unable to open /proc/user_beancounters
+: [(__system__:/home/root/work/software/hypervm/httpdocs) 'vzlist'  '-a']
+04:08 Jun/02/2009: Unable to open /proc/vz/veinfo
+Unable to open /proc/user_beancounters
+: [(__system__:/home/root/work/software/hypervm/httpdocs) 'vzlist'  '-a']
+04:08 Jun/02/2009: Unable to open /proc/vz/veinfo
+Unable to open /proc/user_beancounters
+: [(__system__:/home/root/work/software/hypervm/httpdocs) 'vzlist'  '-a']
+04:08 Jun/02/2009: Unable to open /proc/vz/veinfo
+Unable to open /proc/user_beancounters
+: [(__system__:/home/root/work/software/hypervm/httpdocs) 'vzlist'  '-a']
+04:08 Jun/02/2009: : [(__system__:/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/common/misc/checktotalmemory.php']
+04:08 Jun/02/2009: Unable to open /proc/vz/veinfo
+Unable to open /proc/user_beancounters
+: [(__system__:/home/root/work/software/hypervm/httpdocs) 'vzlist'  '-a' '-H' '-o' 'ip']
+04:08 Jun/02/2009: Unable to open /proc/vz/veinfo
+Unable to open /proc/user_beancounters
+: [(__system__:/home/root/work/software/hypervm/httpdocs) 'vzlist'  '-a' '-H' '-o' 'ip']
+03:57 Jun/03/2009: : [(__system__:/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/common/iptraffic.php']

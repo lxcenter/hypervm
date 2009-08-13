@@ -1,0 +1,89 @@
+<?php
+
+$gl_sql_string = <<<SQL
+
+
+#lxclient logo_manage_flag
+#pserver #lxclient server_traffic_usage server_traffic_last_usage
+#lxbackup backupschedule_flag
+#monitorserver monitorport_num
+#vps #monitorserver monitorserver_num disk_usage backupdisk_usage backup_num memory_usage kernelmem_usage guarmem_usage process_usage realmem_usage cpu_usage iptables_flag traffic_usage uplink_usage traffic_last_usage cpuguarantee_usage memoryguarantee_usage #lxbackup backup_flag swap_usage #lxclient vmipaddress_a_num secondlevelquota_flag cpuunit_usage ioprio_usage ncpu_usage managereversedns_flag managedns_flag rebuildvps_flag centralbackup_flag
+#uuser disk_usage #lxclient
+#client #monitorserver monitorserver_num pserver_num client_num vps_num ip_manage_flag vps_add_flag vps_limit_flag #vps
+
+
+
+
+%lxcontact realname add_address add_city add_country add_telephone add_fax
+%lxquota ser_used ser_priv
+%lxclient __q_var %lxcontact password cpstatus demo_status contactemail text_comment disable_per ser_hpfilter ddate ser_dskhistory ser_dskshortcut_a ser_boxpos dialogsize
+version major minor releasen extra
+module status
+// Both child and normal share the same internal class
+sp_specialplay ser_specialplay_b
+sp_childspecialplay ser_specialplay_b
+
+
+%ssl_key text_private_key text_public_key
+%disableable state status disable_reason
+%dnsbase ser_mx_rec_a ser_ns_rec_a ser_a_rec_a ser_cn_rec_a ttl zone_type
+%template ser_priv share_status  disable_per skin_name description ddate ser_listpriv ostemplate nameserver
+%vpsbase __q_var %lxclient %disableable createstage createmessage rootpassword rootpassword_changed rootlocation syncserver ostemplate ser_vpsipaddress_a hostname username %ssl_key
+clienttemplate %template
+resourceplan realname ser_priv description ddate ser_listpriv status disable_per coma_xenostemplate_list coma_openvzostemplate_list centralbackup_flag
+vpstemplate %template networkgateway networknetmask
+vps ttype vpsid %vpsbase vifname disktype swapdiskname maindiskname timezone iid macaddress coma_vmipaddress_a networkgateway networknetmask corerootdir nameserver template_used resourceplan_used last_rebuild_time centralbackup_flag centralbackup_server vcpu_number text_inittab text_xen_config vncdisplay realpass mainipaddress kloxo_flag kloxo_flag networkbridge coma_xenostemplate_list coma_openvzostemplate_list roldsyncserver nosaveconfig_flag
+client %lxclient cttype ser_listpriv %disableable template_used realpass resourceplan_used smtp_server_flag
+auxiliary %lxclient status realpass delete_flag pserver_flag coma_xenostemplate_list coma_openvzostemplate_list
+centralbackupserver enable_flag serverip slavename ssh_port snapshotdir backup_num
+
+%dnsbase ttl soanameserver zone_type ser_dns_record_a
+dns %dnsbase syncserver serial
+dnstemplate %dnsbase webipaddress mmailipaddress
+reversedns reversename
+
+//////////// Domain Setup
+///////// ENd Multi Server
+
+/// Semi Domain Setup
+lxbackup __q_var ftp_server ssh_server rm_username rm_password upload_type send_email rm_directory upload_to_ftp backupstage backuptype backupschedule_type rm_last_number ser_lxbackupmisc_b restorestage no_local_copy_flag
+uuser %lxclient realpass shellflag shell syncserver status ddate
+ipaddress devname bproto ipaddr client_num shared netmask status userctl peerdns gateway itype ipv6init syncserver clientname
+anonftpipaddress status syncserver ipaddr message anondomain ser_anonftpmisc_b disk_limit connection_limit download_limit
+ostemplatelist ser_openvz_ostl_a ser_xen_ostl_a
+odbc odbcname description driver ser_odbcdetails_b syncserver
+vpstraffic ddate oldtimestamp timestamp traffic_usage incoming_usage outgoing_usage
+vmachinetraffic  oldtimestamp timestamp traffic_usage
+ippool coma_ippserver_a firstip lastip status nameserver networkgateway coma_ippoolextraip_a  coma_ippoolexceptionip_a networknetmask freeflag coma_ippoolpingip_a
+
+// System Setup
+service servicename description grepstring  syncserver
+llog syncserver email period
+datacenter description
+dirlocation ser_common_location_a ser_xen_location_a ser_openvz_location_a
+driver ser_driver_b
+component componentname syncserver
+servermail maps queuelifetime concurrencyremote syncserver
+serverspam status  spam_hit subject_tag ser_wlist_a ser_blist_a syncserver 
+
+cron syncserver email ser_minute ser_hour ser_ddate ser_month ser_weekday  jobid username command argument
+hostdeny  syncserver hostname
+dbadmin dbtype dbadmin_name dbpassword syncserver
+firewall status id syncserver from_address from_port to_address to_port action
+proxy 
+proxyacl syncserver status ttype classid description password http ftp 
+
+
+//Monitor
+monitorserver __q_var servername status moninterval description
+monitorport portnumber portname type portstatus updatetime errorstring errornumber mailedonce changetime
+emailalert emailid last_sent period
+porthistory portnname ddate portstatus status_pre errorstring laststatustime
+portstatus portnname portstatus errorstring errornumber updatetime servername
+monitoringserverstatus updatetime
+tmpipassign ddate
+
+pserver %lxclient ostype osversion dbadmin dbpassword realpass username  cron_mailto syncserver ser_pserverconf_b hostname description clientname realhostname coma_psrole_a ddate datacenter %ssl_key internalnetworkip timezone centralbackupserver max_vps_num tmpdir load_threshold
+
+
+SQL;

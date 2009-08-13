@@ -1,0 +1,37 @@
+
+
+Your account has been created with the following details:
+
+Username:	%name%
+Password:	%password%
+
+To log in immediately, follow this link, using your username and password:
+
+Secure:
+https://%masterserver%:8887
+
+Quota Information:
+%quota%
+
+
+<%class:vps%>
+You can directly login to your vps using the information below:
+
+ Ipaddress: %vmipaddress_a%
+ Username : root
+ Password : %rootpassword%
+
+ <%ostemplate:kloxo%>
+ Your vps has also been configured with Kloxo Control Panel to manage your hosting.
+ You can access your Hosting CP at:
+
+ https://%vmipaddress_a%:7777
+ Username: admin
+ Password: admin
+
+ <%/ostemplate%>
+
+
+ <%/class%>
+
+

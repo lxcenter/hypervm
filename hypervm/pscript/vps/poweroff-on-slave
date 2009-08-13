@@ -1,0 +1,5 @@
+#!/bin/sh
+for i in `/script/filter/vps-on-slave $1`
+do
+	/script/update --class=vps --name=$i --subaction=poweroff
+done

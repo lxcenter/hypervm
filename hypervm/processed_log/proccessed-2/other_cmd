@@ -1,0 +1,330 @@
+04:07 Jun/01/2009: 0:  [(__system__:/home/root/work/software/hypervm/httpdocs) 'pgrep'  '-f' 'hypervm.php']
+04:07 Jun/01/2009: 1: Unable to open /proc/vz/veinfo
+Unable to open /proc/user_beancounters
+ [(__system__:/home/root/work/software/hypervm/httpdocs) 'vzlist'  '-a']
+04:07 Jun/01/2009: 0:  [(__system__:/home/root/work/software/hypervm/httpdocs) 'kill'  '2330']
+04:07 Jun/01/2009: 0:  [(__system__:/home/root/work/software/hypervm/httpdocs) 'pgrep'  '-f' 'hypervm.exe']
+04:07 Jun/01/2009: 1: Unable to open /proc/vz/veinfo
+Unable to open /proc/user_beancounters
+ [(__system__:/home/root/work/software/hypervm/httpdocs) 'vzlist'  '-a']
+04:07 Jun/01/2009: 0:  [(__system__:/home/root/work/software/hypervm/httpdocs) 'pgrep'  '-f' 'lxhttpd']
+04:07 Jun/01/2009: 1: Unable to open /proc/vz/veinfo
+Unable to open /proc/user_beancounters
+ [(__system__:/home/root/work/software/hypervm/httpdocs) 'vzlist'  '-a']
+04:07 Jun/01/2009: 0:  [(__system__:/home/root/work/software/hypervm/httpdocs) 'pgrep'  '-f' 'lxphp']
+04:07 Jun/01/2009: 1: Unable to open /proc/vz/veinfo
+Unable to open /proc/user_beancounters
+ [(__system__:/home/root/work/software/hypervm/httpdocs) 'vzlist'  '-a']
+04:07 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+04:07 Jun/01/2009: 1: Unable to open /proc/vz/veinfo
+Unable to open /proc/user_beancounters
+ [(__system__:/home/root/work/software/hypervm/httpdocs) 'vzlist'  '-a' '-H' '-o' 'ip']
+04:07 Jun/01/2009: 1: Unable to open /proc/vz/veinfo
+Unable to open /proc/user_beancounters
+ [(__system__:/home/root/work/software/hypervm/httpdocs) 'vzlist'  '-a' '-H' '-o' 'ip']
+04:07 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/common/lxportmonitor.php' '--data-server=localhost' >/dev/null 2>&1 &
+04:07 Jun/01/2009: 0:  [(__system__:/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/fix/fixippool.php']
+04:08 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+04:13 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+04:18 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+04:23 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+04:28 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+04:33 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+04:38 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+04:43 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+04:48 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+04:53 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+04:58 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+05:03 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+05:08 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+05:13 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+05:18 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+05:23 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+05:28 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+05:33 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+05:38 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+05:43 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+05:49 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+05:54 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+05:59 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+06:04 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+06:09 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+06:14 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+06:19 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+06:24 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+06:29 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+06:34 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+06:39 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+06:44 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+06:49 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+06:54 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+06:59 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+07:04 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+07:09 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+07:14 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+07:19 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+07:24 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+07:29 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+07:34 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+07:39 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+07:44 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+07:49 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+07:54 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+07:59 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+08:04 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+08:09 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+08:14 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+08:19 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+08:24 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+08:29 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+08:34 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+08:39 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+08:44 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+08:50 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+08:55 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+09:00 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+09:05 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+09:10 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+09:15 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+09:20 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+09:25 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+09:30 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+09:35 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+09:40 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+09:45 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+09:50 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+09:55 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+10:00 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+10:05 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+10:10 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+10:15 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+10:20 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+10:25 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+10:30 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+10:35 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+10:40 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+10:45 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+10:50 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+10:55 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+11:00 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+11:05 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+11:10 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+11:15 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+11:20 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+11:25 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+11:30 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+11:35 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+11:40 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+11:45 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+11:50 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+11:56 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+12:01 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+12:06 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+12:11 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+12:16 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+12:21 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+12:26 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+12:31 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+12:36 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+12:41 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+12:46 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+12:51 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+12:56 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+13:01 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+13:06 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+13:11 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+13:16 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+13:21 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+13:26 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+13:31 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+13:36 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+13:41 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+13:46 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+13:51 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+13:56 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+14:01 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+14:06 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+14:11 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+14:16 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+14:21 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+14:26 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+14:31 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+14:36 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+14:41 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+14:46 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+14:51 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+14:56 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+15:01 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+15:07 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+15:12 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+15:17 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+15:22 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+15:27 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+15:32 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+15:37 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+15:42 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+15:47 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+15:52 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+15:57 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+16:02 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+16:07 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+16:12 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+16:17 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+16:22 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+16:27 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+16:32 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+16:37 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+16:42 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+16:47 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+16:52 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+16:57 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+17:09 Jun/01/2009: 0:  [(__system__:/home/root/work/software/hypervm/httpdocs) 'pgrep'  '-f' 'hypervm-wrapper.sh']
+17:09 Jun/01/2009: 1: Unable to open /proc/vz/veinfo
+Unable to open /proc/user_beancounters
+ [(__system__:/home/root/work/software/hypervm/httpdocs) 'vzlist'  '-a']
+17:10 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+17:10 Jun/01/2009: 1: Unable to open /proc/vz/veinfo
+Unable to open /proc/user_beancounters
+ [(__system__:/home/root/work/software/hypervm/httpdocs) 'vzlist'  '-a' '-H' '-o' 'ip']
+17:10 Jun/01/2009: 1: Unable to open /proc/vz/veinfo
+Unable to open /proc/user_beancounters
+ [(__system__:/home/root/work/software/hypervm/httpdocs) 'vzlist'  '-a' '-H' '-o' 'ip']
+17:10 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/common/lxportmonitor.php' '--data-server=localhost' >/dev/null 2>&1 &
+17:10 Jun/01/2009: 0:  [(__system__:/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/fix/fixippool.php']
+17:10 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+17:15 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+17:20 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+17:25 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+17:30 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+17:35 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+17:40 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+17:45 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+17:50 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+17:55 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+18:00 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+18:05 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+18:10 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+18:15 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+18:20 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+18:25 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+18:30 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+18:35 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+18:40 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+18:45 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+18:50 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+18:56 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+19:01 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+19:06 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+19:11 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+19:16 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+19:21 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+19:26 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+19:31 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+19:36 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+19:41 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+19:46 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+19:51 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+19:56 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+20:01 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+20:06 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+20:11 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+20:16 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+20:21 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+20:26 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+20:31 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+20:36 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+20:41 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+20:46 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+20:51 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+20:56 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+21:01 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+21:06 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+21:11 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+21:16 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+21:22 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+21:27 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+21:32 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+21:37 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+21:42 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+21:47 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+21:52 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+21:57 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+22:02 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+22:07 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+22:12 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+22:17 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+22:22 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+22:27 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+22:32 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+22:37 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+22:42 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+22:47 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+22:52 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+22:57 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+23:02 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+23:07 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+23:12 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+23:17 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+23:22 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+23:27 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+23:32 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+23:37 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+23:42 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+23:47 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+23:52 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+23:57 Jun/01/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+00:02 Jun/02/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+00:07 Jun/02/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+00:12 Jun/02/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+00:17 Jun/02/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+00:22 Jun/02/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+00:27 Jun/02/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+00:32 Jun/02/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+00:37 Jun/02/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+00:42 Jun/02/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+00:47 Jun/02/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+00:52 Jun/02/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+00:58 Jun/02/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+01:03 Jun/02/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+01:08 Jun/02/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+01:13 Jun/02/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+01:18 Jun/02/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+01:23 Jun/02/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+01:28 Jun/02/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+01:33 Jun/02/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+01:38 Jun/02/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+01:43 Jun/02/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+01:48 Jun/02/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+01:53 Jun/02/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+01:58 Jun/02/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+02:03 Jun/02/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+02:08 Jun/02/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+02:13 Jun/02/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+02:18 Jun/02/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+02:23 Jun/02/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+02:28 Jun/02/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+02:33 Jun/02/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+02:38 Jun/02/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+02:43 Jun/02/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+02:48 Jun/02/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+02:53 Jun/02/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+02:58 Jun/02/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+03:03 Jun/02/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+03:08 Jun/02/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+03:13 Jun/02/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+03:18 Jun/02/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+03:23 Jun/02/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+03:28 Jun/02/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+03:33 Jun/02/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+03:38 Jun/02/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+03:43 Jun/02/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+03:48 Jun/02/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+03:53 Jun/02/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+03:57 Jun/02/2009: 0:  [(__system__:/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/trafficperslave.php' '192.168.1.103' '1243808853' '1243895253']
+03:57 Jun/02/2009: 0:  [(__system__:/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/trafficperslave.php' '192.168.1.32' '1243808853' '1243895253']
+03:57 Jun/02/2009: 0:  [(__system__:/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/trafficperslave.php' 'localhost' '1243808853' '1243895253']
+03:57 Jun/02/2009: 0:  [(__system__:/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/trafficperslave.php' 'orion' '1243808853' '1243895253']
+03:58 Jun/02/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+04:03 Jun/02/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+04:08 Jun/02/2009: Background: (/home/root/work/software/hypervm/httpdocs) '/usr/local/lxlabs/ext/php/php'  '../bin/sisinfoc.php' >/dev/null 2>&1 &
+04:08 Jun/02/2009: 0:  [(__system__:/home/root/work/software/hypervm/httpdocs) 'df'  '-P']

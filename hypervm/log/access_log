@@ -1,0 +1,3 @@
+127.0.0.1 localhost:8888 - [01/Aug/2009:19:17:27 +0530] "POST /htmllib/mibin/monitordata.php HTTP/1.1" 200 1495 "-" "-"
+127.0.0.1 localhost:8888 - [01/Aug/2009:19:17:28 +0530] "POST /htmllib/mibin/monitordata.php HTTP/1.1" 200 91 "-" "-"
+127.0.0.1 - - [01/Aug/2009:19:17:35 +0530] "POST /htmllib/mibin/monitordata.php HTTP/1.1" 417 363 "-" "-"

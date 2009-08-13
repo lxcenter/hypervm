@@ -1,0 +1,2 @@
+#!/bin/sh
+echo "select nname from vps where priv_q_traffic_usage != 'Unlimited' AND (used_q_traffic_usage + 0) > ( priv_q_traffic_usage + 0)" | hypervmdb | tail -n+2

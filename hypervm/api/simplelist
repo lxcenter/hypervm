@@ -1,0 +1,2 @@
+#!/bin/sh
+lphp.exe ../bin/common/api.php --action=simplelist $@

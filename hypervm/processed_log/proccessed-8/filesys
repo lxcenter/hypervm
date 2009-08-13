@@ -1,0 +1,7 @@
+04:07 May/30/2009: Removing /usr/local/lxlabs/hypervm/log/access_log
+04:07 May/30/2009: Removing /usr/local/lxlabs/hypervm/log/lighttpd_error.log
+04:07 May/30/2009: Chown /usr/local/lxlabs/hypervm/log to lxlabs:lxlabs
+19:03 May/30/2009: Removing /usr/local/lxlabs/hypervm/log/access_log
+19:03 May/30/2009: Removing /usr/local/lxlabs/hypervm/log/lighttpd_error.log
+19:03 May/30/2009: Chown /usr/local/lxlabs/hypervm/log to lxlabs:lxlabs
+03:57 May/31/2009: Removing /usr/local/lxlabs/hypervm/pid/collectquota.php.pid

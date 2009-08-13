@@ -1,0 +1,2 @@
+#!/bin/sh
+echo "select nname from vps where coma_vmipaddress_a LIKE '%$1%'" | hypervmdb | tail -n+2

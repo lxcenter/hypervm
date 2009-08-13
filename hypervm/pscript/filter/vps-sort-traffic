@@ -1,0 +1,2 @@
+#!/bin/sh
+echo "select nname from vps order by (used_q_traffic_usage + 0) desc" | hypervmdb | tail -n+2

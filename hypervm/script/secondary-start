@@ -1,0 +1,6 @@
+#!/bin/sh
+cd /usr/local/lxlabs/hypervm/httpdocs/
+cp /etc/secondary_master.copy.my.cnf /etc/my.cnf
+service mysqld restart
+rm ../etc/running_secondary
+/script/upcp

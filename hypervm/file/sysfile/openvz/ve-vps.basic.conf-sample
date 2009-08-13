@@ -1,0 +1,53 @@
+#  Copyright (C) 2000-2006 SWsoft. All rights reserved.
+#
+#  This program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program; if not, write to the Free Software
+#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+
+ONBOOT="no"
+
+# UBC parameters (in form of barrier:limit)
+# Primary parameters
+AVNUMPROC="40:40"
+NUMPROC="65:65"
+NUMTCPSOCK="80:80"
+NUMOTHERSOCK="80:80"
+VMGUARPAGES="6144:2147483647"
+# Secondary parameters
+KMEMSIZE="2752512:2936012"
+TCPSNDBUF="319488:524288"
+TCPRCVBUF="319488:524288"
+OTHERSOCKBUF="132096:336896"
+DGRAMRCVBUF="132096:132096"
+OOMGUARPAGES="6144:2147483647"
+# Auxiliary parameters
+LOCKEDPAGES="32:32"
+SHMPAGES="8192:8192"
+PRIVVMPAGES="49152:53575"
+NUMFILE="2048:2048"
+NUMFLOCK="100:110"
+NUMPTY="16:16"
+NUMSIGINFO="256:256"
+DCACHESIZE="1048576:1097728"
+
+PHYSPAGES="0:2147483647"
+NUMIPTENT="128:128"
+
+# Disk quota parameters (in form of softlimit:hardlimit)
+DISKSPACE="104576000:115343000"
+DISKINODES="2000000:2200000"
+QUOTATIME="0"
+
+# CPU fair sheduler parameter
+CPUUNITS="1000"

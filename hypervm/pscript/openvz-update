@@ -1,0 +1,8 @@
+#!/bin/sh
+if [ `arch` = "x86_64" ] ; then
+yum -y install ovzkernel.x86_64 vzctl.x86_64
+else
+yum -y install ovzkernel-PAE vzctl
+fi
+
+

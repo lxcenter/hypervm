@@ -1,0 +1,2 @@
+#!/bin/sh
+echo "select nname from vps where syncserver = '$1'" | hypervmdb | tail -n+2

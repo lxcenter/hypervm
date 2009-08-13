@@ -1,0 +1,7 @@
+<?php
+
+$gl_sql_string_common = <<<SQL
+
+
+SQL;
+

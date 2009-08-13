@@ -1,0 +1,68 @@
+[openvz-utils]
+name=OpenVZ utilities
+#baseurl=http://download.openvz.org/current/
+mirrorlist=http://download.openvz.org/mirrors-current
+enabled=1
+gpgcheck=1
+gpgkey=http://download.openvz.org/RPM-GPG-Key-OpenVZ
+
+# In addition to openvz-utils repo, you have to enable one the the
+# kernel repositories below. In the stock config, openvz-kernel-rhel5
+# is enabled; you might want to change this.
+
+[openvz-kernel-2.6.22]
+name=OpenVZ 2.6.22 kernel
+#baseurl=http://download.openvz.org/kernel/branches/2.6.20/current
+mirrorlist=http://download.openvz.org/kernel/mirrors-2.6.22
+enabled=0
+gpgcheck=1
+gpgkey=http://download.openvz.org/RPM-GPG-Key-OpenVZ
+
+[openvz-kernel-2.6.20]
+name=OpenVZ 2.6.20 kernel
+#baseurl=http://download.openvz.org/kernel/branches/2.6.20/current
+mirrorlist=http://download.openvz.org/kernel/mirrors-2.6.20
+enabled=0
+gpgcheck=1
+gpgkey=http://download.openvz.org/RPM-GPG-Key-OpenVZ
+
+[openvz-kernel-rhel5]
+name=OpenVZ RHEL5-based kernel
+#baseurl=http://download.openvz.org/kernel/branches/rhel5-2.6.18/current/
+mirrorlist=http://download.openvz.org/kernel/mirrors-rhel5-2.6.18
+enabled=1
+gpgcheck=1
+gpgkey=http://download.openvz.org/RPM-GPG-Key-OpenVZ
+
+[openvz-kernel-2.6.18]
+name=OpenVZ 2.6.18 kernel
+#baseurl=http://download.openvz.org/kernel/branches/2.6.18/current
+mirrorlist=http://download.openvz.org/kernel/mirrors-2.6.18
+enabled=0
+gpgcheck=1
+gpgkey=http://download.openvz.org/RPM-GPG-Key-OpenVZ
+
+[openvz-kernel-2.6.16]
+name=OpenVZ 2.6.16 kernel
+#baseurl=http://download.openvz.org/kernel/branches/2.6.16/current
+mirrorlist=http://download.openvz.org/kernel/mirrors-2.6.16
+enabled=0
+gpgcheck=1
+gpgkey=http://download.openvz.org/RPM-GPG-Key-OpenVZ
+
+[openvz-kernel-rhel4]
+name=OpenVZ RHEL4-based kernel
+#baseurl=http://download.openvz.org/kernel/branches/rhel4-2.6.9/current/
+mirrorlist=http://download.openvz.org/kernel/mirrors-rhel4-2.6.9
+enabled=0
+gpgcheck=1
+gpgkey=http://download.openvz.org/RPM-GPG-Key-OpenVZ
+
+[openvz-kernel-2.6.8]
+name=OpenVZ 2.6.8 kernel
+#baseurl=http://download.openvz.org/kernel/branches/2.6.8/current
+mirrorlist=http://download.openvz.org/kernel/mirrors-2.6.8
+enabled=0
+gpgcheck=1
+gpgkey=http://download.openvz.org/RPM-GPG-Key-OpenVZ
+
