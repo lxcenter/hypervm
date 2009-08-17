@@ -2542,7 +2542,7 @@ function getDownloadServer()
 	if (isOn($local)) {
 		$server = "http://192.168.1.100/download/$progname/$maj";
 	} else {
-		$server = "http://download.lxlabs.com/download/$progname/$maj";
+		$server = "http://download.lxcenter.org/download/$progname/$maj";
 	}
 
 	/*
@@ -2821,7 +2821,9 @@ function get_with_cache($file, $cmdarglist)
 
 }
 
-
+//
+// Initialize the /script/ dir
+//
 function copy_script()
 {
 	global $gbl, $sgbl, $login, $ghtml; 

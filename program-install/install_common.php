@@ -209,7 +209,7 @@ function find_os_version()
 	}
 	
 
-	print("This Operating System is Currently Not supported\n");
+	print("This Operating System is Currently Not supported.\n");
 	exit;
 
 }

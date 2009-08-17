@@ -46,7 +46,7 @@ function lxins_main()
 	$osversion = find_os_version();
 
 	if(file_exists("/usr/local/lxlabs/hypervm")) {
-		print("hyperVM is installed do you wish to continue?(No/Yes):\n");
+		print("HyperVM is installed do you wish to continue?(No/Yes):\n");
 		flush();
 		$stdin = fopen('php://stdin','r');
 		$argq = fread($stdin, 5);
@@ -60,7 +60,7 @@ function lxins_main()
 
 	if ($virtualization === 'xen') {
 		if (!char_search_beg($osversion, "fedora-9") && !char_search_beg($osversion, "centos-5") && !char_search_beg($osversion, "rhel-5")) {
-			print("Xen is only supported on Fedora-9 or Centos-5\n");
+			print("Xen is only supported on Fedora 9 or CentOS 5\n");
 			exit;
 		}
 	}
@@ -68,7 +68,7 @@ function lxins_main()
 
 	if ($virtualization === 'openvz') {
 		if (!char_search_beg($osversion, "centos") && !char_search_beg($osversion, "rhel")) {
-			print("Openvz is only supported on centos, rhel 4/5\n");
+			print("OpenVZ is only supported on CentOS 4/5, RHEL 4/5 distributions\n");
 			exit;
 		}
 	}
@@ -121,7 +121,7 @@ function lxins_main()
 	chdir("/usr/local/lxlabs/hypervm");
 	system("mkdir -p /usr/local/lxlabs/hypervm/log");
 	@ unlink("hypervm-current.zip");
-	system("wget http://download.lxlabs.com/download/hypervm/production/hypervm/hypervm-current.zip");
+	system("wget http://download.lxcenter.org/download/hypervm/production/hypervm/hypervm-current.zip");
     system("unzip -oq hypervm-current.zip", $return); 
 
 	if ($return) {
@@ -146,7 +146,6 @@ function lxins_main()
 	system("chmod 755 /etc/init.d/hypervm");
 	system("/sbin/chkconfig hypervm on");
 	system("/sbin/chkconfig iptables off");
-	//system("service hypervm start");
 
 	$skiparg = null;
 	if ($skipostemplate) { $skiparg = "--skipostemplate=true"; }
@@ -157,26 +156,36 @@ function lxins_main()
 		print("Virtualization is $virtualization. Installing $virtualization Components\n");
 	}
 
+//
+// call script to install base OS templates and OpenVZ repo
+//
 	passthru("/usr/local/lxlabs/ext/php/php ../bin/install/virt-install.php --install-type=$installtype --virtualization-type=$virtualization $skiparg");
 
 
-	print("Congratuations. hyperVM has been installed succesfully on your server as $installtype \n");
+	print("Congratuations. HyperVM has been installed succesfully on your server as $installtype \n");
 
 	if ($installtype === 'master') {
 		print("You can connect to the server at https://<ip-address>:8887 or http://<ip-address>:8888\n");
 		print("Please note that first is secure ssl connection, while the second is normal one.\n");
-		print("The login and password are 'admin' 'admin'. After Logging in, you will have to change your password to something more secure\n");
-		print("Thanks for choosing hyperVM to manage your Server, and allowing us to be of service\n");
+		print("The login and password are 'admin' 'admin'. After Logging in, you will have to change your password to something more secure.\n");
+		print("Thanks for choosing HyperVM to manage your Server, and allowing us to be of service.\n");
 	} else {
-		print("You should open the port 8889 on this server, since this is used for the communication between master and slave\n");
-		print("To access this slave, go admin->slaves->add slave, give the ip/machine name of this server. The password is 'admin'. The slave will appear in the list of slaves, and you can access it just like you access localhost\n");
+		print("You should open the port 8889 on this server, since this is used for the communication between master and slave.\n");
+		print("To access this slave, go admin->slaves->add slave, give the ip/machine name of this server. The password is 'admin'. The slave will appear in the list of slaves, and you can access it just like you access localhost.\n");
 	}
 
 	if ($virtualization === 'openvz') {
-		print("\n***There is one more step you have to do to make this complete. Open /etc/grub.conf, and change the 'default=1' line to 'default=0', and reboot this machine. You will be rebooted into the openvz kernel and will able to manage vpses from the hyperVM interface\n");
+		print("\n***There is one more step you have to do to make this complete. Open /etc/grub.conf, and change the 'default=1' line to 'default=0', and reboot this machine. You will be rebooted into the OpenVZ kernel and will able to manage VPSes from the HyperVM interface.\n");
 	} else if ($virtualization === 'xen'){
-		print("\n**** You will have to reboot for the xen kernel to take effect. Once rebooted, you will able to manage xen virtual machines using the hyperVM interface\n");
+		print("\n**** You will have to reboot for the XEN kernel to take effect. Once rebooted, you will able to manage XEN virtual machines using the HyperVM interface.\n");
 	}
+	
+		print("\n\nExtra note:\n");
+		print("To install extra XEN and/or OpenVZ OS templates please run:\n\n");
+		print("sh /script/install-extra-ostemplates\n");
+				print("\nThese template are left out the install process to speed up the HyperVM installation. By default only CentOS 5 and HostInBox(Kloxo) OS templates are installed.");
+
+
 }
 
 function fix_network_forwarding()

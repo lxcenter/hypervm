@@ -25,8 +25,8 @@ function updatecleanup_main()
 		$login = new Client(null, null, 'update');
 	}
 
-	print("Executing UpdateCleanup. This will take a long time. Please be patient\n");
-	log_log("update", "Execing Updatecleanup");
+	print("Executing UpdateCleanup. This can take a long time. Please be patient\n");
+	log_log("update", "Executing Updatecleanup");
 
 	if (lxfile_exists("CVS")) {
 		print("Found CVS.. Exiting\n\n");

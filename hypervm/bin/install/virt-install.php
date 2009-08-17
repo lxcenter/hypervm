@@ -1,4 +1,10 @@
 <?php 
+// 
+// This file is part of the HyperVM installer
+// dterweij 17aug09
+// Installing OS Templates, OpenVZ yum/up2date repo
+// 
+//
 include_once "htmllib/lib/include.php"; 
 
 virt_install_main();
@@ -23,7 +29,7 @@ function virt_install_main()
 	}
 
 	if ($installtype !== 'slave' && !$skipostemplate) {
-		installOstemplates();
+		installOstemplates($virtualization);
 	}
 
 	print("Executing Update Cleanup... Will take a long time to finish....\n");
@@ -48,10 +54,22 @@ function openvz_install($installtype)
 
 }
 
-function installOstemplates()
+//
+// This function is changed.
+// It downloads only two base ostemplates
+// It only download ostemplates for virtualisation type
+// added /base/ and /extra/ to download server to split base and extra os templates
+// To get the extra os templates a new script has to be made into /scripts/ 
+// dterweij 17aug09
+//
+function installOstemplates($virtualization)
 {
-	system("mkdir -p /home/hypervm/xen/template/ ; cd /home/hypervm/xen/template/ ; wget -nd -np -c -r  download.lxlabs.com/download/vmtemplate/;");
-	system("mkdir -p /vz/template/cache ; cd /vz/template/cache/ ; wget -nd -np -c -r  download.lxlabs.com/download/vpstemplate/;");
+	if ($virtualization === 'xen') {
+	system("mkdir -p /home/hypervm/xen/template/ ; cd /home/hypervm/xen/template/ ; wget -nd -np -c -r  download.lxcenter.org/download/vmtemplate/base/;");
+	}
+	if ($virtualization === 'openvz') {
+	system("mkdir -p /vz/template/cache ; cd /vz/template/cache/ ; wget -nd -np -c -r  download.lxcenter.org/download/vpstemplate/base/;");
+	}
 }
 
 function xen_install($installtype)
