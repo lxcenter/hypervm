@@ -1,8 +1,0 @@
-
-#additional packages that may be useful
-[lxcenter-base]
-name=%distro%-$releasever - lxcenter-base
-baseurl=http://download.lxcenter.org/download/update/%distro%/$basearch/
-gpgcheck=0
-enabled=1
-

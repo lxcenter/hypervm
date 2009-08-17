@@ -157,8 +157,8 @@ function install_rhn_sources($osversion)
 	}
 
 	$data = our_file_get_contents("/etc/sysconfig/rhn/sources");
-	if(!preg_match('/lxlabs/i', $data)) {
-		$ndata = "yum lxlabs-updates http://download.lxlabs.com/download/update/$osversion/\$ARCH/\nyum lxlabs-lxupdates http://download.lxlabs.com/download/update/lxgeneral";
+	if(!preg_match('/lxcenter/i', $data)) {
+		$ndata = "yum lxcenter-base http://download.lxcenter.org/download/update/$osversion/\$ARCH/\nyum lxcenter-extra  http://download.lxcenter.org/download/update/lxgeneral";
 		//append it to the file...
 		our_file_put_contents("/etc/sysconfig/rhn/sources","\n\n", true);
 		our_file_put_contents("/etc/sysconfig/rhn/sources", $ndata, true);
@@ -172,9 +172,9 @@ function install_yum_repo($osversion)
 		return;
 	}
 
-	$cont = our_file_get_contents("../lxlabs.repo.template");
+	$cont = our_file_get_contents("../lxcenter.repo.template");
 	$cont = str_replace("%distro%", $osversion, $cont);
-	our_file_put_contents("/etc/yum.repos.d/lxlabs.repo", $cont);
+	our_file_put_contents("/etc/yum.repos.d/lxcenter.repo", $cont);
 	if ($osversion === 'centos-4') {
 		//system("cp ../CentOS-Base.repo /etc/yum.repos.d/");
 	}

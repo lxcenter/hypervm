@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 # HyperVM
-# Install Script Version 1.0
+# Install Script Version 1.0.1
 # More information at http://www.lxcenter.org/
 # Author dterweij
 #
@@ -31,14 +31,16 @@ if ! [ -f /usr/bin/php ] ; then
 	exit
 fi
 #
+if 	[ -f ./hypervm-install.zip ] ; then
 	echo Remove old installation package
-	rm -f program-install.zip
+	rm -f hypervm-install.zip
+fi
 	echo Downloading installation package from LxCenter
-	wget http://download.lxcenter.org/download/program-install.zip
+	wget http://download.lxcenter.org/download/hypervm-install.zip
 #
 	echo Unpacking installation package	
-	unzip -oq program-install.zip
-	cd program-install/hypervm-linux
+	unzip -oq hypervm-install.zip
+	cd hypervm-install/hypervm-linux
 	echo Starting main installation script
 	php lxins.php --install-type=master $* | tee hypervm_install.log
 }
