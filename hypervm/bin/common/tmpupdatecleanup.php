@@ -28,6 +28,14 @@ function updatecleanup_main()
 	print("Executing UpdateCleanup. This can take a long time. Please be patient\n");
 	log_log("update", "Executing Updatecleanup");
 
+//
+// Cleanup old lxlabs.repo file
+// 
+	if (lxfile_exists("/etc/yum.repos.d/lxcenter.repo")) {
+	if (lxfile_exists("/etc/yum.repos.d/lxlabs.repo")) {
+		lxfile_mv("/etc/yum.repos.d/lxlabs.repo", "/etc/yum.repos.d/lxlabs.repo.lxsave");
+		}
+		}
 	if (lxfile_exists("CVS")) {
 		print("Found CVS.. Exiting\n\n");
 		exit;
