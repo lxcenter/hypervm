@@ -6,13 +6,13 @@
 startopenvz() {
 mkdir -p /vz/template/cache
 cd /vz/template/cache/
-wget -nd -np -c -r download.lxcenter.org/download/vpstemplate/base/
+wget -nd -np -c -r download.lxcenter.org/download/openvztemplates/extra/
 }
 #
 startxen() {
 mkdir -p /home/hypervm/xen/template/
 cd /home/hypervm/xen/template/
-wget -nd -np -c -r download.lxcenter.org/download/vmtemplate/base/
+wget -nd -np -c -r download.lxcenter.org/download/xentemplates/extra/
 }
 #
 # Check how we were called.
