@@ -113,10 +113,10 @@ function doUpdateExtraStuff()
 
 	system("mysql -u hypervm -p`cat ../etc/conf/hypervm.pass` hypervm1_0 < ../file/interface/interface_template.dump");
 	if (!lxfile_real("/vz/template/cache/centos-5-i386-afull.tar.gz")) {
-		system("mkdir -p /vz/template/cache/ ; cd /vz/template/cache/ ; rm centos-5-i386-afull.tar.gz; wget download.lxlabs.com/download/vpstemplate/centos-5-i386-afull.tar.gz ");
+		system("mkdir -p /vz/template/cache/ ; cd /vz/template/cache/ ; rm centos-5-i386-afull.tar.gz; wget download.lxcenter.org/download/openvztemplates/base/centos-5-i386-afull.tar.gz ");
 	}
 	if (!lxfile_real("/home/hypervm/xen/template/centos-5-i386-afull.tar.gz")) {
-		system("mkdir -p /home/hypervm/xen/template ; cd /home/hypervm/xen/template/ ; rm centos-5-i386-afull.tar.gz;  wget download.lxlabs.com/download/vmtemplate/centos-5-i386-afull.tar.gz ");
+		system("mkdir -p /home/hypervm/xen/template ; cd /home/hypervm/xen/template/ ; rm centos-5-i386-afull.tar.gz;  wget download.lxcenter.org/download/xentemplates/base/centos-5-i386-afull.tar.gz ");
 	}
 
 	fix_self_ssl();
@@ -137,16 +137,23 @@ function fix_ipaddress_column_type()
 
 function get_kloxo_ostemplate()
 {
+	//
+	// This must me changed!
+	//
+   //##########  
 	$ver = "576";
+	//##########
+	//
+	//
 	if (lxfile_exists("/vz/template/cache")) {
 		if (!lxfile_real("/vz/template/cache/centos-5-i386-hostinabox$ver.tar.gz")) {
-			system("cd /vz/template/cache/ ;rm -f centos-?-i386-lxadmin*.tar.gz ; rm -f centos-?-i386-hostinabox*.tar.gz; wget download.lxlabs.com/download/vpstemplate/centos-5-i386-hostinabox$ver.tar.gz");
+			system("cd /vz/template/cache/ ;rm -f centos-?-i386-lxadmin*.tar.gz ; rm -f centos-?-i386-hostinabox*.tar.gz; wget download.lxcenter.org/download/openvztemplates/base/centos-5-i386-hostinabox$ver.tar.gz");
 		}
 	}
 
 	if (lxfile_exists("/home/hypervm/xen/template/")) {
 		if (!lxfile_nonzero("/home/hypervm/xen/template/centos-5-i386-hostinabox$ver.tar.gz")) {
-			system("cd /home/hypervm/xen/template/ ; rm -f centos-?-i386-lxadmin*.tar.gz; rm -f centos-?-i386-hostinabox*.tar.gz; wget download.lxlabs.com/download/vmtemplate/centos-5-i386-hostinabox$ver.tar.gz");
+			system("cd /home/hypervm/xen/template/ ; rm -f centos-?-i386-lxadmin*.tar.gz; rm -f centos-?-i386-hostinabox*.tar.gz; wget download.lxcenter.org/download/xentemplates/base/centos-5-i386-hostinabox$ver.tar.gz");
 		}
 	}
 }
@@ -285,6 +292,13 @@ function updateApplicableToSlaveToo()
 	if (lxfile_exists("/etc/vz")) {
 		lxfile_cp("__path_program_root/file/sysfile/openvz/ve-vps.basic.conf-sample", "/etc/vz/conf");
 		lxfile_cp("../file/openvz.repo", "/etc/yum.repos.d/openvz.repo");
+	// add lxcenter.repo	
+		lxfile_cp("../file/lxcenter.repo", "/etc/yum.repos.d/lxcenter.repo");
+	// delete lxlabs.repo	
+	if (lxfile_exists("/etc/yum.repos.d/lxlabs.repo")) {
+		lxfile_mv("/etc/yum.repos.d/lxlabs.repo","/etc/yum.repos.d/lxlabs.repo.lxsave");
+		}
+		
 		vps__openvz::staticChangeConf("/etc/vz/vz.conf", "NEIGHBOUR_DEVS", "all");
 	}
 
