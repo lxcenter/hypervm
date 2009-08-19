@@ -292,8 +292,10 @@ function updateApplicableToSlaveToo()
 	if (lxfile_exists("/etc/vz")) {
 		lxfile_cp("__path_program_root/file/sysfile/openvz/ve-vps.basic.conf-sample", "/etc/vz/conf");
 		lxfile_cp("../file/openvz.repo", "/etc/yum.repos.d/openvz.repo");
-	// add lxcenter.repo	
-		lxfile_cp("../file/lxcenter.repo", "/etc/yum.repos.d/lxcenter.repo");
+	// add lxcenter.repo
+	$cont = our_file_get_contents("../file/lxcenter.repo");
+	$cont = str_replace("%distro%", $osversion, $cont);
+	our_file_put_contents("/etc/yum.repos.d/lxcenter.repo", $cont);	
 	// delete lxlabs.repo	
 	if (lxfile_exists("/etc/yum.repos.d/lxlabs.repo")) {
 		lxfile_mv("/etc/yum.repos.d/lxlabs.repo","/etc/yum.repos.d/lxlabs.repo.lxsave");

@@ -1,14 +1,14 @@
 
 #additional packages that may be useful
 [lxcenter-base]
-name=%distro%-$releasever - lxcenter-base
+name=HyperVM - $releasever - lxcenter-base
 baseurl=http://download.lxcenter.org/download/update/%distro%/$basearch/
 gpgcheck=0
 enabled=1
 
 #packages used/produced in the build but not released
 [lxcenter-extra]
-name=CentOS-$releasever - lxcenter-extra
+name=HyperVM- $releasever - lxcenter-extra
 baseurl=http://download.lxcenter.org/download/update/lxgeneral
 gpgcheck=0
 enabled=1

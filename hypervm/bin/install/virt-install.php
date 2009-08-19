@@ -59,7 +59,6 @@ function openvz_install($installtype)
 // It downloads only two base ostemplates
 // It only download ostemplates for virtualisation type
 // added /base/ and /extra/ to download server to split base and extra os templates
-// To get the extra os templates a new script has to be made into /scripts/ 
 // dterweij 17aug09
 //
 function installOstemplates($virtualization)
