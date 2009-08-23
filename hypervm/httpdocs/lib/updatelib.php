@@ -353,6 +353,7 @@ function updateApplicableToSlaveToo()
 	// delete lxlabs.repo	
 	if (lxfile_exists("/etc/yum.repos.d/lxlabs.repo")) {
 		lxfile_mv("/etc/yum.repos.d/lxlabs.repo","/etc/yum.repos.d/lxlabs.repo.lxsave");
+		lxfile_rm("/etc/yum.repos.d/lxlabs.repo");
 		}
 		
 		vps__openvz::staticChangeConf("/etc/vz/vz.conf", "NEIGHBOUR_DEVS", "all");
@@ -360,12 +361,11 @@ function updateApplicableToSlaveToo()
 
 	fix_rhn_sources_file();
 	fix_ipconntrack();
-
 	if (lxfile_exists("/home/hypervm/xen/template")) {
 		system("echo hypervm-windows > /home/hypervm/xen/template/windows-lxblank.img");
 	}
 
-	memoryGraphFix();
+   memoryGraphFix();
 	lxfile_unix_chmod("../cexe/closeallinput", "0755");
 
 	installLxetc();
