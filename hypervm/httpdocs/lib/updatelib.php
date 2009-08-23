@@ -393,10 +393,10 @@ function updateApplicableToSlaveToo()
 			print("Check Xen windows-lxblank.img template\n");
 		system("echo hypervm-windows > /home/hypervm/xen/template/windows-lxblank.img");
 	}
-
+	print("Fix memory graph\n");
    memoryGraphFix();
 	lxfile_unix_chmod("../cexe/closeallinput", "0755");
-
+	print("Fix LxEtc\n");
 	installLxetc();
 
 	print("Check binaries\n");
