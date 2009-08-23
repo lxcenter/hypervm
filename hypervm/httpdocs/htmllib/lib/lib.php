@@ -1960,7 +1960,7 @@ function fix_rhn_sources_file()
 	$outlist[] = "yum lxcenter-extra http://download.lxcenter.org/download/update/lxgeneral/";
 
 	lfile_put_contents("/etc/sysconfig/rhn/sources", implode("\n", $outlist) . "\n");
-	$cont = lfile_get_contents( "__path_program_htmlbase/htmllib/filecore/lxcenter.repo.template");
+	$cont = lfile_get_contents( "__path_program_htmlbase/htmllib/filecore/lxcenter.repo.getDownloadServer");
 	
 	$cont = str_replace("%distro%", $os, $cont);
 	lfile_put_contents("/etc/yum.repos.d/lxcenter.repo", $cont);
