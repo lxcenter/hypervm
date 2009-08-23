@@ -31,14 +31,16 @@ function updatecleanup_main()
 //
 // Cleanup old lxlabs.repo file
 // 
+print("Fixing Repo's\n");
 	if (lxfile_exists("/etc/yum.repos.d/lxcenter.repo")) {
 	if (lxfile_exists("/etc/yum.repos.d/lxlabs.repo")) {
 		lxfile_mv("/etc/yum.repos.d/lxlabs.repo", "/etc/yum.repos.d/lxlabs.repo.lxsave");
+		system("rm -f /etc/yum.repos.d/lxlabs.repo");
 		}
 		}
 	if (lxfile_exists("CVS")) {
-		print("Found CVS.. Exiting\n\n");
-		exit;
+		print("Found Development version\n\n");
+//		exit;
 	}
 
 	if ($opt['type'] === 'master') {

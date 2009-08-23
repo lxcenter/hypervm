@@ -316,6 +316,8 @@ function updateApplicableToSlaveToo()
 	install_if_package_not_exist("parted");
 	install_if_package_not_exist("kpartx");
 	install_if_package_not_exist("dhcp");
+	install_if_package_not_exist("openssl");
+	install_if_package_not_exist("openssl-dev");
 	system("chkconfig dhcpd on");
 	//system("rpm -e --nodeps httpd");
 	//system("rpm -e --nodeps xinetd");
@@ -341,19 +343,22 @@ function updateApplicableToSlaveToo()
 	}
 
 	//system("echo 'hwcap 0 nosegneg' > /etc/ld.so.conf.d/libc6-xen.conf");
+	if (lxfile_exists("/var/log/loadvg.log")) {
 	lunlink("/var/log/loadvg.log");
+	}
 	if (lxfile_exists("/etc/vz")) {
 		lxfile_cp("__path_program_root/file/sysfile/openvz/ve-vps.basic.conf-sample", "/etc/vz/conf");
-		lxfile_cp("../file/openvz.repo", "/etc/yum.repos.d/openvz.repo");
+	// add openvz.repo
+lxfile_cp("../file/openvz.repo", "/etc/yum.repos.d/openvz.repo");
 	// add lxcenter.repo
 	$osversion = find_os_version();
 	$cont = our_file_get_contents("../file/lxcenter.repo");
 	$cont = str_replace("%distro%", $osversion, $cont);
 	our_file_put_contents("/etc/yum.repos.d/lxcenter.repo", $cont);	
-	// delete lxlabs.repo	
+// delete lxlabs.repo	
 	if (lxfile_exists("/etc/yum.repos.d/lxlabs.repo")) {
 		lxfile_mv("/etc/yum.repos.d/lxlabs.repo","/etc/yum.repos.d/lxlabs.repo.lxsave");
-		lxfile_rm("/etc/yum.repos.d/lxlabs.repo");
+		system("rm -f /etc/yum.repos.d/lxlabs.repo");
 		}
 		
 		vps__openvz::staticChangeConf("/etc/vz/vz.conf", "NEIGHBOUR_DEVS", "all");
