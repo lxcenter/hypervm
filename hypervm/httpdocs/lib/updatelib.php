@@ -298,7 +298,8 @@ function find_os_version()
 
 		return $osversion;
 }
-	
+}
+
 function updateApplicableToSlaveToo()
 {
 	global $gbl, $sgbl, $login, $ghtml; 
