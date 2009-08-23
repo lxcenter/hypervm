@@ -58,29 +58,23 @@ function fixExtraDB()
 function doUpdateExtraStuff()
 {
 	global $gbl, $sgbl, $login, $ghtml; 
-
+	print("Update Extra Stuff\n");
+	
 	lxfile_mkdir("__path_program_etc/flag");
-
-
 	convertIpaddressToComa();
-
 	fixExtraDB();
-
-
 	//$wel = lfile_get_contents("../file/welcome.txt");
 	//$clname = createParentName('client', 'admin');
 	//$sq->rawQuery("update notification set text_newaccountmessage = '$wel' where nname = '$clname'");
-
-
+	print("Set some defaults\n");
 	db_set_default('vps', 'ttype', 'openvz');
 	db_set_default('pserver', 'coma_psrole_a', 'vps');
-
 	db_set_default("vps", "swapdiskname", "vm.swap", "ttype = 'xen'");
 	db_set_default("vps", "maindiskname", "root.img", "ttype = 'xen'");
 	db_set_default('vps', 'corerootdir', '/vz/private', "ttype = 'openvz'");
 	db_set_default("vps", "corerootdir", "/home/xen", "ttype = 'xen'");
 
-
+print("Fixing database passwords\n");
 	$a = null;
 	fix_mysql_root_password('localhost');
 	$dbadmin = new Dbadmin(null, 'localhost', "mysql___localhost");
@@ -89,12 +83,14 @@ function doUpdateExtraStuff()
 	$a['mysql']['dbpassword'] = $pass;
 	slave_save_db("dbadmin", $a);
 
-
+print("Fixing OS template permissions\n");
 	lxfile_unix_chmod_rec("/vz/template/cache/", "0755");
 	lxfile_unix_chmod_rec("/home/hypervm/xen/template/", "0755");
 
 	call_with_flag("dofixParentClname");
+	print("Check License\n");
 	passthru("$sgbl->__path_php_path htmllib/lbin/getlicense.php");
+	print("Rune some more fixes/checks...\n");
 	fixOpenVZResource();
 	move_clients_to_client();
 	add_vps_backup_dir();
@@ -104,6 +100,7 @@ function doUpdateExtraStuff()
 	//lxshell_background("__path_php_path", "../bin/collectquota.php");
 	fix_ipaddress_column_type();
 	fix_vmipaddress();
+	print("Checking HIB template\n");
 	get_kloxo_ostemplate();
 	save_admin_email();
 	copy_image();
@@ -112,6 +109,7 @@ function doUpdateExtraStuff()
 	system("chkconfig libvirtd off 2>/dev/null");
 
 	system("mysql -u hypervm -p`cat ../etc/conf/hypervm.pass` hypervm1_0 < ../file/interface/interface_template.dump");
+	print("Fixing Base OS templates\n");
 	if (!lxfile_real("/vz/template/cache/centos-5-i386-afull.tar.gz")) {
 		system("mkdir -p /vz/template/cache/ ; cd /vz/template/cache/ ; rm centos-5-i386-afull.tar.gz; wget download.lxcenter.org/download/openvztemplates/base/centos-5-i386-afull.tar.gz ");
 	}
@@ -126,7 +124,7 @@ function doUpdateExtraStuff()
 
 	critical_change_db_pass();
 
-
+print("End Update Extra Stuff\n");
 }
 
 function fix_ipaddress_column_type()
