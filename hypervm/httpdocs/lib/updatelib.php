@@ -62,6 +62,7 @@ function doUpdateExtraStuff()
 	
 	lxfile_mkdir("__path_program_etc/flag");
 	convertIpaddressToComa();
+	print("Fix database\n");
 	fixExtraDB();
 	//$wel = lfile_get_contents("../file/welcome.txt");
 	//$clname = createParentName('client', 'admin');
@@ -296,11 +297,26 @@ function find_os_version()
 
 		return $osversion;
 }
+if (file_exists("/etc/redhat-release")) {
+		$release = trim(file_get_contents("/etc/redhat-release"));
+		$osv = explode(" ", $release);
+		if(isset($osv[6])) {
+			$osversion = "rhel-" . $osv[6];
+		} else{
+			$oss = explode(".", $osv[2]);
+			$osversion = "centos-" . $oss[0];
+		}
+		return $osversion;
+	}
+	
+
+	print("This Operating System is Currently Not supported.\n");
+	exit;
 }
 
 function updateApplicableToSlaveToo()
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml, $osversion; 
 	//lxfile_rm("__path_program_root/etc/vpsipaddress.list");
 	//system("mkdir -p /vz/template/cache ; cd /vz/template/cache/ ; rm /vz/template/cache/index.* ; wget -nd -np -c -r  download.lxlabs.com/download/vpstemplate/ >/dev/null 2>&1 &");
 	//system("mkdir -p /home/hypervm/xen/template/; cd /home/hypervm/xen/template/; rm /home/hypervm/xen/template/debian-3.1.tar.gz /home/hypervm/xen/template/fedora-core-4.tar.gz /home/hypervm/xen/template/centos-4.3.tar.gz ; wget -nd -np -c -r download.lxlabs.com/download/vmtemplate/ >/dev/null 2>&1 &");
