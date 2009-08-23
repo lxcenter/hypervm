@@ -114,7 +114,7 @@ function timed_exec($time, $func)
 function exec_scavenge()
 {
 	global $gbl, $sgbl, $login, $ghtml; 
-	dprint("Execing collect quota\n");
+	dprint("Executing collect quota\n");
 	$olddir = getcwd();
 	lchdir("__path_program_htmlbase");
 	exec_with_all_closed("$sgbl->__path_php_path ../bin/scavenge.php");
@@ -208,7 +208,7 @@ function root_main($d)
 		$res = do_root_main($d);
 		$res->exception = null;
 	} catch (exception $e) {
-		dprint("Coaught Execption: " . $e->getMessage());
+		dprint("Caught Exception: " . $e->getMessage());
 		$res = new Remote();
 		$res->ret = -1;
 		$res->exception = $e;

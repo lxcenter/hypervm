@@ -90,7 +90,7 @@ print("Fixing OS template permissions\n");
 	call_with_flag("dofixParentClname");
 	print("Check License\n");
 	passthru("$sgbl->__path_php_path htmllib/lbin/getlicense.php");
-	print("Rune some more fixes/checks...\n");
+	print("Run some more fixes/checks...\n");
 	fixOpenVZResource();
 	move_clients_to_client();
 	add_vps_backup_dir();
@@ -399,6 +399,7 @@ function updateApplicableToSlaveToo()
 	system("chmod ug+s /usr/sbin/lxrestart");
 	system("chmod 777 /tmp");
 	system("chmod o+t /tmp");
+	print("Create script dir\n");
 	copy_script();
 	system("rmdir /usr/local/lxlabs/kloxo/httpdocs/ >/dev/null 2>&1");
 	system("rmdir /usr/local/lxlabs/kloxo/ >/dev/null 2>&1");

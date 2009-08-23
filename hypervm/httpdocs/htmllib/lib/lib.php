@@ -86,7 +86,7 @@ function core_installWithVersion($path, $file, $ver)
 	lxfile_mkdir("/var/cache/$prgm");
 	if (!lxfile_real("/var/cache/$prgm/$file.$ver.zip")) {
 		while (lxshell_return("unzip", "-t", "/var/cache/$prgm/$file.$ver.zip")) {
-			system("cd /var/cache/$prgm/ ; rm -f $file*.zip; wget download.lxlabs.com/download/$file.$ver.zip");
+			system("cd /var/cache/$prgm/ ; rm -f $file*.zip; wget download.lxcenter.org/download/$file.$ver.zip");
 		}
 		system("cd $path ; unzip -oq /var/cache/$prgm/$file.$ver.zip");
 	}
@@ -1103,7 +1103,7 @@ function exec_with_all_closed($cmd)
 {
 	global $gbl, $sgbl, $login, $ghtml; 
 	$string = null;
-	log_shell("CLosed Exec $sgbl->__path_program_root/cexe/closeallinput '$cmd' >/dev/null 2>&1 &");
+	log_shell("Closed Exec $sgbl->__path_program_root/cexe/closeallinput '$cmd' >/dev/null 2>&1 &");
 	chmod("$sgbl->__path_program_root/cexe/closeallinput", 0755);
 	exec("$sgbl->__path_program_root/cexe/closeallinput '$cmd' >/dev/null 2>&1 &");
 }
@@ -1121,7 +1121,7 @@ function exec_with_all_closed_output($cmd)
 	chmod("$sgbl->__path_program_root/cexe/closeallinput", 0755);
 	//exec("$cmd > /dev/null 2>&1 &");
 	$res = shell_exec("$sgbl->__path_program_root/cexe/closeallinput '$cmd' 2>/dev/null");
-	log_shell("CLosed Exec output: $res :  $sgbl->__path_program_root/cexe/closeallinput '$cmd'");
+	log_shell("Closed Exec output: $res :  $sgbl->__path_program_root/cexe/closeallinput '$cmd'");
 	return trim($res);
 }
 
@@ -1949,21 +1949,21 @@ function fix_rhn_sources_file()
 		if (!$l) {
 			continue;
 		}
-		if (csb($l, "yum lxlabs")) {
+		if (csb($l, "yum lxcenter")) {
 			continue;
 		}
 		$outlist[$k] = $l;
 	}
 
 	$outlist[] = "\n";
-	$outlist[] = "yum lxlabs-updates http://download.lxlabs.com/download/update/$os/\$ARCH/";
-	$outlist[] = "yum lxlabs-lxupdates http://download.lxlabs.com/download/update/lxgeneral/";
+	$outlist[] = "yum lxcenter-base http://download.lxcenter.org/download/update/$os/\$ARCH/";
+	$outlist[] = "yum lxcenter-extra http://download.lxcenter.org/download/update/lxgeneral/";
 
 	lfile_put_contents("/etc/sysconfig/rhn/sources", implode("\n", $outlist) . "\n");
-	$cont = lfile_get_contents( "__path_program_htmlbase/htmllib/filecore/lxlabs.repo.template");
+	$cont = lfile_get_contents( "__path_program_htmlbase/htmllib/filecore/lxcenter.repo.template");
 	
 	$cont = str_replace("%distro%", $os, $cont);
-	lfile_put_contents("/etc/yum.repos.d/lxlabs.repo", $cont);
+	lfile_put_contents("/etc/yum.repos.d/lxcenter.repo", $cont);
 }
 
 
@@ -2827,15 +2827,18 @@ function get_with_cache($file, $cmdarglist)
 function copy_script()
 {
 	global $gbl, $sgbl, $login, $ghtml; 
+	if (!lxfile_exists("/script/")) {
 	lxfile_tmp_rm_rec("/script");
 	lxfile_mkdir("/script");
 	lxfile_mkdir("/script/filter");
-
+	}
 	lxfile_cp_content_file("htmllib/script/", "/script/");
 	lxfile_cp_content_file("../pscript", "/script/");
 
 	if (lxfile_exists("../pscript/vps/")) {
+		if (lxfile_exists("/script/vps/")) {
 		lxfile_mkdir("/script/vps");
+		}
 		lxfile_cp_content_file("../pscript/vps/", "/script/vps/");
 	}
 
