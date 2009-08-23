@@ -285,6 +285,20 @@ function our_file_put_contents($file, $contents, $appendflag = false)
 	fclose($fp);
 }
 
+function find_os_version()
+{
+	if (file_exists("/etc/fedora-release")) {
+		$release = trim(file_get_contents("/etc/fedora-release"));
+		$osv = explode(" ", $release);
+		if (strtolower($osv[1]) === 'core') {
+			$osversion = "fedora-" . $osv[3]; 
+		} else {
+			$osversion = "fedora-" . $osv[2]; 
+		}
+
+		return $osversion;
+}
+	
 function updateApplicableToSlaveToo()
 {
 	global $gbl, $sgbl, $login, $ghtml; 
@@ -331,6 +345,7 @@ function updateApplicableToSlaveToo()
 		lxfile_cp("__path_program_root/file/sysfile/openvz/ve-vps.basic.conf-sample", "/etc/vz/conf");
 		lxfile_cp("../file/openvz.repo", "/etc/yum.repos.d/openvz.repo");
 	// add lxcenter.repo
+	$osversion = find_os_version();
 	$cont = our_file_get_contents("../file/lxcenter.repo");
 	$cont = str_replace("%distro%", $osversion, $cont);
 	our_file_put_contents("/etc/yum.repos.d/lxcenter.repo", $cont);	
