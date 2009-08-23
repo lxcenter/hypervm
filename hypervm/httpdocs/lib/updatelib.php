@@ -304,11 +304,15 @@ function updateApplicableToSlaveToo()
 	//lxfile_rm("__path_program_root/etc/vpsipaddress.list");
 	//system("mkdir -p /vz/template/cache ; cd /vz/template/cache/ ; rm /vz/template/cache/index.* ; wget -nd -np -c -r  download.lxlabs.com/download/vpstemplate/ >/dev/null 2>&1 &");
 	//system("mkdir -p /home/hypervm/xen/template/; cd /home/hypervm/xen/template/; rm /home/hypervm/xen/template/debian-3.1.tar.gz /home/hypervm/xen/template/fedora-core-4.tar.gz /home/hypervm/xen/template/centos-4.3.tar.gz ; wget -nd -np -c -r download.lxlabs.com/download/vmtemplate/ >/dev/null 2>&1 &");
+	print("Download 3rdparty\n");
 	download_thirdparty(2009);
+	print("Installing binaries\n");
 	lxfile_cp("__path_program_root/cexe/lxxen", "/usr/bin");
 	lxfile_cp("__path_program_root/cexe/lxopenvz", "/usr/bin");
+	print("Fixing binaries permissions\n");
 	lxfile_generic_chmod("/usr/bin/lxopenvz", "6755");
 	lxfile_generic_chmod("/usr/bin/lxxen", "6755");
+	print("Install missing rpm packages if any\n");
 	install_if_package_not_exist("rrdtool");
 	install_if_package_not_exist("ntfsprogs");
 	install_if_package_not_exist("parted");
@@ -346,25 +350,29 @@ function updateApplicableToSlaveToo()
 	}
 	if (lxfile_exists("/etc/vz")) {
 		lxfile_cp("__path_program_root/file/sysfile/openvz/ve-vps.basic.conf-sample", "/etc/vz/conf");
+		print("Fixing openvz repo\n");
 	// add openvz.repo
 lxfile_cp("../file/openvz.repo", "/etc/yum.repos.d/openvz.repo");
+print("Fixing lxcenter repo\n");
 	// add lxcenter.repo
 	$osversion = find_os_version();
 	$cont = our_file_get_contents("../file/lxcenter.repo");
 	$cont = str_replace("%distro%", $osversion, $cont);
 	our_file_put_contents("/etc/yum.repos.d/lxcenter.repo", $cont);	
+	print("Delete old repo's\n");
 // delete lxlabs.repo	
 	if (lxfile_exists("/etc/yum.repos.d/lxlabs.repo")) {
 		lxfile_mv("/etc/yum.repos.d/lxlabs.repo","/etc/yum.repos.d/lxlabs.repo.lxsave");
 		system("rm -f /etc/yum.repos.d/lxlabs.repo");
 		}
-		
+		print("Set NEIGHBOUR_DEVS=all to vz.conf");
 		vps__openvz::staticChangeConf("/etc/vz/vz.conf", "NEIGHBOUR_DEVS", "all");
 	}
 
 	fix_rhn_sources_file();
 	fix_ipconntrack();
 	if (lxfile_exists("/home/hypervm/xen/template")) {
+			print("Check Xen windows-lxblank.img template");
 		system("echo hypervm-windows > /home/hypervm/xen/template/windows-lxblank.img");
 	}
 
@@ -373,6 +381,7 @@ lxfile_cp("../file/openvz.repo", "/etc/yum.repos.d/openvz.repo");
 
 	installLxetc();
 
+	print("Check binaries");
 	system("cp ../sbin/lxrestart /usr/sbin/");
 	system("chown root:root /usr/sbin/lxrestart");
 	system("chmod 755 /usr/sbin/lxrestart");
