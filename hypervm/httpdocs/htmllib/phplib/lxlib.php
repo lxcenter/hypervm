@@ -1171,13 +1171,14 @@ function get_composite($class)
 	return array($list[0], $list[1], $list[2]);
 }
 
+// Set unlicensed to Unlimited usage
 function setLicenseTodefault()
 {
 	global $gbl, $sgbl, $login, $ghtml; 
 	$license = $login->getObject('license');
 	$license->parent_clname = $login->getClName();
 	$lic = $license->licensecom_b;
-	$def = array("maindomain_num" => "40", "vps_num" => 5, "pserver_num" => 10, "client_num" => "Unlimited");
+	$def = array("maindomain_num" => "Unlimited", "vps_num" => "Unlimited", "pserver_num" => "Unlimited", "client_num" => "Unlimited");
 	$list = get_license_resource();
 	foreach($list as $l) {
 		$licv = "lic_$l";
@@ -2888,7 +2889,7 @@ function add_superadmin($pass)
 		$res['cttype'] = 'superadmin';
 		$res['cpstatus'] = 'on';
 		if(if_demo()){
-			$res['email'] = "admin@lxlabs.com";
+			$res['email'] = "admin@lxcenter.org";
 		}
 		$client->create($res);
 		$client->write();
@@ -2907,7 +2908,7 @@ function add_slave($pass)
 		$res['password'] = $pass;
 		$res['cttype'] = 'slave';
 		if(if_demo()){
-			$res['email'] = "admin@lxlabs.com";
+			$res['email'] = "admin@lxcenter.org";
 		}
 		$client->create($res);
 		$client->write();
@@ -3465,7 +3466,7 @@ function if_demo_throw_exception($where = null)
 
 function get_package_version($name)
 {
-	$cont = curl_general_get("http://download.lxlabs.com/download/version/$name");
+	$cont = curl_general_get("http://download.lxcenter.org/download/version/$name");
 	return trim($cont);
 }
 
