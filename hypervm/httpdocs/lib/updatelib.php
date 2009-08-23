@@ -350,12 +350,17 @@ function updateApplicableToSlaveToo()
 	}
 	if (lxfile_exists("/etc/vz")) {
 		lxfile_cp("__path_program_root/file/sysfile/openvz/ve-vps.basic.conf-sample", "/etc/vz/conf");
-		print("Fixing openvz repo\n");
+		print("Set NEIGHBOUR_DEVS=all to vz.conf");
+		vps__openvz::staticChangeConf("/etc/vz/vz.conf", "NEIGHBOUR_DEVS", "all");
+	}
+	
+	print("Fixing openvz repo\n");
 	// add openvz.repo
-lxfile_cp("../file/openvz.repo", "/etc/yum.repos.d/openvz.repo");
-print("Fixing lxcenter repo\n");
+	lxfile_cp("../file/openvz.repo", "/etc/yum.repos.d/openvz.repo");
+	print("Fixing lxcenter repo\n");
 	// add lxcenter.repo
 	$osversion = find_os_version();
+	print("- Your OS $osversion\n");
 	$cont = our_file_get_contents("../file/lxcenter.repo");
 	$cont = str_replace("%distro%", $osversion, $cont);
 	our_file_put_contents("/etc/yum.repos.d/lxcenter.repo", $cont);	
@@ -365,14 +370,11 @@ print("Fixing lxcenter repo\n");
 		lxfile_mv("/etc/yum.repos.d/lxlabs.repo","/etc/yum.repos.d/lxlabs.repo.lxsave");
 		system("rm -f /etc/yum.repos.d/lxlabs.repo");
 		}
-		print("Set NEIGHBOUR_DEVS=all to vz.conf");
-		vps__openvz::staticChangeConf("/etc/vz/vz.conf", "NEIGHBOUR_DEVS", "all");
-	}
 
 	fix_rhn_sources_file();
 	fix_ipconntrack();
 	if (lxfile_exists("/home/hypervm/xen/template")) {
-			print("Check Xen windows-lxblank.img template");
+			print("Check Xen windows-lxblank.img template\n");
 		system("echo hypervm-windows > /home/hypervm/xen/template/windows-lxblank.img");
 	}
 
@@ -381,7 +383,7 @@ print("Fixing lxcenter repo\n");
 
 	installLxetc();
 
-	print("Check binaries");
+	print("Check binaries\n");
 	system("cp ../sbin/lxrestart /usr/sbin/");
 	system("chown root:root /usr/sbin/lxrestart");
 	system("chmod 755 /usr/sbin/lxrestart");
