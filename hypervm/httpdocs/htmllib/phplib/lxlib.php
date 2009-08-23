@@ -1208,9 +1208,9 @@ function decodeAndStoreLicense($ip, $license_content)
 	if (!isset($post['maindomain_num'])) {
 		if (isset($post['domain_num'])) {
 		$post['maindomain_num'] = $post['domain_num'];
-		} else {
-			throw new lxException("could_not_get_domain_num");
-			}
+			} else {
+		$post['maindomain_num'] = $post['domain_num'];
+		}
 	}
 
 	if ($sgbl->isDebug()) {
