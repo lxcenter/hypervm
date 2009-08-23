@@ -138,7 +138,7 @@ function fix_ipaddress_column_type()
 function get_kloxo_ostemplate()
 {
 	//
-	// This must me changed!
+	// This must be changed!
 	//
    //##########  
 	$ver = "576";
@@ -246,6 +246,44 @@ function convertIpaddressToComa()
 	}
 }
 
+function our_file_get_contents($file)
+{
+	$string = null;
+
+	$fp = fopen($file, "r");
+
+	if (!$fp) {
+		return null;
+	}
+
+
+	while(!feof($fp)) {
+		$string .= fread($fp, 8192);
+	}
+	fclose($fp);
+	return $string;
+
+}
+
+function our_file_put_contents($file, $contents, $appendflag = false)
+{
+
+	if ($appendflag) {
+		$flag = "a";
+	} else {
+		$flag = "w";
+	}
+
+	$fp = fopen($file, $flag);
+
+	if (!$fp) {
+		return null;
+	}
+
+	fwrite($fp, $contents);
+
+	fclose($fp);
+}
 
 function updateApplicableToSlaveToo()
 {
