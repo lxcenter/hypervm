@@ -55,9 +55,9 @@ function add_admin($pass)
 	$client = new Client(null, null, 'admin');
 	$login = $client;
 	$client->initThisDef();
-	$client->priv->pserver_num = 10;
-	$client->priv->maindomain_num = 40;
-	$client->priv->vps_num = '5';
+	$client->priv->pserver_num = 'Unlimited';
+	$client->priv->maindomain_num = 'Unlimited';
+	$client->priv->vps_num = 'Unlimited';
 	$client->priv->client_num = 'Unlimited';
 	$client->ddate = time();
 
@@ -65,13 +65,13 @@ function add_admin($pass)
 	if (!$ddb->existInTable("nname", 'admin')) {
 		if ($sgbl->dbg > 0) {
 			$pass = 'lxlabs';
-			$res['contacemail'] = 'admin@lxlabs.com';
+			$res['contacemail'] = 'admin@lxcenter.org';
 		}
 		$res['password'] = crypt($pass);
 		$res['cttype'] = 'admin';
 		$res['cpstatus'] = 'on';
 		if(if_demo()){
-			$res['email'] = "admin@lxlabs.com";
+			$res['email'] = "admin@lxcenter.org";
 		}
 		$client->create($res);
 		$client->driverApp = new client__sync(null, null, 'admin');
