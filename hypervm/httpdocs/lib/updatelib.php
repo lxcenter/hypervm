@@ -103,20 +103,26 @@ print("Fixing OS template permissions\n");
 	print("Checking HIB template\n");
 	get_kloxo_ostemplate();
 	save_admin_email();
+	print("Checking Skin Images\n");
 	copy_image();
+	system("mysql -u hypervm -p`cat ../etc/conf/hypervm.pass` hypervm1_0 < ../file/interface/interface_template.dump");
+
 	lxfile_cp("tmpimg/tabs-example.js", "htmllib/extjs/examples/tabs/tabs-example.js");
 	lxfile_cp("tmpimg/custom_button.gif", "img/general/default/default.gif");
+	print("Make sure libvirtd is not started after reboot\n");
 	system("chkconfig libvirtd off 2>/dev/null");
-
-	system("mysql -u hypervm -p`cat ../etc/conf/hypervm.pass` hypervm1_0 < ../file/interface/interface_template.dump");
-	print("Fixing Base OS templates\n");
+	
+if (is_openvz()) {
+print("Fixing Base OS templates\n");
 	if (!lxfile_real("/vz/template/cache/centos-5-i386-afull.tar.gz")) {
 		system("mkdir -p /vz/template/cache/ ; cd /vz/template/cache/ ; rm centos-5-i386-afull.tar.gz; wget download.lxcenter.org/download/openvztemplates/base/centos-5-i386-afull.tar.gz ");
 			system("rm /vz/template/cache/index.html* 2>/dev/null");
 	}
+	} else {
 	if (!lxfile_real("/home/hypervm/xen/template/centos-5-i386-afull.tar.gz")) {
 	system("mkdir -p /home/hypervm/xen/template ; cd /home/hypervm/xen/template/ ; rm centos-5-i386-afull.tar.gz;  wget download.lxcenter.org/download/xentemplates/base/centos-5-i386-afull.tar.gz ");
 	system("rm /home/hypervm/xen/template/index.html* 2>/dev/null");
+	}
 	}
 	fix_self_ssl();
 	critical_change_db_pass();
