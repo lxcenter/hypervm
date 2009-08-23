@@ -58,7 +58,6 @@ function fixExtraDB()
 function doUpdateExtraStuff()
 {
 	global $gbl, $sgbl, $login, $ghtml; 
-	print("Update Extra Stuff\n");
 	
 	lxfile_mkdir("__path_program_etc/flag");
 	convertIpaddressToComa();
@@ -113,19 +112,20 @@ print("Fixing OS template permissions\n");
 	print("Fixing Base OS templates\n");
 	if (!lxfile_real("/vz/template/cache/centos-5-i386-afull.tar.gz")) {
 		system("mkdir -p /vz/template/cache/ ; cd /vz/template/cache/ ; rm centos-5-i386-afull.tar.gz; wget download.lxcenter.org/download/openvztemplates/base/centos-5-i386-afull.tar.gz ");
+			system("rm /vz/template/cache/index.html* 2>/dev/null");
 	}
 	if (!lxfile_real("/home/hypervm/xen/template/centos-5-i386-afull.tar.gz")) {
-		system("mkdir -p /home/hypervm/xen/template ; cd /home/hypervm/xen/template/ ; rm centos-5-i386-afull.tar.gz;  wget download.lxcenter.org/download/xentemplates/base/centos-5-i386-afull.tar.gz ");
-	}
-
-	fix_self_ssl();
+	system("mkdir -p /home/hypervm/xen/template ; cd /home/hypervm/xen/template/ ; rm centos-5-i386-afull.tar.gz;  wget download.lxcenter.org/download/xentemplates/base/centos-5-i386-afull.tar.gz ");
 	system("rm /home/hypervm/xen/template/index.html* 2>/dev/null");
-	system("rm /vz/template/cache/index.html* 2>/dev/null");
-
-
+	}
+	fix_self_ssl();
 	critical_change_db_pass();
-
-print("End Update Extra Stuff\n");
+	print("Delete old repo's\n");
+// delete lxlabs.repo	
+	if (lxfile_exists("/etc/yum.repos.d/lxlabs.repo")) {
+		lxfile_mv("/etc/yum.repos.d/lxlabs.repo","/etc/yum.repos.d/lxlabs.repo.lxsave");
+		system("rm -f /etc/yum.repos.d/lxlabs.repo");
+		}
 }
 
 function fix_ipaddress_column_type()
@@ -380,13 +380,6 @@ function updateApplicableToSlaveToo()
 	$cont = our_file_get_contents("../file/lxcenter.repo");
 	$cont = str_replace("%distro%", $osversion, $cont);
 	our_file_put_contents("/etc/yum.repos.d/lxcenter.repo", $cont);	
-	print("Delete old repo's\n");
-// delete lxlabs.repo	
-	if (lxfile_exists("/etc/yum.repos.d/lxlabs.repo")) {
-		lxfile_mv("/etc/yum.repos.d/lxlabs.repo","/etc/yum.repos.d/lxlabs.repo.lxsave");
-		system("rm -f /etc/yum.repos.d/lxlabs.repo");
-		}
-
 	fix_rhn_sources_file();
 	fix_ipconntrack();
 	if (lxfile_exists("/home/hypervm/xen/template")) {

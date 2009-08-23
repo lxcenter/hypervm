@@ -141,7 +141,7 @@ function loadMenus () {
 		*/
 	}
 	?> 
-    help.addMenuItem("Forum","window.open('http://www.lxlabs.com/forum')","0","helparea","0");
+    help.addMenuItem("Forum","window.open('http://forum.lxcenter.org')","0","helparea","0");
 	<?php 
    
 	?> 
