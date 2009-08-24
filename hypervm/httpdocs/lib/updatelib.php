@@ -61,7 +61,7 @@ function doUpdateExtraStuff()
 	
 	lxfile_mkdir("__path_program_etc/flag");
 	convertIpaddressToComa();
-	print("Fix database\n");
+	print("Fix extra database\n");
 	fixExtraDB();
 	//$wel = lfile_get_contents("../file/welcome.txt");
 	//$clname = createParentName('client', 'admin');
@@ -90,18 +90,22 @@ print("Fixing OS template permissions\n");
 	call_with_flag("dofixParentClname");
 	print("Check License\n");
 	passthru("$sgbl->__path_php_path htmllib/lbin/getlicense.php");
-	print("Run some more fixes/checks...\n");
+	print("Fix OpenVZ resources\n");
 	fixOpenVZResource();
+	print("Move clients to client of needed\n");
 	move_clients_to_client();
+	print("create backup dirs\n");
 	add_vps_backup_dir();
+	print("Parse SQL Data\n");
 	parse_sql_data();
+	print("Fix IP POOL\n");
 	lxshell_return("__path_php_path", "../bin/fix/fixippool.php");
-	
-	//lxshell_background("__path_php_path", "../bin/collectquota.php");
+	print("Fix IP adresses in database\n");
 	fix_ipaddress_column_type();
 	fix_vmipaddress();
 	print("Checking HIB template\n");
 	get_kloxo_ostemplate();
+	print("Set admin email\n");
 	save_admin_email();
 	print("Checking Skin Images\n");
 	copy_image();
@@ -109,8 +113,10 @@ print("Fixing OS template permissions\n");
 
 	lxfile_cp("tmpimg/tabs-example.js", "htmllib/extjs/examples/tabs/tabs-example.js");
 	lxfile_cp("tmpimg/custom_button.gif", "img/general/default/default.gif");
+	if (lxfile_exists("/etc/init.d/libvirtd")) {
 	print("Make sure libvirtd is not started after reboot\n");
 	system("chkconfig libvirtd off 2>/dev/null");
+	}
 	
 if (is_openvz()) {
 print("Fixing Base OS templates\n");
@@ -124,13 +130,15 @@ print("Fixing Base OS templates\n");
 	system("rm /home/hypervm/xen/template/index.html* 2>/dev/null");
 	}
 	}
+	print("Fix SSL\n");
 	fix_self_ssl();
+	print("Fix database password\n");
 	critical_change_db_pass();
 	print("Delete old repo's\n");
-// delete lxlabs.repo	
-	if (lxfile_exists("/etc/yum.repos.d/lxlabs.repo")) {
+if (lxfile_exists("/etc/yum.repos.d/lxlabs.repo")) {
 		lxfile_mv("/etc/yum.repos.d/lxlabs.repo","/etc/yum.repos.d/lxlabs.repo.lxsave");
 		system("rm -f /etc/yum.repos.d/lxlabs.repo");
+	print("Removed lxlabs.repo\n");
 		}
 }
 
@@ -325,9 +333,6 @@ if (file_exists("/etc/redhat-release")) {
 function updateApplicableToSlaveToo()
 {
 	global $gbl, $sgbl, $login, $ghtml, $osversion; 
-	//lxfile_rm("__path_program_root/etc/vpsipaddress.list");
-	//system("mkdir -p /vz/template/cache ; cd /vz/template/cache/ ; rm /vz/template/cache/index.* ; wget -nd -np -c -r  download.lxlabs.com/download/vpstemplate/ >/dev/null 2>&1 &");
-	//system("mkdir -p /home/hypervm/xen/template/; cd /home/hypervm/xen/template/; rm /home/hypervm/xen/template/debian-3.1.tar.gz /home/hypervm/xen/template/fedora-core-4.tar.gz /home/hypervm/xen/template/centos-4.3.tar.gz ; wget -nd -np -c -r download.lxlabs.com/download/vmtemplate/ >/dev/null 2>&1 &");
 	print("Download 3rdparty\n");
 	download_thirdparty(2009);
 	print("Installing binaries\n");
@@ -336,17 +341,24 @@ function updateApplicableToSlaveToo()
 	print("Fixing binaries permissions\n");
 	lxfile_generic_chmod("/usr/bin/lxopenvz", "6755");
 	lxfile_generic_chmod("/usr/bin/lxxen", "6755");
-	print("Install missing rpm packages if any\n");
+	print("Install missing rpm packages if any");
 	install_if_package_not_exist("rrdtool");
-	install_if_package_not_exist("ntfsprogs");
+	print("-rrdtool-");
+    install_if_package_not_exist("ntfsprogs");
+	print("-ntfsprogs-");
 	install_if_package_not_exist("parted");
+	print("-parted-");
 	install_if_package_not_exist("kpartx");
+	print("-kpartx-");
 	install_if_package_not_exist("dhcp");
+	print("-dhcp-");
 	install_if_package_not_exist("openssl");
-	install_if_package_not_exist("openssl-dev");
+	print("-openssl-");
+	install_if_package_not_exist("openssl-devel");
+	print("-openssl-devel-");
 	system("chkconfig dhcpd on");
-	//system("rpm -e --nodeps httpd");
-	//system("rpm -e --nodeps xinetd");
+	print("\nEnable dhcpd at system startup");
+	print("\n");
 
 	if (lxfile_exists("/etc/xen")) {
 		lxfile_mkdir("/etc/xen/hypervm");
@@ -388,7 +400,9 @@ function updateApplicableToSlaveToo()
 	$cont = our_file_get_contents("../file/lxcenter.repo");
 	$cont = str_replace("%distro%", $osversion, $cont);
 	our_file_put_contents("/etc/yum.repos.d/lxcenter.repo", $cont);	
+	print("Fix RHN");
 	fix_rhn_sources_file();
+	print("Fix ipconntrack");
 	fix_ipconntrack();
 	if (lxfile_exists("/home/hypervm/xen/template")) {
 			print("Check Xen windows-lxblank.img template\n");
@@ -396,10 +410,10 @@ function updateApplicableToSlaveToo()
 	}
 	print("Fix memory graph\n");
    memoryGraphFix();
+	print("Fix permission of closeallinput");
 	lxfile_unix_chmod("../cexe/closeallinput", "0755");
 	print("Fix LxEtc\n");
 	installLxetc();
-
 	print("Check binaries\n");
 	system("cp ../sbin/lxrestart /usr/sbin/");
 	system("chown root:root /usr/sbin/lxrestart");
@@ -409,10 +423,11 @@ function updateApplicableToSlaveToo()
 	system("chmod o+t /tmp");
 	print("Create script dir\n");
 	copy_script();
+	if (!lxfile_exists("/usr/local/lxlabs/kloxo/")) {
+	print("Remove kloxo things as it should not be here\n");
 	system("rmdir /usr/local/lxlabs/kloxo/httpdocs/ >/dev/null 2>&1");
 	system("rmdir /usr/local/lxlabs/kloxo/ >/dev/null 2>&1");
-	//system("yum -y install lxlighttpd");
-
+}
 	if (!lxfile_exists("/var/named/chroot/etc/kloxo.named.conf")) {
 		if (lxfile_exists("/var/named/chroot/etc/lxadmin.named.conf")) {
 			remove_line("/var/named/chroot/etc/named.conf", "lxadmin.named.conf");
@@ -423,9 +438,6 @@ function updateApplicableToSlaveToo()
 			@ lxfile_mv("/var/named/chroot/etc/lxadmin.named.conf", "/var/named/chroot/etc/kloxo.named.conf");
 		}
 	}
-
-
-
 }
 
 function memoryGraphFix()
@@ -433,7 +445,8 @@ function memoryGraphFix()
 	global $gbl, $sgbl, $login, $ghtml; 
 	$file = "__path_program_root/etc/openvzmemorygraphfix";
 	if (lxfile_exists($file)) {
-		return;
+	print("Memory Graph fix not needed\n");
+	return;
 	}
 	lxfile_touch($file);
 	system("rm $sgbl->__path_program_root/data/memory/*");
@@ -442,7 +455,7 @@ function memoryGraphFix()
 function add_vps_backup_dir()
 {
 	if (lxfile_exists("__path_program_home/vps")) {
-		print("vps backupdir exists... returning\n");
+		print("VPS backupdir already exist...\n");
 		return;
 	}
 
@@ -451,6 +464,8 @@ function add_vps_backup_dir()
 	$res = $sq->getTable(array('nname'));
 	foreach($res as $r) {
 		lxfile_mkdir("__path_program_home/vps/{$r['nname']}/__backup");
+	$vpsbackupdirname = {$r['nname']}
+	print("Backup dir created for $vpsbackupdirname \n");
 	}
 }
 
@@ -482,5 +497,3 @@ function convert_ipaddress()
 	}
 
 }
-
-

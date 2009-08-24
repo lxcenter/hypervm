@@ -39,25 +39,32 @@ print("Fixing Repo's\n");
 		}
 		}
 	if (lxfile_exists("CVS")) {
-		print("Found Development version\n\n");
+		print("Found Development version, we just go on.\n");
 //		exit;
 	}
 
 	if ($opt['type'] === 'master') {
 		$sgbl->slave = false;
 		if (!is_secondary_master()) {
+			print("Update database\n");
 			updateDatabaseProperly();
+			print("Fix Extra database issues\n");
 			fixExtraDB();
+			print("Update extra issues\n");
 			doUpdateExtraStuff();
+			print("Get Driver info\n");
 			lxshell_return("__path_php_path", "../bin/common/driverload.php");
 		}
+		print("Starting Update all slaves\n");
 		update_all_slave();
+		print("Fix main $program databasefile\n");
 		cp_dbfile();
 	} else {
 		$sgbl->slave = true;
 	}
 
 	if (!is_secondary_master()) {
+		print("Starting update cleanups\n");
 		updatecleanup();
 	}
 

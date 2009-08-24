@@ -30,9 +30,7 @@ function update_main()
 		//fix_database($upversion);
 		print("Upgrade Done.. Executing Cleanup....\n");
 		flush();
-		//lxshell_return("__path_php_path", "../bin/update.php");
-		//Execute update once more... that's when everything gets done properly... 
-	} else {
+		} else {
 		print("$program is the latest version\n");
 	}
 
@@ -52,12 +50,15 @@ function update_main()
 
 function updatecleanup()
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
+	print("Checking program service\n");
 	os_create_program_service();
+	print("Checking permissions\n");
 	os_fix_lxlabs_permission();
+	print("Restart myself\n");
 	os_restart_program();
+	print("Start Some cleanups:\n");
 	updateApplicableToSlaveToo();
-	//os_update_server();
 }
 
 function update_all_slave()
@@ -113,6 +114,10 @@ function findNextVersion($lastversion = null)
 function do_upgrade($upversion)
 {
 	global $gbl, $sgbl, $login, $ghtml; 
+	if (file_exists("CVS")) {
+		print("CVS exists... Development system.. Not upgrading --> exit!...\n");
+		exit;
+	}
 	$maj = $sgbl->__ver_major;
 	$program = $sgbl->__var_program_name;
 
@@ -122,15 +127,9 @@ function do_upgrade($upversion)
 	lxfile_mkdir("help");
 	lxfile_rm_rec("__path_program_htmlbase/htmllib/script");
 	lxfile_rm_rec("__path_program_root/pscript");
-	if (file_exists("CVS")) {
-		print("CVS exists... Development system.. Not upgrading...\n");
-		exit;
-	}
-
 
 	$saveddir = getcwd();
 	lxfile_rm_rec("__path_program_htmlbase/download");
-	//lxfile_rm_rec("__path_program_htmlbase/img");
 	lxfile_mkdir("download");
 	chdir("download");
 	print("Downloading $programfile.....\n");
@@ -158,7 +157,7 @@ function fixZshEtc()
 	if ($ret) {
 		system("yum -y install zsh vim-enhanced");
 	}
-
+print("Copy LxEtc\n");
 	lxfile_cp_rec("htmllib/filecore/lxetc/", "$dir/.etc");
 }
 
@@ -167,6 +166,7 @@ function move_clients_to_client()
 	if (lxfile_exists("__path_program_home/client")) {
 		return;
 	}
+	print("Rename clients folder to client\n");
 	lxfile_mv_rec("__path_program_home/clients", "__path_program_home/client");
 }
 
