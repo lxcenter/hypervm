@@ -464,7 +464,7 @@ function add_vps_backup_dir()
 	$res = $sq->getTable(array('nname'));
 	foreach($res as $r) {
 		lxfile_mkdir("__path_program_home/vps/{$r['nname']}/__backup");
-	$vpsbackupdirname = {$r['nname']}
+	$vpsbackupdirname = {$r['nname']};
 	print("Backup dir created for $vpsbackupdirname \n");
 	}
 }
