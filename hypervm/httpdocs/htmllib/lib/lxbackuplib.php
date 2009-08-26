@@ -676,8 +676,13 @@ function doUpdateRestore($file, $param)
 	}
 
 	if (!$gbl->__var_list_flag) {
-		lx_mail(null, $this->getParentO()->contactemail, "$cprogname Restoration on " . @ date('Y-M-d') . " at " . @ date('H') ." Hours" , "$cprogname Restoration Succeeded for {$parent->nname}\n");  
-	}
+		lx_mail(null, $this->getParentO()->contactemail, "$cprogname Restoration on " . @ date('Y-M-d') . " at " . @ date('H') ." Hours" , "$cprogname Restoration Succeeded for {$parent->nname}\n");
+// openvz fix only	
+if ($this->getParentO()->ttype == "openvz") {
+		$vpsid = $this->getParentO()->vpsid
+		system("/usr/sbin/vzctl exec $vpsid chmod -R 700 /tmp/backup*")
+		}
+ 	}
 
 	if ($sgbl->isKloxo()) {
 		lxshell_return("__path_php_path", "../bin/collectquota.php", "--just-db=yes"); 
