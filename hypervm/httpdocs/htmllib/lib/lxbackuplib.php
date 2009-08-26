@@ -75,7 +75,7 @@ function isSync() {return false ; }
 function update($subaction, $param)
 {
 	if (!$this->getParentO()->priv->isOn('backup_flag')) {
-		throw new lxException('no_premission_to_backup', '', '');
+		throw new lxException('no_permission_to_backup', '', '');
 	}
 	return $param;
 }
@@ -90,7 +90,6 @@ static function getMetaData($file)
 	}
 	$tmpdir = lxbackup::createTmpDirIfitDoesntExist($file, false);
 		// milw0rm #9520
-    system("chmod -R 700 $tmpdir");
 	print_time("create_tmp_dir", "Creating Tmp Directory");
 	$filename = recursively_get_file($tmpdir, "$progname.file");
 
@@ -628,8 +627,6 @@ function getFtpOrLocal($param)
 
 static function createTmpDirIfitDoesntExist($file, $real)
 {
-//LOOKS LIKE THIS IS NOT USED!
-// dterweij
 	global $gbl, $sgbl, $login, $ghtml; 
 	$progname = $sgbl->__var_program_name;
 	$vd = tempnam("/tmp", "backup");
@@ -638,31 +635,22 @@ static function createTmpDirIfitDoesntExist($file, $real)
 	}
 	lunlink($vd);
 	mkdir($vd);
-	lxfile_generic_chmod($vd, "0700");
+	lxfile_generic_chmod($vd, "600");
 
 	if ($real) {
 		lxshell_unzip_with_throw($vd, $file);
-					// milw0rm #9520
-    system("chmod -R 700 $vd");
 	} else {
 		if ($sgbl->isKloxoForRestore()) {
 			try {
 				lxshell_unzip_with_throw($vd, $file, array("*$progname.file", "*$progname.metadata"));
-					// milw0rm #9520
-    system("chmod -R 700 $vd");
 			} catch (Exception $e) {
 				lxshell_unzip_with_throw($vd, $file, array("*lxadmin.file", "*lxadmin.metadata"));
-					// milw0rm #9520
-    system("chmod -R 700 $vd");
 			}
 		} else {
 			lxshell_unzip_with_throw($vd, $file, array("*$progname.file", "*$progname.metadata"));
-				// milw0rm #9520
-    system("chmod -R 700 $vd");
 		}
 	}
-	// milw0rm #9520
-    system("chmod -R 700 $vd");
+	lxfile_generic_chmod($vd, "600");
 	return $vd;
 
 }
