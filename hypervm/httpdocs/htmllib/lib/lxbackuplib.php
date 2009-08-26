@@ -89,7 +89,7 @@ static function getMetaData($file)
 		throw new lxException('could_not_find_file', '', $file);
 	}
 	$tmpdir = lxbackup::createTmpDirIfitDoesntExist($file, false);
-		// milw0rm #9520
+		
 	print_time("create_tmp_dir", "Creating Tmp Directory");
 	$filename = recursively_get_file($tmpdir, "$progname.file");
 
@@ -100,6 +100,7 @@ static function getMetaData($file)
 
 	$rem = unserialize(file_get_contents($filename));
 	lxfile_tmp_rm_rec($tmpdir);
+	lxfile_rm_rec($tmpdir);
 	if (!$rem) {
 		throw new lxException('backupfile_corrupted', '');
 	}
@@ -635,7 +636,7 @@ static function createTmpDirIfitDoesntExist($file, $real)
 	}
 	lunlink($vd);
 	mkdir($vd);
-	lxfile_generic_chmod($vd, "600");
+	lxfile_generic_chmod($vd, "0700");
 
 	if ($real) {
 		lxshell_unzip_with_throw($vd, $file);
@@ -650,7 +651,7 @@ static function createTmpDirIfitDoesntExist($file, $real)
 			lxshell_unzip_with_throw($vd, $file, array("*$progname.file", "*$progname.metadata"));
 		}
 	}
-	lxfile_generic_chmod($vd, "600");
+	lxfile_generic_chmod($vd, "0700");
 	return $vd;
 
 }
