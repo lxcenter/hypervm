@@ -628,7 +628,8 @@ function getFtpOrLocal($param)
 
 static function createTmpDirIfitDoesntExist($file, $real)
 {
-
+//LOOKS LIKE THIS IS NOT USED!
+// dterweij
 	global $gbl, $sgbl, $login, $ghtml; 
 	$progname = $sgbl->__var_program_name;
 	$vd = tempnam("/tmp", "backup");
@@ -641,7 +642,7 @@ static function createTmpDirIfitDoesntExist($file, $real)
 
 	if ($real) {
 		lxshell_unzip_with_throw($vd, $file);
-			// milw0rm #9520
+					// milw0rm #9520
     system("chmod -R 700 $vd");
 	} else {
 		if ($sgbl->isKloxoForRestore()) {
