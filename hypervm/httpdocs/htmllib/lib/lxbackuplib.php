@@ -99,6 +99,10 @@ static function getMetaData($file)
 	}
 
 	$rem = unserialize(file_get_contents($filename));
+	$bugfix = $tmpdir . $progname . ".file";
+	lxfile_rm($bugfix);
+	$bugfix = $tmpdir . $progname . ".metadata";
+	lxfile_rm($bugfix);
 	lxfile_tmp_rm_rec($tmpdir);
 	lxfile_rm_rec($tmpdir);
 	if (!$rem) {
