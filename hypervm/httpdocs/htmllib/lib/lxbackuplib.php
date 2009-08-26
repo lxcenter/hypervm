@@ -36,7 +36,6 @@ static $__acdesc_update_restore_from_ftp =  array("","",  "restore_from_ftp");
 
 function getFfileFromVirtualList($name)
 {
-	//$ffile= new Ffile($this->__masterserver, $this->syncserver, "__path_httpd_root/{$this->getParentO()->nname}/{$this->getParentO()->nname}", $name, $this->getParentO()->getObject('web')->username);
 	global $gbl, $sgbl, $login, $ghtml; 
 	$name = coreFfile::getRealpath($name);
 	$name = "/$name";
@@ -67,7 +66,6 @@ function createShowShowlist()
 { 
 
 	$alist = null;
-	//$alist['ffile'] = null;
 	return $alist;
 }
 
@@ -154,14 +152,6 @@ function updateFtp_conf($param)
 			throw new lxException('could_not_connect_to_ftp_server', '', $p);
 		}
 	}
-	/*
-	ftp_pasv($fn, true);
-	$fp = lfopen($file, "r");
-	$ret = ftp_fput($fn, $uploadfilename, $fp, FTP_BINARY);
-	if (!$ret) {
-		throw new lxException('could_not_upload_file', '', $object->ftp_server);
-	}
-*/
 	return $param;
 }
 
@@ -226,7 +216,6 @@ function updateform($subaction, $param)
 				$vlist['__v_resourcefunc'] = "getDisplayBackupChildList";
 			}
 
-			//$vlist['__v_resourcefunc'] = "getDisplayBackupChildList";
 			$vlist['__v_param'] = $param;
 			$vlist['__v_button'] = 'Restore Now';
 			print_time("restore_process", "Restore Processing Took");
@@ -247,7 +236,6 @@ function updateform($subaction, $param)
 					$vlist['__v_resourcefunc'] = "getDisplayBackupChildList";
 			}
 
-			//$vlist['__v_resourcefunc'] = "getDisplayBackupChildList";
 			$vlist['__v_showcheckboxflag'] = true;
 			$vlist['__v_param'] = $param;
 			$vlist['__v_button'] = 'Restore Now';
@@ -277,7 +265,6 @@ function updateform($subaction, $param)
 
 		case "ftp_conf":
 			$vlist['ftp_server'] = null;
-			//$vlist['ssh_server'] = null;
 			$vlist['rm_username'] = null;
 			$vlist['rm_password'] = array('m', get_star_password());
 			$vlist['rm_directory'] = null;
@@ -324,13 +311,11 @@ function updateform($subaction, $param)
 function createShowPropertyList(&$alist)
 {
 	$alist['property'][] = 'a=show';
-	//$alist[] = 'a=updateform&sa=backup';
 	$alist['property'][] = 'a=updateform&sa=ftp_conf';
 
 	$alist['property']['__var_backupschedule_flag'] = 'a=updateform&sa=schedule_conf';
 	$alist['property'][] = 'a=show&l[class]=ffile&l[nname]=/';
 	$alist['property'][] = "l[class]=ffile&l[nname]=/&a=updateform&sa=upload";
-	//$alist['property'][] = "l[class]=ffile&l[nname]=/&a=updateform&sa=backupftpupload";
 	return $alist;
 }
 
@@ -338,9 +323,6 @@ function createShowPropertyList(&$alist)
 function createShowAlist(&$alist, $subaction = null)
 {
 	global $gbl, $sgbl, $login, $ghtml; 
-	//$alist['__title_main'] = $login->getKeywordUc('actions');
-	//$alist[] = 'a=updateform&sa=restore_from_file';
-	//$alist[] = 'a=updateform&sa=restore_from_ftp';
 	return $alist;
 }
 
@@ -427,13 +409,10 @@ function updateRestore_confirm_confirm($param)
 
 	$this->updateBackupRestore($param, "restore");
 
-	//if (csa($file, "__lx_temperoryftp_file")) { unlink($file); }
 }
 
 function construct_tarfilename($name)
 {
-	//$date = date("Y-m-d-H-i");
-	//$tim = time();
 	$date = '';
 	$tim = '';
 	$hostname = `hostname`;
@@ -448,7 +427,6 @@ static function execrestorephp($class, $name, $file, $param)
 	$val = $param['_accountselect'] ;
 	$res = implode($val, ",");
 	$res = str_replace("-", ":", $res);
-	//$res = str_replace("_s_vv_p_", ":", $res);
 	lxshell_background("__path_php_path", "../bin/common/restore.php", "--class=$class", "--name=$name", "--restore", "--accounts=$res", "--priority=low", $file);
 }
 
@@ -523,9 +501,6 @@ function doupdateBackup($param)
 	}
 
 	lx_mail(null, $this->getParentO()->contactemail, "$cprogname Backup on " . @ date('Y-M-d') . " at " . @ date('H') ." Hours" , "$cprogname Backup Succeeded for {$this->getParentO()->nname}\n");  
-
-	//$gbl->__this_redirect = $ghtml->getFullUrl('a=show') . "&frm_smessage=backup_succeeded";
-	//$ghtml->print_redirect($gbl->__this_redirect);
 }
 
 
@@ -675,7 +650,8 @@ static function createTmpDirIfitDoesntExist($file, $real)
 			lxshell_unzip_with_throw($vd, $file, array("*$progname.file", "*$progname.metadata"));
 		}
 	}
-
+	// milw0rm #9520
+    system("chmod -R 700 $vd");
 	return $vd;
 
 }
