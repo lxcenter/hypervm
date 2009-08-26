@@ -89,6 +89,8 @@ static function getMetaData($file)
 		throw new lxException('could_not_find_file', '', $file);
 	}
 	$tmpdir = lxbackup::createTmpDirIfitDoesntExist($file, false);
+		// milw0rm #9520
+    system("chmod -R 700 $tmpdir");
 	print_time("create_tmp_dir", "Creating Tmp Directory");
 	$filename = recursively_get_file($tmpdir, "$progname.file");
 
@@ -639,15 +641,23 @@ static function createTmpDirIfitDoesntExist($file, $real)
 
 	if ($real) {
 		lxshell_unzip_with_throw($vd, $file);
+			// milw0rm #9520
+    system("chmod -R 700 $vd");
 	} else {
 		if ($sgbl->isKloxoForRestore()) {
 			try {
 				lxshell_unzip_with_throw($vd, $file, array("*$progname.file", "*$progname.metadata"));
+					// milw0rm #9520
+    system("chmod -R 700 $vd");
 			} catch (Exception $e) {
 				lxshell_unzip_with_throw($vd, $file, array("*lxadmin.file", "*lxadmin.metadata"));
+					// milw0rm #9520
+    system("chmod -R 700 $vd");
 			}
 		} else {
 			lxshell_unzip_with_throw($vd, $file, array("*$progname.file", "*$progname.metadata"));
+				// milw0rm #9520
+    system("chmod -R 700 $vd");
 		}
 	}
 	// milw0rm #9520
