@@ -30,7 +30,7 @@ function __construct()
 
 	$this->__ver_major = "2";
 	$this->__ver_minor = "0";
-	$this->__ver_release = "7992";
+	$this->__ver_release = "7993";
 	$this->__ver_enterprise = null;
 	$this->__ver_type = "production";
 	$this->__ver_extra = "Stable";
