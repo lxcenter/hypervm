@@ -1,5 +1,12 @@
 <?php 
-
+// milw0rm #9520 note:
+// copy (overwrite) this file to the following location
+// /usr/local/lxlabs/hypervm/httpdocs/htmllib/lib/lxbackuplib.php
+//
+// temporaryfix for openvz only
+// if someone knows a xen fix (if xen has this issue aswell).. please contact us.
+// 27aug2009
+// 
 class lxbackup extends Lxdb {
 
 static $__desc = array("", "",  "backup");
@@ -640,6 +647,10 @@ static function createTmpDirIfitDoesntExist($file, $real)
 	}
 	lunlink($vd);
 	mkdir($vd);
+	//
+	// This is not a chmod inside the VM!
+	// dont try to change it as restore will fail
+	//
 	lxfile_generic_chmod($vd, "0700");
 
 	if ($real) {
@@ -655,6 +666,10 @@ static function createTmpDirIfitDoesntExist($file, $real)
 			lxshell_unzip_with_throw($vd, $file, array("*$progname.file", "*$progname.metadata"));
 		}
 	}
+	//
+	// This is not a chmod inside the VM!
+	// dont try to change it as restore will fail
+	// Extra added by dterweij
 	lxfile_generic_chmod($vd, "0700");
 	return $vd;
 
@@ -677,11 +692,14 @@ function doUpdateRestore($file, $param)
 
 	if (!$gbl->__var_list_flag) {
 		lx_mail(null, $this->getParentO()->contactemail, "$cprogname Restoration on " . @ date('Y-M-d') . " at " . @ date('H') ." Hours" , "$cprogname Restoration Succeeded for {$parent->nname}\n");
-// openvz fix only	
+// ##################
+// milw0rm #9520
+// openvz fix only
 if ($this->getParentO()->ttype == "openvz") {
 		$vpsid = $this->getParentO()->vpsid;
 		system("/usr/sbin/vzctl exec $vpsid chmod -R 700 /tmp/backup*");
 		}
+// ##################
  	}
 
 	if ($sgbl->isKloxo()) {
