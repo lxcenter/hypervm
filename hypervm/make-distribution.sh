@@ -11,8 +11,15 @@ echo "################################"
 echo "### Start packaging"
 echo "### read version..."
 # Read version
-# --> To be created
-# <--
+# Please note, this must be a running machine with SVN version!
+if ! [ -f /script/version ] ; then
+        echo "## Packaging failed. No /script/version found."
+	echo "## Are you sure you are running a development version?"
+	echo "### Aborted."
+	echo "################################"
+        exit
+fi
+version=`/script/version`
 #
 echo "### Compile c files..."
 # Compile C files
