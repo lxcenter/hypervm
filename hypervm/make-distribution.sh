@@ -34,7 +34,7 @@ cd ../../
 #
 echo "### Create zip package..."
 # Package part
-zip -r9 hypervm-test.zip ./bin ./cexe ./file ./httpdocs ./pscript ./sbin -x \
+zip -r9 hypervm-$version.zip ./bin ./cexe ./file ./httpdocs ./pscript ./sbin -x \
 "*/CVS/*" \
 "*/.svn/*"
 #
