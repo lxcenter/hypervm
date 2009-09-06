@@ -111,8 +111,6 @@ print("Fixing OS template permissions\n");
 	copy_image();
 	system("mysql -u hypervm -p`cat ../etc/conf/hypervm.pass` hypervm1_0 < ../file/interface/interface_template.dump");
 
-	lxfile_cp("tmpimg/tabs-example.js", "htmllib/extjs/examples/tabs/tabs-example.js");
-	lxfile_cp("tmpimg/custom_button.gif", "img/general/default/default.gif");
 	if (lxfile_exists("/etc/init.d/libvirtd")) {
 	print("Make sure libvirtd is not started after reboot\n");
 	system("chkconfig libvirtd off 2>/dev/null");

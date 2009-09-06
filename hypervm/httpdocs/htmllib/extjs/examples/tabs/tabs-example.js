@@ -10,7 +10,7 @@ var TabsExample = {
     init : function(){
         // basic tabs 1, built from existing content
         var tabs = new Ext.TabPanel('tabs1');
-       // tabs.addTab('script', "Vista Style");
+        //tabs.addTab('script', "Vista Style");
         //tabs.addTab('markup', "Tree View");
         tabs.activate('script');
     
