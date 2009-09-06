@@ -6,6 +6,6 @@ install:
 	cp lxxen ../../sbin/lxxen
 	mv lxxen ../../cexe/lxxen
 	cp lxopenvz ../../sbin/lxopenvz
-	mv lxopenvz ../../cexe/lxxen
+	mv lxopenvz ../../cexe/lxopenvz
 	mv findfreeloop ../../sbin/findfreeloop
- 
+
