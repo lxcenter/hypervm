@@ -149,7 +149,7 @@ function check_for_remote($rmt)
 	if ($vercmp > 0) {
 		update_from_master($rmt);
 		//$res->state = 'upgrade';
-		$res->exception = new lxException("slave_upgrading_please_try_after_a_few_minutes", 'machine', $rmt->machine);
+		$res->exception = new lxException("slave_is_upgrading_after_few_mins_its_finished_on_slave", 'machine', $rmt->machine);
 		print("Version Lesser <br> \n");
 		return $res;
 	}
