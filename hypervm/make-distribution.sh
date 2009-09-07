@@ -20,6 +20,7 @@ if ! [ -f /script/version ] ; then
         exit
 fi
 version=`/script/version`
+rm -f hypervm-$version.zip
 #
 echo "### Compile c files..."
 # Compile C files
