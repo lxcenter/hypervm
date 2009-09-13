@@ -38,31 +38,17 @@ function print_tab_for_feather($alist)
 	foreach($alist as $k => $a) {
 		print_tab_button_for_feather($k, $a, $list);
 	}
-
-	/*
-<td class="ver"><div><img src="/img/skin/kloxo/feather/default/images/menulft21.jpg" border="0" /></div></td><td class="new2"><div class="verb">Home</div></td> <td class="ver"><img src="/img/skin/kloxo/feather/default/images/menulft20.jpg" border="0" /></td>
-<td class="new"><div class="verb3">Domains</div></td><td class="ver"><img src="/img/skin/kloxo/feather/default/images/menurit20.jpg" border="0" /></td>
-<td class="new1"><div class="verb2" >Sub Domains</div></td><td class="ver"><img src="/img/skin/kloxo/feather/default/images/menurit21.jpg" border="0" /></td><td class="ver"><img src="/img/skin/kloxo/feather/default/images/menulft21.jpg" border="0" /></td><td class="new1"><div class="verb" >Mail Accounts</div></td><td class="ver"><img src="/img/skin/kloxo/feather/default/images/menurit21.jpg" border="0" /></td><td class="ver"><img src="/img/skin/kloxo/feather/default/images/menulft21.jpg" border="0" /></td><td class="new1"><div class="verb" >Appearance</div></td> 
-<td class="ver"><img src="/img/skin/kloxo/feather/default/images/menurit21.jpg" border="0" /></td>
-<td class="ver"><div style="margin-bottom:0px"><img src="/img/skin/kloxo/feather/default/images/menulft21.jpg" border="0" /></div></td><td class="new1"><div class="verb" >Advanced</div></td><td class="ver"><img src="/img/skin/kloxo/feather/default/images/menurit21.jpg" border="0" /></td>
-*/
-
 ?> 
 
-<td width=100%  class=tabcomplete> <div class=tabcompletediv> &nbsp; </div> </td>
-
+<td width=100%  class=tabcomplete> <div class=tabcompletediv> &nbsp; </div></td>
 </tr>
 </table> 
 <br> 
-
-</td> </tr> 
-
+</td></tr> 
 </table>
 </div>
 <?php 
-
 }
-
 
 function print_tab_button_for_feather($key, $url, $list)
 {
