@@ -83,7 +83,7 @@ function monitor_main()
 			$porthistlist = null;
 			foreach($ports as $p) {
 				if (isset($portmonlist[$l['nname']][$p['nname']][2])) {
-					print("SOcket Already exists... \n");
+					print("Socket Already exists... \n");
 					socket_close($portmonlist[$l['nname']][$p['nname']][2]);
 				}
 				$socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
@@ -220,7 +220,7 @@ function remote_http_exec_monitor($server, $port, $rmt)
 	dprintr($res);
 
 	if (!$res) {
-		print("Got Nothing from server for CMd: $rmt->cmd\n");
+		print("Got Nothing from server for command: $rmt->cmd\n");
 		print($data);
 		$global_failure = true;
 	} else {
@@ -383,7 +383,7 @@ function do_monitor_list($portmonlist, &$serverhistlist)
 					//print("failed Dns $ip for *{$data[0]}*\n");
 					$obj['portstatus'] = 'off';
 					//$obj['errornumber'] = 100;
-					$obj['errorstring'] = "Dns failed for $ip";
+					$obj['errorstring'] = "DNS failed for $ip";
 					$obj['portnname'] = $nname;
 					$data[2] = null;
 					$data[4] = 'done';
