@@ -36,12 +36,12 @@ function print_one_link($name)
 	} else {
 		$onclickstring = "onClick=\"$url\"";
 	}
-	print("<td ><span title='$desc' OnMouseOver=\"style.cursor='pointer'\" $onclickstring><img src=/img/skin/kloxo/feather/default/images/$img></span> </td> ");
+	print("<td ><span title='$desc' OnMouseOver=\"style.cursor='pointer'\" $onclickstring><img src=/img/skin/hypervm/feather/default/images/$img></span> </td> ");
 }
 
 function print_logout()
 {
-	print("<td OnMouseOver=\"style.cursor='pointer'\" onClick=\"javascript:top.mainframe.logOut();\"> <span title=Logout> <img width=15 height=14 src=/img/skin/kloxo/feather/default/images/logout.png> Logout </span> </td> ");
+	print("<td OnMouseOver=\"style.cursor='pointer'\" onClick=\"javascript:top.mainframe.logOut();\"> <span title=Logout> <img width=15 height=14 src=/img/skin/hypervm/feather/default/images/logout.png> Logout </span> </td> ");
 }
 
 function print_header()

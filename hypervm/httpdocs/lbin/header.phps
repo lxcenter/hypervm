@@ -36,7 +36,7 @@ function print_one_link($name)
 	} else {
 		$onclickstring = "onClick=\"$url\"";
 	}
-	print("<span style='margin-left:2%;' OnMouseOver=\"style.cursor='pointer'\" $onclickstring class=menu1><img src=/img/skin/kloxo/feather/default/images/$img> $desc  </span>");
+	print("<span style='margin-left:2%;' OnMouseOver=\"style.cursor='pointer'\" $onclickstring class=menu1><img src=/img/skin/hypervm/feather/default/images/$img> $desc  </span>");
 }
 
 function print_header()
@@ -73,7 +73,7 @@ function print_header()
 <?php 
 
 	if (!$login->getSpecialObject('sp_specialplay')->isOn('show_thin_header')) {
-		print("<tr><td id='td1' class='bgtop3' style='text-align:left'><img id='im' src='/img/skin/kloxo/feather/default/images/LightFeather.jpg' /></td></tr>");
+		print("<tr><td id='td1' class='bgtop3' style='text-align:left'><img id='im' src='/img/skin/hypervm/feather/default/images/LightFeather.jpg' /></td></tr>");
 	}
 
 ?> 
