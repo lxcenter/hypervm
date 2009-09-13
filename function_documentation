@@ -1,0 +1,4 @@
+Hello HyperVM developers! 
+You can find here the PHP functions, this may help you while developing!: http://developers.lxcenter.org/wiki/doku.php/php_functions 
+NOTE When you change, add or remove a function you have to update this on the wiki. The wiki allows you as developer to search where a specific function can be found and what functions are used by that function. We have all to work on it, else it won't help! 
+
