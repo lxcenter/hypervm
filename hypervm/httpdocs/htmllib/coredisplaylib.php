@@ -276,7 +276,7 @@ function __ac_desc_show($object)
 						$nnalist[$k] = $total[$k];
 					}
 				}
-				$nnalist = lx_merge_good(array('__title_advanced' => 'advanced'), $nnalist);
+				$nnalist = lx_merge_good(array('__title_advanced' => 'Advanced'), $nnalist);
 			} else {
 				$nnalist = $advanced;
 			}
@@ -305,13 +305,13 @@ function __ac_desc_show($object)
 			}
 		}
 		if (!$gottitle) {
-			$nalist['__title_resource'] = 'resource';
+			$nalist['__title_resource'] = 'Resource';
 		}
 
 		foreach((array) $aalist as $k => $a) {
 			if (csb($k, "__title")) {
 				if (!$a) {
-					$a = 'resource';
+					$a = 'Resource';
 				}
 				$nalist[$k] = $a;
 				continue;
@@ -623,7 +623,9 @@ function check_for_license()
 			} else {
 				$mess = $ghtml->show_error_message("The system is not at present working because there is not enough license for $res. Please contact your administrator.");
 			}
-			exit;
+//
+//			exit;
+// disabled by dterweij
 		}
 	}
 
@@ -1998,7 +2000,7 @@ function display_init()
 	init_language();
 
 
-	if ($sgbl->is_this_slave()) { print("Slave Server\n"); exit; }
+	if ($sgbl->is_this_slave()) { print("This is a Slave Server. You control it at the Master Server.\n"); exit; }
 
 	// The only thing that gets modified when the dbaction is not a modify action, is the ssession table. Other tables should get modified only inside non-form actions.
 	if (isModifyAction() && isUpdating()) {
