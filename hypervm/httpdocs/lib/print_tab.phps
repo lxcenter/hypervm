@@ -18,7 +18,7 @@ function print_tab_for_feather($alist)
 		$ghtml->print_dialog($alist, $gbl->__c_object);
 	}
 
-	?> <link href="/img/skin/kloxo/feather/default/feather.css" rel="stylesheet" type="text/css" /> <?php 
+	?> <link href="/img/skin/hypervm/feather/default/feather.css" rel="stylesheet" type="text/css" /> <?php 
 
 
 	?> 
@@ -136,27 +136,27 @@ function print_tab_button_for_feather($key, $url, $list)
 	$lastkey = count($list);
 	if ($check) {
 		if ($key === 0) {
-			print("<td class='tabver'><img src='/img/skin/kloxo/feather/default/images/menufirstlft20.jpg' border='0' /></td>");
+			print("<td class='tabver'><img src='/img/skin/hypervm/feather/default/images/menufirstlft20.jpg' border='0' /></td>");
 		} else {
-			print("<td class='tabver'><img src='/img/skin/kloxo/feather/default/images/menulft20.jpg' border='0' /></td>");
+			print("<td class='tabver'><img src='/img/skin/hypervm/feather/default/images/menulft20.jpg' border='0' /></td>");
 		}
 		print("<td class='tabnew'><div class='verb3'><a href=\"$url\" $targetstring>$descstring</a> </div></td>");
 
 		//dprint("hello $lastkey $key hello");
 		//dprintr($list);
 		if ($key === $lastkey - 3 ) {
-			print("<td class='tabver'><img src='/img/skin/kloxo/feather/default/images/menulastrit20.jpg' border='0' /></td>");
+			print("<td class='tabver'><img src='/img/skin/hypervm/feather/default/images/menulastrit20.jpg' border='0' /></td>");
 		} else {
-			print("<td class='tabver'><img src='/img/skin/kloxo/feather/default/images/menurit20.jpg' border='0' /></td>");
+			print("<td class='tabver'><img src='/img/skin/hypervm/feather/default/images/menurit20.jpg' border='0' /></td>");
 		}
 	} else {
 		if (!$list[$key - 1]) {
-			print("<td class='tabver'><img src='/img/skin/kloxo/feather/default/images/menulft21.jpg' border='0' /></td>");
+			print("<td class='tabver'><img src='/img/skin/hypervm/feather/default/images/menulft21.jpg' border='0' /></td>");
 		}
 		
 		print("<td class='tabnew1' ><div nowrap class='verb'><a href=\"$url\" $targetstring>$descstring</a></div></td>");
 		if ($key === $lastkey - 3 ) {
-			print("<td class='tabver'><img src='/img/skin/kloxo/feather/default/images/menulft21.jpg' border='0' /></td>");
+			print("<td class='tabver'><img src='/img/skin/hypervm/feather/default/images/menulft21.jpg' border='0' /></td>");
 		}
 	}
 
