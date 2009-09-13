@@ -305,13 +305,17 @@ function __ac_desc_show($object)
 			}
 		}
 		if (!$gottitle) {
-			$nalist['__title_resource'] = 'Resource';
+			$nalist['__title_resource'] = 'Advanced';
+			// Lighes changed Advanced to Resource
+			// Changed back to Advanced
 		}
 
 		foreach((array) $aalist as $k => $a) {
 			if (csb($k, "__title")) {
 				if (!$a) {
-					$a = 'Resource';
+					$a = 'Advanced';
+			// Lighes changed Advanced to Resource
+			// Changed back to Advanced
 				}
 				$nalist[$k] = $a;
 				continue;
