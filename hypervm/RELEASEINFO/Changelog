@@ -13,7 +13,7 @@ dterweij 	- DownloadServer - Added Base and Extra dirs with OS templates
 dterweij 	- Update - When /script/upcp is used to update, print on screen what it is doing
 dterweij 	- Scripts - Added install-extra-ostemplates file to get the Extra OS templates
 dterweij 	- NewInstall/Update - Split Xen and OpenVZ, if virtualization type = OpenVZ,
-		dont download Xen OS templates and when type is Xen, dont download OpenVZ OS templates
+		don't download Xen OS templates and when type is Xen, don't download OpenVZ OS templates
 		(Speeds up New Installations!)
 dterweij 	- Update - Added checks to split Xen and OpenVZ (Do "this" only when it is 
 		"that" virtialization type)
@@ -21,8 +21,10 @@ dterweij 	- NewInstall/Update - Changed *.lxlabs.com to *.lxcenter.org
 dterweij 	- NewInstall/Update: Minor fixes not need to mention
 dterweij	- Update-Slave - Changed message slave_upgrading_try_again_after_few_mins to a better one
 dterweij	- SVN - Created install packager and hypervm packager scripts
-dterweij	- general - Add RELEASEINFO dir to /usr/local/lxlabs/hypervm/ with info :)
-dterweij	- general - Cleanup of sourcedirs (removed frontpage data files, not used files, etc)
+dterweij	- general - Add RELEASEINFO Dir to /usr/local/lxlabs/hypervm/ with info :)
+dterweij	- general - Cleanup of sourcedirs (removed frontpage data files, not used files, 					etc)
+dterweij	- default skin - fixed a lot missing images at development version.
+dterweij	- default skin - changed image path from kloxo to hypervm (css, image paths)
 
 ################
 version 2.0.7993
