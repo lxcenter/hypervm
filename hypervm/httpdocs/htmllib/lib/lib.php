@@ -49,8 +49,8 @@ function print_head_image()
 		return;
 	}
 
-	?> <link href="/img/skin/kloxo/feather/default/feather.css" rel="stylesheet" type="text/css" /> <?php 
-	print("<table class='bgtop3' width=100% cellpadding=0 cellspacing=0 style=\"background:url(/img/skin/kloxo/feather/default/invertfeather.jpg)\"> ");
+	?> <link href="/img/skin/hypervm/feather/default/feather.css" rel="stylesheet" type="text/css" /> <?php 
+	print("<table class='bgtop3' width=100% cellpadding=0 cellspacing=0 style=\"background:url(/img/skin/hypervm/feather/default/invertfeather.jpg)\"> ");
 	print("<tr  ><td width=100% id='td1' > </td> ");
 
 	if ($login->getSpecialObject('sp_specialplay')->isOn('simple_skin')) {
@@ -2851,6 +2851,10 @@ function copy_script()
 	lxfile_unix_chmod_rec("/script", "0755");
 }
 
+// 
+// This function realy needed?
+// removed tmpimg and tmpskin dirs in some revisions back
+// dterweij
 function copy_image()
 {
 	global $gbl, $sgbl, $login, $ghtml; 
