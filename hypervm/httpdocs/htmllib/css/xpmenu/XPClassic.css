@@ -1,20 +1,16 @@
-body
-{
-	FONT-Family: Arial, Verdana, Tahoma ;
+body {
+	FONT-Family: Arial, Verdana, Tahoma;
 	font-size: 8pt;
 	font-weight: normal;
-	
 }
 
-#panelBar
-{
+#panelBar {
 	height: 100%;
 	width: 100%;
 	vertical-align: top;
 }
 
-.menuHeaderExpanded
-{
+.menuHeaderExpanded {
 	font-family: Verdana, Tahoma, Arial;
 	font-size: 8pt;
 	font-weight: bold;
@@ -23,25 +19,22 @@ body
 	cursor: hand;
 }
 
-.xptable
-{
+.xptable {
 	border-width: 1;
 	border-color: black;
 }
 
 /* ie screws up the the class after the one that makes the cursor hand..*/
 .iiedebug1 {
-
+	
 }
 
-.menuHeaderExpanded td
-{	
-	padding: 4 5 10 10 ;
+.menuHeaderExpanded td {
+	padding: 4 5 10 10;
 	font-weight: bold;
 }
 
-.menuHeaderCollapsed
-{
+.menuHeaderCollapsed {
 	font-family: Verdana, Tahoma, Arial;
 	font-size: 8pt;
 	font-weight: bold;
@@ -52,26 +45,22 @@ body
 
 /* ie screws up the the class after the one that makes the cursor hand..*/
 .iiedebug2 {
-
+	
 }
 
-.menuHeaderCollapsed td
-{
-	padding: 4 5 10 10 ;
+.menuHeaderCollapsed td {
+	padding: 4 5 10 10;
 	font-weight: bold;
 }
 
-.menuItems
-{
+.menuItems {
 	font-family: Verdana, Tahoma, Arial;
 	font-size: 8pt;
-	background-color:#ffffff;
+	background-color: #ffffff;
 	color: #000000;
 	position: relative;
 }
 
-.menuItems  td
-{
-	padding: 2 2 5 10 ;
+.menuItems  td {
+	padding: 2 2 5 10;
 }
-

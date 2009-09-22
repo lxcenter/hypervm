@@ -22,11 +22,11 @@
  * This page compose the File Browser dialog frameset.
 -->
 <html>
-	<head>
-		<title>FCKeditor - Resources Browser</title>
-		<link href="browser.css" type="text/css" rel="stylesheet">
-		<script type="text/javascript" src="js/fckxml.js"></script>
-		<script language="javascript">
+<head>
+<title>FCKeditor - Resources Browser</title>
+<link href="browser.css" type="text/css" rel="stylesheet">
+<script type="text/javascript" src="js/fckxml.js"></script>
+<script language="javascript">
 
 function GetUrlParam( paramName )
 {
@@ -135,20 +135,27 @@ oIcons.GetIcon = function( fileName )
 		return 'default.icon' ;
 }
 		</script>
-	</head>
-	<frameset cols="150,*" class="Frame" framespacing="3" bordercolor="#f1f1e3" frameborder="1">
-		<frameset rows="50,*" framespacing="0">
-			<frame src="frmresourcetype.html" scrolling="no" frameborder="0">
-			<frame name="frmFolders" src="frmfolders.html" scrolling="auto" frameborder="1">
-		</frameset>
-		<frameset rows="50,*,50" framespacing="0">
-			<frame name="frmActualFolder" src="frmactualfolder.html" scrolling="no" frameborder="0">
-			<frame name="frmResourcesList" src="frmresourceslist.html" scrolling="auto" frameborder="1">
-			<frameset cols="150,*,0" framespacing="0" frameborder="0">
-				<frame name="frmCreateFolder" src="frmcreatefolder.html" scrolling="no" frameborder="0">
-				<frame name="frmUpload" src="frmupload.html" scrolling="no" frameborder="0">
-				<frame name="frmUploadWorker" src="javascript:void(0)" scrolling="no" frameborder="0">
-			</frameset>
+</head>
+<frameset cols="150,*" class="Frame" framespacing="3"
+	bordercolor="#f1f1e3" frameborder="1">
+	<frameset rows="50,*" framespacing="0">
+		<frame src="frmresourcetype.html" scrolling="no" frameborder="0">
+		<frame name="frmFolders" src="frmfolders.html" scrolling="auto"
+			frameborder="1">
+	</frameset>
+	<frameset rows="50,*,50" framespacing="0">
+		<frame name="frmActualFolder" src="frmactualfolder.html"
+			scrolling="no" frameborder="0">
+		<frame name="frmResourcesList" src="frmresourceslist.html"
+			scrolling="auto" frameborder="1">
+		<frameset cols="150,*,0" framespacing="0" frameborder="0">
+			<frame name="frmCreateFolder" src="frmcreatefolder.html"
+				scrolling="no" frameborder="0">
+			<frame name="frmUpload" src="frmupload.html" scrolling="no"
+				frameborder="0">
+			<frame name="frmUploadWorker" src="javascript:void(0)" scrolling="no"
+				frameborder="0">
 		</frameset>
 	</frameset>
+</frameset>
 </html>

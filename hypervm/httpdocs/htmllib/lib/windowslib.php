@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 include_once "htmllib/phplib/lib/windowscorelib.php";
 include_once "htmllib/lib/windowsfslib.php";
@@ -43,7 +43,7 @@ function os_create_system_user($basename, $password, $id, $shell, $dir = "/tmp")
 
 function os_addto_iis()
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	$progname = $sgbl->__var_program_name;
 	$obj = new lxCOM("winmgmts://./root/WebAdministration");
 	$iiso = $obj->com_get("Site.Name='$progname'");
@@ -76,7 +76,7 @@ function os_addto_iis()
 		$sBinding = $obj->get("BindingElement")->SpawnInstance_();
 		$sBinding->BindingInformation = "*:7777:";
 		$sBinding->Protocol = "https";
-		$iisdfn->Create($progname, array($oBinding, $sBinding), $homedir); 
+		$iisdfn->Create($progname, array($oBinding, $sBinding), $homedir);
 		$iiso = $obj->com_get("Site.Name='$progname'");
 	}
 
@@ -99,7 +99,7 @@ function os_addto_iis()
 	$handle->Add("Handlers", $oHandler);
 	$handle->Refresh_();
 
-	 
+
 	//$newmap = lx_array_merge(array($ScriptMaps, $list));
 	dprint("\n");
 	foreach($handle->Handlers as $h) {
@@ -166,21 +166,21 @@ function os_getpid()
 function RemoveUserFromFolder($strUser, $strFolderPath)
 {
 	$Caclscommand = "cmd /c echo y| CACLS " . $strFolderPath;
-    $Caclscommand = $Caclscommand .  " /E /C /R " . $strUser;
-    $whs = new COM("WScript.Shell");
-    $whsRun = $whs->Run($Caclscommand, 0, True);
+	$Caclscommand = $Caclscommand .  " /E /C /R " . $strUser;
+	$whs = new COM("WScript.Shell");
+	$whsRun = $whs->Run($Caclscommand, 0, True);
 }
 
 function AddUserToFolder($strUser, $strFolderPath)
 {
 	$strPermission = "F";
 	$Caclscommand = "cmd /c echo y| CACLS " . $strFolderPath;
-    $Caclscommand = $Caclscommand . " /E /C /G " . $strUser . ":" . $strPermission;
-    $whs = new COM("WScript.Shell");
-    $whsRun = $whs->Run($Caclscommand, 0, True);
+	$Caclscommand = $Caclscommand . " /E /C /G " . $strUser . ":" . $strPermission;
+	$whs = new COM("WScript.Shell");
+	$whsRun = $whs->Run($Caclscommand, 0, True);
 }
 
-   
+ 
 
 function convertTobackSlash($string)
 {

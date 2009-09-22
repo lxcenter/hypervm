@@ -86,8 +86,8 @@ $cfg['Servers'][$i]['AllowRoot']       = TRUE;
 $cfg['Servers'][$i]['AllowDeny']['order'] = '';
 $cfg['Servers'][$i]['AllowDeny']['rules'] = array();
 
-	$cfg['ServerDefault'] = 1;              // Default server (0 = no default server)
-	$cfg['Server']        = '';
-	unset($cfg['Servers'][0]);
+$cfg['ServerDefault'] = 1;              // Default server (0 = no default server)
+$cfg['Server']        = '';
+unset($cfg['Servers'][0]);
 
 

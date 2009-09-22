@@ -31,27 +31,27 @@ include('basexml.php') ;
 include('commands.php') ;
 
 if ( !$Config['Enabled'] )
-	SendError( 1, 'This connector is disabled. Please check the "editor/filemanager/browser/default/connectors/php/config.php" file' ) ;
+SendError( 1, 'This connector is disabled. Please check the "editor/filemanager/browser/default/connectors/php/config.php" file' ) ;
 
 // Get the "UserFiles" path.
 $GLOBALS["UserFilesPath"] = '' ;
 
 if ( isset( $Config['UserFilesPath'] ) )
-	$GLOBALS["UserFilesPath"] = $Config['UserFilesPath'] ;
+$GLOBALS["UserFilesPath"] = $Config['UserFilesPath'] ;
 else if ( isset( $_GET['ServerPath'] ) )
-	$GLOBALS["UserFilesPath"] = $_GET['ServerPath'] ;
+$GLOBALS["UserFilesPath"] = $_GET['ServerPath'] ;
 else
-	$GLOBALS["UserFilesPath"] = '/userfiles/' ;
+$GLOBALS["UserFilesPath"] = '/userfiles/' ;
 
 if ( ! ereg( '/$', $GLOBALS["UserFilesPath"] ) )
-	$GLOBALS["UserFilesPath"] .= '/' ;
+$GLOBALS["UserFilesPath"] .= '/' ;
 
 if ( strlen( $Config['UserFilesAbsolutePath'] ) > 0 )
 {
 	$GLOBALS["UserFilesDirectory"] = $Config['UserFilesAbsolutePath'] ;
 
 	if ( ! ereg( '/$', $GLOBALS["UserFilesDirectory"] ) )
-		$GLOBALS["UserFilesDirectory"] .= '/' ;
+	$GLOBALS["UserFilesDirectory"] .= '/' ;
 }
 else
 {
@@ -64,7 +64,7 @@ DoResponse() ;
 function DoResponse()
 {
 	if ( !isset( $_GET['Command'] ) || !isset( $_GET['Type'] ) || !isset( $_GET['CurrentFolder'] ) )
-		return ;
+	return ;
 
 	// Get the main request informaiton.
 	$sCommand		= $_GET['Command'] ;
@@ -73,7 +73,7 @@ function DoResponse()
 
 	// Check if it is an allowed type.
 	if ( !in_array( $sResourceType, array('File','Image','Flash','Media') ) )
-		return ;
+	return ;
 
 	// Check the current folder syntax (must begin and start with a slash).
 	if ( ! ereg( '/$', $sCurrentFolder ) ) $sCurrentFolder .= '/' ;
@@ -81,7 +81,7 @@ function DoResponse()
 
 	// Check for invalid folder paths (..)
 	if ( strpos( $sCurrentFolder, '..' ) )
-		SendError( 102, "" ) ;
+	SendError( 102, "" ) ;
 
 	// File Upload doesn't have to Return XML, so it must be intercepted before anything.
 	if ( $sCommand == 'FileUpload' )

@@ -53,7 +53,7 @@ function init_global()
 
 function debug_for_backend()
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	check_for_debug("/commands.php");
 	if ($sgbl->isDebug()) { return; }
 	check_for_debug("/backend.php");
@@ -61,7 +61,7 @@ function debug_for_backend()
 
 function check_for_debug($file)
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	if (file_exists(getreal($file))) {
 		$sgbl->dbg = file_get_contents(getreal($file));
 		if ($sgbl->dbg != "1" && $sgbl->dbg != "2" && $sgbl->dbg != "3" && $sgbl->dbg != 4 && $sgbl->dbg != 5) {
@@ -87,29 +87,29 @@ function isUpdating()
 }
 
 class lxException extends Exception {
-public $syncserver;
-public $class;
-public $variable;
-public $error;
-public $message;
-function getClass()
-{
-	return lget_class($this);
-}
+	public $syncserver;
+	public $class;
+	public $variable;
+	public $error;
+	public $message;
+	function getClass()
+	{
+		return lget_class($this);
+	}
 
-function __construct($message, $variable = 'nname', $value = null)
-{
-	$this->message = $message;
-	$this->variable = $variable;
-	$this->value = $value;
-	$this->__full_message = "$message: $variable: $value";
-	//log_log("exception", "$message: $variable: $value");
-}
+	function __construct($message, $variable = 'nname', $value = null)
+	{
+		$this->message = $message;
+		$this->variable = $variable;
+		$this->value = $value;
+		$this->__full_message = "$message: $variable: $value";
+		//log_log("exception", "$message: $variable: $value");
+	}
 
-function getlMessage()
-{
-	return "$this->message: $this->variable: $this->value";
-}
+	function getlMessage()
+	{
+		return "$this->message: $this->variable: $this->value";
+	}
 
 }
 
@@ -147,7 +147,7 @@ function findOperatingSystem($type = null)
 	if (file_exists("/etc/fedora-release")) {
 		$ret['os'] = 'fedora';
 		$ret['version'] = file_get_contents("/etc/fedora-release");
-		$ret['pointversion'] = find_os_pointversion(); 
+		$ret['pointversion'] = find_os_pointversion();
 	} else if (file_exists("/etc/redhat-release")) {
 		$ret['os'] = 'rhel';
 		$ret['version'] = file_get_contents("/etc/redhat-release");
@@ -173,9 +173,9 @@ function find_os_pointversion()
 		$release = trim(file_get_contents("/etc/fedora-release"));
 		$osv = explode(" ", $release);
 		if (strtolower($osv[1]) === 'core') {
-			$osversion = "fedora-" . $osv[3]; 
+			$osversion = "fedora-" . $osv[3];
 		} else {
-			$osversion = "fedora-" . $osv[2]; 
+			$osversion = "fedora-" . $osv[2];
 		}
 		return $osversion;
 	}
@@ -192,11 +192,11 @@ function find_os_pointversion()
 		return $osversion;
 	}
 }
-	
 
 
 
-function lscandir_without_dot($arg, $dotflag = false) 
+
+function lscandir_without_dot($arg, $dotflag = false)
 {
 
 	$list = lscandir($arg);
@@ -216,7 +216,7 @@ function lscandir_without_dot($arg, $dotflag = false)
 	return $list;
 }
 
-function lscandir_without_dot_or_underscore($arg, $dotflag = false) 
+function lscandir_without_dot_or_underscore($arg, $dotflag = false)
 {
 
 	$list = lscandir($arg);
@@ -255,7 +255,7 @@ function ltouch($arg)
 
 	return lx_redefine_func("touch", $arg);
 }
- 
+
 function lchdir($arg)
 {
 	return lx_redefine_func("chdir", $arg);
@@ -264,14 +264,14 @@ function lchdir($arg)
 function takeToStartOfLine($fp)
 {
 
-	 while(fgetc($fp) == "\n" && ftell($fp) != 1 && ftell($fp) != 0) {
-		 fseek($fp, -2, SEEK_CUR);
-	 }
+	while(fgetc($fp) == "\n" && ftell($fp) != 1 && ftell($fp) != 0) {
+		fseek($fp, -2, SEEK_CUR);
+	}
 
-	 while(($c = fgetc($fp)) != "\n" && ftell($fp) != 1 && ftell($fp) != 0) {
-		 fseek($fp, -2, SEEK_CUR);
-	 }
- }
+	while(($c = fgetc($fp)) != "\n" && ftell($fp) != 1 && ftell($fp) != 0) {
+		fseek($fp, -2, SEEK_CUR);
+	}
+}
 
 function tail_func($file, $lines)
 {
@@ -388,7 +388,7 @@ function lis_hardlink($file)
 	$file = expand_real_root($file);
 	if (is_dir($file)) { return false; }
 	$stat = stat($file);
-	if ($stat['nlink'] >= 2) { 
+	if ($stat['nlink'] >= 2) {
 		return true;
 	}
 	return false;
@@ -479,13 +479,13 @@ function lfile_put_contents($file, $data, $flag = null)
 	return file_put_contents($file, $data, $flag);
 }
 
-/** 
-* @return void 
-* @param unknown  
-* @param unknown  
-* @desc Redefining php functions ... sort of.. Stupid php doesn't allow that. So we do the next best thing.. We add an 'l' to all system functions and then use these functions instead of the php ones... In a way, is a better idea too, since, there might always be some cases where we might want to override this crap. :-)
-*/ 
- 
+/**
+ * @return void
+ * @param unknown
+ * @param unknown
+ * @desc Redefining php functions ... sort of.. Stupid php doesn't allow that. So we do the next best thing.. We add an 'l' to all system functions and then use these functions instead of the php ones... In a way, is a better idea too, since, there might always be some cases where we might want to override this crap. :-)
+ */
+
 
 
 function lmkdir($dir)
@@ -550,7 +550,7 @@ function llstat($file)
 
 function lx_merge_good($arg)
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 
 	$start = 0;
 	$transforming_func = null;
@@ -600,27 +600,27 @@ function lx_array_merge($list)
 	return $ret;
 }
 
-function log_switch($mess, $id = 1) 
+function log_switch($mess, $id = 1)
 {
 	log_log('switch', $mess, $id);
 }
 
-function log_error($mess, $id = 1) 
+function log_error($mess, $id = 1)
 {
 	log_log('error', $mess, $id);
 }
 
-function log_bdatabase($mess, $id = 1) 
+function log_bdatabase($mess, $id = 1)
 {
 	log_log('bdatabase', $mess, $id);
 }
 
-function log_restore($mess, $id = 1) 
+function log_restore($mess, $id = 1)
 {
 	log_log('restore', $mess, $id);
 }
 
-function log_database($mess, $id = 1) 
+function log_database($mess, $id = 1)
 {
 	log_log('database', $mess, $id);
 }
@@ -639,7 +639,7 @@ function myPcntl_wait()
 
 function myPcntl_fork()
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	if (!WindowsOs()) {
 		$pid = pcntl_fork();
 	} else {
@@ -746,16 +746,16 @@ function lsqlite_open($file)
 	return lx_redefine_func("sqlite_open", $file);
 }
 
-/** 
-* @return void 
-* @param unknown  
-* @param unknown  
-* @desc This function is the core of the the path abstraction. It converts the paths of the form '__path.../dir' to '$sgbl->__path.../dir'. This is used in all the redefined functions to convert their arguments.
-*/ 
- 
+/**
+ * @return void
+ * @param unknown
+ * @param unknown
+ * @desc This function is the core of the the path abstraction. It converts the paths of the form '__path.../dir' to '$sgbl->__path.../dir'. This is used in all the redefined functions to convert their arguments.
+ */
+
 function expand_real_root($root)
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	if (char_search_beg($root, "__path")) {
 		if (char_search_a($root, "/")) {
 			$var = substr($root, 0, strpos($root, "/"));
@@ -768,13 +768,13 @@ function expand_real_root($root)
 	return $root;
 }
 
-/** 
-* @return void 
-* @param unknown  
-* @param unknown  
-* @desc the function that does the redefining of fundamental file access functions. Note the double use of 'eval'. hey hey, nothing is impossible in php. Never ever repeat the code; Make it unreadable instead. :-)
-*/ 
- 
+/**
+ * @return void
+ * @param unknown
+ * @param unknown
+ * @desc the function that does the redefining of fundamental file access functions. Note the double use of 'eval'. hey hey, nothing is impossible in php. Never ever repeat the code; Make it unreadable instead. :-)
+ */
+
 
 function kill_and_save_pid($name)
 {
@@ -784,7 +784,7 @@ function kill_and_save_pid($name)
 }
 function save_pid($name)
 {
-	lfile_put_contents("__path_program_root/pid/$name.pid", os_getpid()); 
+	lfile_put_contents("__path_program_root/pid/$name.pid", os_getpid());
 }
 
 function kill_pid($name)
@@ -803,7 +803,7 @@ function kill_pid($name)
 
 function licenseDecrypt($license_content)
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 
 	$fp = lfopen("__path_program_root/file/lprogram.crt", "r");
 	$public_key = fread($fp, 8192);
@@ -834,7 +834,7 @@ function licenseDecrypt($license_content)
 function lx_redefine_func($func)
 {
 
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 
 	$start = 1;
 	$transforming_func = "expand_real_root";
@@ -845,9 +845,9 @@ function lx_redefine_func($func)
 }
 
 
-function licenseEncrypt($string) 
+function licenseEncrypt($string)
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	$file = "$sgbl->__path_program_root/file/license_privatekey.key";
 	// encrypt
 	$pass = "helloworld";
@@ -875,7 +875,7 @@ function remove_unnecessary_stat(&$stat)
 
 function getShellCommand($cmd, $arglist)
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	$args = null;
 	$q = $sgbl->__var_quote_char;
 	$cmd = expand_real_root($cmd);
@@ -903,17 +903,17 @@ function getShellCommand($cmd, $arglist)
 
 class Remote {
 	/*
-public $ddata;
-public $message;
-public $exception;
-*/
+	 public $ddata;
+	 public $message;
+	 public $exception;
+	 */
 
 }
 
 
 function dprintoa($var, $type = 0)
 {
-	global $sgbl, $login, $ghtml; 
+	global $sgbl, $login, $ghtml;
 	if ($type > $sgbl->dbg) {
 		return;
 	}
@@ -961,7 +961,7 @@ function dprintr($var, $type = 0)
 		$class = $newvar->get__table();
 		if (csb($class, "sp_")) {
 			$bclass = strfrom($class, "sp_") . "_b";
-			$newvar->$bclass->__parent_o = 'unset for printing'; 
+			$newvar->$bclass->__parent_o = 'unset for printing';
 		}
 	} else {
 		$newvar = $var;
@@ -1005,10 +1005,10 @@ function dprint_r($var, $type = 0)
 function lx_local_socket_read($socket)
 {
 	return  @ socket_read($socket, 2048);
-	//$res=socket_recv($MsgSock,$buffer,1024,0);            
+	//$res=socket_recv($MsgSock,$buffer,1024,0);
 }
 
-function csa($haystack, $needle, $insensitive = 0) 
+function csa($haystack, $needle, $insensitive = 0)
 {
 	return char_search_a($haystack, $needle, $insensitive);
 
@@ -1027,10 +1027,10 @@ function char_search_a($haystack, $needle, $insensitive = 1)
 		log_log("error", $v);
 	}
 	if ($insensitive) {
-		return (false !== stristr($haystack, $needle)) ? true : false;    
-	} else {                                                              
-		return (false !== strpos($haystack, $needle))  ? true : false;    
-	}                                                                     
+		return (false !== stristr($haystack, $needle)) ? true : false;
+	} else {
+		return (false !== strpos($haystack, $needle))  ? true : false;
+	}
 
 }
 
@@ -1066,10 +1066,10 @@ function strfrom($string, $needle)
 function array_push_unique($array, $value)
 {
 	if(!$array)
-		$array = array();
+	$array = array();
 	foreach($array as $var) {
 		if ($var === $value)
-			return $array;
+		return $array;
 	}
 	$array[] =  $value ;
 	return $array;
@@ -1080,7 +1080,7 @@ function array_remove($array, $element)
 	$ret = null;
 	foreach($array as $value) {
 		if ($value !== $element)
-			$ret[]  = $value;
+		$ret[]  = $value;
 	}
 	return $ret;
 }
@@ -1137,7 +1137,7 @@ function array_search_bool($needle, $haystack)
 
 function isLicensed($var)
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 
 	if ($var == 'lic_client') {
 		return true;
@@ -1174,7 +1174,7 @@ function get_composite($class)
 // Set unlicensed to Unlimited usage
 function setLicenseTodefault()
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	$license = $login->getObject('license');
 	$license->parent_clname = $login->getClName();
 	$lic = $license->licensecom_b;
@@ -1190,7 +1190,7 @@ function setLicenseTodefault()
 
 function decodeAndStoreLicense($ip, $license_content)
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 
 	$license = $login->getObject('license');
 	$license->parent_clname = $login->getClName();
@@ -1207,9 +1207,9 @@ function decodeAndStoreLicense($ip, $license_content)
 
 	if (!isset($post['maindomain_num'])) {
 		if (isset($post['domain_num'])) {
-		$post['maindomain_num'] = $post['domain_num'];
-			} else {
-		$post['maindomain_num'] = $post['domain_num'];
+			$post['maindomain_num'] = $post['domain_num'];
+		} else {
+			$post['maindomain_num'] = $post['domain_num'];
 		}
 	}
 
@@ -1242,7 +1242,7 @@ function decodeAndStoreLicense($ip, $license_content)
 
 	if (isset($post['maindomain_num'])) {
 		$login->priv->maindomain_num = $post['maindomain_num'];
-	} 
+	}
 
 	if (isset($post['vps_num'])) {
 		$login->priv->vps_num = $post['vps_num'];
@@ -1268,7 +1268,7 @@ function remove_dot_dot($list)
 
 function lx_tmp_file($file)
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	$file = expand_real_root($file);
 	$n = preg_replace("+/+i", "_", $file);
 	return tempnam("$sgbl->__path_tmp/", "lxtmp_$n");
@@ -1322,7 +1322,7 @@ function test_remote_func()
 
 function log_clicks($mess, $id = 1)
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	if (!if_demo()) {
 		return;
 	}
@@ -1400,13 +1400,13 @@ function filter_object_list($list, $rule)
 
 }
 
-function is_assoc_array($var) 
-{                                    
-	if (!is_array($var)) {                                          
-		return false;                                               
-	}                                                               
-	return array_keys($var) !== range(0,sizeof($var)-1);              
-}                                                                  
+function is_assoc_array($var)
+{
+	if (!is_array($var)) {
+		return false;
+	}
+	return array_keys($var) !== range(0,sizeof($var)-1);
+}
 
 
 function get_namelist_from_objectlist($ol, $key = null, $val = null)
@@ -1420,7 +1420,7 @@ function get_namelist_from_objectlist($ol, $key = null, $val = null)
 		$key = "nname";
 	}
 
-	if($val === null){ 
+	if($val === null){
 		$val = $key;
 	}
 	foreach($ol as $o) {
@@ -1448,7 +1448,7 @@ function get_namelist_from_arraylist($ol, $key = null, $val = null)
 		$key = "nname";
 	}
 
-	if($val === null){ 
+	if($val === null){
 		$val = $key;
 	}
 	foreach((array) $ol as $o) {
@@ -1524,9 +1524,9 @@ function lx_phpdebug()
 	global $gbl, $sgbl;
 
 	if ($sgbl->dbg <= 0)
-		return;
+	return;
 	if (!lfile_exists("/tmp/.php_debug"))
-		return;
+	return;
 
 	$fp = lfopen("/tmp/.php_debug", "r");
 	$s = fgets($fp, 1024);
@@ -1590,17 +1590,17 @@ function get_general_image_path($v = null)
 	return add_http_host("/img/general/$v");
 }
 
-/** 
-* @return void 
-* @param 
-* @param 
-* @desc  part of the getting-image-through-http (to enable caching) madness.
-*/ 
- 
+/**
+ * @return void
+ * @param
+ * @param
+ * @desc  part of the getting-image-through-http (to enable caching) madness.
+ */
+
 function add_http_host($elem)
 {
 
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	return $elem;
 
 	$host = $_SERVER['SERVER_NAME'];
@@ -1654,7 +1654,7 @@ function DBG_GetBacktrace($traceArr)
 	foreach($traceArr as $arr)
 	{
 		for ($i=0; $i < $tabs; $i++)
-			$s .= ' &nbsp; ';
+		$s .= ' &nbsp; ';
 
 		$tabs -= 1;
 		$s .= '<font face="Courier New,Courier">';
@@ -1702,7 +1702,7 @@ function getInfo($b)
 function backtrace_once()
 {
 
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	if ($sgbl->dbg < 2) {
 		return;
 	}
@@ -1749,7 +1749,7 @@ function backtrace_once()
 }
 function debugBacktrace($flag = false)
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	$string = null;
 
 	if ($sgbl->dbg < 2) {
@@ -1802,7 +1802,7 @@ class Language_Mes {
 
 function get_language()
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	if (is_object($login) && isset($login->getSpecialObject('sp_specialplay')->language)) {
 		$lan = $login->getSpecialObject('sp_specialplay')->language;
 	} else {
@@ -1821,7 +1821,7 @@ function get_charset()
 
 function print_meta_lan()
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	$lan = get_language();
 	$charset = @ lfile_get_contents("lang/$lan/charset");
 	$charset = trim($charset);
@@ -1833,7 +1833,7 @@ function print_meta_lan()
 
 function init_language()
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	global $g_language_mes, $g_language_desc;
 
 	$lan = get_language();
@@ -1891,7 +1891,7 @@ function init_language()
 function lx_error_handler($errno, $errstr, $file, $line)
 {
 
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	global $last_error;
 
 	$last_error = $errstr;
@@ -1922,16 +1922,16 @@ function lx_error_handler($errno, $errstr, $file, $line)
 	lfile_put_contents($sgbl->__var_error_file, $error);
 	dprint(" <font color=red> <b> Notice : $errstr in  $file at $line </b> </font> <br> \n", 1);
 
-	
+
 }
 
-/** 
-* @return void 
-* @param 
-* @param 
-* @desc Truly random and insane way to encrypt the image/form names so that hackers won't easily understand teh program structure, (which is clearly visible in these names...)
-*/ 
- 
+/**
+ * @return void
+ * @param
+ * @param
+ * @desc Truly random and insane way to encrypt the image/form names so that hackers won't easily understand teh program structure, (which is clearly visible in these names...)
+ */
+
 
 function createEncName($name)
 {
@@ -1972,7 +1972,7 @@ function check_password($unenc, $enc)
 
 function lx_exception_handler($e)
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 
 	print("Notice : The resource you have requested doesn't exist. The server returned the error message: <br> ");
 
@@ -1985,7 +1985,7 @@ function lx_exception_handler($e)
 	$tr = $e->getTrace();
 	$trace = "";
 	foreach($tr as $a) {
-		$trace .= $a["file"] . ":" . $a["line"] . ":" ; 
+		$trace .= $a["file"] . ":" . $a["line"] . ":" ;
 		if (isset($a["class"])) {
 			$trace .= $a["class"] . ":";
 		}
@@ -2021,16 +2021,16 @@ function check_raw_password($class, $client, $pass)
 
 }
 
-/** 
-* @return void 
-* @param 
-* @param 
-* @desc  Checks if the client is disabled and exits immedeiately showing a message.
-*/ 
- 
+/**
+ * @return void
+ * @param
+ * @param
+ * @desc  Checks if the client is disabled and exits immedeiately showing a message.
+ */
+
 function check_if_disabled_and_exit()
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 
 
 	$contact = "administrator";
@@ -2058,10 +2058,10 @@ function check_if_disabled_and_exit()
 function delete_expired_ssessions()
 {
 
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 
 	$s_l = $login->getList("ssessionlist");
-	
+
 	foreach($s_l as $s) {
 		if (!is_object($s)) { continue; }
 		$timeout = $s->last_access + $login->getSpecialObject('sp_specialplay')->ssession_timeout;
@@ -2092,20 +2092,20 @@ function createTreeObject($name, $img, $imgstr, $url, $open, $help, $alt)
 	$tobj->alt = $alt;
 	return $tobj;
 }
- 
 
-/** 
-* @return void 
-* @param 
-* @param 
-* @desc A generic function, that can be used by all programs. Does all the basic login stuff. 
-*/ 
- 
+
+/**
+ * @return void
+ * @param
+ * @param
+ * @desc A generic function, that can be used by all programs. Does all the basic login stuff.
+ */
+
 
 
 function initProgramlib($ctype = null)
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 
 	if ($sgbl->is_this_slave()) { print("Slave Server\n"); exit; }
 	static $var = 0;
@@ -2277,13 +2277,13 @@ function initProgramlib($ctype = null)
 
 function clear_all_cookie()
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	$progname = $sgbl->__var_program_name;
 
 	$search = $progname;
 	if ($ghtml->frm_consumedlogin === 'true') {
 		$search .= "-consumed";
-	} 
+	}
 
 	foreach($_COOKIE as $k => $v) {
 		if (csb($k, $search)) {
@@ -2308,7 +2308,7 @@ function checkPublicKey($string, $encrypted_string)
 
 function initSession($object, $ssl_param, $consuming_parent)
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	$progname = $sgbl->__var_program_name;
 
 	$session = randomString(50);
@@ -2324,7 +2324,7 @@ function initSession($object, $ssl_param, $consuming_parent)
 	if ($consuming_parent) {
 		$ckstart .= "-consumed";
 	}
-		
+
 	if ($object->isAuxiliary()) {
 		$name = $object->__auxiliary_object->nname;
 		$class = $object->__auxiliary_object->getClass();
@@ -2335,13 +2335,13 @@ function initSession($object, $ssl_param, $consuming_parent)
 
 	setcookie("$ckstart-clientname", $name, $cookietime, '/');
 	setcookie("$ckstart-classname", $class, $cookietime, '/');
-	setcookie("$ckstart-session-id", $session, $cookietime, '/');	
+	setcookie("$ckstart-session-id", $session, $cookietime, '/');
 
 	dprint("Set cookies\n");
 
 	$hostname = $_SERVER['REMOTE_ADDR'];
 
-	$sessobj = new Ssession(null, null, $session); 
+	$sessobj = new Ssession(null, null, $session);
 	$sessa['nname'] = $session;
 	$sessa['ip_address'] =$_SERVER['REMOTE_ADDR'];
 	$sessa['cttype'] = $object->getLoginType();
@@ -2374,7 +2374,7 @@ function initSession($object, $ssl_param, $consuming_parent)
 
 function do_login($classname, $cgi_clientname, $ssl_param = null)
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	$url = "/display.php?frm_action=show";
 
 	$progname = $sgbl->__var_program_name;
@@ -2399,7 +2399,7 @@ function do_login($classname, $cgi_clientname, $ssl_param = null)
 
 function ifSplashScreen()
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	if (array_search_bool(strtolower($ghtml->frm_action), array('show', 'updateform', 'addform', 'continue'))) {
 		return true;
 	}
@@ -2408,7 +2408,7 @@ function ifSplashScreen()
 
 function isModifyAction()
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	if (array_search_bool(strtolower($ghtml->frm_action), array('show', 'updateform', 'addform', 'continue', 'list')) || array_search_bool($ghtml->frm_subaction, array("download"))) {
 		return false;
 	}
@@ -2423,7 +2423,7 @@ function lget_class($object)
 function exit_programlib()
 {
 
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 
 
 	$refer = $gbl->getSessionV("lx_http_referer");
@@ -2458,23 +2458,23 @@ function getAllclients($cttype = null)
 }
 function delete_login()
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 
 	$class = lget_class($login);
 
 }
 
 
-/** 
-* @return void 
-* @param 
-* @param 
-* @desc  Saves teh whole login info. Login is 'Was'ed; (Write and synced). Any exception is caught and the script is returned to the previous web page, with the error message string returned by the exception. Works EXceptionally well.. :-)
-*/ 
+/**
+ * @return void
+ * @param
+ * @param
+ * @desc  Saves teh whole login info. Login is 'Was'ed; (Write and synced). Any exception is caught and the script is returned to the previous web page, with the error message string returned by the exception. Works EXceptionally well.. :-)
+ */
 
 function save_login()
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	// NO saved..
 	return;
 
@@ -2486,7 +2486,7 @@ function save_login()
 	}
 
 
- 	if($login->__force != "normal") {
+	if($login->__force != "normal") {
 		return;
 	}
 
@@ -2508,7 +2508,7 @@ function isLocalhost($var)
 
 function get_savedlogin($classname, $clientname)
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 
 	$path = "$sgbl->__path_program_etc/$classname:$clientname";
 
@@ -2551,7 +2551,7 @@ function get_login($classname, $clientname)
 }
 
 
-function create_name($word) 
+function create_name($word)
 {
 	$word = str_replace("_", $word);
 	return $word;
@@ -2559,13 +2559,13 @@ function create_name($word)
 
 
 
-/** 
-* @return void 
-* @param 
-* @param 
-* @desc  Remove unsavoury characters from a string so that it can be used as a variable.
-*/ 
- 
+/**
+ * @return void
+ * @param
+ * @param
+ * @desc  Remove unsavoury characters from a string so that it can be used as a variable.
+ */
+
 function fix_nname_to_be_variable($var)
 {
 	if (!$var) { return; }
@@ -2600,7 +2600,7 @@ function get_description($stuff)
 
 function get_classvar_description($class, $var = null)
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 
 	global $g_language_desc;
 	global $g_language_mes;
@@ -2640,10 +2640,10 @@ function get_classvar_description($class, $var = null)
 	}
 
 	/*
-	if ($login->getSpecialObject('sp_specialplay')->isCoreLanguage()) {
+	 if ($login->getSpecialObject('sp_specialplay')->isCoreLanguage()) {
 		return $ret;
-	}
-*/
+		}
+		*/
 
 	$k = trim($ret[2], "_\n ");
 	if (isset($g_language_desc->__description[$k])) {
@@ -2659,8 +2659,8 @@ function get_classvar_description($class, $var = null)
 
 	return $ret;
 
-	
-	
+
+
 
 }
 
@@ -2701,11 +2701,11 @@ function get_class_variable($class, $var)
 	$var = fix_nname_to_be_variable($var);
 	$class = ucfirst($class);
 	/*
-	if (csa($class, '-')) {
+	 if (csa($class, '-')) {
 		debugBacktrace();
 		exit;
-	}
-*/
+		}
+		*/
 
 	$variable = "$class::\$" . $var;
 	return eval(" if (isset($variable)) { return $variable ; }  ");
@@ -2714,7 +2714,7 @@ function get_class_variable($class, $var)
 }
 
 
-function set_class_variable($class, $var, $val) 
+function set_class_variable($class, $var, $val)
 {
 	$var = fix_nname_to_be_variable($var);
 	$class = ucfirst($class);
@@ -2733,13 +2733,13 @@ function createZeroString($n)
 }
 
 
-/** 
-* @return void 
-* @param 
-* @param 
-* @desc  Execs a method inside a class. Passes all the variables to it. See the use of 2 evals.. Check documentation for lx_redefine_func;
-*/ 
- 
+/**
+ * @return void
+ * @param
+ * @param
+ * @desc  Execs a method inside a class. Passes all the variables to it. See the use of 2 evals.. Check documentation for lx_redefine_func;
+ */
+
 function exec_class_method($class, $func)
 {
 
@@ -2747,7 +2747,7 @@ function exec_class_method($class, $func)
 
 	//list($iclass, $mclass, $rclass) = get_composite($class);
 	$rclass = $class;
-	
+
 	$class = strtolower($class);
 
 	//Arg getting string is a function that needs $start to be set.
@@ -2780,7 +2780,7 @@ function lxgettimewithoutyear($time)
 	}
 
 
- 	$minutes = $date['minutes'];
+	$minutes = $date['minutes'];
 
 	if ($minutes < 10) {
 		$minutes = "0" . $minutes;
@@ -2812,7 +2812,7 @@ function lxgettime($time)
 	}
 
 
- 	$minutes = $date['minutes'];
+	$minutes = $date['minutes'];
 
 	if ($minutes < 10) {
 		$minutes = "0" . $minutes;
@@ -2863,13 +2863,13 @@ function array_remove_assoc(&$array, $element)
 {
 	foreach($array as $key => $value) {
 		if ($value === $element)
-			unset($array[$key]);
+		unset($array[$key]);
 	}
 }
 
 function array_remove_object($objectlist, $variable, $value)
-{   
-	
+{
+
 	foreach($objectlist as $object) {
 		if ($object->$variable != $value ) {
 			$ret[$object->nname] =  $object;
@@ -2882,8 +2882,8 @@ function array_remove_object($objectlist, $variable, $value)
 
 function add_superadmin($pass)
 {
-	global $gbl, $sgbl, $login, $ghtml; 
-		
+	global $gbl, $sgbl, $login, $ghtml;
+
 	$client = new SuperClient(null, null, 'superadmin');
 	$client->initThisDef();
 
@@ -2902,8 +2902,8 @@ function add_superadmin($pass)
 
 function add_slave($pass)
 {
-	global $gbl, $sgbl, $login, $ghtml; 
-		
+	global $gbl, $sgbl, $login, $ghtml;
+
 	$client = new Slave(null, null, 'slave');
 	$client->initThisDef();
 
@@ -2921,7 +2921,7 @@ function add_slave($pass)
 
 function init_supernode($pass)
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 
 	sql_main();
 	add_superadmin($pass);
@@ -2930,7 +2930,7 @@ function init_supernode($pass)
 
 function init_slave($pass)
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	$rm = new Remote();
 	$rm->password = crypt($pass);
 	lfile_put_contents('__path_slave_db', serialize($rm));
@@ -2940,7 +2940,7 @@ function init_slave($pass)
 
 function lx_socket_read($socket)
 {
-	//$res=socket_recv($MsgSock,$buffer,1024,0);            
+	//$res=socket_recv($MsgSock,$buffer,1024,0);
 }
 
 function pad_to_length($var, $len)
@@ -2967,7 +2967,7 @@ function remote_http_exec($server, $port, $rmt)
 
 function send_to_some_http_server($raddress, $socket_type, $port, $var)
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 
 	print_time('server');
 
@@ -2987,7 +2987,7 @@ function send_to_some_http_server($raddress, $socket_type, $port, $var)
 
 function check_remote_pass($user, $pass)
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	return check_password($pass, $login->password);
 }
 
@@ -3010,13 +3010,13 @@ function getNthToken($string,  $num, $delim = ':')
 
 
 
-/** 
-* @return void 
-* @param unknown  
-* @param unknown  
-* @desc Recurses a dir tree and execs the '$func' on all the files AND the directories.
-*/ 
- 
+/**
+ * @return void
+ * @param unknown
+ * @param unknown
+ * @desc Recurses a dir tree and execs the '$func' on all the files AND the directories.
+ */
+
 
 function recurse_dir($dir, $func, $arglist = null)
 {
@@ -3096,7 +3096,7 @@ function array_get_object($objectlist, $variable, $value)
 
 function getBasicServiceList()
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	$serv[] = $sgbl->__var_programname_web;
 	$descr[$sgbl->__var_programname_web] = "Web Server";
 	$serv[] = $sgbl->__var_programname_dns;
@@ -3155,7 +3155,7 @@ function critical_change_db_pass()
 }
 function change_db_pass()
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	$pass = randomString(10);
 	$newp = client::createDbPass($pass);
 	$oldpass = lfile_get_contents("__path_admin_pass");
@@ -3181,7 +3181,7 @@ function change_db_pass()
 
 function create_database()
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	$flist = parse_sql_data();
 	foreach($flist as $k => $v) {
 		create_table_with_drop($k, $v);
@@ -3218,8 +3218,8 @@ function parse_sql_data()
 
 
 		$res = trim($res);
-		if (!$res) 
-			continue;
+		if (!$res)
+		continue;
 
 		if (char_search_beg($res, "//")) {
 			continue;
@@ -3263,7 +3263,7 @@ function parse_sql_data()
 
 		if (csb($res, "%")) {
 			$vl = explode(" ", $res);
-			$name = array_shift($vl); 
+			$name = array_shift($vl);
 			$nnnnvl = null;
 			foreach($vl as $q) {
 				if (csb($q, "%")) {
@@ -3352,7 +3352,7 @@ function mssql_do_create_table($__db, $tbl_name, $fields)
 
 function create_table_with_drop($tbl_name, $list)
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	$__db = new Sqlite(null, 'sqlite');
 	$__db->rawQuery("drop table $tbl_name");
 	create_table($__db, $tbl_name, $list);
@@ -3360,7 +3360,7 @@ function create_table_with_drop($tbl_name, $list)
 
 function create_table($__db, $tbl_name, $list)
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	$__db = new Sqlite(null, 'sqlite');
 
 	// For mssql you can talk of primary key initially itself nad not wait till the end of the fields.
@@ -3405,7 +3405,7 @@ function sqlite_do_create_table($__db, $tbl_name, $fields)
 	print("Creating table $tbl_name....\n");
 	$ret = $__db->rawQuery($query);
 	//if (!$ret) {
-		//print("\nerror: " . sqlite_error_string(sqlite_last_error()) . "\n\n");
+	//print("\nerror: " . sqlite_error_string(sqlite_last_error()) . "\n\n");
 	//}
 	$query = "insert into $tbl_name (nname) values ('__dummy__dummy__')"; $__db->rawQuery($query);
 	//$query = "create index parent_clname_$tbl_name on $tbl_name (parent_clname (255));"; $__db->rawQuery($query);
@@ -3456,7 +3456,7 @@ function remove_extra_slash($file)
 
 function if_demo_throw_exception($where = null)
 {
-	global $gbl, $sgbl, $login, $ghtml;  
+	global $gbl, $sgbl, $login, $ghtml;
 
 	if ($sgbl->dbg < 0) {
 		$where = null;
@@ -3486,14 +3486,14 @@ function getClassFromName($cgi_clientname)
 		$classname = "vps";
 	} else if (csa($cgi_clientname, ".aux")) {
 		$classname = "auxiliary";
-	} 
+	}
 
 	/*
-	Domain user doesn't exist anymore....
-	else if (csa($cgi_clientname, ".")) {
+	 Domain user doesn't exist anymore....
+	 else if (csa($cgi_clientname, ".")) {
 		$classname = "domain";
-	}
-*/
+		}
+		*/
 
 	return $classname;
 

@@ -1,8 +1,8 @@
-<?php 
+<?php
 
 function lxshell_expect($strtype, $cmd)
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 
 	$a = array("ntfsresize" => "expect \"Are you sure you want to proceed (y/[n])? \"\nsend \"y\\r\"\n\n");
 	$t = lx_tmp_file("expect");
@@ -15,7 +15,7 @@ function lxshell_expect($strtype, $cmd)
 
 function lxshell_getzipcontent($path)
 {
-	
+
 	$type = os_getZipType($path);
 	if ($type === 'zip') {
 		return lxshell_output("unzip", "-l", $path);
@@ -158,16 +158,16 @@ function lxfile_get_disk_usage($file)
 	$res = explode("\n", $res);
 	foreach($res as $r) {
 		if (csb($r, "Block size:")) {
-			$blocksize = trim(strfrom($r, "Block size:")) /1024; 
+			$blocksize = trim(strfrom($r, "Block size:")) /1024;
 		}
 	}
 
 	foreach($res as $r) {
 		if (csb($r, "Block count:")) {
-			$total = trim(strfrom($r, "Block count:")) * $blocksize; 
+			$total = trim(strfrom($r, "Block count:")) * $blocksize;
 		}
 		if (csb($r, "Free blocks:")) {
-			$free = trim(strfrom($r, "Free blocks:")) * $blocksize; 
+			$free = trim(strfrom($r, "Free blocks:")) * $blocksize;
 		}
 	}
 
@@ -421,7 +421,7 @@ function lxfile_rm_rec($file)
 		throw new lxException('no_stars_allowed', '');
 	}
 	lxshell_return("rm", "-r", $file);
-	
+
 }
 
 function lxfile_generic_chmod($file, $mod)
@@ -524,15 +524,15 @@ function lxfile_cp_content($dirsource, $dirdest)
 }
 
 function lxfile_cp_rec($dirsource, $dirdest)
-{ 
-	
+{
+
 	$username = "__system__";
 	$dirdest = expand_real_root($dirdest);
 	$dirsource = expand_real_root($dirsource);
 	$arglist = array("-a", $dirsource, $dirdest);
 	$cmd = getShellCommand("cp", $arglist);
 	return do_exec_system($username, null, $cmd, $out, $err, $ret, null);
-} 
+}
 
 
 function lxfile_size($file)
@@ -545,14 +545,14 @@ function lxfile_size($file)
 	return $size;
 }
 
-function lxfile_unix_chmod($file, $mod) 
+function lxfile_unix_chmod($file, $mod)
 {
 	$file = expand_real_root($file);
 	/*
-	if ($mod & S_ISUID || $mod & S_ISGID) {
+	 if ($mod & S_ISUID || $mod & S_ISGID) {
 		throw new lxException('setuid_not_allowed_in_chmod', '');
-	}
-*/
+		}
+		*/
 	$ret =  lxshell_return("chmod", $mod, $file);
 
 	// There is difference in the return values betweent eh internal and the external chmod
@@ -602,12 +602,12 @@ function lxfile_unix_chown($file, $mod)
 		dprint("Chown Error in file $file\n");
 	}
 	return $ret;
-	
+
 }
 
 function lxshell_background($cmd)
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	global $global_dontlogshell;
 	$username = '__system__';
 	$start = 1;
@@ -625,10 +625,10 @@ function lxshell_background($cmd)
 	return true;
 }
 
-function do_exec_system($username, $dir, $cmd, &$out, &$err, &$ret, $input) 
+function do_exec_system($username, $dir, $cmd, &$out, &$err, &$ret, $input)
 {
 	//dprint("<hr>$dir <hr> ");
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	global $global_shell_out, $global_shell_error, $global_shell_ret;
 
 	global $global_dontlogshell;

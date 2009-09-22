@@ -24,68 +24,55 @@
  * A user can configure the editor to use another CSS file. Just change
  * the value of the FCKConfig.EditorAreaCSS key in the configuration
  * file.
- */
-
-/*
+ */ /*
     The "body" styles should match your editor web site, mainly regarding
     background color and font family and size.
 */
-
-body
-{
+body {
 	background-color: #ffffff;
 	padding: 5px 5px 5px 5px;
 	margin: 0px;
 }
 
-body, td
-{
+body,td {
 	font-family: Arial, Verdana, Sans-Serif;
 	font-size: 12px;
 }
 
-a[href]
-{
-	color: #0000FF !important;	/* For Firefox... mark as important, otherwise it becomes black */
+a[href] {
+	color: #0000FF !important;
+	/* For Firefox... mark as important, otherwise it becomes black */
 }
 
 /*
 	Just uncomment the following block if you want to avoid spaces between
 	paragraphs. Remember to apply the same style in your output front end page.
-*/
-
-/*
+*/ /*
 p, ul, li
 {
 	margin-top: 0px;
 	margin-bottom: 0px;
 }
-*/
-
-/*
+*/ /*
     The following are some sample styles used in the "Styles" toolbar command.
     You should instead remove them, and include the styles used by the site
     you are using the editor in.
 */
-
-.Bold
-{
+.Bold {
 	font-weight: bold;
 }
 
-.Title
-{
+.Title {
 	font-weight: bold;
 	font-size: 18px;
 	color: #cc3300;
 }
 
-.Code
-{
+.Code {
 	border: #8b4513 1px solid;
 	padding-right: 5px;
 	padding-left: 5px;
 	color: #000066;
-	font-family: 'Courier New' , Monospace;
+	font-family: 'Courier New', Monospace;
 	background-color: #ff9933;
 }

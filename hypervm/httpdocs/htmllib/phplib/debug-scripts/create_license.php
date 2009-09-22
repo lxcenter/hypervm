@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 include "htmllib/lib/include.php";
 
@@ -7,7 +7,7 @@ create_license();
 
 function create_license()
 {
-	global $gbl, $sgbl, $login, $ghtml, $argc, $argv; 
+	global $gbl, $sgbl, $login, $ghtml, $argc, $argv;
 
 	$elements = array(
 		'client' => 'On',

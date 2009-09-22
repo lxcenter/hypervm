@@ -1,4 +1,4 @@
-<?php 
+<?php
 include_once "htmllib/lib/include.php";
 
 if (!os_isSelfSystemOrLxlabsUser()) {
@@ -23,7 +23,7 @@ if ($argv[1] === 'master') {
 	if (!lxfile_exists("__path_slave_db")) {
 		print("Not Slave\n");
 		exit;
-		}
+	}
 	$rmt = unserialize(lfile_get_contents('__path_slave_db'));
 	$rmt->password = crypt($argv[2]);
 	lfile_put_contents('__path_slave_db', serialize($rmt));

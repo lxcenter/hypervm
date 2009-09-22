@@ -1,8 +1,8 @@
-<?php 
+<?php
 
 function lxserver_main()
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	global $argv, $argc;
 	// Set time limit to indefinite execution
 
@@ -46,7 +46,7 @@ function lxserver_main()
 
 function do_server_stuff()
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	//dprint("in Do server stuff\n");
 
 	if (if_demo()) {
@@ -58,7 +58,7 @@ function do_server_stuff()
 		if ($sgbl->is_this_master()) {
 			$schour = null;
 			$schour = $login->getObject('general')->generalmisc_b->scavengehour;
-			$scminute = $login->getObject('general')->generalmisc_b->scavengeminute; 
+			$scminute = $login->getObject('general')->generalmisc_b->scavengeminute;
 			//dprint("Cron exec $schour, $scminute\n");
 			if ($schour) {
 				cron_exec($schour, $scminute, "exec_scavenge");
@@ -89,7 +89,7 @@ function cron_exec($hour, $minute, $func)
 			$localvar[$func] = false;
 		}
 		return ;
-		
+
 	}
 
 	if ($now > $time && $now < $time + 2* 60) {
@@ -113,7 +113,7 @@ function timed_exec($time, $func)
 
 function exec_scavenge()
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	dprint("Executing collect quota\n");
 	$olddir = getcwd();
 	lchdir("__path_program_htmlbase");
@@ -123,7 +123,7 @@ function exec_scavenge()
 
 function checkRestart()
 {
-	
+
 	if (if_demo()) {
 		return;
 	}
@@ -167,7 +167,7 @@ function exec_openvz_tc()
 
 function special_bind_restart($cmd)
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	if (WindowsOs()) {
 		return;
 	}
@@ -185,7 +185,7 @@ function special_bind_restart($cmd)
 
 function reload_lxserver_password()
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 
 	static $time;
 

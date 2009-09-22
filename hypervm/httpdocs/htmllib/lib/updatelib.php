@@ -1,9 +1,9 @@
-<?php 
+<?php
 
 function update_main()
 {
 	global $argc, $argv;
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 
 	debug_for_backend();
 	$program = $sgbl->__var_program_name;
@@ -30,7 +30,7 @@ function update_main()
 		//fix_database($upversion);
 		print("Upgrade Done.. Executing Cleanup....\n");
 		flush();
-		} else {
+	} else {
 		print("$program is the latest version\n");
 	}
 
@@ -87,7 +87,7 @@ function update_all_slave()
 
 function findNextVersion($lastversion = null)
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	$maj = $sgbl->__ver_major;
 	$thisversion = $sgbl->__ver_major_minor_release;
 
@@ -113,7 +113,7 @@ function findNextVersion($lastversion = null)
 
 function do_upgrade($upversion)
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	if (file_exists("CVS")) {
 		print("CVS exists... Development system.. Not upgrading --> exit!...\n");
 		exit;
@@ -157,7 +157,7 @@ function fixZshEtc()
 	if ($ret) {
 		system("yum -y install zsh vim-enhanced");
 	}
-print("Copy LxEtc\n");
+	print("Copy LxEtc\n");
 	lxfile_cp_rec("htmllib/filecore/lxetc/", "$dir/.etc");
 }
 

@@ -1,7 +1,7 @@
-<?php 
+<?php
 // read the post from PayPal system and add 'cmd'
 chdir("../../");
-include_once "htmllib/lib/include.php"; 
+include_once "htmllib/lib/include.php";
 
 
 $req = 'cmd=_notify-validate';

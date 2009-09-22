@@ -62,14 +62,14 @@ class FCKeditor
 		if ( $this->IsCompatible() )
 		{
 			if ( isset( $_GET['fcksource'] ) && $_GET['fcksource'] == "true" )
-				$File = 'fckeditor.original.html' ;
+			$File = 'fckeditor.original.html' ;
 			else
-				$File = 'fckeditor.html' ;
+			$File = 'fckeditor.html' ;
 
 			$Link = "{$this->BasePath}editor/{$File}?InstanceName={$this->InstanceName}" ;
 
 			if ( $this->ToolbarSet != '' )
-				$Link .= "&amp;Toolbar={$this->ToolbarSet}" ;
+			$Link .= "&amp;Toolbar={$this->ToolbarSet}" ;
 
 			// Render the linked hidden field.
 			$Html .= "<input type=\"hidden\" id=\"{$this->InstanceName}\" name=\"{$this->InstanceName}\" value=\"{$HtmlValue}\" style=\"display:none\" />" ;
@@ -83,14 +83,14 @@ class FCKeditor
 		else
 		{
 			if ( strpos( $this->Width, '%' ) === false )
-				$WidthCSS = $this->Width . 'px' ;
+			$WidthCSS = $this->Width . 'px' ;
 			else
-				$WidthCSS = $this->Width ;
+			$WidthCSS = $this->Width ;
 
 			if ( strpos( $this->Height, '%' ) === false )
-				$HeightCSS = $this->Height . 'px' ;
+			$HeightCSS = $this->Height . 'px' ;
 			else
-				$HeightCSS = $this->Height ;
+			$HeightCSS = $this->Height ;
 
 			$Html .= "<textarea name=\"{$this->InstanceName}\" rows=\"4\" cols=\"40\" style=\"width: {$WidthCSS}; height: {$HeightCSS}\">{$HtmlValue}</textarea>" ;
 		}
@@ -105,9 +105,9 @@ class FCKeditor
 		global $HTTP_USER_AGENT ;
 
 		if ( isset( $HTTP_USER_AGENT ) )
-			$sAgent = $HTTP_USER_AGENT ;
+		$sAgent = $HTTP_USER_AGENT ;
 		else
-			$sAgent = $_SERVER['HTTP_USER_AGENT'] ;
+		$sAgent = $_SERVER['HTTP_USER_AGENT'] ;
 
 		if ( strpos($sAgent, 'MSIE') !== false && strpos($sAgent, 'mac') === false && strpos($sAgent, 'Opera') === false )
 		{
@@ -120,7 +120,7 @@ class FCKeditor
 			return ($iVersion >= 20030210) ;
 		}
 		else
-			return false ;
+		return false ;
 	}
 
 	function GetConfigFieldString()
@@ -131,16 +131,16 @@ class FCKeditor
 		foreach ( $this->Config as $sKey => $sValue )
 		{
 			if ( $bFirst == false )
-				$sParams .= '&amp;' ;
+			$sParams .= '&amp;' ;
 			else
-				$bFirst = false ;
+			$bFirst = false ;
 
 			if ( $sValue === true )
-				$sParams .= $this->EncodeConfig( $sKey ) . '=true' ;
+			$sParams .= $this->EncodeConfig( $sKey ) . '=true' ;
 			else if ( $sValue === false )
-				$sParams .= $this->EncodeConfig( $sKey ) . '=false' ;
+			$sParams .= $this->EncodeConfig( $sKey ) . '=false' ;
 			else
-				$sParams .= $this->EncodeConfig( $sKey ) . '=' . $this->EncodeConfig( $sValue ) ;
+			$sParams .= $this->EncodeConfig( $sKey ) . '=' . $this->EncodeConfig( $sValue ) ;
 		}
 
 		return $sParams ;

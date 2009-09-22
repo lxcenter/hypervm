@@ -1,4 +1,4 @@
-<?php 
+<?php
 $__keyword['under'] = 'under';
 $__keyword['filtered'] = 'filtered';
 $__keyword['no'] = 'No';

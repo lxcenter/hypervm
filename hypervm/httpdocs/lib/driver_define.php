@@ -1,4 +1,4 @@
-<?php 
+<?php
 include_once "htmllib/lib/driver_definecore.php";
 
 $gl_class_array["client__sync"] = "htmllib/phplib/lib/client/client__synclib.php";

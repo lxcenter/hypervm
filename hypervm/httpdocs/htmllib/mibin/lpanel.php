@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 chdir("../../");
 include_once "htmllib/lib/displayinclude.php";
@@ -8,7 +8,7 @@ lpanel_main();
 
 function lpanel_main()
 {
-	global $gbl, $login, $ghtml; 
+	global $gbl, $login, $ghtml;
 
 	initProgram();
 	init_language();
@@ -49,12 +49,12 @@ function lpanel_main()
 
 function print_ext_tree($object)
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 
-	?> 
+	?>
 
 
-	<script>
+<script>
 	Ext.onReady(function(){
     // shorthand
     var Tree = Ext.tree;
@@ -82,7 +82,7 @@ function print_ext_tree($object)
     root.expand();
 });
 </script>
-<?php 
+	<?php
 
 }
 

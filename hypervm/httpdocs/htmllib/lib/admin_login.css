@@ -1,18 +1,18 @@
 body {
- 	margin: 0px;
+	margin: 0px;
 	padding: 0px;
-	color : #333;
-	background-color : #FFF;
-	font-size : 11px;
-	font-family : Arial, Helvetica, sans-serif;
-		 }
+	color: #333;
+	background-color: #FFF;
+	font-size: 11px;
+	font-family: Arial, Helvetica, sans-serif;
+}
 
 #wrapper {
-    border: 0px;
-    margin: 0px;
-    margin-left: auto;
-    margin-right: auto;
-    padding: 0px;
+	border: 0px;
+	margin: 0px;
+	margin-left: auto;
+	margin-right: auto;
+	padding: 0px;
 }
 
 #break {
@@ -24,11 +24,11 @@ form {
 }
 
 .button {
-	border : solid 1px #cccccc;
+	border: solid 1px #cccccc;
 	background: #E9ECEF;
-	color : #666666;
-	font-weight : bold;
-	font-size : 11px;
+	color: #666666;
+	font-weight: bold;
+	font-size: 11px;
 	padding: 4px;
 }
 
@@ -41,11 +41,11 @@ form {
 	width: 429px;
 	background: #F1F3F5;
 }
-	
+
 .login p {
 	padding: 0 1em 0 1em;
 }
-					
+
 .form-block {
 	border: 1px solid #cccccc;
 	background: #E9ECEF;
@@ -88,6 +88,7 @@ form {
 	margin: 0 0 1em 0;
 	border: 1px solid #cccccc;
 }
+
 .passbox {
 	COLOR: #000000;
 	FONT-FAMILY: Verdana, Tahoma;
@@ -104,7 +105,7 @@ form {
 }
 
 .clr {
-    clear:both;
+	clear: both;
 }
 
 .ctr {
@@ -116,13 +117,12 @@ form {
 }
 
 .message {
-	margin-top: 10px; 
-	padding: 7px; 
+	margin-top: 10px;
+	padding: 7px;
 	width: 400px;
 	border: 1px solid #B22222;
 	background: #F1F3F5;
-	color: #B22222;	
+	color: #B22222;
 	font-weight: bold;
 	font-size: 13px;
 }
-

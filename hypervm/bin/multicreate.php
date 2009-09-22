@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 include "lib/include.php";
 

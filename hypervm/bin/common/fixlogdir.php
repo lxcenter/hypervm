@@ -1,12 +1,12 @@
-<?php 
+<?php
 
-include_once "htmllib/lib/include.php"; 
+include_once "htmllib/lib/include.php";
 
 fixlogdir_main();
 
 function fixlogdir_main()
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 
 	$progname = $sgbl->__var_program_name;
 

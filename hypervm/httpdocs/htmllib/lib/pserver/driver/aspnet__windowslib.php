@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 class aspnet__windows extends Lxdriverclass {
 
@@ -7,9 +7,9 @@ class aspnet__windows extends Lxdriverclass {
 
 	}
 
-	
+
 	function dbactionDelete()
-	{   
+	{
 
 	}
 
@@ -18,23 +18,23 @@ class aspnet__windows extends Lxdriverclass {
 		print("\n #############\n");
 	}
 
-static function getAspnetVersion()
-{
-	//print("\nI am here\n");
-	//$r=exec("c:\regASPVer.vbs");
-	$cm="cmd /K CD C:\Dir";
-	lxshell_return("cmd", "/K", "cd", "c:\dir");
-	
-	//print($r."\n");
-	//$r = system('cscript.exe c:\regASPVer.vbs.vbs', $a);
+	static function getAspnetVersion()
+	{
+		//print("\nI am here\n");
+		//$r=exec("c:\regASPVer.vbs");
+		$cm="cmd /K CD C:\Dir";
+		lxshell_return("cmd", "/K", "cd", "c:\dir");
 
-	//cscript.exe regASPVer.vbs
-	//regASPVer.vbs
-	foreach($a as $b) {
-		$res['version'] = "aab";
-		$res['sss'] = 'ab';
-		$ret[] = $res;
+		//print($r."\n");
+		//$r = system('cscript.exe c:\regASPVer.vbs.vbs', $a);
+
+		//cscript.exe regASPVer.vbs
+		//regASPVer.vbs
+		foreach($a as $b) {
+			$res['version'] = "aab";
+			$res['sss'] = 'ab';
+			$ret[] = $res;
+		}
+
 	}
-
-}
 }

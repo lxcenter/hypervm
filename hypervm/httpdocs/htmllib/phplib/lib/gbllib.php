@@ -1,224 +1,224 @@
-<?php 
+<?php
 
 class Gbllib  extends Lxclass {
 
-function write() {}
-function get() { }
+	function write() {}
+	function get() { }
 
-function __construct()
-{
+	function __construct()
+	{
 
-	$this->nname = 'gbl';
+		$this->nname = 'gbl';
 
-	$this->__fvar_dont_redirect = null;
-	$this->c_session = null;
-	$this->__this_warning = null;
+		$this->__fvar_dont_redirect = null;
+		$this->c_session = null;
+		$this->__this_warning = null;
 
-}
-
-function setWarning($message, $var, $val)
-{
-	$this->__this_warning['message'] = $message;
-	$this->__this_warning['var'] = $var;
-	$this->__this_warning['val'] = $val;
-}
-
-function getClass()
-{
-	return 'gbl';
-}
-
-function __get($var)
-{
-	return false;
-}
-
-function loaddriverappInfo($master)
-{
-	$db = new Sqlite($master, 'driver');
-	$res = $db->getTable();
-
-	// Doing the setFromArray stuff here itself. Since that is the place from where we are called, and if we call setfromarray here, naturally it results in a loop.
-	$__t_ob = null;
-	foreach((array) $res as $row) { 
-		$nname = $row['nname'];
-		$obj = new driver($master, null, $nname);
-
-
-		foreach($row as $key => $value) {
-
-		if (csb($key, "ser_")) {
-			$key = strfrom($key, "ser_");
-			$value = unserialize(base64_decode($value));
-		}
-
-		if (cse($key, "_b") && !is_object($value)) {
-			$value = new $key(null, null, $nname);
-		}
-
-		if (is_numeric($key)) {
-			continue;
-		}
-
-		$obj->$key = $value;
-		}
-		$__t_ob[$nname] = $obj;
-	}
-	if (!isset($this->driver)) {
-		$this->driver = array();
 	}
 
-	$this->driver[$master] = $__t_ob;
-	//dprintr($this->driver);
-}
-
-
-function getSyncClass($master, $syncserver, $class)
-{
-	global $gbl, $sgbl, $login, $ghtml; 
-
-	if (!$login) {
-		return;
-	}
-	if (isLocalhost($master)) {
-		$master = 'localhost';
+	function setWarning($message, $var, $val)
+	{
+		$this->__this_warning['message'] = $message;
+		$this->__this_warning['var'] = $var;
+		$this->__this_warning['val'] = $val;
 	}
 
-	if ($login->isSuperadmin() && $master === 'localhost') {
+	function getClass()
+	{
+		return 'gbl';
+	}
+
+	function __get($var)
+	{
+		return false;
+	}
+
+	function loaddriverappInfo($master)
+	{
+		$db = new Sqlite($master, 'driver');
+		$res = $db->getTable();
+
+		// Doing the setFromArray stuff here itself. Since that is the place from where we are called, and if we call setfromarray here, naturally it results in a loop.
+		$__t_ob = null;
+		foreach((array) $res as $row) {
+			$nname = $row['nname'];
+			$obj = new driver($master, null, $nname);
+
+
+			foreach($row as $key => $value) {
+
+				if (csb($key, "ser_")) {
+					$key = strfrom($key, "ser_");
+					$value = unserialize(base64_decode($value));
+				}
+
+				if (cse($key, "_b") && !is_object($value)) {
+					$value = new $key(null, null, $nname);
+				}
+
+				if (is_numeric($key)) {
+					continue;
+				}
+
+				$obj->$key = $value;
+			}
+			$__t_ob[$nname] = $obj;
+		}
+		if (!isset($this->driver)) {
+			$this->driver = array();
+		}
+
+		$this->driver[$master] = $__t_ob;
+		//dprintr($this->driver);
+	}
+
+
+	function getSyncClass($master, $syncserver, $class)
+	{
+		global $gbl, $sgbl, $login, $ghtml;
+
+		if (!$login) {
+			return;
+		}
+		if (isLocalhost($master)) {
+			$master = 'localhost';
+		}
+
+		if ($login->isSuperadmin() && $master === 'localhost') {
+			return null;
+		}
+
+		if (isLocalhost($syncserver)) {
+			$syncserver = 'localhost';
+		}
+
+		//Dynamically load the syncserver info....
+		if (!isset($this->driver) || !isset($this->driver[$master])) {
+			$this->loaddriverappInfo($master);
+		}
+		if (!isset($this->driver[$master][$syncserver])) {
+			$this->loaddriverappInfo($master);
+		}
+
+		$class_var = strtolower("pg_" . $class);
+		//debugBacktrace();
+
+		$pgm = $this->driver[$master][$syncserver]->driver_b;
+
+
+		if (isset($pgm->$class_var)) {
+			$str = $pgm->$class_var;
+			if (csb($str, "__v_")) {
+				$class_var = "pg_" . strtolower(strfrom($str, "__v_"));
+			}
+			return $pgm->$class_var;
+		}
 		return null;
 	}
 
-	if (isLocalhost($syncserver)) {
-		$syncserver = 'localhost';
-	}
+	function setHistory()
+	{
+		global $gbl, $sgbl, $login, $ghtml;
+		$ac = array('addform', 'updateform', 'list', 'show');
 
-	//Dynamically load the syncserver info....
-	if (!isset($this->driver) || !isset($this->driver[$master])) {
-		$this->loaddriverappInfo($master);
-	}
-	if (!isset($this->driver[$master][$syncserver])) {
-		$this->loaddriverappInfo($master);
-	}
-
-	$class_var = strtolower("pg_" . $class);
-	//debugBacktrace();
-
-	$pgm = $this->driver[$master][$syncserver]->driver_b;
-
-
-	if (isset($pgm->$class_var)) {
-		$str = $pgm->$class_var;
-		if (csb($str, "__v_")) {
-			$class_var = "pg_" . strtolower(strfrom($str, "__v_"));
+		if (!array_search_bool(strtolower($ghtml->__http_vars['frm_action']), $ac)) {
+			return ;
 		}
-		return $pgm->$class_var;
-	}
-	return null;
-}
+		//$histlist = $this->getSessionV("lx_history_var");
 
-function setHistory()
-{
-	global $gbl, $sgbl, $login, $ghtml; 
-	$ac = array('addform', 'updateform', 'list', 'show');
+		$histlist = $login->dskhistory;
+		$buttonpath = null;
 
-	if (!array_search_bool(strtolower($ghtml->__http_vars['frm_action']), $ac)) {
-		return ;
-	}
-	//$histlist = $this->getSessionV("lx_history_var");
-
-	$histlist = $login->dskhistory;
-	$buttonpath = null;
-
-	$url = "/display.php?{$ghtml->get_get_from_current_post(array('Search', 'frm_hpfilter'))}";
-	$description = $ghtml->getActionDetails($url, null, $buttonpath, $path, $post, $file, $name, $image, $__t_identity);
+		$url = "/display.php?{$ghtml->get_get_from_current_post(array('Search', 'frm_hpfilter'))}";
+		$description = $ghtml->getActionDetails($url, null, $buttonpath, $path, $post, $file, $name, $image, $__t_identity);
 
 
-	if ($file === 'ffile') {
-		return;
-	}
+		if ($file === 'ffile') {
+			return;
+		}
 
-	if ($file === 'dskshortcut_a') {
-		return;
-	}
+		if ($file === 'dskshortcut_a') {
+			return;
+		}
 
-	if (cse($file, 'installsoft')) {
-		return;
-	}
+		if (cse($file, 'installsoft')) {
+			return;
+		}
 
-	unset($histlist[$url]);
-	$histlist[$url] = time();
+		unset($histlist[$url]);
+		$histlist[$url] = time();
 
-	while(count($histlist) > 20) {
-		array_shift($histlist);
+		while(count($histlist) > 20) {
+			array_shift($histlist);
+		}
+
+		//$this->setSessionV("lx_history_var", $histlist);
+
+		$login->dskhistory = $histlist;
+		$login->setUpdateSubaction();
+		$login->write();
 	}
 
-	//$this->setSessionV("lx_history_var", $histlist);
+	function setSessionV($key, $value)
+	{
+		if (!isset($this->c_session)) {
+			//throw new lxexception ("Current Session Not Set");
+			return 0;
+		}
 
-	$login->dskhistory = $histlist;
-	$login->setUpdateSubaction();
-	$login->write();
-}
+		if ($this->c_session->dbaction === "delete") {
+			return;
+		}
 
-function setSessionV($key, $value)
-{
-	if (!isset($this->c_session)) {
-		//throw new lxexception ("Current Session Not Set");
-		return 0;
+		if (!isset($this->c_session->ssession_vars)) {
+			$this->c_session->ssession_vars = null;
+		}
+		$this->c_session->ssession_vars[$key] = $value;
+		$this->c_session->setUpdateSubaction();
+
 	}
 
-	if ($this->c_session->dbaction === "delete") {
-		return;
+	function isetSessionV($key)
+	{
+		if (isset($this->c_session->ssession_vars[$key])) {
+			return true;
+		}
+		return false;
 	}
 
-	if (!isset($this->c_session->ssession_vars)) {
-		$this->c_session->ssession_vars = null;
+	function unsetSessionV($key)
+	{
+		unset($this->c_session->ssession_vars[$key]);
+		$this->c_session->dbaction = 'update';
 	}
-	$this->c_session->ssession_vars[$key] = $value;
-	$this->c_session->setUpdateSubaction();
 
-}
-
-function isetSessionV($key)
-{
-	if (isset($this->c_session->ssession_vars[$key])) {
-		return true;
+	function getSessionV($key)
+	{
+		if (isset($this->c_session->ssession_vars[$key])) {
+			return $this->c_session->ssession_vars[$key];
+		}
+		return null;
 	}
-	return false;
-}
 
-function unsetSessionV($key)
-{
-	unset($this->c_session->ssession_vars[$key]);
-	$this->c_session->dbaction = 'update';
-}
-
-function getSessionV($key)
-{
-	if (isset($this->c_session->ssession_vars[$key])) {
-		return $this->c_session->ssession_vars[$key];
+	function isOn($var)
+	{
+		$val = $this->getSessionV($var);
+		$val = strtolower($val);
+		return ($val === 'on');
 	}
-	return null;
-}
 
-function isOn($var)
-{
-	$val = $this->getSessionV($var);
-	$val = strtolower($val);
-	return ($val === 'on');
-}
+	final function getHttpReferer()
+	{
+		global $gbl, $sgbl, $login, $ghtml;
 
-final function getHttpReferer()
-{
-	global $gbl, $sgbl, $login, $ghtml; 
-
-	$refer = $this->getSessionV("lx_http_referer");
-	$current_query_string = $ghtml->get_get_from_post(array(), $ghtml->__http_vars);
-	$cur_url = $_SERVER['PHP_SELF'] . "?" . $current_query_string;
-	if ($cur_url === $refer) {
-		return $this->getSessionV("lx_http_referer_parent");
+		$refer = $this->getSessionV("lx_http_referer");
+		$current_query_string = $ghtml->get_get_from_post(array(), $ghtml->__http_vars);
+		$cur_url = $_SERVER['PHP_SELF'] . "?" . $current_query_string;
+		if ($cur_url === $refer) {
+			return $this->getSessionV("lx_http_referer_parent");
+		}
+		return $refer;
 	}
-	return $refer;
-}
 
 
 

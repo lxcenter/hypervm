@@ -7,7 +7,7 @@ backup_main();
 function backup_main()
 {
 	global $argc, $argv;
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 
 	$progname = $sgbl->__var_program_name;
 
@@ -47,13 +47,13 @@ function backup_main()
 	}
 
 	/*
-	if (!testAllServersWithMessage()) {
+	 if (!testAllServersWithMessage()) {
 		mail($object->contactemail, "Backup Failed..", "Could not connect to slave servers.");
 		$backup->backupstage = "Failed due to: could not connect to slave servers";
 		clearLxbackup($backup);
 		exit;
-	}
-*/
+		}
+		*/
 
 	if ($object->dbaction === 'add') {
 		print("object $name doesn exist\n");

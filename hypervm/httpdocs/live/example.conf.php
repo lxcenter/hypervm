@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 $chanbase = "kloxo";
 $redirect = 1;

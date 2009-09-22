@@ -1,4 +1,4 @@
-<?php 
+<?php
 chdir("../../");
 
 include_once "htmllib/lib/displayinclude.php";
@@ -9,7 +9,7 @@ monitor_remote_main();
 
 function monitor_remote_main()
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	ob_start();
 
 	// @var $login client
@@ -26,11 +26,11 @@ function monitor_remote_main()
 	$rem->ddata = "hello";
 
 	/*
-	if (!check_raw_password('client', $info->login, $info->password)) {
+	 if (!check_raw_password('client', $info->login, $info->password)) {
 		$rem->exception = new lxexception('license_login_failed', 'login');
 		print_and_exit($rem);
-	}
-*/
+		}
+		*/
 
 	$servername = $_SERVER['REMOTE_ADDR'];
 	$sv = new MonitoringServerStatus(null, null, $servername);

@@ -35,7 +35,7 @@ function GetFolders( $resourceType, $currentFolder )
 	while ( $sFile = readdir( $oCurrentFolder ) )
 	{
 		if ( $sFile != '.' && $sFile != '..' && is_dir( $sServerDir . $sFile ) )
-			$aFolders[] = '<Folder name="' . ConvertToXmlAttribute( $sFile ) . '" />' ;
+		$aFolders[] = '<Folder name="' . ConvertToXmlAttribute( $sFile ) . '" />' ;
 	}
 
 	closedir( $oCurrentFolder ) ;
@@ -45,7 +45,7 @@ function GetFolders( $resourceType, $currentFolder )
 
 	natcasesort( $aFolders ) ;
 	foreach ( $aFolders as $sFolder )
-		echo $sFolder ;
+	echo $sFolder ;
 
 	// Close the "Folders" node.
 	echo "</Folders>" ;
@@ -67,7 +67,7 @@ function GetFoldersAndFiles( $resourceType, $currentFolder )
 		if ( $sFile != '.' && $sFile != '..' )
 		{
 			if ( is_dir( $sServerDir . $sFile ) )
-				$aFolders[] = '<Folder name="' . ConvertToXmlAttribute( $sFile ) . '" />' ;
+			$aFolders[] = '<Folder name="' . ConvertToXmlAttribute( $sFile ) . '" />' ;
 			else
 			{
 				$iFileSize = filesize( $sServerDir . $sFile ) ;
@@ -87,7 +87,7 @@ function GetFoldersAndFiles( $resourceType, $currentFolder )
 	echo '<Folders>' ;
 
 	foreach ( $aFolders as $sFolder )
-		echo $sFolder ;
+	echo $sFolder ;
 
 	echo '</Folders>' ;
 
@@ -96,7 +96,7 @@ function GetFoldersAndFiles( $resourceType, $currentFolder )
 	echo '<Files>' ;
 
 	foreach ( $aFiles as $sFiles )
-		echo $sFiles ;
+	echo $sFiles ;
 
 	echo '</Files>' ;
 }
@@ -111,7 +111,7 @@ function CreateFolder( $resourceType, $currentFolder )
 		$sNewFolderName = $_GET['NewFolderName'] ;
 
 		if ( strpos( $sNewFolderName, '..' ) !== FALSE )
-			$sErrorNumber = '102' ;		// Invalid folder name.
+		$sErrorNumber = '102' ;		// Invalid folder name.
 		else
 		{
 			// Map the virtual path to the local server path of the current folder.
@@ -138,11 +138,11 @@ function CreateFolder( $resourceType, $currentFolder )
 				}
 			}
 			else
-				$sErrorNumber = '103' ;
+			$sErrorNumber = '103' ;
 		}
 	}
 	else
-		$sErrorNumber = '102' ;
+	$sErrorNumber = '102' ;
 
 	// Create the "Error" node.
 	echo '<Error number="' . $sErrorNumber . '" originalDescription="' . ConvertToXmlAttribute( $sErrorMsg ) . '" />' ;
@@ -167,7 +167,7 @@ function FileUpload( $resourceType, $currentFolder )
 
 		// Replace dots in the name with underscores (only one dot can be there... security issue).
 		if ( $Config['ForceSingleExtension'] )
-			$sFileName = preg_replace( '/\\.(?![^.]*$)/', '_', $sFileName ) ;
+		$sFileName = preg_replace( '/\\.(?![^.]*$)/', '_', $sFileName ) ;
 
 		$sOriginalFileName = $sFileName ;
 
@@ -208,10 +208,10 @@ function FileUpload( $resourceType, $currentFolder )
 			}
 		}
 		else
-			$sErrorNumber = '202' ;
+		$sErrorNumber = '202' ;
 	}
 	else
-		$sErrorNumber = '202' ;
+	$sErrorNumber = '202' ;
 
 	echo '<script type="text/javascript">' ;
 	echo 'window.parent.frames["frmUpload"].OnUploadCompleted(' . $sErrorNumber . ',"' . str_replace( '"', '\\"', $sFileName ) . '") ;' ;

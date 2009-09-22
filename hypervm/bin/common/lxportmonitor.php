@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 
 class Remote { }
@@ -13,14 +13,14 @@ monitor_main();
 
 function monitor_main()
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	global $argv;
 	global $global_ip_array;
 	global $global_remoteserver;
 	global $global_remoteport;
 
 	error_reporting(E_ALL);
-	
+
 
 	$list = parse_opt($argv);
 
@@ -161,7 +161,7 @@ function monitor_main()
 
 function get_my_name()
 {
-	global $global_remoteserver; 
+	global $global_remoteserver;
 
 	$rmt = new Remote();
 	$rmt->cmd = "my_name";
@@ -174,7 +174,7 @@ function send_alive_info()
 {
 
 	$host = `hostname`;
-	global $global_remoteserver; 
+	global $global_remoteserver;
 
 	$rmt = new Remote();
 	$rmt->cmd = "im_alive";
@@ -184,7 +184,7 @@ function send_alive_info()
 
 function send_data_to_server($serverhistlist)
 {
-	global $global_remoteserver; 
+	global $global_remoteserver;
 
 	$rmt = new Remote();
 	$rmt->cmd = "set_list";
@@ -237,7 +237,7 @@ function remote_http_exec_monitor($server, $port, $rmt)
 
 function send_to_some_http_server_monitor($raddress, $socket_type, $port, $var)
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 
 	//print_time('server');
 
@@ -257,7 +257,7 @@ function send_to_some_http_server_monitor($raddress, $socket_type, $port, $var)
 
 function checkPort($sname, $num, $nname)
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 
 
 	$sip = gethostbyname($sname);
@@ -344,7 +344,7 @@ function getDnsesFirst($list)
 		if (!isset($global_ip_array[$l['servername']])) {
 			$ip = gethostbyname($l['servername']);
 			$global_ip_array[$l['servername']] = $ip;
-		} 
+		}
 	}
 }
 

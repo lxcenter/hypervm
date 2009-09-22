@@ -1,8 +1,8 @@
-<?php 
+<?php
 
 function create_mysql_db($type, $opt, $admin_pass)
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	$progname = $sgbl->__var_program_name;
 	if (!isset($opt['db-rootuser']) || !isset($opt['db-rootpassword'])) {
 		print("Need db Root User and password --db-rootuser, --db-rootpassword \n");
@@ -32,11 +32,11 @@ function create_mysql_db($type, $opt, $admin_pass)
 		@ mysql_query("create database $dbname");
 		mysql_query("grant all on $dbname.* to '$pguser'@'localhost' identified by '$dbadminpass';");
 	} else if ($sgbl->__var_database_type === 'mssql') {
-		 mssql_query("create database $dbname;");
-		 mssql_query("use master ");
-		 mssql_query("sp_addlogin '$pguser', '$dbadminpass', '$dbname';");
-		 mssql_query("use $dbname ");
-		 mssql_query("grant all to $pguser");
+		mssql_query("create database $dbname;");
+		mssql_query("use master ");
+		mssql_query("sp_addlogin '$pguser', '$dbadminpass', '$dbname';");
+		mssql_query("use $dbname ");
+		mssql_query("grant all to $pguser");
 	} else {
 	}
 
@@ -49,8 +49,8 @@ function create_mysql_db($type, $opt, $admin_pass)
 
 function add_admin($pass)
 {
-		
-	global $gbl, $sgbl, $login, $ghtml; 
+
+	global $gbl, $sgbl, $login, $ghtml;
 
 	$client = new Client(null, null, 'admin');
 	$login = $client;
@@ -98,7 +98,7 @@ function add_admin($pass)
 
 function create_general()
 {
-	global $sgbl, $login, $ghtml; 
+	global $sgbl, $login, $ghtml;
 	$gen = new General(null, null, 'admin');
 	$gen->initThisDef();
 	$g = $gen->generalmisc_b;

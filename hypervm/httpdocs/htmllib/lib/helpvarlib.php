@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 $__helpvar['status_v_off'] = 'Disabled. Click to Enable';
 $__helpvar['status_v_on'] = 'Enabled. Click to Disable';

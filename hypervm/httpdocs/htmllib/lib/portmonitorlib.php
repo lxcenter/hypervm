@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 function port_send_email($portstatus)
 {

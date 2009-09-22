@@ -20,20 +20,16 @@
  *
  * CSS styles used by all pages that compose the File Browser.
  */
-
-body
-{
+body {
 	background-color: #f1f1e3;
 }
 
-form
-{
-	margin: 0px 0px 0px 0px ;
-	padding: 0px 0px 0px 0px ;
+form {
+	margin: 0px 0px 0px 0px;
+	padding: 0px 0px 0px 0px;
 }
 
-.Frame
-{
+.Frame {
 	background-color: #f1f1e3;
 	border-color: #f1f1e3;
 	border-right: thin inset;
@@ -42,33 +38,27 @@ form
 	border-bottom: thin inset;
 }
 
-body.FileArea
-{
-
+body.FileArea {
 	background-color: #ffffff;
 }
 
-body, td, input, select
-{
+body,td,input,select {
 	font-size: 11px;
-	font-family: 'Microsoft Sans Serif' , Arial, Helvetica, Verdana;
+	font-family: 'Microsoft Sans Serif', Arial, Helvetica, Verdana;
 }
 
-.ActualFolder
-{
+.ActualFolder {
 	font-weight: bold;
 	font-size: 14px;
 }
 
-.PopupButtons
-{
+.PopupButtons {
 	border-top: #d5d59d 1px solid;
 	background-color: #e3e3c7;
 	padding: 7px 10px 7px 10px;
 }
 
-.Button, button
-{
+.Button,button {
 	border-right: #737357 1px solid;
 	border-top: #737357 1px solid;
 	border-left: #737357 1px solid;
@@ -77,12 +67,10 @@ body, td, input, select
 	background-color: #c7c78f;
 }
 
-.FolderListCurrentFolder img
-{
+.FolderListCurrentFolder img {
 	background-image: url(images/FolderOpened.gif);
 }
 
-.FolderListFolder img
-{
+.FolderListFolder img {
 	background-image: url(images/Folder.gif);
 }

@@ -40,7 +40,7 @@ function timed_execution()
 	global $global_dontlogshell;
 	$global_dontlogshell = true;
 	timed_exec(2,  "checkRestart");
-	timed_exec(2 * 5, "execSisinfoc"); 
+	timed_exec(2 * 5, "execSisinfoc");
 	$global_dontlogshell = false;
 }
 

@@ -24,7 +24,7 @@ flush();
 
 function convert_tree_to_frm_o()
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	$cid = $ghtml->node;
 
 	if (!csa($cid, "&")) {
@@ -63,7 +63,7 @@ function convert_tree_to_frm_o()
 
 function __ajax_desc_tree()
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	$object = $gbl->__c_object;
 	$icondir = get_image_path('/button/');
 	$rclist = $object->getResourceChildList();
@@ -109,7 +109,7 @@ function __ajax_desc_tree()
 						break;
 					}
 					continue;
-				} 
+				}
 				$insidetitle = true;
 				continue;
 			}
@@ -134,7 +134,7 @@ function __ajax_desc_tree()
 			if ($title === 'mailaccount') { continue; }
 			if ($title === 'custom') { continue; }
 			$icon = "{$icondir}/__title_$title.gif";
-			if (!lxfile_exists("__path_program_htmlbase/$icon")) { 
+			if (!lxfile_exists("__path_program_htmlbase/$icon")) {
 				//lfile_put_contents("title.img", "$title.gif\n", FILE_APPEND);
 				$icon = null;
 			}
@@ -155,7 +155,7 @@ function __ajax_desc_tree()
 
 function __ajax_desc_list()
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 
 	$buttonpath = get_image_path("/button");
 
@@ -172,7 +172,7 @@ function __ajax_desc_list()
 
 function __ajax_desc_addform()
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	$object = $gbl->__c_object;
 	$ghtml->print_message();
 	$buttonpath = get_image_path("/button");
@@ -191,7 +191,7 @@ function __ajax_desc_addform()
 
 function __ajax_desc_updateform()
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	$object = $gbl->__c_object;
 	$ghtml->print_message();
 	$buttonpath = get_image_path("/button");
@@ -206,14 +206,14 @@ function __ajax_desc_updateform()
 
 function __ajax_desc_add()
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	$gbl->__ajax_refresh = true;
 	return __ajax_desc_update();
 }
 
 function __ajax_desc_update()
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	$caction = $ghtml->frm_action;
 	$cgi_action = "__ac_desc_{$ghtml->frm_action}";
 

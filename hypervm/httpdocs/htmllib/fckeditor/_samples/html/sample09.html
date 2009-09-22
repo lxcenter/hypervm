@@ -23,12 +23,12 @@
 -->
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-	<title>FCKeditor - Sample</title>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<meta name="robots" content="noindex, nofollow" />
-	<link href="../sample.css" rel="stylesheet" type="text/css" />
-	<script type="text/javascript" src="../../fckeditor.js"></script>
-	<script type="text/javascript">
+<title>FCKeditor - Sample</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="robots" content="noindex, nofollow" />
+<link href="../sample.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="../../fckeditor.js"></script>
+<script type="text/javascript">
 
 function FCKeditor_OnComplete( editorInstance )
 {
@@ -49,21 +49,17 @@ function FCKeditor_OnFocus( editorInstance )
 	</script>
 </head>
 <body>
-	<h1>
-		FCKeditor - JavaScript - Sample 9</h1>
-	<div>
-		This sample shows FCKeditor in a more complex form with two different instances.<br />
-		It also shows and interesting usage of the "OnFocus" and "OnBlur" events available
-		in the JavaScript API.
-	</div>
-	<hr />
-	<form action="sampleposteddata.asp" method="post" target="_blank">
-		Normal text field:<br />
-		<input name="NormaText" value="Plain Text" />
-		<br />
-		<br />
-		FCKeditor with Basic toolbar:
-		<script type="text/javascript">
+<h1>FCKeditor - JavaScript - Sample 9</h1>
+<div>This sample shows FCKeditor in a more complex form with two
+different instances.<br />
+It also shows and interesting usage of the "OnFocus" and "OnBlur" events
+available in the JavaScript API.</div>
+<hr />
+<form action="sampleposteddata.asp" method="post" target="_blank">
+Normal text field:<br />
+<input name="NormaText" value="Plain Text" /> <br />
+<br />
+FCKeditor with Basic toolbar: <script type="text/javascript">
 <!--
 // Automatically calculates the editor base path based on the _samples directory.
 // This is usefull only for these samples. A real application should use something like this:
@@ -79,10 +75,8 @@ oFCKeditor.ToolbarSet	= 'Basic' ;
 oFCKeditor.Value		= 'This is some <strong>sample text</strong>. You are using <a href="http://www.fckeditor.net/">FCKeditor</a>.' ;
 oFCKeditor.Create() ;
 //-->
-		</script>
-		<br />
-		FCKeditor with Default toolbar:
-		<script type="text/javascript">
+		</script> <br />
+FCKeditor with Default toolbar: <script type="text/javascript">
 <!--
 oFCKeditor = new FCKeditor( 'FCKeditor_Default' ) ;
 
@@ -92,9 +86,7 @@ oFCKeditor.BasePath	= sBasePath ;
 oFCKeditor.Value	= 'This is some <strong>sample text</strong>. You are using <a href="http://www.fckeditor.net/">FCKeditor</a>.' ;
 oFCKeditor.Create() ;
 //-->
-		</script>
-		<br />
-		<input type="submit" value="Submit" />
-	</form>
+		</script> <br />
+<input type="submit" value="Submit" /></form>
 </body>
 </html>

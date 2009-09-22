@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 include_once "htmllib/lib/include.php";
 
@@ -57,7 +57,7 @@ function find_cpuusage()
 
 function interfacetraffic_main()
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 
 	if (!lxfile_exists("__path_program_etc/xeninterface.list")) {
 		return;

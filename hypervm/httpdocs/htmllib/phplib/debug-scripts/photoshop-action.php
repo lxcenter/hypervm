@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 
 php_main() ;
@@ -67,7 +67,7 @@ function SetColor($ps, $id, $hue, $sat, $light)
 	$list1->PutObject( $id["Hst2"], $desc4);
 	$desc3->putList( $id["Adjs"], $list1);
 	$desc2->putObject( $id["T   "], $id["HStr"], $desc3);
-	try { 
+	try {
 		$ps->ExecuteAction($id["setd"], $desc2, 3);
 	} catch (exception $e) {
 		$id3 = $ps->charIDToTypeID( "Mk  " );
@@ -101,7 +101,7 @@ function SetColor($ps, $id, $hue, $sat, $light)
 			$ps->executeAction($id3, $desc2, $dialogmod_no);
 		}
 
-		
+
 		SetColor($ps, $id, $hue, $sat, $light);
 	}
 
@@ -111,16 +111,16 @@ function SetColor($ps, $id, $hue, $sat, $light)
 function saveAsGif($ps, $file)
 {
 	/*
-	$gifSaveOptions = new COM("Photoshop.GIFSaveOptions");
-	//$gifSaveOptions->colors = 256;
-	$gifSaveOptions->preserveExactColors = 1;
-	$gifSaveOptions->transparency = 1;
-	$gifSaveOptions->interlaced = 0;
+	 $gifSaveOptions = new COM("Photoshop.GIFSaveOptions");
+	 //$gifSaveOptions->colors = 256;
+	 $gifSaveOptions->preserveExactColors = 1;
+	 $gifSaveOptions->transparency = 1;
+	 $gifSaveOptions->interlaced = 0;
 
-         //Save the file and close it
-	//$ps->activeDocument->flatten();
-	$ps->activeDocument->saveAs($file, $gifSaveOptions, true);
-	*/
+	 //Save the file and close it
+	 //$ps->activeDocument->flatten();
+	 $ps->activeDocument->saveAs($file, $gifSaveOptions, true);
+	 */
 
 	SaveGif($ps, $file);
 
@@ -224,7 +224,7 @@ function closeFile($ps)
 
 	$ps->executeAction($id14, $desc5);
 }
-	//$ps->Quit();
-	//$ps->Release();
+//$ps->Quit();
+//$ps->Release();
 
 

@@ -1,6 +1,6 @@
-<?php 
+<?php
 
-include_once "htmllib/lib/include.php"; 
+include_once "htmllib/lib/include.php";
 
 initProgram('admin');
 
@@ -26,9 +26,9 @@ foreach($list as $l) {
 	$fip = $l->getFreeIp(10000);
 
 
-	if ($fip) { 
+	if ($fip) {
 		$l->freeflag = 'on';
-	} else { 
+	} else {
 		$l->freeflag = 'dull';
 	}
 

@@ -1,4 +1,4 @@
-<?php 
+<?php
 include_once "htmllib/lib/include.php";
 include_once "lib/updatelib.php";
 include_once "htmllib/lib/updatelib.php";
@@ -10,7 +10,7 @@ updatecleanup_main();
 function updatecleanup_main()
 {
 	global $argc, $argv;
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 
 	$program = $sgbl->__var_program_name;
 	$opt = parse_opt($argv);
@@ -28,19 +28,19 @@ function updatecleanup_main()
 	print("Executing UpdateCleanup. This can take a long time. Please be patient\n");
 	log_log("update", "Executing Updatecleanup");
 
-//
-// Cleanup old lxlabs.repo file
-// 
-print("Fixing Repo's\n");
+	//
+	// Cleanup old lxlabs.repo file
+	//
+	print("Fixing Repo's\n");
 	if (lxfile_exists("/etc/yum.repos.d/lxcenter.repo")) {
-	if (lxfile_exists("/etc/yum.repos.d/lxlabs.repo")) {
-		lxfile_mv("/etc/yum.repos.d/lxlabs.repo", "/etc/yum.repos.d/lxlabs.repo.lxsave");
-		system("rm -f /etc/yum.repos.d/lxlabs.repo");
+		if (lxfile_exists("/etc/yum.repos.d/lxlabs.repo")) {
+			lxfile_mv("/etc/yum.repos.d/lxlabs.repo", "/etc/yum.repos.d/lxlabs.repo.lxsave");
+			system("rm -f /etc/yum.repos.d/lxlabs.repo");
 		}
-		}
+	}
 	if (lxfile_exists("CVS")) {
 		print("Found Development version, we just go on.\n");
-//		exit;
+		//		exit;
 	}
 
 	if ($opt['type'] === 'master') {

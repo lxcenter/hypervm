@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 function shell_recurse_dir($dir, $func, $arglist = null)
 {
@@ -55,7 +55,7 @@ function lxshell_unzip_with_throw($dir, $file, $list = null)
 
 function lxshell_redirect($file, $cmd)
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	$start = 2;
 	eval($sgbl->arg_getting_string);
 	$cmd = getShellCommand($cmd, $arglist);
@@ -66,7 +66,7 @@ function lxshell_redirect($file, $cmd)
 
 function lxshell_directory($dir, $cmd)
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 
 	$dir = expand_real_root($dir);
 	$username = '__system__';
@@ -80,7 +80,7 @@ function lxshell_directory($dir, $cmd)
 }
 function lxshell_output($cmd)
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 
 	$username = '__system__';
 
@@ -148,7 +148,7 @@ function lxfile_rm($file)
 
 function lxfile_mv($src, $dst)
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	$src = expand_real_root($src);
 	$dst = expand_real_root($dst);
 	if (is_dir($dst)) {
@@ -165,7 +165,7 @@ function lxfile_mv($src, $dst)
 		return true;
 	}
 	return false;
-	
+
 }
 
 function lxfile_exists($file)
@@ -204,7 +204,7 @@ function lxfile_mkdir($dir)
 
 function lxfile_cp($src, $dst)
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	$src = expand_real_root($src);
 	$dst = expand_real_root($dst);
 	if (is_dir($dst)) {
@@ -344,7 +344,7 @@ function lxfile_tail($file, $getsize)
 		$ret .= fread($fp, 1024);
 	}
 	return $ret;
-	
+
 }
 
 function lxfile_touch($file)

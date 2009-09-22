@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 function os_update_server()
 {

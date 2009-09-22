@@ -1,4 +1,4 @@
-<?php 
+<?php
 include_once "htmllib/lib/include.php";
 
 
@@ -9,7 +9,7 @@ commandline_main();
 
 function commandline_main()
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	global $argv;
 	initProgram('admin');
 	$must = array('action');

@@ -1,4 +1,4 @@
-<?php 
+<?php
 include_once "htmllib/lib/definecore.php";
 
 $gl_class_array['clienttemplate'] = "lib/client/clienttemplatelib.php";

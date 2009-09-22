@@ -11,12 +11,12 @@ function irc_read($socket, $len) {
 }
 
 function irc_write($socket, $msg) {
-    global $mode;
+	global $mode;
 	return fputs($socket, $msg);
 }
 
 function irc_nb($socket) {
-    global $mode;
+	global $mode;
 	stream_set_blocking($socket, false);
 }
 
@@ -27,12 +27,12 @@ function irc_open($serv_addr, $serv_port, &$errno, &$errstr) {
 }
 
 function irc_close($socket) {
-    global $mode;
+	global $mode;
 	return @fclose($socket);
 }
 
 function flush_server_buffer() {
-    // flush();
-    @ob_flush();
+	// flush();
+	@ob_flush();
 }
 

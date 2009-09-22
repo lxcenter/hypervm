@@ -1,4 +1,4 @@
-<?php 
+<?php
 if (!file_exists("htmllib/lib/displayinclude.php")) {
 	chdir("../..");
 }

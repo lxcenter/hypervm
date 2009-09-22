@@ -1,12 +1,12 @@
 <?php
-    if (preg_match("/Mozilla\/\d.+Compatible; MSIE/i", $_SERVER['HTTP_USER_AGENT']) && !preg_match("/Opera/i", $_SERVER['HTTP_USER_AGENT'])) {
-        header('Expires: 0');
-        header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
-        header('Pragma: public');
-    } else {
-        header('Expires: 0');
-        header('Pragma: no-cache');
-    }
+if (preg_match("/Mozilla\/\d.+Compatible; MSIE/i", $_SERVER['HTTP_USER_AGENT']) && !preg_match("/Opera/i", $_SERVER['HTTP_USER_AGENT'])) {
+	header('Expires: 0');
+	header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+	header('Pragma: public');
+} else {
+	header('Expires: 0');
+	header('Pragma: no-cache');
+}
 
 include("common.php");
 
@@ -47,7 +47,7 @@ foreach($cmdlist as $cmd) {
 			$command = "QUIT$match[1]";
 
 		} elseif (preg_match("/^ME (.+)/i", $matches[1], $match)) {
-		$command = "PRIVMSG $channel :\001ACTION $match[1]\001";
+			$command = "PRIVMSG $channel :\001ACTION $match[1]\001";
 
 		} elseif (preg_match("/^NAMES(.*)/i", $matches[1], $match)) {
 			if ($match[1]) {
@@ -76,9 +76,9 @@ foreach($cmdlist as $cmd) {
 }
 
 /*
-echo <<<EOF
-<html>
-<head><title>passed command</title>
-</head><body bgcolor="$bgcolor"></body></html>
-EOF;
-*/
+ echo <<<EOF
+ <html>
+ <head><title>passed command</title>
+ </head><body bgcolor="$bgcolor"></body></html>
+ EOF;
+ */

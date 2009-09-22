@@ -1,6 +1,6 @@
-<?php 
+<?php
 
-include_once "htmllib/lib/include.php"; 
+include_once "htmllib/lib/include.php";
 
 if (!os_isSelfSystemUser()) {
 	print("Not enough privileges\n");

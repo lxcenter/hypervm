@@ -1,4 +1,4 @@
-<?php 
+<?php
 include_once "htmllib/lib/include.php";
 include_once "htmllib/lib/initlib.php";
 
@@ -8,7 +8,7 @@ create_main();
 function create_main()
 {
 	global $argc, $argv;
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	$opt = parse_opt($argv);
 
 	lxfile_mkdir("{$sgbl->__path_program_etc}/conf");

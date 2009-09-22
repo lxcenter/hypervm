@@ -1,4 +1,4 @@
-<?php 
+<?php
 $__description["owner"] = array("Owner");
 $__description["command_center"] = array("Command Center");
 $__description["Command"] = array("Command");

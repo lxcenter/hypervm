@@ -1,6 +1,6 @@
-<?php 
+<?php
 
-function windowsOs() 
+function windowsOs()
 {
 	if (getOs() == "windows") {
 		return true;
@@ -46,11 +46,11 @@ dummy_debug_function();
 
 function getreal($vpath)
 {
-     return  $_SERVER["DOCUMENT_ROOT"] . "/". $vpath; 
+	return  $_SERVER["DOCUMENT_ROOT"] . "/". $vpath;
 }
 
 function readvirtual($vpath)
 {
-     readfile($_SERVER["DOCUMENT_ROOT"] . $vpath);
+	readfile($_SERVER["DOCUMENT_ROOT"] . $vpath);
 }
 

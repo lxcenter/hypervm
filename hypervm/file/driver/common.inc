@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 $driver['client'] = "sync";
 $driver['mysqldb'] = "mysql";

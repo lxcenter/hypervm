@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 function fixExtraDB()
 {
@@ -57,8 +57,8 @@ function fixExtraDB()
 
 function doUpdateExtraStuff()
 {
-	global $gbl, $sgbl, $login, $ghtml; 
-	
+	global $gbl, $sgbl, $login, $ghtml;
+
 	lxfile_mkdir("__path_program_etc/flag");
 	convertIpaddressToComa();
 	print("Fix extra database\n");
@@ -74,7 +74,7 @@ function doUpdateExtraStuff()
 	db_set_default('vps', 'corerootdir', '/vz/private', "ttype = 'openvz'");
 	db_set_default("vps", "corerootdir", "/home/xen", "ttype = 'xen'");
 
-print("Fixing database passwords\n");
+	print("Fixing database passwords\n");
 	$a = null;
 	fix_mysql_root_password('localhost');
 	$dbadmin = new Dbadmin(null, 'localhost', "mysql___localhost");
@@ -83,7 +83,7 @@ print("Fixing database passwords\n");
 	$a['mysql']['dbpassword'] = $pass;
 	slave_save_db("dbadmin", $a);
 
-print("Fixing OS template permissions\n");
+	print("Fixing OS template permissions\n");
 	lxfile_unix_chmod_rec("/vz/template/cache/", "0755");
 	lxfile_unix_chmod_rec("/home/hypervm/xen/template/", "0755");
 
@@ -112,32 +112,32 @@ print("Fixing OS template permissions\n");
 	system("mysql -u hypervm -p`cat ../etc/conf/hypervm.pass` hypervm1_0 < ../file/interface/interface_template.dump");
 
 	if (lxfile_exists("/etc/init.d/libvirtd")) {
-	print("Make sure libvirtd is not started after reboot\n");
-	system("chkconfig libvirtd off 2>/dev/null");
+		print("Make sure libvirtd is not started after reboot\n");
+		system("chkconfig libvirtd off 2>/dev/null");
 	}
-	
-if (is_openvz()) {
-print("Fixing Base OS templates\n");
-	if (!lxfile_real("/vz/template/cache/centos-5-i386-afull.tar.gz")) {
-		system("mkdir -p /vz/template/cache/ ; cd /vz/template/cache/ ; rm centos-5-i386-afull.tar.gz; wget download.lxcenter.org/download/openvztemplates/base/centos-5-i386-afull.tar.gz ");
+
+	if (is_openvz()) {
+		print("Fixing Base OS templates\n");
+		if (!lxfile_real("/vz/template/cache/centos-5-i386-afull.tar.gz")) {
+			system("mkdir -p /vz/template/cache/ ; cd /vz/template/cache/ ; rm centos-5-i386-afull.tar.gz; wget download.lxcenter.org/download/openvztemplates/base/centos-5-i386-afull.tar.gz ");
 			system("rm /vz/template/cache/index.html* 2>/dev/null");
-	}
+		}
 	} else {
-	if (!lxfile_real("/home/hypervm/xen/template/centos-5-i386-afull.tar.gz")) {
-	system("mkdir -p /home/hypervm/xen/template ; cd /home/hypervm/xen/template/ ; rm centos-5-i386-afull.tar.gz;  wget download.lxcenter.org/download/xentemplates/base/centos-5-i386-afull.tar.gz ");
-	system("rm /home/hypervm/xen/template/index.html* 2>/dev/null");
-	}
+		if (!lxfile_real("/home/hypervm/xen/template/centos-5-i386-afull.tar.gz")) {
+			system("mkdir -p /home/hypervm/xen/template ; cd /home/hypervm/xen/template/ ; rm centos-5-i386-afull.tar.gz;  wget download.lxcenter.org/download/xentemplates/base/centos-5-i386-afull.tar.gz ");
+			system("rm /home/hypervm/xen/template/index.html* 2>/dev/null");
+		}
 	}
 	print("Fix SSL\n");
 	fix_self_ssl();
 	print("Fix database password\n");
 	critical_change_db_pass();
 	print("Delete old repo's\n");
-if (lxfile_exists("/etc/yum.repos.d/lxlabs.repo")) {
+	if (lxfile_exists("/etc/yum.repos.d/lxlabs.repo")) {
 		lxfile_mv("/etc/yum.repos.d/lxlabs.repo","/etc/yum.repos.d/lxlabs.repo.lxsave");
 		system("rm -f /etc/yum.repos.d/lxlabs.repo");
-	print("Removed lxlabs.repo\n");
-		}
+		print("Removed lxlabs.repo\n");
+	}
 }
 
 function fix_ipaddress_column_type()
@@ -151,24 +151,24 @@ function get_kloxo_ostemplate()
 	//
 	// This must be changed!
 	//
-   //##########  
+	//##########
 	$ver = "576";
 	//##########
 	//
 	//
 	if (is_openvz()) {
-	if (lxfile_exists("/vz/template/cache")) {
-		if (!lxfile_real("/vz/template/cache/centos-5-i386-hostinabox$ver.tar.gz")) {
-			system("cd /vz/template/cache/ ;rm -f centos-?-i386-lxadmin*.tar.gz ; rm -f centos-?-i386-hostinabox*.tar.gz; wget download.lxcenter.org/download/openvztemplates/base/centos-5-i386-hostinabox$ver.tar.gz");
+		if (lxfile_exists("/vz/template/cache")) {
+			if (!lxfile_real("/vz/template/cache/centos-5-i386-hostinabox$ver.tar.gz")) {
+				system("cd /vz/template/cache/ ;rm -f centos-?-i386-lxadmin*.tar.gz ; rm -f centos-?-i386-hostinabox*.tar.gz; wget download.lxcenter.org/download/openvztemplates/base/centos-5-i386-hostinabox$ver.tar.gz");
+			}
+		}
+	} else {
+		if (lxfile_exists("/home/hypervm/xen/template/")) {
+			if (!lxfile_nonzero("/home/hypervm/xen/template/centos-5-i386-hostinabox$ver.tar.gz")) {
+				system("cd /home/hypervm/xen/template/ ; rm -f centos-?-i386-lxadmin*.tar.gz; rm -f centos-?-i386-hostinabox*.tar.gz; wget download.lxcenter.org/download/xentemplates/base/centos-5-i386-hostinabox$ver.tar.gz");
+			}
 		}
 	}
-		} else {
-	if (lxfile_exists("/home/hypervm/xen/template/")) {
-		if (!lxfile_nonzero("/home/hypervm/xen/template/centos-5-i386-hostinabox$ver.tar.gz")) {
-			system("cd /home/hypervm/xen/template/ ; rm -f centos-?-i386-lxadmin*.tar.gz; rm -f centos-?-i386-hostinabox*.tar.gz; wget download.lxcenter.org/download/xentemplates/base/centos-5-i386-hostinabox$ver.tar.gz");
-		}
-	}
-		}
 
 }
 
@@ -181,7 +181,7 @@ function fix_ipconntrack()
 
 function fixOpenVZResource()
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 
 	$file = "__path_program_root/etc/newnewfixed_openvz_resource";
 	if (lxfile_exists($file)) {
@@ -234,7 +234,7 @@ function fix_vmipaddress()
 
 function convertIpaddressToComa()
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	initProgram('admin');
 	if (!$ret) {
 		return;
@@ -304,14 +304,14 @@ function find_os_version()
 		$release = trim(file_get_contents("/etc/fedora-release"));
 		$osv = explode(" ", $release);
 		if (strtolower($osv[1]) === 'core') {
-			$osversion = "fedora-" . $osv[3]; 
+			$osversion = "fedora-" . $osv[3];
 		} else {
-			$osversion = "fedora-" . $osv[2]; 
+			$osversion = "fedora-" . $osv[2];
 		}
 
 		return $osversion;
-}
-if (file_exists("/etc/redhat-release")) {
+	}
+	if (file_exists("/etc/redhat-release")) {
 		$release = trim(file_get_contents("/etc/redhat-release"));
 		$osv = explode(" ", $release);
 		if(isset($osv[6])) {
@@ -322,7 +322,7 @@ if (file_exists("/etc/redhat-release")) {
 		}
 		return $osversion;
 	}
-	
+
 
 	print("This Operating System is Currently Not supported.\n");
 	exit;
@@ -330,7 +330,7 @@ if (file_exists("/etc/redhat-release")) {
 
 function updateApplicableToSlaveToo()
 {
-	global $gbl, $sgbl, $login, $ghtml, $osversion; 
+	global $gbl, $sgbl, $login, $ghtml, $osversion;
 	print("Download 3rdparty\n");
 	download_thirdparty(2009);
 	print("Installing binaries\n");
@@ -342,7 +342,7 @@ function updateApplicableToSlaveToo()
 	print("Install missing rpm packages if any");
 	install_if_package_not_exist("rrdtool");
 	print("-rrdtool-");
-    install_if_package_not_exist("ntfsprogs");
+	install_if_package_not_exist("ntfsprogs");
 	print("-ntfsprogs-");
 	install_if_package_not_exist("parted");
 	print("-parted-");
@@ -380,14 +380,14 @@ function updateApplicableToSlaveToo()
 
 	//system("echo 'hwcap 0 nosegneg' > /etc/ld.so.conf.d/libc6-xen.conf");
 	if (lxfile_exists("/var/log/loadvg.log")) {
-	lunlink("/var/log/loadvg.log");
+		lunlink("/var/log/loadvg.log");
 	}
 	if (lxfile_exists("/etc/vz")) {
 		lxfile_cp("__path_program_root/file/sysfile/openvz/ve-vps.basic.conf-sample", "/etc/vz/conf");
 		print("Set NEIGHBOUR_DEVS=all to vz.conf");
 		vps__openvz::staticChangeConf("/etc/vz/vz.conf", "NEIGHBOUR_DEVS", "all");
 	}
-	
+
 	print("Fixing openvz repo\n");
 	// add openvz.repo
 	lxfile_cp("../file/openvz.repo", "/etc/yum.repos.d/openvz.repo");
@@ -397,17 +397,17 @@ function updateApplicableToSlaveToo()
 	print("- Your OS $osversion\n");
 	$cont = our_file_get_contents("../file/lxcenter.repo");
 	$cont = str_replace("%distro%", $osversion, $cont);
-	our_file_put_contents("/etc/yum.repos.d/lxcenter.repo", $cont);	
+	our_file_put_contents("/etc/yum.repos.d/lxcenter.repo", $cont);
 	print("Fix RHN");
 	fix_rhn_sources_file();
 	print("Fix ipconntrack");
 	fix_ipconntrack();
 	if (lxfile_exists("/home/hypervm/xen/template")) {
-			print("Check Xen windows-lxblank.img template\n");
+		print("Check Xen windows-lxblank.img template\n");
 		system("echo hypervm-windows > /home/hypervm/xen/template/windows-lxblank.img");
 	}
 	print("Fix memory graph\n");
-   memoryGraphFix();
+	memoryGraphFix();
 	print("Fix permission of closeallinput");
 	lxfile_unix_chmod("../cexe/closeallinput", "0755");
 	print("Fix LxEtc\n");
@@ -422,10 +422,10 @@ function updateApplicableToSlaveToo()
 	print("Create script dir\n");
 	copy_script();
 	if (!lxfile_exists("/usr/local/lxlabs/kloxo/")) {
-	print("Remove kloxo things as it should not be here\n");
-	system("rmdir /usr/local/lxlabs/kloxo/httpdocs/ >/dev/null 2>&1");
-	system("rmdir /usr/local/lxlabs/kloxo/ >/dev/null 2>&1");
-}
+		print("Remove kloxo things as it should not be here\n");
+		system("rmdir /usr/local/lxlabs/kloxo/httpdocs/ >/dev/null 2>&1");
+		system("rmdir /usr/local/lxlabs/kloxo/ >/dev/null 2>&1");
+	}
 	if (!lxfile_exists("/var/named/chroot/etc/kloxo.named.conf")) {
 		if (lxfile_exists("/var/named/chroot/etc/lxadmin.named.conf")) {
 			remove_line("/var/named/chroot/etc/named.conf", "lxadmin.named.conf");
@@ -440,11 +440,11 @@ function updateApplicableToSlaveToo()
 
 function memoryGraphFix()
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	$file = "__path_program_root/etc/openvzmemorygraphfix";
 	if (lxfile_exists($file)) {
-	print("Memory Graph fix not needed\n");
-	return;
+		print("Memory Graph fix not needed\n");
+		return;
 	}
 	lxfile_touch($file);
 	system("rm $sgbl->__path_program_root/data/memory/*");
@@ -462,14 +462,14 @@ function add_vps_backup_dir()
 	$res = $sq->getTable(array('nname'));
 	foreach($res as $r) {
 		lxfile_mkdir("__path_program_home/vps/{$r['nname']}/__backup");
-	$vpsbackupdirname = $r['nname'];
-	print("Backup dir created for $vpsbackupdirname \n");
+		$vpsbackupdirname = $r['nname'];
+		print("Backup dir created for $vpsbackupdirname \n");
 	}
 }
 
 function convert_ipaddress()
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 
 	initProgram('admin');
 	$login->loadAllVps();

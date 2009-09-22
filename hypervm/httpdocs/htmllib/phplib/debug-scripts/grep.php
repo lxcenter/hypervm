@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 include_once "htmllib/phplib/lxlib.php";
 
@@ -23,7 +23,7 @@ function find_expr($file)
 
 
 	$count = 0;
- 	foreach($dl as $l) {
+	foreach($dl as $l) {
 		$count++;
 		if (preg_match('/' . $argv[1] . '/', $l)) {
 			print("$file:$count:$l");
@@ -31,7 +31,7 @@ function find_expr($file)
 	}
 }
 
-			
+	
 
 
 

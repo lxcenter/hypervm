@@ -1,4 +1,4 @@
-<?php 
+<?php
 $__emessage['old_kloxo_found'] = "An Kloxo Installation file was found in the vps, which would mean that Kloxo is already installed. If you want me to try again, please delete the kloxo-install-master.sh and /usr/local/lxlabs/kloxo locations using the file manager.";
 $__emessage['a_vps_with_the_same_id_exists'] ="A vps with the id [%s] already exists on the system. This either means this was created outside of hyperVM or else it got orphaned because hyperVM was interrupted forcibly in the midst of a migration. You can either a) Login manually and delete the vps. or b) Use our import facility to import this vps into hyperVM. Sorry for the inconvenience.";
 $__emessage['could_not_start_vps'] = "Could Not Start Vps, Reason: [%s]";

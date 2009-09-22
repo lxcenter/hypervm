@@ -1,8 +1,8 @@
-<?php 
+<?php
 
 function __cmd_desc_add($p, $parent = null)
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 
 
 	if (!$parent) {
@@ -58,18 +58,18 @@ function __cmd_desc_add($p, $parent = null)
 
 function __cmd_desc_delete($p)
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	/*
-	if (isset($p['parent-class']) && isset($p['parent-name'])) {
+	 if (isset($p['parent-class']) && isset($p['parent-name'])) {
 		$parent = new $p['parent-class'](null, 'localhost', $p['parent-name']);
 		$parent->get();
 		if ($parent->dbaction === 'add') {
-			throw new lxException("parent_doesnt_exist", "nname", $class);
+		throw new lxException("parent_doesnt_exist", "nname", $class);
 		}
-	} else {
+		} else {
 		$parent = $login;
-	}
-*/
+		}
+		*/
 	$class = $p['class'];
 	$name = $p['name'];
 
@@ -89,7 +89,7 @@ function __cmd_desc_delete($p)
 
 function __cmd_desc_simplelist($p)
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 
 	ob_start();
 	$resource = $p['resource'];
@@ -155,7 +155,7 @@ function copy_nname_to_name(&$p)
 
 function __cmd_desc_update($p)
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	copy_nname_to_name($p);
 	$object = new $p['class'](null, 'localhost', $p['name']);
 	$object->get();
@@ -185,7 +185,7 @@ function __cmd_desc_update($p)
 
 function __cmd_desc_getproperty($param)
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	if (isset($param['name']) && isset($param['class'])) {
 		$name = $param['name'];
 		$class = $param['class'];

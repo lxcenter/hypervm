@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 include "htmllib/lib/include.php";
 
@@ -8,18 +8,18 @@ description_main();
 
 function description_main()
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 
 	global $gl_class_array;
 
 	foreach($gl_class_array as $k => $g) {
 		if (csa($k, "__")) {
 			continue;
-		} 
+		}
 
 		if (cse($k, "base") || cse($k, "core")) {
 			continue;
-		} 
+		}
 
 		try {
 			$r = new ReflectionClass($k);
@@ -64,10 +64,10 @@ function description_main()
 	foreach($ret as $k => $v) {
 		foreach($v as $nk => $nv) {
 			/* Let the definitions be made multiple times, but it is better to have them rather than not have them... So the line below is not needed.
-			if ($k != 'lxclass' && isset($ret['lxclass'][$nk])) {
+			 if ($k != 'lxclass' && isset($ret['lxclass'][$nk])) {
 				continue;
-			}
-		*/
+				}
+				*/
 			if (cse($nk, "_o") || cse($nk, "_l")) {
 				continue;
 			}
@@ -87,7 +87,7 @@ function description_main()
 	foreach($description as $k => $v) {
 		$str .= "\$__description[\"$k\"] = array(\"$v\");\n";
 	}
-	
+
 	$str .= "\n";
 	file_put_contents("lang/en/desclib.php", $str);
 
@@ -107,7 +107,7 @@ function description_main()
 	system("cp htmllib/help-core/* help/");
 	system("cp help-base/* help/");
 
-	
+
 
 }
 

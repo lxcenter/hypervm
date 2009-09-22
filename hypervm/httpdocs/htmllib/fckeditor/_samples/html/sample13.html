@@ -23,12 +23,12 @@
 -->
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-	<title>FCKeditor - Sample</title>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<meta name="robots" content="noindex, nofollow" />
-	<link href="../sample.css" rel="stylesheet" type="text/css" />
-	<script type="text/javascript" src="../../fckeditor.js"></script>
-	<script type="text/javascript">
+<title>FCKeditor - Sample</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="robots" content="noindex, nofollow" />
+<link href="../sample.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="../../fckeditor.js"></script>
+<script type="text/javascript">
 
 function Toggle()
 {
@@ -116,34 +116,29 @@ function PrepareSave()
 	</script>
 </head>
 <body>
-	<h1>
-		FCKeditor - JavaScript - Sample 13
-	</h1>
-	<div>
-		This sample starts with a normal textarea and provides the ability to switch back
-		and forth between the textarea and FCKeditor. It uses the JavaScript API to do the
-		operations so it will work even if the internal implementation changes.
-	</div>
-	<hr />
-	<form action="sampleposteddata.asp" method="post" target="_blank" onsubmit="PrepareSave();">
-		<div id="_Textarea">
-			<input type="button" value="Switch to FCKeditor" onclick="Toggle()" />
-			<br />
-			<br />
-			<textarea id="_DataTextarea" name="Data" cols="80" rows="20" style="width: 95%">This is some &lt;strong&gt;sample text&lt;/strong&gt;. You are using &lt;a href="http://www.fckeditor.net/"&gt;FCKeditor&lt;/a&gt;.</textarea>
-		</div>
-		<div id="_FCKeditor" style="display: none">
-			<!-- Note that the following button is disabled at startup.
-				It will be enabled once the editor is completely loaded. -->
-			<input id="_BtnSwitchTextarea" type="button" disabled="disabled" value="Switch to Textarea" onclick="Toggle()" />
-			<br />
+<h1>FCKeditor - JavaScript - Sample 13</h1>
+<div>This sample starts with a normal textarea and provides the
+ability to switch back and forth between the textarea and FCKeditor. It
+uses the JavaScript API to do the operations so it will work even if the
+internal implementation changes.</div>
+<hr />
+<form action="sampleposteddata.asp" method="post" target="_blank"
+	onsubmit="PrepareSave();">
+<div id="_Textarea"><input type="button"
+	value="Switch to FCKeditor" onclick="Toggle()" /> <br />
+<br />
+<textarea id="_DataTextarea" name="Data" cols="80" rows="20"
+	style="width: 95%">This is some &lt;strong&gt;sample text&lt;/strong&gt;. You are using &lt;a href="http://www.fckeditor.net/"&gt;FCKeditor&lt;/a&gt;.</textarea>
+</div>
+<div id="_FCKeditor" style="display: none"><!-- Note that the following button is disabled at startup.
+				It will be enabled once the editor is completely loaded. --> <input
+	id="_BtnSwitchTextarea" type="button" disabled="disabled"
+	value="Switch to Textarea" onclick="Toggle()" /> <br />
 
-			<br />
-			<!-- Note that the following textarea doesn't have a "name", so it will not be posted. -->
-			<textarea id="_DataFCKeditor" cols="80" rows="20"></textarea>
-		</div>
-		<br />
-		<input type="submit" value="Submit" />
-	</form>
+<br />
+<!-- Note that the following textarea doesn't have a "name", so it will not be posted. -->
+<textarea id="_DataFCKeditor" cols="80" rows="20"></textarea></div>
+<br />
+<input type="submit" value="Submit" /></form>
 </body>
 </html>

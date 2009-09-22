@@ -22,10 +22,10 @@
  * Page used to upload new files in the current folder.
 -->
 <html xmlns="http://www.w3.org/1999/xhtml">
-	<head>
-		<link href="browser.css" type="text/css" rel="stylesheet" />
-		<script type="text/javascript" src="js/common.js"></script>
-		<script type="text/javascript">
+<head>
+<link href="browser.css" type="text/css" rel="stylesheet" />
+<script type="text/javascript" src="js/common.js"></script>
+<script type="text/javascript">
 
 function SetCurrentFolder( resourceType, folderPath )
 {
@@ -92,22 +92,26 @@ window.onload = function()
 	window.top.IsLoadedUpload = true ;
 }
 		</script>
-	</head>
-	<body bottommargin="0" topmargin="0">
-		<form id="frmUpload" action="" target="frmUploadWorker" method="post" enctype="multipart/form-data" onsubmit="return OnSubmit();">
-			<table height="100%" cellspacing="0" cellpadding="0" width="100%" border="0">
-				<tr>
-					<td nowrap="nowrap">
-						<span id="eUploadMessage">Upload a new file in this folder</span><br>
-						<table cellspacing="0" cellpadding="0" width="100%" border="0">
-							<tr>
-								<td width="100%"><input id="NewFile" name="NewFile" style="WIDTH: 100%" type="file"></td>
-								<td nowrap="nowrap">&nbsp;<input id="btnUpload" type="submit" value="Upload"></td>
-							</tr>
-						</table>
-					</td>
-				</tr>
-			</table>
-		</form>
-	</body>
+</head>
+<body bottommargin="0" topmargin="0">
+<form id="frmUpload" action="" target="frmUploadWorker" method="post"
+	enctype="multipart/form-data" onsubmit="return OnSubmit();">
+<table height="100%" cellspacing="0" cellpadding="0" width="100%"
+	border="0">
+	<tr>
+		<td nowrap="nowrap"><span id="eUploadMessage">Upload a new
+		file in this folder</span><br>
+		<table cellspacing="0" cellpadding="0" width="100%" border="0">
+			<tr>
+				<td width="100%"><input id="NewFile" name="NewFile"
+					style="WIDTH: 100%" type="file"></td>
+				<td nowrap="nowrap">&nbsp;<input id="btnUpload" type="submit"
+					value="Upload"></td>
+			</tr>
+		</table>
+		</td>
+	</tr>
+</table>
+</form>
+</body>
 </html>

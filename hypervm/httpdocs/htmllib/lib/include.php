@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 $path = __FILE__;
 $dir = dirname(dirname(dirname($path)));

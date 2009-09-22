@@ -21,9 +21,7 @@
  * This is the CSS file used for interface details in some dialog
  * windows.
  */
-
-.ImagePreviewArea
-{
+.ImagePreviewArea {
 	border: #000000 1px solid;
 	overflow: auto;
 	width: 100%;
@@ -31,8 +29,7 @@
 	background-color: #ffffff;
 }
 
-.FlashPreviewArea
-{
+.FlashPreviewArea {
 	border: #000000 1px solid;
 	padding: 5px;
 	overflow: auto;
@@ -41,8 +38,7 @@
 	background-color: #ffffff;
 }
 
-.BtnReset
-{
+.BtnReset {
 	float: left;
 	background-position: center center;
 	background-image: url(images/reset.gif);
@@ -50,11 +46,10 @@
 	height: 16px;
 	background-repeat: no-repeat;
 	border: 1px none;
-	font-size: 1px ;
+	font-size: 1px;
 }
 
-.BtnLocked, .BtnUnlocked
-{
+.BtnLocked,.BtnUnlocked {
 	float: left;
 	background-position: center center;
 	background-image: url(images/locked.gif);
@@ -62,22 +57,19 @@
 	height: 16px;
 	background-repeat: no-repeat;
 	border: none 1px;
-	font-size: 1px ;
+	font-size: 1px;
 }
 
-.BtnUnlocked
-{
+.BtnUnlocked {
 	background-image: url(images/unlocked.gif);
 }
 
-.BtnOver
-{
+.BtnOver {
 	border: outset 1px;
 	cursor: pointer;
 	cursor: hand;
 }
 
-.FCK__FieldNumeric
-{
-	behavior: url(common/fcknumericfield.htc) ;
+.FCK__FieldNumeric {
+	behavior: url(common/fcknumericfield.htc);
 }

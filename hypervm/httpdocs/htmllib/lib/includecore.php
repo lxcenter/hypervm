@@ -1,5 +1,5 @@
-<?php 
-function print_time($var, $mess = null, $dbg = 2) 
+<?php
+function print_time($var, $mess = null, $dbg = 2)
 {
 	static $last;
 
@@ -26,7 +26,7 @@ function print_time($var, $mess = null, $dbg = 2)
 
 print_time('full');
 
-function windowsOs() 
+function windowsOs()
 {
 	if (getOs() == "Windows") {
 		return true;
@@ -60,10 +60,10 @@ if (WindowsOs()) {
 
 function getreal($vpath)
 {
-     return  $_SERVER["DOCUMENT_ROOT"] . "/". $vpath; 
+	return  $_SERVER["DOCUMENT_ROOT"] . "/". $vpath;
 }
 
 function readvirtual($vpath)
 {
-     readfile($_SERVER["DOCUMENT_ROOT"] . $vpath);
+	readfile($_SERVER["DOCUMENT_ROOT"] . $vpath);
 }

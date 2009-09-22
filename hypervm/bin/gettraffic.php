@@ -1,4 +1,4 @@
-<?php 
+<?php
 include_once "htmllib/lib/include.php";
 
 debug_for_backend();
@@ -28,12 +28,12 @@ function clearTrafficTable()
 	$sql->rawquery("delete from vpstraffic;");
 }
 
-function filltraffictable() 
+function filltraffictable()
 {
-	global $gbl, $login, $ghtml; 
+	global $gbl, $login, $ghtml;
 	initProgram('admin');
 	$t="";
- // Fake domain to store the time the last stats finding was done.
+	// Fake domain to store the time the last stats finding was done.
 
 	$laccessdom = new Vps(null, null, '__last_access_domain_');
 	try {
@@ -45,13 +45,13 @@ function filltraffictable()
 
 
 	if (!$laccess) {
-        $laccess = new Vpstraffic(null, null, '__last_access_domain_');
-        $oldtime = 0;
+		$laccess = new Vpstraffic(null, null, '__last_access_domain_');
+		$oldtime = 0;
 		$laccess->parent_clname = 'vps-__last_access_domain_';
-        $laccess->dbaction = 'add';
-    } else {
-        $oldtime = $laccess->timestamp;
-    }
+		$laccess->dbaction = 'add';
+	} else {
+		$oldtime = $laccess->timestamp;
+	}
 
 	if ($oldtime && ((time() - $oldtime) > 5 * 3600 * 24) ) {
 		$oldtime = time() - 5 * 3600 * 24;
@@ -70,10 +70,10 @@ function filltraffictable()
 		//$oldtime  =  mktime( 00 , 01, 00 , 1 ,1, date("Y"));
 		$flag = 1;
 	}
-	
+
 	// $newtime =   mktime( 00 , 01, 00 , date("n")  , date("j")  ,date("Y"));
 
-    $newtime = time();
+	$newtime = time();
 
 	$old = $oldtime;
 	$new = $newtime;
@@ -87,7 +87,7 @@ function filltraffictable()
 
 	$j = 0;
 	for($i = $newtime; $i >= $oldtime ; $i -= (24 *  60 * 60)) {
-		if($j > 0) { 
+		if($j > 0) {
 			$timearray[]  = $new . "-" . $i ;
 		}
 		$new = $i;
@@ -106,7 +106,7 @@ function filltraffictable()
 		if ($newtime - $oldtime < 4 * 60 * 60) { continue; }
 		$o = @ strftime("%c" , $oldtime);
 		$n = @ strftime("%c" , $newtime);
-		print("\n\n$o  to ... $n\n\n"); 
+		print("\n\n$o  to ... $n\n\n");
 		findtraffic($oldtime , $newtime);
 		// Write every time, otherwise, the traffic calculation breaks off in the middle, it will be left inconsistent.
 		$laccess->timestamp = $newtime;
@@ -119,8 +119,8 @@ function filltraffictable()
 	$laccess->setUpdateSubaction();
 	$laccess->write();
 
-} 
- 
+}
+
 
 function findtraffic($oldtime,  $newtime)
 {
@@ -132,5 +132,5 @@ function findtraffic($oldtime,  $newtime)
 		lxshell_return("__path_php_path", "../bin/trafficperslave.php", $l, $oldtime, $newtime);
 	}
 
-} 
+}
 

@@ -1,4 +1,4 @@
-<?php 
+<?php
 include_once "htmllib/lib/displayinclude.php";
 
 schedulebackup_main();
@@ -6,7 +6,7 @@ schedulebackup_main();
 
 function schedulebackup_main()
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	$progname = $sgbl->__var_program_name;
 	initProgram('admin');
 
@@ -45,19 +45,19 @@ function schedulebackup_main()
 
 
 		/*
-		try {
+		 try {
 			$param['backup_to_file_f'] = "$progname-scheduled";
 			$param['upload_to_ftp'] = $l->upload_to_ftp;
 			$backup = $l;
 			$object = $l->getParentO();
 			$backup->doupdateBackup($param);
 			$backup->backupstage = 'done';
-		} catch (exception $e) {
+			} catch (exception $e) {
 			$mess = "{$e->__full_message}\n";
 			$backup->backupstage = "Failed due to: $mess";
 			lx_mail($progname, $object->contactemail, "Backup Failed..", "Backup Failed for $object->nname with the Message $mess");
-		}
-	*/
+			}
+			*/
 
 		$class = $l->getParentClass();
 		$name = $l->getParentName();

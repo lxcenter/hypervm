@@ -1,4 +1,4 @@
-<?php 
+<?php
 include "common.inc";
 $driver['web'] = "iis";
 $driver['mmail'] = array("mailenable");

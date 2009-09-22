@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 
 function parse_category($cat)

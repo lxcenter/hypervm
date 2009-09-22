@@ -1,6 +1,6 @@
-<?php 
+<?php
 
-include_once "htmllib/lib/include.php"; 
+include_once "htmllib/lib/include.php";
 initProgram('admin');
 
 $list = $login->getList('pserver');
@@ -8,7 +8,7 @@ $list = $login->getList('pserver');
 foreach($list as $l) {
 	print("Checking $l->nname..");
 	flush();
-	try { 
+	try {
 		$ret = rl_exec_get(null, $l->nname, "findOperatingSystem");
 	} catch (Exception $e) {
 		print("$l->nname gave error {$e->getMessage()}\n");

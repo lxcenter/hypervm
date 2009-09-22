@@ -22,10 +22,10 @@
  * This page is used by all dialog box as the container.
 -->
 <html xmlns="http://www.w3.org/1999/xhtml">
-	<head>
-		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-		<meta name="robots" content="noindex, nofollow" />
-		<script type="text/javascript">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="robots" content="noindex, nofollow" />
+<script type="text/javascript">
 
 // On some Gecko browsers (probably over slow connections) the
 // "dialogArguments" are not set so we must get it from the opener window.
@@ -279,46 +279,45 @@ if ( window.addEventListener )
 	window.addEventListener( 'unload', Window_OnClose, false ) ;
 
 		</script>
-	</head>
-	<body onload="LoadInnerDialog();" class="PopupBody">
-		<table height="100%" cellspacing="0" cellpadding="0" width="100%" border="0">
-			<tr>
-				<td id="TitleArea" class="PopupTitle PopupTitleBorder">
-					<script type="text/javascript">
+</head>
+<body onload="LoadInnerDialog();" class="PopupBody">
+<table height="100%" cellspacing="0" cellpadding="0" width="100%"
+	border="0">
+	<tr>
+		<td id="TitleArea" class="PopupTitle PopupTitleBorder"><script
+			type="text/javascript">
 document.write( sTitle ) ;
-					</script>
-				</td>
-			</tr>
-			<tr id="TabsRow" style="DISPLAY: none">
-				<td class="PopupTabArea">
-					<table border="0" cellpadding="0" cellspacing="0" width="100%">
-						<tr id="Tabs" onselectstart="return false;">
-							<td class="PopupTabEmptyArea">&nbsp;</td>
-							<td class="PopupTabEmptyArea" width="100%">&nbsp;</td>
-						</tr>
-					</table>
-				</td>
-			</tr>
-			<tr>
-				<td id="FrameCell" height="100%" valign="top">
-					<iframe id="frmMain" src="javascript:void(0)" name="frmMain" frameborder="0" height="100%" width="100%" scrolling="auto">
-					</iframe>
-				</td>
-			</tr>
-			<tr>
-				<td class="PopupButtons">
-					<table border="0" cellpadding="0" cellspacing="0">
-						<tr>
-							<td width="100%">&nbsp;</td>
-							<td nowrap="nowrap">
-								<input id="btnOk" style="VISIBILITY: hidden;" type="button" value="Ok" class="Button" onclick="Ok();" fckLang="DlgBtnOK" />
-								&nbsp; 
-								<input id="btnCancel" type="button" value="Cancel" class="Button" onclick="Cancel();" fckLang="DlgBtnCancel" />
-							</td>
-						</tr>
-					</table>
-				</td>
+					</script></td>
+	</tr>
+	<tr id="TabsRow" style="DISPLAY: none">
+		<td class="PopupTabArea">
+		<table border="0" cellpadding="0" cellspacing="0" width="100%">
+			<tr id="Tabs" onselectstart="return false;">
+				<td class="PopupTabEmptyArea">&nbsp;</td>
+				<td class="PopupTabEmptyArea" width="100%">&nbsp;</td>
 			</tr>
 		</table>
-	</body>
+		</td>
+	</tr>
+	<tr>
+		<td id="FrameCell" height="100%" valign="top"><iframe
+			id="frmMain" src="javascript:void(0)" name="frmMain" frameborder="0"
+			height="100%" width="100%" scrolling="auto"> </iframe></td>
+	</tr>
+	<tr>
+		<td class="PopupButtons">
+		<table border="0" cellpadding="0" cellspacing="0">
+			<tr>
+				<td width="100%">&nbsp;</td>
+				<td nowrap="nowrap"><input id="btnOk"
+					style="VISIBILITY: hidden;" type="button" value="Ok" class="Button"
+					onclick="Ok();" fckLang="DlgBtnOK" /> &nbsp; <input id="btnCancel"
+					type="button" value="Cancel" class="Button" onclick="Cancel();"
+					fckLang="DlgBtnCancel" /></td>
+			</tr>
+		</table>
+		</td>
+	</tr>
+</table>
+</body>
 </html>

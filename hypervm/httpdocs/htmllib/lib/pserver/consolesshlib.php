@@ -1,47 +1,47 @@
-<?php 
+<?php
 class consolessh extends lxclass {
 
-static $__desc = array("", "", "Console Access");
-static $__desc_nname = array("", "", "Console Access");
+	static $__desc = array("", "", "Console Access");
+	static $__desc_nname = array("", "", "Console Access");
 
-static $__acdesc_show = array("", "",  "Console Access");
-
-
-function get() {}
-function write() {}
-
-function showRawPrint($subaction = null)
-{
-	global $gbl, $sgbl, $login, $ghtml; 
+	static $__acdesc_show = array("", "",  "Console Access");
 
 
-	$parent = $this->getParentO();
+	function get() {}
+	function write() {}
 
-	$parent->makeSureTheUserExists();
+	function showRawPrint($subaction = null)
+	{
+		global $gbl, $sgbl, $login, $ghtml;
 
-	$lgg = $parent->getLogin();
 
-	$sshport = db_get_value("sshconfig", $parent->syncserver, "ssh_port");
-	if (!$sshport) { $sshport = "22"; }
+		$parent = $this->getParentO();
 
-	$v = lfile_get_contents("htmllib/filecore/sshterm-applet.htm");
+		$parent->makeSureTheUserExists();
 
-	$ip = $lgg[1];
+		$lgg = $parent->getLogin();
 
-	$v = str_replace("%username%", $lgg[0], $v);
-	$v = str_replace("%host%", $ip, $v);
-	$v = str_replace("%port%", $sshport, $v);
-	$v = str_replace("%connectimmediately%", "true", $v);
-	$string = $login->getKeyword("console_message");
+		$sshport = db_get_value("sshconfig", $parent->syncserver, "ssh_port");
+		if (!$sshport) { $sshport = "22"; }
 
-	$string = str_replace("%username%", "<font style='font-weight:bold'>$lgg[0]@$ip:$sshport </font>", $string);
-	print(" <table cellpadding=0 cellspacing=0 width=80%> <tr> <td > $string <br> </td> </tr> </table>  \n");
-	print($v);
-}
+		$v = lfile_get_contents("htmllib/filecore/sshterm-applet.htm");
 
-static function initThisObjectRule($parent, $class) { return "consolessh"; }
+		$ip = $lgg[1];
 
-static function initThisObject($parent, $class, $name = null) { return "consolessh"; }
+		$v = str_replace("%username%", $lgg[0], $v);
+		$v = str_replace("%host%", $ip, $v);
+		$v = str_replace("%port%", $sshport, $v);
+		$v = str_replace("%connectimmediately%", "true", $v);
+		$string = $login->getKeyword("console_message");
+
+		$string = str_replace("%username%", "<font style='font-weight:bold'>$lgg[0]@$ip:$sshport </font>", $string);
+		print(" <table cellpadding=0 cellspacing=0 width=80%> <tr> <td > $string <br> </td> </tr> </table>  \n");
+		print($v);
+	}
+
+	static function initThisObjectRule($parent, $class) { return "consolessh"; }
+
+	static function initThisObject($parent, $class, $name = null) { return "consolessh"; }
 
 
 }

@@ -1,6 +1,6 @@
-<?php 
+<?php
 
-include_once "htmllib/lib/include.php"; 
+include_once "htmllib/lib/include.php";
 
 initProgram('admin');
 init_language();
@@ -56,7 +56,7 @@ foreach($param as $k => $v) {
 	$c = null;
 	$prep = null;
 	if ($v && is_array($v)) {
-		if ($v[0] === 'M') { 
+		if ($v[0] === 'M') {
 			$c = "Static: {$v[1]}";
 		}
 	}
@@ -76,12 +76,12 @@ function printProperty($class, $type)
 		if ($type === 'action') {
 			$istr = "__acdesc_";
 			if (!csb($s->name, "__acdesc_"))
-				continue;
+			continue;
 		}
 		if ($type === 'property') {
 			$istr = "__desc_";
 			if (!csb($s->name, "__desc_"))
-				continue;
+			continue;
 		}
 
 		$descr = get_classvar_description($class, $s->name);

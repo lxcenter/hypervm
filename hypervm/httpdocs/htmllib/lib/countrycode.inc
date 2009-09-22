@@ -1,4 +1,4 @@
-<?php 
+<?php
 $gl_country_code["AD"] = "Andorra, Principality of";
 $gl_country_code["AE"] = "United Arab Emirates";
 $gl_country_code["AF"] = "Afghanistan, Islamic State of";

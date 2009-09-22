@@ -23,12 +23,12 @@
 -->
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-	<title>FCKeditor - Sample</title>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<meta name="robots" content="noindex, nofollow" />
-	<link href="../sample.css" rel="stylesheet" type="text/css" />
-	<script type="text/javascript" src="../../fckeditor.js"></script>
-	<script type="text/javascript">
+<title>FCKeditor - Sample</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="robots" content="noindex, nofollow" />
+<link href="../sample.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="../../fckeditor.js"></script>
+<script type="text/javascript">
 
 // The following function is used in this samples to reload the page,
 // setting the querystring parameters for the enter mode.
@@ -43,41 +43,32 @@ function ChangeMode()
 	</script>
 </head>
 <body>
-	<h1>
-		FCKeditor - JavaScript - Sample 12</h1>
-	<div>
-		This sample shows the different ways to configure the [Enter] key behavior on FCKeditor.
-	</div>
-	<hr />
-	<table cellpadding="0" cellspacing="0" border="0">
-		<tr>
-			<td>
-				When [Enter] is pressed:&nbsp;
-			</td>
-			<td>
-				<select id="xEnter" onchange="ChangeMode();">
-					<option value="p" selected="selected">Create new &lt;P&gt;</option>
-					<option value="div">Create new &lt;DIV&gt;</option>
-					<option value="br">Break the line with a &lt;BR&gt;</option>
-				</select>
-			</td>
-		</tr>
-		<tr>
-			<td>
-				When [Shift] + [Enter] is pressed:&nbsp;
-			</td>
-			<td>
-				<select id="xShiftEnter" onchange="ChangeMode();">
-					<option value="p">Create new &lt;P&gt;</option>
-					<option value="div">Create new &lt;DIV&gt;</option>
-					<option value="br" selected="selected">Break the line with a &lt;BR&gt;</option>
-				</select>
-			</td>
-		</tr>
-	</table>
-	<br />
-	<form action="sampleposteddata.asp" method="post" target="_blank">
-		<script type="text/javascript">
+<h1>FCKeditor - JavaScript - Sample 12</h1>
+<div>This sample shows the different ways to configure the [Enter]
+key behavior on FCKeditor.</div>
+<hr />
+<table cellpadding="0" cellspacing="0" border="0">
+	<tr>
+		<td>When [Enter] is pressed:&nbsp;</td>
+		<td><select id="xEnter" onchange="ChangeMode();">
+			<option value="p" selected="selected">Create new &lt;P&gt;</option>
+			<option value="div">Create new &lt;DIV&gt;</option>
+			<option value="br">Break the line with a &lt;BR&gt;</option>
+		</select></td>
+	</tr>
+	<tr>
+		<td>When [Shift] + [Enter] is pressed:&nbsp;</td>
+		<td><select id="xShiftEnter" onchange="ChangeMode();">
+			<option value="p">Create new &lt;P&gt;</option>
+			<option value="div">Create new &lt;DIV&gt;</option>
+			<option value="br" selected="selected">Break the line with a
+			&lt;BR&gt;</option>
+		</select></td>
+	</tr>
+</table>
+<br />
+<form action="sampleposteddata.asp" method="post" target="_blank">
+<script type="text/javascript">
 <!--
 // Automatically calculates the editor base path based on the _samples directory.
 // This is usefull only for these samples. A real application should use something like this:
@@ -119,9 +110,7 @@ document.getElementById('xEnter').value = sEnterMode ;
 document.getElementById('xShiftEnter').value = sShiftEnterMode ;
 
 //-->
-		</script>
-		<br />
-		<input type="submit" value="Submit" />
-	</form>
+		</script> <br />
+<input type="submit" value="Submit" /></form>
 </body>
 </html>

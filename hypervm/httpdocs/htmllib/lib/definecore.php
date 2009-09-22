@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 $gl_class_array["dnsbase"] = "htmllib/lib/dns/dnsbaselib.php";
 $gl_class_array["dnstemplate"] = "htmllib/lib/dns//dnstemplatelib.php";

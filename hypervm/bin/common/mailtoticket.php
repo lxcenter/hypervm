@@ -1,6 +1,6 @@
-<?php 
+<?php
 
-include_once "htmllib/lib/include.php"; 
+include_once "htmllib/lib/include.php";
 include_once "htmllib/lib/parsemail/parseMail.php";
 
 initProgram('admin');
@@ -69,16 +69,16 @@ if (cse($pname, ".vm")) {
 	$pclass = "vps";
 }
 
-	/*
-if (!csa($matches[1], "-")) {
-	$pclass = "client";
-	$pname = $matches[1];
-} else {
-	$pp = explode("-", $matches[1]);
-	$pclass = $pp[0];
-	$pname = $pp[1];
-}
-*/
+/*
+ if (!csa($matches[1], "-")) {
+ $pclass = "client";
+ $pname = $matches[1];
+ } else {
+ $pp = explode("-", $matches[1]);
+ $pclass = $pp[0];
+ $pname = $pp[1];
+ }
+ */
 
 $pobject = new $pclass(null, null, $pname);
 $pobject->get();
@@ -97,7 +97,7 @@ $param['from_ad'] = $email->from;
 
 
 
-$param = tickethistory::add($tick, 'tickethistory', $param); 
+$param = tickethistory::add($tick, 'tickethistory', $param);
 
 
 $newob = new TicketHistory(null, null, $param['nname']);

@@ -1,4 +1,4 @@
-<?php 
+<?php
 $driver['ipaddress'] = "redhat";
 $driver['service'] = "redhat";
 $driver['ipaddress'] = "redhat";

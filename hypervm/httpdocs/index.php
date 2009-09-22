@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 include_once "htmllib/lib/displayinclude.php";
 
@@ -6,8 +6,8 @@ redirect_to_https();
 main_main();
 
 function domainshow()
-{   
-	global $gbl, $sgbl, $login, $ghtml; 
+{
+	global $gbl, $sgbl, $login, $ghtml;
 
 	if ($login->isAdmin()) {
 		$doctype = "admin";
@@ -51,11 +51,11 @@ function domainshow()
 	}
 
 
-    $title = get_title();
-	?> 
-	<head>
-	<title> <?php echo $title ?> </title>
-		
+	$title = get_title();
+	?>
+<head>
+<title><?php echo $title ?></title>
+
 	<?php $ghtml->print_refresh_key();
 
 
@@ -81,7 +81,7 @@ function domainshow()
 
 	print("<FRAME name=topframe src=$file scrolling=no>\n");
 
-	if (!$sp->isOn('split_frame')) { 
+	if (!$sp->isOn('split_frame')) {
 		print("<FRAMESET frameborder=0 cols=\"$width,*\" border=0>\n");
 		print("<FRAME name=leftframe src='/htmllib/lbin/lpanel.php?lpanel_type=tree' $scrollstring border=0>\n");
 	}
@@ -100,8 +100,8 @@ function domainshow()
 	print("</FRAMESET>\n");
 	print("</FRAMESET>\n");
 
-	?> 
-	</head>
+	?>
+</head>
 	<?php
 	//<FRAME name=bottomframe src="/bin/bottom.php">
 }
@@ -109,19 +109,19 @@ function domainshow()
 
 function main_main()
 {
-	global $gbl, $login, $ghtml; 
+	global $gbl, $login, $ghtml;
 
-   	initProgram();
+	initProgram();
 
 	domainshow();
 	/*
-	if ($gbl->isOn('split_frame')) {
+	 if ($gbl->isOn('split_frame')) {
 		$gbl->setSessionV('split_frame', 'off');
-	} else {
+		} else {
 		$gbl->setSessionV('split_frame', 'on');
-	}
-	$gbl->c_session->write();
-	*/
+		}
+		$gbl->c_session->write();
+		*/
 
 }
 

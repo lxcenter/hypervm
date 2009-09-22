@@ -6,12 +6,12 @@ include_once "htmllib/lib/displayinclude.php";
 
 function createHeaderData()
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	global $gdata;
 
 	$gob = $login->getObject('general')->generalmisc_b;
 	$deskdesc = $login->getKeywordUc('desktop');
-	//$this->getListActions($alist, 'ticket'); 
+	//$this->getListActions($alist, 'ticket');
 
 	if ($login->isAdmin()) {
 		$vpsclass = "all_vps";
@@ -75,7 +75,7 @@ function header_main()
 
 function print_a_right_button($something, $ttype, $id, $pos)
 {
-	global $gbl, $login, $ghtml, $gdata; 
+	global $gbl, $login, $ghtml, $gdata;
 
 	$name = $gdata[$id][0];
 	$url = $gdata[$id][1];
@@ -87,16 +87,24 @@ function print_a_right_button($something, $ttype, $id, $pos)
 		$onclickstring = "onClick=\"top.mainframe.location='$url';\"";
 	}
 	$skindir = $login->getSkinDir();
-	?> 
-	
-	<table border="0" cellspacing=0 cellpadding=0 style='font-size:11;color:#004466;height:34;width:73;background:url(<?php echo $skindir ?>/right_btn.gif);' OnMouseOver="style.cursor='pointer'; top.mainframe.changeContent('help','<?php echo $name?>');"  <?php echo $onclickstring ?> onmouseout="changeContent('help','helparea')"><tr><td valign=bottom width=17 height=34 align=left style='padding-bottom:5;padding-left:6'><img height=8 width=8 src='/img/image/<?php echo $login->getSpecialObject('sp_specialplay')->icon_name ?>/button/<?php echo $icon ?>'></td><td valign=bottom width=53 style='padding-left:3;padding-bottom:3;' align=left><b><?php echo  $name ?> </font> </b></td></tr></table>
-	<?php 
+	?>
+
+<table border="0" cellspacing=0 cellpadding=0 style='font-size:11;color:#004466;height:34;width:73;background:url(<?php echo $skindir ?>/right_btn.gif);' OnMouseOver="style.cursor='pointer'; top.mainframe.changeContent('help','<?php echo $name?>');"  <?php echo $onclickstring ?> onmouseout="changeContent('help','helparea')">
+	<tr>
+		<td valign=bottom width=17 height=34 align=left
+			style='padding-bottom: 5; padding-left: 6'><img height=8 width=8
+			src='/img/image/<?php echo $login->getSpecialObject('sp_specialplay')->icon_name ?>/button/<?php echo $icon ?>'></td>
+		<td valign=bottom width=53 style='padding-left: 3; padding-bottom: 3;'
+			align=left><b><?php echo  $name ?> </font> </b></td>
+	</tr>
+</table>
+	<?php
 }
 
 
 function print_a_button($side, $ttype, $id, $pos, $menupos = 0)
 {
-	global $gbl, $login, $ghtml, $gdata; 
+	global $gbl, $login, $ghtml, $gdata;
 	$name = $gdata[$id][0];
 	$url = $gdata[$id][1];
 	$icon = $gdata[$id][2];
@@ -120,12 +128,19 @@ function print_a_button($side, $ttype, $id, $pos, $menupos = 0)
 
 
 
-//	$pos = $gdata[$id][3];
-//	$pos = 1;
+	//	$pos = $gdata[$id][3];
+	//	$pos = 1;
 
-	?> 
-			<table width=85 cellspacing=0 cellpadding=0 border=0 style='font-size:11;color:#004466;height:34;margin:0 0 0 0;background:url(<?php echo $login->getSkinDir() ?>/<?php echo $bgimg ?>)' OnMouseOver="style.cursor='pointer' ;  top.mainframe.changeContent('help','<?php echo $name?>');" onClick="top.mainframe.location='<?php echo $url ?>';" onmouseout="top.mainframe.changeContent('help','helparea')"><tr><td <?php echo $imgtdprop ?>  align=center <?php echo $tdstyle ?>'><img <?php echo $imgprop ?>  src='/img/image/<?php echo $login->getSpecialObject('sp_specialplay')->icon_name ?>/button/<?php echo $icon ?>'></td><td  <?php $tdstyle ?> valign=middle align=center><b><?php echo $name ?>&nbsp;</b></td> </tr></table>
-			<?php 
+	?>
+<table width=85 cellspacing=0 cellpadding=0 border=0 style='font-size:11;color:#004466;height:34;margin:0 0 0 0;background:url(<?php echo $login->getSkinDir() ?>/<?php echo $bgimg ?>)' OnMouseOver="style.cursor='pointer' ;  top.mainframe.changeContent('help','<?php echo $name?>');" onClick="top.mainframe.location='<?php echo $url ?>';" onmouseout="top.mainframe.changeContent('help','helparea')">
+	<tr>
+		<td <?php echo $imgtdprop ?> align=center<?php echo $tdstyle ?>'><img
+		<?php echo $imgprop ?>
+			src='/img/image/<?php echo $login->getSpecialObject('sp_specialplay')->icon_name ?>/button/<?php echo $icon ?>'></td>
+		<td <?php $tdstyle ?> valign=middle align=center><b><?php echo $name ?>&nbsp;</b></td>
+	</tr>
+</table>
+		<?php
 }
 
 
@@ -145,11 +160,11 @@ function print_header()
 
 	createHeaderData();
 
-    $ghtml->print_include_jscript("header");
+	$ghtml->print_include_jscript("header");
 	$skin = $login->getSkinDir();
 	$logo = $login->getSpecialObject('sp_specialplay')->logo_image;
 	$logo_loading = $login->getSpecialObject('sp_specialplay')->logo_image_loading;
-?>
+	?>
 <script>
 if (document.captureEvents) {
 	document.captureEvents(Event.MOUSEUP);
@@ -170,62 +185,76 @@ function changeLogo(flag)
 }
 </script>
 <body topmargin=0 bottommargin=0 leftmargin=0 rightmargin=0 border=0>
-<table width=100% height="59" border="0" valign=top align="center" cellpadding="0" cellspacing="0" >
-<tr> <td width=100% style='background:url(<?php echo $login->getSkinDir() ?>/header_top_bg.gif)'> </td> <td width=326 style='background:url(<?php echo $login->getSkinDir() ?>/header_top_rt.gif);background-repeat:no-repeat'><table width=326> <tr align=right><td width=200> &nbsp; &nbsp; </td> <td align=right> <img id=main_logo width=84 height=23 src="<?php echo $logo_loading?>"></td> <td width=10%> &nbsp; &nbsp; </td></tr></table> </td> </tr>
+<table width=100% height="59" border="0" valign=top align="center"
+	cellpadding="0" cellspacing="0">
+	<tr>
+		<td width=100% style='background:url(<?php echo $login->getSkinDir() ?>/header_top_bg.gif)'>
+		</td>
+		<td width=326 style='background:url(<?php echo $login->getSkinDir() ?>/header_top_rt.gif);background-repeat:no-repeat'>
+		<table width=326>
+			<tr align=right>
+				<td width=200>&nbsp; &nbsp;</td>
+				<td align=right><img id=main_logo width=84 height=23
+					src="<?php echo $logo_loading?>"></td>
+				<td width=10%>&nbsp; &nbsp;</td>
+			</tr>
+		</table>
+		</td>
+	</tr>
 </table>
-<TABLE border="0" width=100%  cellspacing=0 cellpadding=0 background="<?php echo $login->getSkinDir() ?>/header_panel_bg.gif">
- <TBODY>
-  <TR> 
-  <?php
-	if ($gbl->isOn('show_lpanel')) {
-		/*
-		?> 
-		<td width=218><table width=218> <tr> <td > </td> </tr></table></td> 
-	  <?php 
-		*/
-  }
-	?> 
-  <td > 
-  <?php 
-	
-	$count = 1;
-	$button_width = 85;
-	print_a_button("left", $ttype, "desktop", $count, 1);
-	print( "</td> <td >");
-	print_a_button("left", $ttype, "home", $count, 1);
-	$count+= 83;
+<TABLE border="0" width=100% cellspacing=0 cellpadding=0
+	background="<?php echo $login->getSkinDir() ?>/header_panel_bg.gif">
+	<TBODY>
+		<TR>
+		<?php
+		if ($gbl->isOn('show_lpanel')) {
+			/*
+			 ?>
+			 <td width=218><table width=218> <tr> <td > </td> </tr></table></td>
+			 <?php
+			 */
+		}
+		?>
+			<td><?php 
 
-	if (!$login->isSuperClient()) {
-		print_left_panel($ttype, $count);
-	}
+			$count = 1;
+			$button_width = 85;
+			print_a_button("left", $ttype, "desktop", $count, 1);
+			print( "</td> <td >");
+			print_a_button("left", $ttype, "home", $count, 1);
+			$count+= 83;
 
-
+			if (!$login->isSuperClient()) {
+				print_left_panel($ttype, $count);
+			}
 
 
-	print("<td width=100%></td> <td >");
-	if ($login->get__table() !== 'ticket') {
-		print_a_right_button("right", $ttype, "ticket", 294);
-		print("</td> <td >");
-	}
-	print_a_right_button("right", $ttype, "ssession", 150);
-	print("</td> <td >");
-	//print_a_right_button("right", $ttype, "help", 150);
-	print("</td> <td >");
-	/*
-	print_a_right_button("right", $ttype, "help", 148);
-	print("</td> <td >");
-	*/
-	print_a_right_button("right", $ttype, "logout", 190);
-	print("</td>");
 
-	
+
+			print("<td width=100%></td> <td >");
+			if ($login->get__table() !== 'ticket') {
+				print_a_right_button("right", $ttype, "ticket", 294);
+				print("</td> <td >");
+			}
+			print_a_right_button("right", $ttype, "ssession", 150);
+			print("</td> <td >");
+			//print_a_right_button("right", $ttype, "help", 150);
+			print("</td> <td >");
+			/*
+			 print_a_right_button("right", $ttype, "help", 148);
+			 print("</td> <td >");
+			 */
+			print_a_right_button("right", $ttype, "logout", 190);
+			print("</td>");
+
+
 }
 
 
 
 function print_left_panel($ttype, $count)
 {
-	global $gbl, $login, $ghtml; 
+	global $gbl, $login, $ghtml;
 
 	$button_width = 85;
 
@@ -233,7 +262,7 @@ function print_left_panel($ttype, $count)
 		print("</td> <td >");
 		print_a_button("left", $ttype, "vps",$count);
 		$count += $button_width;
-	} 
+	}
 
 
 	if($login->isLte('reseller')) {

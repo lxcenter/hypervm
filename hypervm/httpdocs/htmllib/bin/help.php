@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 chdir("../..");
 include_once "htmllib/lib/include.php";
@@ -6,7 +6,7 @@ include_once "htmllib/lib/helplib.php";
 
 
 
-help_main(); 
+help_main();
 
 
 
@@ -39,7 +39,7 @@ function __ac_desc_lxlabs_forum()
 
 function __ac_desc_show()
 {
-	global $gbl, $login, $ghtml; 
+	global $gbl, $login, $ghtml;
 
 	$cgi_help = $ghtml->frm_q;
 	$help = base64_decode($cgi_help);
@@ -53,15 +53,15 @@ function __ac_desc_show()
 	}
 
 	if (!show_help_file($help_file))
-		__ac_desc_tutorial();
-		
+	__ac_desc_tutorial();
+
 }
 
 
 function show_help_file($hhelp_file)
 {
 
-	global $gbl, $login, $ghtml; 
+	global $gbl, $login, $ghtml;
 
 	$help_file = getreal($hhelp_file);
 
@@ -82,7 +82,7 @@ function show_help_file($hhelp_file)
 	$last = "";
 	$inblock = "out";
 	while(!feof($fp)) {
-		
+
 		$buf = fgets($fp, 1024);
 		$buf = trim($buf);
 		if (preg_match("/<reseller>/", $buf)) {
@@ -127,7 +127,7 @@ function show_help_file($hhelp_file)
 
 
 		if ($login->isGte('reseller') && $inblock === "admin") {
-				continue;
+			continue;
 		}
 
 		if ($login->isLogin() && $inblock === 'notlogin') {
@@ -168,7 +168,7 @@ function show_help_file($hhelp_file)
 		}
 		print($buf);
 	}
-  return 1;
+	return 1;
 }
 
 function __ac_desc_tutorial()
@@ -185,22 +185,26 @@ function print_alternate_header()
 
 function print_help_header()
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	$progname = $sgbl->__var_program_name;
 	$cprogname = ucfirst($progname);
-	?> 
-	<head> 
-	<title> <?php echo $cprogname ?>  Help </title>
-	</head>
+	?>
+<head>
+<title><?php echo $cprogname ?> Help</title>
+</head>
 
-	<?php 
+	<?php
 	$ghtml->print_css_source("/htmllib/css/common.css");
-	?> 
-		<body topmargin="0" leftmargin="0">
-<table width=100%  border="0" valign="top" align="center" cellpadding="0" cellspacing="0">
-<tr><td width="100%" colspan=5 background="/img/header/header_05.gif" width="10" height="34"></td></tr>
+	?>
+<body topmargin="0" leftmargin="0">
+<table width=100% border="0" valign="top" align="center" cellpadding="0"
+	cellspacing="0">
+	<tr>
+		<td width="100%" colspan=5 background="/img/header/header_05.gif"
+			width="10" height="34"></td>
+	</tr>
 </table>
-<?php
+	<?php
 }
 
 
@@ -208,7 +212,7 @@ function print_help_header()
 function help_main()
 {
 
-	global $gbl, $login, $ghtml; 
+	global $gbl, $login, $ghtml;
 
 	initProgram();
 	print_help_header();
@@ -225,15 +229,15 @@ function help_main()
 	print("</td></tr></table>");
 
 	print(" </td> <td >&nbsp;  </td> <td > ");
-	
+
 
 
 	//print_alternate_header();
 
 	__ac_desc_show();
 
-print("</td> </tr> </table> ");
-$ghtml->print_end();
+	print("</td> </tr> </table> ");
+	$ghtml->print_end();
 
 }
 

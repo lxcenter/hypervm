@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 
 include_once "htmllib/lib/include.php";
@@ -8,7 +8,7 @@ monitor_child();
 
 function monitor_child()
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	global $global_reminder;
 
 	initProgram('admin');

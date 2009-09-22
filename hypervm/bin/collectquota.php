@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 include_once "htmllib/lib/include.php";
 
@@ -34,7 +34,7 @@ findServerTraffic();
 
 function storeinGblvariables()
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	return;
 
 	$firstofmonth  = @ mktime(00, 01, 00, @ date("n"), 1, @ date("Y"));
@@ -51,18 +51,18 @@ function storeinGblvariables()
 
 		list($month, $year) = get_last_month_and_year();
 		$last_traffic = VpstrafficHistory::getMonthTotal($vpst, $month, $year, null);
-        if (!isset($sgbl->__var_traffic_last_usage)) {
-            $sgbl->__var_traffic_last_usage = null;
-        }
-        $sgbl->__var_traffic_last_usage[$vps->getClName()] = $last_traffic['traffic_usage'];
+		if (!isset($sgbl->__var_traffic_last_usage)) {
+			$sgbl->__var_traffic_last_usage = null;
+		}
+		$sgbl->__var_traffic_last_usage[$vps->getClName()] = $last_traffic['traffic_usage'];
 
 		/*
-		try {
+		 try {
 			$sgbl->__var_backupdisk_usage[$vps->getClName()] = rl_exec_get(null, $vps->syncserver, array("vps", "getBackupDiskSize"), array($vps->nname));
-		} catch (Exception $e) {
+			} catch (Exception $e) {
 			$sgbl->__var_backupdisk_usage[$vps->getClName()] = null;
-		}
-	*/
+			}
+			*/
 	}
 	//dprintr($sgbl->__var_backupdisk_usage);
 	$sgbl->__var_traffic_usage = $total;

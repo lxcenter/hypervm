@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 $g_commonhelp['ippool_updateform_update_post'] = 'ippool_addform__post';
 $g_commonhelp['vps_addform_openvz_post'] = 'vps_addform__post';

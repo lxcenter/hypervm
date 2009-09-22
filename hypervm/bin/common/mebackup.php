@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 include_once "htmllib/lib/displayinclude.php";
 
@@ -7,7 +7,7 @@ mebackup_main();
 
 function mebackup_main()
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	$progname = $sgbl->__var_program_name;
 	$cprogname = ucfirst($progname);
 	initProgram('admin');
@@ -21,7 +21,7 @@ function mebackup_main()
 	$docf = "$vd/mebackup.dump";
 	exec("exec mysqldump --add-drop-table -u $progname -p$pass $dbf > $docf");
 
-	$string = @ date('Y-M-d'). '-' . time(); 
+	$string = @ date('Y-M-d'). '-' . time();
 	$bfile = "$sgbl->__path_program_home/selfbackup/self/__backup/$progname-scheduled-masterselfbackup-$string.zip";
 	lxshell_zip($vd, $bfile, array("mebackup.dump"));
 	lxfile_tmp_rm_rec($vd);
@@ -31,7 +31,7 @@ function mebackup_main()
 			lxbackup::upload_to_server($bfile, basename($bfile), $backup);
 		} catch (Exception $e) {
 			print("Sending warning to $login->contactemail ..\n");
-			lx_mail(null, $login->contactemail, "$cprogname Self Database Backup Upload Failed on " . date('Y-M-d') . " at " . date('H') ." Hours" , "$cprogname Backup upload Failed due to {$e->getMessage()}\n");  
+			lx_mail(null, $login->contactemail, "$cprogname Self Database Backup Upload Failed on " . date('Y-M-d') . " at " . date('H') ." Hours" , "$cprogname Backup upload Failed due to {$e->getMessage()}\n");
 		}
 	}
 	$backup->rm_last_number = 20;

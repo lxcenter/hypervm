@@ -17,14 +17,14 @@ if (isset($_REQUEST['list'])) {
 	$list = "";
 }
 if ($list) {
-    $nicknames = split(":", $list);
-    foreach($nicknames as $n) {
-        if (strlen($n) > 0) {
-            echo "$n<BR />";
-        }
-    }
+	$nicknames = split(":", $list);
+	foreach($nicknames as $n) {
+		if (strlen($n) > 0) {
+			echo "$n<BR />";
+		}
+	}
 } else {
-    echo "<br> Please wait..";
+	echo "<br> Please wait..";
 }
 
 echo "</BODY>\n</HTML>\n";

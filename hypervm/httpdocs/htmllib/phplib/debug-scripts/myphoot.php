@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 
 php_main() ;

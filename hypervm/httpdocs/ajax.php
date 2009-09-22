@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 include_once "htmllib/coredisplaylib.php";
 log_log("ajax", var_export($_REQUEST, true));

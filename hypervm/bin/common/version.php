@@ -1,4 +1,4 @@
-<?php 
+<?php
 //
 // Get HyperVM version
 //

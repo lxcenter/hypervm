@@ -14,7 +14,7 @@ function index_main()
 function redirect_no_frames($url)
 {
 
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 
 
 
@@ -40,7 +40,7 @@ function redirect_no_frames($url)
 function ip_blocked($client)
 {
 
-	global $gbl, $sgbl, $ghtml; 
+	global $gbl, $sgbl, $ghtml;
 
 	return false;
 
@@ -49,7 +49,7 @@ function ip_blocked($client)
 	foreach((array) $bl as $b) {
 		//Ipaddress::chekWhetherToBlock($_SERVER['REMOTE_ADDR']))
 		if (check_ip_network($b->nname, $_SERVER['REMOTE_ADDR']))
-			return true;
+		return true;
 	}
 
 	return false;
@@ -58,7 +58,7 @@ function ip_blocked($client)
 
 function checkAttempt()
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	$match = 0;
 
 	try  {
@@ -88,14 +88,14 @@ function checkAttempt()
 	$gbl->was();
 }
 
-function print_index() 
+function print_index()
 {
 	global $gbl, $sgbl, $ghtml, $login;
 
 	ob_start();
 
 	print_time('index');
-	$cgi_clientname = $ghtml->frm_clientname; 
+	$cgi_clientname = $ghtml->frm_clientname;
 
 	Htmllib::checkForScript($cgi_clientname);
 	$cgi_class = $ghtml->frm_class;
@@ -105,7 +105,7 @@ function print_index()
 	}
 
 	$cgi_password = $ghtml->frm_password;
-	$cgi_forgotpwd = $ghtml->frm_forgotpwd; 
+	$cgi_forgotpwd = $ghtml->frm_forgotpwd;
 	$cgi_email = $ghtml->frm_email;
 	$cgi_key = $ghtml->frm_login_key;
 
@@ -123,10 +123,10 @@ function print_index()
 	}
 
 
-	if ($cgi_clientname == "" || ($cgi_password == "" && $cgi_key == "")) { 
+	if ($cgi_clientname == "" || ($cgi_password == "" && $cgi_key == "")) {
 		$cgi_forgotpwd = $ghtml->frm_forgotpwd;
 		return;
-	} 
+	}
 
 
 	$ip = $_SERVER['REMOTE_ADDR'];
@@ -138,12 +138,12 @@ function print_index()
 
 	log_log("login_success", "Successful Login to $cgi_clientname from " .  $_SERVER['REMOTE_ADDR']);
 	/*
-	try {
+	 try {
 		$att = $gbl->g->getFromList("loginattempt", $ip);
 		$att->delete();
-} catch (Exception $e) {
-}
-*/
+		} catch (Exception $e) {
+		}
+		*/
 
 	if (check_disable_admin($cgi_clientname)) {
 		$ghtml->print_redirect("/login/?frm_emessage=login_error");
@@ -167,14 +167,14 @@ function print_index()
 
 function check_login_success($cgi_classname, $cgi_clientname, $cgi_password, $cgi_key)
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	if ($cgi_password) {
 		if (check_raw_password($cgi_classname, $cgi_clientname, $cgi_password)) {
 			return true;
 		} else {
 			log_log("error", "Failed Login attempt to $cgi_clientname from " .  $_SERVER['REMOTE_ADDR']);
 			$ghtml->print_redirect("/login/?frm_emessage=login_error");
-			return false; 
+			return false;
 		}
 	}
 
@@ -192,7 +192,7 @@ function check_login_success($cgi_classname, $cgi_clientname, $cgi_password, $cg
 		}
 		$ghtml->print_redirect("/login/?frm_emessage=login_error_key");
 		return false;
-	} 
+	}
 
 
 	return false;
@@ -202,7 +202,7 @@ function check_login_success($cgi_classname, $cgi_clientname, $cgi_password, $cg
 function check_blocked_ip()
 {
 
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	if (!$login->isAllowed()) {
 		$ip = $_SERVER['REMOTE_ADDR'];
 		log_message("Denied Entry from Ip $ip for $login->nname");

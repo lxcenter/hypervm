@@ -1,5 +1,5 @@
-<?php 
-include_once "htmllib/lib/include.php"; 
+<?php
+include_once "htmllib/lib/include.php";
 
 initProgram('admin');
 $slave = $argv[1];
@@ -12,7 +12,7 @@ trafficperslave($slave, $oldtime, $newtime);
 function trafficperslave($slave, $oldtime, $newtime)
 {
 
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	$sq = new Sqlite(null, 'vps');
 
 	$res = $sq->getRowswhere("syncserver = '$slave'", array('nname'));
@@ -38,7 +38,7 @@ function trafficperslave($slave, $oldtime, $newtime)
 
 	$driverapp = $gbl->getSyncClass(null, $slave, 'vps');
 	try {
-		$vps_usage = rl_exec_get(null, $slave, array("vpstraffic__$driverapp", 'findTotaltrafficUsage'), array($list, $oldtime, $newtime)); 
+		$vps_usage = rl_exec_get(null, $slave, array("vpstraffic__$driverapp", 'findTotaltrafficUsage'), array($list, $oldtime, $newtime));
 	} catch (exception $e) {
 		exit;
 	}
@@ -78,12 +78,12 @@ function trafficperslave($slave, $oldtime, $newtime)
 		$sq->rawQuery("update vps set used_q_traffic_last_usage = '$tlu' where nname = '$vps->nname'");
 
 		/*
-		try {
+		 try {
 			$sgbl->__var_backupdisk_usage[$vps->getClName()] = rl_exec_get(null, $vps->syncserver, array("vps", "getBackupDiskSize"), array($vps->nname));
-		} catch (Exception $e) {
+			} catch (Exception $e) {
 			$sgbl->__var_backupdisk_usage[$vps->getClName()] = null;
-		}
-	*/
+			}
+			*/
 	}
 
 }

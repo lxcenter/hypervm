@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 ob_start();
 include_once "htmllib/lib/include.php";
@@ -7,7 +7,7 @@ process_main();
 
 function process_main()
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 
 	global $argv;
 

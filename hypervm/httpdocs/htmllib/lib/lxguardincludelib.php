@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 function get_deny_list($total)
 {
@@ -134,7 +134,7 @@ function ftpLogString($string, &$list)
 
 function getTimeFromSysLogString($line)
 {
-	
+
 	$line = trimSpaces($line);
 	$year = @ date('Y');
 	list($month, $day, $time) = explode(" ", $line);

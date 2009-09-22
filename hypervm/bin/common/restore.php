@@ -1,4 +1,4 @@
-<?php 
+<?php
 include_once "htmllib/lib/include.php";
 
 backup_main();
@@ -6,7 +6,7 @@ backup_main();
 function backup_main()
 {
 	global $argc, $argv;
-	global $gbl, $login, $ghtml; 
+	global $gbl, $login, $ghtml;
 
 	$gbl->__restore_flag = true;
 
@@ -69,12 +69,12 @@ function backup_main()
 
 
 	/*
-	if (!testAllServersWithMessage()) {
+	 if (!testAllServersWithMessage()) {
 		$backup->restorestage = "Failed due to: could not connect to slave servers";
 		clearLxbackup($backup);
 		exit;
-	}
-*/
+		}
+		*/
 
 
 	$file = $opt['final'];

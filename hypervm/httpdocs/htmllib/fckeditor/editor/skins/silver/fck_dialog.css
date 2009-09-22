@@ -20,33 +20,27 @@
  *
  * Styles used by the dialog boxes.
  */
-
-body
-{
+body {
 	margin: 0px;
 	padding: 10px;
 	background-color: #f7f7f7;
 }
 
-body, td, input, select, textarea
-{
+body,td,input,select,textarea {
 	font-size: 11px;
-	font-family: 'Microsoft Sans Serif' , Arial, Helvetica, Verdana;
+	font-family: 'Microsoft Sans Serif', Arial, Helvetica, Verdana;
 }
 
-body, .BackColor
-{
+body,.BackColor {
 	background-color: #f7f7f7;
 }
 
-.PopupBody
-{
+.PopupBody {
 	margin: 0px;
 	padding: 0px;
 }
 
-.PopupTitle
-{
+.PopupTitle {
 	padding-right: 10px;
 	padding-left: 10px;
 	font-weight: bold;
@@ -57,54 +51,45 @@ body, .BackColor
 	background-color: #dedede;
 }
 
-.PopupButtons
-{
+.PopupButtons {
 	border-top: #cec6b5 1px solid;
 	background-color: #DEDEDE;
 	padding: 7px 10px 7px 10px;
 }
 
-.Button
-{
+.Button {
 	border: #7a7261 1px solid;
 	color: #504845;
 	background-color: #cec6b5;
 }
 
-#btnOk
-{
+#btnOk {
 	width: 100px;
 }
 
-.DarkBackground
-{
+.DarkBackground {
 	background-color: #d7d79f;
 }
 
-.LightBackground
-{
+.LightBackground {
 	background-color: #ffffbe;
 }
 
-.PopupTitleBorder
-{
+.PopupTitleBorder {
 	border-bottom: #cec6b5 1px solid;
 }
 
-.PopupTabArea
-{
+.PopupTabArea {
 	color: #504845;
 	background-color: #DEDEDE;
 }
 
-.PopupTabEmptyArea
-{
-	padding-left: 10px ;
+.PopupTabEmptyArea {
+	padding-left: 10px;
 	border-bottom: #cec6b5 1px solid;
 }
 
-.PopupTab, .PopupTabSelected
-{
+.PopupTab,.PopupTabSelected {
 	border-right: #cec6b5 1px solid;
 	border-top: #cec6b5 1px solid;
 	border-left: #cec6b5 1px solid;
@@ -115,25 +100,22 @@ body, .BackColor
 	color: #504845;
 }
 
-.PopupTab
-{
+.PopupTab {
 	margin-top: 1px;
 	border-bottom: #cec6b5 1px solid;
 	cursor: pointer;
 	cursor: hand;
 }
 
-.PopupTabSelected
-{
-	font-weight:bold;
+.PopupTabSelected {
+	font-weight: bold;
 	cursor: default;
 	padding-top: 4px;
 	border-bottom: #f1f1e3 1px solid;
 	background-color: #f7f7f7;
 }
 
-.PopupSelectionBox
-{
+.PopupSelectionBox {
 	border: #a9a9a9 1px solid !important;
 	background-color: #dcdcdc !important;
 	cursor: pointer;

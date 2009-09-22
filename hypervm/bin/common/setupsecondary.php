@@ -1,12 +1,12 @@
-<?php 
-include_once "htmllib/lib/include.php"; 
+<?php
+include_once "htmllib/lib/include.php";
 
 setupsecondary_main();
 
 
 function setupsecondary_main()
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	global $argv;
 	$dbf = $sgbl->__var_dbf;
 	$prgm = $sgbl->__var_program_name;
@@ -57,7 +57,7 @@ function check_if_skip($l)
 }
 function add_line_to_secondary_mycnf($master, $slavepass)
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	if (!lxfile_exists("/etc/secondary_master.copy.my.cnf")) {
 		lxfile_cp("/etc/my.cnf", "/etc/secondary_master.copy.my.cnf");
 	}

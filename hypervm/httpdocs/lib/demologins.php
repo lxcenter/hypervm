@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 include_once "htmllib/lib/include.php";
 
@@ -34,7 +34,7 @@ foreach($res as $k => $v) {
 	print("<input type=hidden name=frm_password value=lxlabs>");
 	print("</form>");
 
-	
+
 	if ($class == 'client') {
 		$var = "cttype_v_$name";
 	} else {
@@ -47,8 +47,8 @@ foreach($res as $k => $v) {
 	print("</td></tr>");
 }
 
-	print(" <tr> <td ><img width=20 height=20 src=/img/general/button/on.gif> </td> <td ><a href=http://lxlabs.com/forum/ target='_blank'> Visit our forums.</a> </td></tr>");
-	print(" <tr> <td ><img width=20 height=20 src=/img/general/button/on.gif> </td> <td ><a href=http://lxlabs.com/ target='_blank'> lxlabs.com</a> </td></tr>");
-	print(" <tr> <td ><img width=20 height=20 src=/img/general/button/on.gif> </td> <td ><a href=http://lxlabs.com/software/hypervm/full-feature/ target='_blank'> Full Feature List</a> </td></tr>");
+print(" <tr> <td ><img width=20 height=20 src=/img/general/button/on.gif> </td> <td ><a href=http://lxlabs.com/forum/ target='_blank'> Visit our forums.</a> </td></tr>");
+print(" <tr> <td ><img width=20 height=20 src=/img/general/button/on.gif> </td> <td ><a href=http://lxlabs.com/ target='_blank'> lxlabs.com</a> </td></tr>");
+print(" <tr> <td ><img width=20 height=20 src=/img/general/button/on.gif> </td> <td ><a href=http://lxlabs.com/software/hypervm/full-feature/ target='_blank'> Full Feature List</a> </td></tr>");
 print("</table>");
 

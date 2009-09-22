@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 $c = crypt($argv[1], $argv[2]);
 if ( $c === $argv[2]) {
