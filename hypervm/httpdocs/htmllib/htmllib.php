@@ -836,13 +836,13 @@ class HtmlLib {
 .trigger {
 	cursor: pointer;
 	background: url(<?=$skindir?>/expand.gif);
-	border: 1px solid #<?=$ col ?>;
+	border: 1px solid #<?=$col ?>;
 }
 
 .expanded {
 	cursor: pointer;
 	background: url(<?=$skindir?>/expand.gif);
-	border: 1px solid #<?=$ col ?>;
+	border: 1px solid #<?=$col ?>;
 }
 
 .show {
@@ -864,9 +864,9 @@ body {
 }
 
 #boundary {
-	border-left: 1px solid #<?=$ col ?>;
-	border-right: 1px solid #<?=$ col ?>;
-	border-bottom: 1px solid #<?=$ col ?>;
+	border-left: 1px solid #<?=$col ?>;
+	border-right: 1px solid #<?=$col ?>;
+	border-bottom: 1px solid #<?=$col ?>;
 }
 
 a {
@@ -901,7 +901,7 @@ p code {
 pre {
 	background: #eee;
 	padding: .5em 1em;
-	border: 1px solid #<?=$ col ?>;
+	border: 1px solid #<?=$col ?>;
 }
 
 h1 code,h2 code,h3 code {
@@ -943,7 +943,7 @@ h1 code {
 	border-bottom: 1px solid #036;
 	border-right: 1px solid #036;
 	border-top: 1px solid #69c;
-	border-left: 1px solid #<?=$ col ?>;
+	border-left: 1px solid #<?=$col ?>;
 }
 
 #download li {
@@ -977,14 +977,14 @@ h1 code {
 .trigger {
 	cursor: pointer;
 	background: url(<?=$skindir?>/expand.gif);
-	border: 1px solid #<?=$ col ?>;
+	border: 1px solid #<?=$col ?>;
 	height: 25px;
 }
 
 .expanded {
 	cursor: pointer;
 	background: url(<?=$skindir?>/expand.gif);
-	border: 1px solid #<?=$ col ?>;
+	border: 1px solid #<?=$col ?>;
 	height: 25px;
 }
 
@@ -1011,9 +1011,9 @@ body {
 #boundary {
 	margin-left: 20px;
 	margin-right: 100px;
-	border-left: 1px solid #<?=$ col ?>;
-	border-right: 1px solid #<?=$ col ?>;
-	border-bottom: 1px solid #<?=$ col ?>;
+	border-left: 1px solid #<?=$col ?>;
+	border-right: 1px solid #<?=$col ?>;
+	border-bottom: 1px solid #<?=$col ?>;
 }
 
 a {
@@ -1049,7 +1049,7 @@ p code {
 pre {
 	background: #eee;
 	padding: .5em 1em;
-	border: 1px solid #<?=$ col ?>;
+	border: 1px solid #<?=$col ?>;
 }
 
 h1 code,h2 code,h3 code {
@@ -1097,7 +1097,7 @@ h1 code {
 	border-bottom: 1px solid #036;
 	border-right: 1px solid #036;
 	border-top: 1px solid #69c;
-	border-left: 1px solid #<?=$ col ?>;
+	border-left: 1px solid #<?=$col ?>;
 }
 
 #download li {
@@ -1925,7 +1925,7 @@ Ext.EventManager.onDocumentReady(YAHOO.example.DDApp.init, YAHOO.example.DDApp, 
 
 <style>
 div.section,div#createNew {
-	border: 1px solid #<? echo $ col ?>;
+	border: 1px solid #<? echo $col ?>;
 	margin: 9px 5px;
 	padding: 0px 0px 10px 0px;
 	width: 520;
@@ -1943,7 +1943,7 @@ div#createNew h3,div.section h3 {
 	font-family: "trebuchet ms", verdana, sans-serif;
 	color: #003360;
 	background: url(<?=$skindir?>/expand.gif);
-	border-bottom: 1px solid #<? echo $ col ?>;
+	border-bottom: 1px solid #<? echo $col ?>;
 }
 
 div.section h3 {
