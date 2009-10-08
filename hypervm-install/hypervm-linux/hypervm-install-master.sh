@@ -27,17 +27,6 @@
 clear
 start() {
 
-cat LICENSE | more
-echo "--------------------------------------------"
-echo "Do you agree this license? (press enter for yes, any other key + enter for no)"
-read -s AGREE
-if [ -z $AGREE ]; then
-echo "Proceed installation"
-else
-echo "Install aborted."
-exit;
-fi
-
 	export PATH=/usr/sbin:/sbin:$PATH
 
 if ! [ -f /usr/bin/yum ] ; then
