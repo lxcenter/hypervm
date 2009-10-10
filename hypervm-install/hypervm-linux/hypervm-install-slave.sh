@@ -25,6 +25,9 @@
 #
 ######
 clear
+cat LICENSE | more
+echo "--------------------------------------------"
+
 start() {
 
 	export PATH=/usr/sbin:/sbin:$PATH
@@ -61,18 +64,6 @@ fi
 	unzip -oq hypervm-install.zip
 	cd hypervm-install/hypervm-linux
 	echo Starting main installation script
-
-cat LICENSE | more
-echo "--------------------------------------------"
-echo "Do you agree this license? (press enter for yes, any other key + enter for no)"
-read -s AGREE
-if [ -z $AGREE ]; then
-echo "Proceed installation"
-else
-echo "Install aborted."
-exit;
-fi
-
 	php lxins.php --install-type=slave $* | tee hypervm_install.log
 }
 #
