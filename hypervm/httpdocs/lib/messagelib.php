@@ -1,25 +1,4 @@
-<?PHP
-//
-//    HyperVM, Server Virtualization GUI for OpenVZ and Xen
-//
-//    Copyright (C) 2000-2009     LxLabs
-//    Copyright (C) 2009          LxCenter
-//
-//    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Affero General Public License as
-//    published by the Free Software Foundation, either version 3 of the
-//    License, or (at your option) any later version.
-//
-//    This program is distributed in the hope that it will be useful,
-//    but WITHOUT ANY WARRANTY; without even the implied warranty of
-//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Affero General Public License for more details.
-//
-//    You should have received a copy of the GNU Affero General Public License
-//    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-?>
-
-<?php
+<?php 
 $__emessage['old_kloxo_found'] = "An Kloxo Installation file was found in the vps, which would mean that Kloxo is already installed. If you want me to try again, please delete the kloxo-install-master.sh and /usr/local/lxlabs/kloxo locations using the file manager.";
 $__emessage['a_vps_with_the_same_id_exists'] ="A vps with the id [%s] already exists on the system. This either means this was created outside of hyperVM or else it got orphaned because hyperVM was interrupted forcibly in the midst of a migration. You can either a) Login manually and delete the vps. or b) Use our import facility to import this vps into hyperVM. Sorry for the inconvenience.";
 $__emessage['could_not_start_vps'] = "Could Not Start Vps, Reason: [%s]";

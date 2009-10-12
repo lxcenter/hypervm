@@ -1,26 +1,5 @@
-<?PHP
-//
-//    HyperVM, Server Virtualization GUI for OpenVZ and Xen
-//
-//    Copyright (C) 2000-2009     LxLabs
-//    Copyright (C) 2009          LxCenter
-//
-//    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Affero General Public License as
-//    published by the Free Software Foundation, either version 3 of the
-//    License, or (at your option) any later version.
-//
-//    This program is distributed in the hope that it will be useful,
-//    but WITHOUT ANY WARRANTY; without even the implied warranty of
-//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Affero General Public License for more details.
-//
-//    You should have received a copy of the GNU Affero General Public License
-//    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-?>
-
-<?php
-include_once "htmllib/lib/include.php";
+<?php 
+include_once "htmllib/lib/include.php"; 
 
 initProgram('admin');
 $slave = $argv[1];
@@ -33,7 +12,7 @@ trafficperslave($slave, $oldtime, $newtime);
 function trafficperslave($slave, $oldtime, $newtime)
 {
 
-	global $gbl, $sgbl, $login, $ghtml;
+	global $gbl, $sgbl, $login, $ghtml; 
 	$sq = new Sqlite(null, 'vps');
 
 	$res = $sq->getRowswhere("syncserver = '$slave'", array('nname'));
@@ -59,7 +38,7 @@ function trafficperslave($slave, $oldtime, $newtime)
 
 	$driverapp = $gbl->getSyncClass(null, $slave, 'vps');
 	try {
-		$vps_usage = rl_exec_get(null, $slave, array("vpstraffic__$driverapp", 'findTotaltrafficUsage'), array($list, $oldtime, $newtime));
+		$vps_usage = rl_exec_get(null, $slave, array("vpstraffic__$driverapp", 'findTotaltrafficUsage'), array($list, $oldtime, $newtime)); 
 	} catch (exception $e) {
 		exit;
 	}
@@ -99,12 +78,12 @@ function trafficperslave($slave, $oldtime, $newtime)
 		$sq->rawQuery("update vps set used_q_traffic_last_usage = '$tlu' where nname = '$vps->nname'");
 
 		/*
-		 try {
+		try {
 			$sgbl->__var_backupdisk_usage[$vps->getClName()] = rl_exec_get(null, $vps->syncserver, array("vps", "getBackupDiskSize"), array($vps->nname));
-			} catch (Exception $e) {
+		} catch (Exception $e) {
 			$sgbl->__var_backupdisk_usage[$vps->getClName()] = null;
-			}
-			*/
+		}
+	*/
 	}
 
 }

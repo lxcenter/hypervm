@@ -1,30 +1,9 @@
-<?PHP
-//
-//    HyperVM, Server Virtualization GUI for OpenVZ and Xen
-//
-//    Copyright (C) 2000-2009     LxLabs
-//    Copyright (C) 2009          LxCenter
-//
-//    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Affero General Public License as
-//    published by the Free Software Foundation, either version 3 of the
-//    License, or (at your option) any later version.
-//
-//    This program is distributed in the hope that it will be useful,
-//    but WITHOUT ANY WARRANTY; without even the implied warranty of
-//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Affero General Public License for more details.
-//
-//    You should have received a copy of the GNU Affero General Public License
-//    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-?>
-
-<?php
+<?php 
 
 function update_main()
 {
 	global $argc, $argv;
-	global $gbl, $sgbl, $login, $ghtml;
+	global $gbl, $sgbl, $login, $ghtml; 
 
 	debug_for_backend();
 	$program = $sgbl->__var_program_name;
@@ -51,7 +30,7 @@ function update_main()
 		//fix_database($upversion);
 		print("Upgrade Done.. Executing Cleanup....\n");
 		flush();
-	} else {
+		} else {
 		print("$program is the latest version\n");
 	}
 
@@ -108,7 +87,7 @@ function update_all_slave()
 
 function findNextVersion($lastversion = null)
 {
-	global $gbl, $sgbl, $login, $ghtml;
+	global $gbl, $sgbl, $login, $ghtml; 
 	$maj = $sgbl->__ver_major;
 	$thisversion = $sgbl->__ver_major_minor_release;
 
@@ -134,7 +113,7 @@ function findNextVersion($lastversion = null)
 
 function do_upgrade($upversion)
 {
-	global $gbl, $sgbl, $login, $ghtml;
+	global $gbl, $sgbl, $login, $ghtml; 
 	if (file_exists("CVS")) {
 		print("CVS exists... Development system.. Not upgrading --> exit!...\n");
 		exit;
@@ -178,7 +157,7 @@ function fixZshEtc()
 	if ($ret) {
 		system("yum -y install zsh vim-enhanced");
 	}
-	print("Copy LxEtc\n");
+print("Copy LxEtc\n");
 	lxfile_cp_rec("htmllib/filecore/lxetc/", "$dir/.etc");
 }
 

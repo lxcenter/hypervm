@@ -1,316 +1,295 @@
-<?PHP
-//
-//    HyperVM, Server Virtualization GUI for OpenVZ and Xen
-//
-//    Copyright (C) 2000-2009     LxLabs
-//    Copyright (C) 2009          LxCenter
-//
-//    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Affero General Public License as
-//    published by the Free Software Foundation, either version 3 of the
-//    License, or (at your option) any later version.
-//
-//    This program is distributed in the hope that it will be useful,
-//    but WITHOUT ANY WARRANTY; without even the implied warranty of
-//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Affero General Public License for more details.
-//
-//    You should have received a copy of the GNU Affero General Public License
-//    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-?>
-
-<?php
+<?php 
 
 class Dns__djbdns  extends lxDriverClass {
 
-	// Core
+// Core
 
 
-	static function installMe()
-	{
-		lxshell_return("yum", "-y", "install", "djbdns", "daemontools");
-		if ($ret) { throw new lxexception('install_djbdns_failed', 'parent'); }
-		lxfile_rm_rec("/var/tinydns");
-		lxfile_rm_rec("/var/axfrdns");
-		lxshell_return("__path_php_path", "../bin/misc/djbdnsstart.php");
-		lxfile_cp("../file/djbdns.init", "/etc/init.d/djbdns");
-		lxfile_unix_chmod("/etc/init.d/djbdns", "0755");
-		lxshell_return("chkconfig", "djbdns", "on");
-		createRestartFile("djbdns");
+static function installMe()
+{
+	lxshell_return("yum", "-y", "install", "djbdns", "daemontools");
+	if ($ret) { throw new lxexception('install_djbdns_failed', 'parent'); }
+	lxfile_rm_rec("/var/tinydns");
+	lxfile_rm_rec("/var/axfrdns");
+	lxshell_return("__path_php_path", "../bin/misc/djbdnsstart.php");
+	lxfile_cp("../file/djbdns.init", "/etc/init.d/djbdns");
+	lxfile_unix_chmod("/etc/init.d/djbdns", "0755");
+	lxshell_return("chkconfig", "djbdns", "on");
+	createRestartFile("djbdns");
+}
+
+static function unInstallMe()
+{
+	lxshell_return("service", "djbdns", "stop");
+	lxshell_return("rpm", "-e", "djbdns");
+	lunlink("/etc/init.d/djbdns");
+}
+
+function createConfFile()
+{
+	$fdata = null;
+	$fdata .= $this->syncAddFile($this->main->nname);
+	foreach((array) $this->main->__var_addonlist as $add) {
+		$fdata .= $this->syncAddFile($add->nname);
 	}
 
-	static function unInstallMe()
-	{
-		lxshell_return("service", "djbdns", "stop");
-		lxshell_return("rpm", "-e", "djbdns");
-		lunlink("/etc/init.d/djbdns");
-	}
+}
 
-	function createConfFile()
-	{
-		$fdata = null;
-		$fdata .= $this->syncAddFile($this->main->nname);
-		foreach((array) $this->main->__var_addonlist as $add) {
-			$fdata .= $this->syncAddFile($add->nname);
+
+function syncAddFile($domainname)
+{
+	global $gbl, $sgbl, $login, $ghtml; 
+
+
+	$nameduser = "tinydns";
+	$fdata = null;
+
+
+	$dnsrec = $this->main->dns_record_a;
+	$arec = null;
+	$fdata = null;
+	$starvalue = null;
+	$dnsdata = null;
+	$nameserver = null;
+	foreach($dnsrec as $dns) {
+		if ($dns->ttype === "ns") {
+			if (!$nameserver) {
+				$nameserver = $dns->param;
+			}
 		}
 
+		if ($dns->ttype === 'a') {
+			$arecord[$dns->hostname] = $dns->param;
+		}
 	}
 
+	if ($this->main->soanameserver) {
+		$nameserver = $this->main->soanameserver;
+	}
 
-	function syncAddFile($domainname)
-	{
-		global $gbl, $sgbl, $login, $ghtml;
-
-
-		$nameduser = "tinydns";
-		$fdata = null;
+	$dnsdata .= "Z{$domainname}:$nameserver:{$this->main->__var_email}:{$this->main->__var_ddate}\n";
+	$dnsdata .= ".{$domainname}::$nameserver\n";
 
 
-		$dnsrec = $this->main->dns_record_a;
-		$arec = null;
-		$fdata = null;
-		$starvalue = null;
-		$dnsdata = null;
-		$nameserver = null;
-		foreach($dnsrec as $dns) {
-			if ($dns->ttype === "ns") {
-				if (!$nameserver) {
-					$nameserver = $dns->param;
+	$starvalue = null;
+
+	$fdata .= $dnsdata ;
+
+
+	foreach($dnsrec as $k => $o) {
+
+		switch($o->ttype) {
+
+			case "ns":
+				if ($o->param !== $nameserver) {
+					$fdata .= "&{$domainname}::$o->param\n";
 				}
-			}
+				break;
 
-			if ($dns->ttype === 'a') {
-				$arecord[$dns->hostname] = $dns->param;
-			}
-		}
-
-		if ($this->main->soanameserver) {
-			$nameserver = $this->main->soanameserver;
-		}
-
-		$dnsdata .= "Z{$domainname}:$nameserver:{$this->main->__var_email}:{$this->main->__var_ddate}\n";
-		$dnsdata .= ".{$domainname}::$nameserver\n";
+			case "mx":
+				$v = $o->priority;
+				$tmp= "@$domainname::{$o->param}:$v\n";
+				$fdata .= $tmp;
+				break;
 
 
-		$starvalue = null;
 
-		$fdata .= $dnsdata ;
-
-
-		foreach($dnsrec as $k => $o) {
-
-			switch($o->ttype) {
-
-				case "ns":
-					if ($o->param !== $nameserver) {
-						$fdata .= "&{$domainname}::$o->param\n";
-					}
+			case "a":
+				$key = $o->hostname;
+				$value = $o->param;
+				if ($key === '*') {
+					$starvalue = "+*.$domainname:$value";
 					break;
+				}
 
-				case "mx":
-					$v = $o->priority;
-					$tmp= "@$domainname::{$o->param}:$v\n";
-					$fdata .= $tmp;
-					break;
+				if ($key !== "__base__") {
+					$key = "$key.$domainname";
+				} else {
+					$key = "$domainname";
+				}
 
-
-
-				case "a":
-					$key = $o->hostname;
-					$value = $o->param;
-					if ($key === '*') {
-						$starvalue = "+*.$domainname:$value";
-						break;
-					}
-
-					if ($key !== "__base__") {
-						$key = "$key.$domainname";
-					} else {
-						$key = "$domainname";
-					}
-
-					$tmp= "+$key:$value\n";
-					$fdata .= $tmp;
-					break;
+				$tmp= "+$key:$value\n";
+				$fdata .= $tmp;
+				break;
 
 
-				case "cn":
-				case "cname":
-					$key = $o->hostname;
-					$value = $o->param;
+			case "cn":
+			case "cname":
+				$key = $o->hostname;
+				$value = $o->param;
 
-					if (isset($arecord[$value])) {
-						$rvalue = $arecord[$value];
-
-						if ($key === '*') {
-							$starvalue = "+*.$domainname:$rvalue\n";
-							break;
-						}
-						$key .= ".$domainname";
-						$fdata .= "+$key:$rvalue\n" ;
-						break;
-					}
-
-					if ($value !== "__base__") {
-						$value = "$value.$domainname";
-					} else {
-						$value = "$domainname";
-					}
-
+				if (isset($arecord[$value])) {
+					$rvalue = $arecord[$value];
 
 					if ($key === '*') {
-						$starvalue = "C*.$domainname:$value\n";
+						$starvalue = "+*.$domainname:$rvalue\n";
 						break;
 					}
-
-					$key .= ".{$domainname}";
-					$fdata .= "C$key:$value\n" ;
+					$key .= ".$domainname";
+					$fdata .= "+$key:$rvalue\n" ;
 					break;
+				}
 
-				case "fcname":
-					$key = $o->hostname;
-					$value = $o->param;
+				if ($value !== "__base__") {
+					$value = "$value.$domainname";
+				} else {
+					$value = "$domainname";
+				}
 
 
-					if ($value !== "__base__") {
-						$value = $value;
-					} else {
-						$value = "$domainname";
-					}
-
-					$key .= ".{$domainname}";
-					$fdata .= "C$key:$value\n" ;
+				if ($key === '*') {
+					$starvalue = "C*.$domainname:$value\n";
 					break;
+				}
 
-				case "txt":
-					$key = $o->hostname;
-					$value = $o->param;
-					if($o->param === null) continue;
+				$key .= ".{$domainname}";
+				$fdata .= "C$key:$value\n" ;
+				break;
 
-					if ($key !== "__base__") {
-						$key = "$key.$domainname";
-					} else {
-						$key = "$domainname";
-					}
+			case "fcname":
+				$key = $o->hostname;
+				$value = $o->param;
 
-					$value = str_replace("<%domain>", $domainname, $value);
-					$value = str_replace(":", "\\072", $value);
 
-					$tmp= "'$key:$value\n" ;
-					$fdata .= $tmp;
-					break;
-			}
+				if ($value !== "__base__") {
+					$value = $value;
+				} else {
+					$value = "$domainname";
+				}
+
+				$key .= ".{$domainname}";
+				$fdata .= "C$key:$value\n" ;
+				break;
+
+			case "txt":
+				$key = $o->hostname;
+				$value = $o->param;
+				if($o->param === null) continue;	
+
+				if ($key !== "__base__") {
+					$key = "$key.$domainname";
+				} else {
+					$key = "$domainname";
+				}
+
+				$value = str_replace("<%domain>", $domainname, $value);
+				$value = str_replace(":", "\\072", $value);
+
+				$tmp= "'$key:$value\n" ;
+				$fdata .= $tmp;
+				break;
 		}
-
-		$fdata .= "$starvalue\n";
-		lxfile_mkdir("/var/tinydns/root/kloxo");
-		lfile_put_contents("/var/tinydns/root/kloxo/$domainname.data", $fdata);
-
 	}
 
+	$fdata .= "$starvalue\n";
+	lxfile_mkdir("/var/tinydns/root/kloxo");
+	lfile_put_contents("/var/tinydns/root/kloxo/$domainname.data", $fdata);
 
-	function syncCreateConf()
-	{
-
-		global $gbl, $sgbl, $login, $ghtml;
-
-
-		//	$host = `hostname`;
-		$dlistv = "__var_domainlist_{$this->main->__var_syncserver}";
-		$result = $this->main->$dlistv;
-		$nameduser = "tinydns";
-
-		$dnsfile = "/var/tinydns/root/data";
-
-		//dprintr($result);
-		$result = merge_array_object_not_deleted($result, $this->main);
-
-		if (!$this->main->isDeleted()) {
-			foreach((array) $this->main->__var_addonlist as $d) {
-				$result = merge_array_object_not_deleted($result, $d);
-			}
-		}
-
-		$cdata = null;
-
-		foreach((array) $result as $value){
-			$cdata .= " {$value['nname']}.data ";
-		}
-
-		$cdata = trim($cdata);
-		if ($cdata) {
-			$cmd = "cd /var/tinydns/root/kloxo/ ; cat $cdata > ../data";
-			log_log("dns_log", $cmd);
-			system($cmd);
-		} else {
-			system("rm /var/tinydns/root/data");
-		}
-
-		lxfile_unix_chown($dnsfile, $nameduser);
-		lxshell_directory("/var/tinydns/root/", "make");
-		lxshell_directory("/var/tinydns/root/", "tinydns-data");
-
-	}
+}
 
 
+function syncCreateConf()
+{
 
-	function dbactionAdd()
-	{
-		$this->createConfFile();
-		$this->syncCreateConf();
+	global $gbl, $sgbl, $login, $ghtml; 
 
-		$this->fixRelay();
+	
+//	$host = `hostname`;
+	$dlistv = "__var_domainlist_{$this->main->__var_syncserver}";
+	$result = $this->main->$dlistv;
+	$nameduser = "tinydns";
 
+	$dnsfile = "/var/tinydns/root/data";
 
-	}
+	//dprintr($result);
+	$result = merge_array_object_not_deleted($result, $this->main);
 
-
-	function fixRelay()
-	{
-		$list = os_get_allips();
-		$out = implode("\n", $list);
-		$out = "$out\n";
-		lfile_put_contents("/var/dnscache/root/servers/{$this->main->nname}", $out);
+	if (!$this->main->isDeleted()) {
 		foreach((array) $this->main->__var_addonlist as $d) {
-			$dnsfile = "/var/dnscache/root/servers/{$d->nname}" ;
-			lfile_put_contents($dnsfile, $out);
+			$result = merge_array_object_not_deleted($result, $d);
 		}
 	}
 
-	function dbactionUpdate($subaction)
-	{
+	$cdata = null;
 
-		$this->createConfFile();
-		$this->syncCreateConf();
-		$this->fixRelay();
-		if ($subaction === 'full_update') {
-			//$this->fixRelay();
-		}
+	foreach((array) $result as $value){
+		$cdata .= " {$value['nname']}.data ";
 	}
 
-	function dbactionDelete()
-	{
-		global $gbl, $sgbl, $login, $ghtml;
+	$cdata = trim($cdata);
+	if ($cdata) {
+		$cmd = "cd /var/tinydns/root/kloxo/ ; cat $cdata > ../data";
+		log_log("dns_log", $cmd);
+		system($cmd);
+	} else {
+		system("rm /var/tinydns/root/data");
+	}
 
-		$dnsfile = "/var/dnscache/root/servers/{$this->main->nname}" ;
-		$tinyfile = "/var/tinydns/root/kloxo/{$this->main->nname}.data";
+	lxfile_unix_chown($dnsfile, $nameduser);
+	lxshell_directory("/var/tinydns/root/", "make");
+	lxshell_directory("/var/tinydns/root/", "tinydns-data");
+
+}
+
+
+
+function dbactionAdd()
+{
+	$this->createConfFile();
+	$this->syncCreateConf();
+
+	$this->fixRelay();
+
+
+}
+
+
+function fixRelay()
+{
+	$list = os_get_allips();
+	$out = implode("\n", $list);
+	$out = "$out\n";
+	lfile_put_contents("/var/dnscache/root/servers/{$this->main->nname}", $out);
+	foreach((array) $this->main->__var_addonlist as $d) {
+		$dnsfile = "/var/dnscache/root/servers/{$d->nname}" ;
+		lfile_put_contents($dnsfile, $out);
+	}
+}
+
+function dbactionUpdate($subaction)
+{
+
+	$this->createConfFile();
+	$this->syncCreateConf();
+	$this->fixRelay();
+	if ($subaction === 'full_update') {
+		//$this->fixRelay();
+	}
+}
+
+function dbactionDelete()
+{
+	global $gbl, $sgbl, $login, $ghtml; 
+
+	$dnsfile = "/var/dnscache/root/servers/{$this->main->nname}" ;
+	$tinyfile = "/var/tinydns/root/kloxo/{$this->main->nname}.data";
+	lxfile_rm($dnsfile);
+	lxfile_rm($tinyfile);
+	foreach((array) $this->main->__var_addonlist as $d) {
+		$dnsfile = "/var/dnscache/root/servers/{$d->nname}" ;
+		$tinyfile = "/var/tinydns/root/kloxo/{$d->nname}.data";
 		lxfile_rm($dnsfile);
 		lxfile_rm($tinyfile);
-		foreach((array) $this->main->__var_addonlist as $d) {
-			$dnsfile = "/var/dnscache/root/servers/{$d->nname}" ;
-			$tinyfile = "/var/tinydns/root/kloxo/{$d->nname}.data";
-			lxfile_rm($dnsfile);
-			lxfile_rm($tinyfile);
-		}
-		$this->syncCreateConf();
-
 	}
+	$this->syncCreateConf();
 
-	function dosyncToSystemPost()
-	{
-		global $sgbl;
+}
 
-		createRestartFile("djbdns");
-	}
+function dosyncToSystemPost()
+{
+	global $sgbl;
+
+	createRestartFile("djbdns");
+}
 
 }

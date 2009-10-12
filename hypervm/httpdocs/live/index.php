@@ -1,33 +1,12 @@
-<?PHP
-//
-//    HyperVM, Server Virtualization GUI for OpenVZ and Xen
-//
-//    Copyright (C) 2000-2009     LxLabs
-//    Copyright (C) 2009          LxCenter
-//
-//    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Affero General Public License as
-//    published by the Free Software Foundation, either version 3 of the
-//    License, or (at your option) any later version.
-//
-//    This program is distributed in the hope that it will be useful,
-//    but WITHOUT ANY WARRANTY; without even the implied warranty of
-//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Affero General Public License for more details.
-//
-//    You should have received a copy of the GNU Affero General Public License
-//    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-?>
-
 <?php
-if (preg_match("/Mozilla\/\d.+Compatible; MSIE/i", $_SERVER['HTTP_USER_AGENT']) && !preg_match("/Opera/i", $_SERVER['HTTP_USER_AGENT'])) {
-	header('Expires: 0');
-	header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
-	header('Pragma: public');
-} else {
-	header('Expires: 0');
-	header('Pragma: no-cache');
-}
+    if (preg_match("/Mozilla\/\d.+Compatible; MSIE/i", $_SERVER['HTTP_USER_AGENT']) && !preg_match("/Opera/i", $_SERVER['HTTP_USER_AGENT'])) {
+        header('Expires: 0');
+        header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+        header('Pragma: public');
+    } else {
+        header('Expires: 0');
+        header('Pragma: no-cache');
+    }
 
 include("common.php");
 
@@ -93,9 +72,9 @@ foreach($list as $l) {
 }
 
 if ($redirect)
-$username = $chanbase;
+	$username = $chanbase;
 else
-$username = $_REQUEST['nickname'];
+	$username = $_REQUEST['nickname'];
 
 $id = microtime(true);
 $id = md5($id);
@@ -120,93 +99,123 @@ channel = "%23$channel";
 EOF;
 ?>
 
-commandHist = new Array(); commandNr = 0; function send(cmd) { var a =
-commandHist.unshift(cmd); if (a > 20) { commandHist.pop(); } commandNr =
-0; cmd = escape(cmd); self.passcmnd.location =
-"pcmnd.php?username="+user+"&id="+id+"&cmnd="+cmd+"&channel="+channel;
-// alert("hey"); } function sendSingle() { var cmd =
-document.input.command.value; cmd = cmd.replace(/'/g, "\"");
-//alert(cmd); send(cmd); document.input.command.value=""; // empty }
+commandHist = new Array();
+commandNr = 0;
 
-function sendMultiLine() { var cmd =
-document.getElementById('multiline').value; cmd = cmd.replace(/'/g,
-"\""); send(cmd); document.getElementById('multiline').value = ''; }
+function send(cmd) {
+    var a = commandHist.unshift(cmd);
+
+    
+    if (a > 20) {
+		commandHist.pop();
+    }
+    commandNr = 0;
+    cmd = escape(cmd);
+    self.passcmnd.location = "pcmnd.php?username="+user+"&id="+id+"&cmnd="+cmd+"&channel="+channel;
+//    alert("hey");
+}
+
+function sendSingle()
+{
+    var cmd = document.input.command.value;
+	cmd = cmd.replace(/'/g, "\"");
+	//alert(cmd);
+	send(cmd);
+    document.input.command.value=""; // empty
+}
+
+function sendMultiLine()
+{
+	var cmd = document.getElementById('multiline').value;
+	cmd = cmd.replace(/'/g, "\"");
+	send(cmd);
+	document.getElementById('multiline').value = '';
+}
 
 
 
-function choseColor(color) { document.input.command.value += "%C"+color;
-} function nixreload(namelist) { self.nicklist.location =
-"nicklist.php?list="+namelist; } interID = -1; function scrollen() {
-self.out.scrollBy(0,25) } function scrl(what) { if (what == 1) { if
-(interID == -1) { clearInterval(interID); interID = -1; interID =
-setInterval("scrollen()", 250); // scroll down om de 250 ms; } } else {
-clearInterval(interID); interID = -1; } } function do_MorN(type) { var
-a; var act = "/msg "; if (type == 2) { act = "/notice "; } a =
-document.nicks.nix.selectedIndex; nick =
-document.nicks.nix.options[a].value; nick = nick.replace(/[\@\+\%]/,
-""); document.input.command.value = act + nick + " "; } function
-displayCommand(relElem) { commandNr += relElem; if (commandNr < 0) {
-commandNr = commandHist.length-1; } if (commandNr >= commandHist.length)
-{ commandNr = 0; } document.input.command.value =
-commandHist[commandNr]; } //-->
-</script>
+function choseColor(color) {
+    document.input.command.value += "%C"+color;
+}
+
+function nixreload(namelist) {
+    self.nicklist.location = "nicklist.php?list="+namelist;
+}
+
+interID = -1;
+
+function scrollen() {
+    self.out.scrollBy(0,25)
+}
+function scrl(what) {
+    if (what == 1) {
+	if (interID == -1) {
+	    clearInterval(interID);
+	    interID = -1;
+	    interID = setInterval("scrollen()", 250); // scroll down om de 250 ms;
+	}
+    } else {
+	clearInterval(interID);
+	interID = -1;
+    }
+}
+
+function do_MorN(type) {
+    var a;
+    var act = "/msg ";
+    if (type == 2) { act = "/notice "; }
+    a = document.nicks.nix.selectedIndex;
+    nick = document.nicks.nix.options[a].value;
+    nick = nick.replace(/[\@\+\%]/, "");
+    document.input.command.value = act + nick + " ";
+}
+function displayCommand(relElem) {
+    commandNr += relElem;
+    if (commandNr < 0) { commandNr = commandHist.length-1; }
+    if (commandNr >= commandHist.length) { commandNr = 0; }
+    document.input.command.value = commandHist[commandNr];
+}
+//--></script>
 
 </head>
 
-<table cellspacing="1" cellpadding="0"
-	bgcolor="<?php echo $table_border; ?>" width='600' height='500'>
-	<tr>
-		<td bgcolor="<?php echo $chan_bg; ?>" width=100% height=100%>
-		<table cellpadding=6 cellspacing=6 height=100% width=100%>
-			<tr>
-				<td><iframe frameborder="0" height="100%" width="100%" name="out"
-					src="main.php?licid=<?php echo $licid ?>&username=<?php echo "$user&channel=$channel&id=$id$extra_url"; ?>"
-					valign="bottom" marginwidth="0" marginheight="0">Sorry your browser
-				doesn't support this :S</iframe></td>
-			</tr>
-		</table>
-		</td>
-		<td bgcolor="<?php echo $chan_bg; ?>" width="150" valign="top"
-			align="left"><iframe frameborder="0" height="100%" width="150"
-			name="nicklist" src="nicklist.php" valign="bottom" marginwidth="0"
-			marginheight="0">Sorry your browser doesn't support this :S</iframe>
-		</td>
-	</tr>
-	<tr>
-		<td align="left" bgcolor="<?php echo $input_bg; ?>" height='60'>
-		<form name="input" onSubmit="sendSingle();return false;"
-			style="margin: 2pt; padding: 2pt;">
-		<table>
-			<tr>
-				<td><input type="text" id=command name="command" size="68"></td>
-				<td><input type="button" value="Send" onClick="sendSingle()"></td>
-		
-		</table>
-		<b> MultiLine </b> <textarea name=multiline id=multiline rows=4
-			cols=41></textarea><input type="button" value="Send"
-			onClick="sendMultiLine()"> <iframe frameborder="0" height="0"
-			width="0" src="pcmnd.php" name="passcmnd" marginwidth="0"
-			marginheight="0"></iframe></form>
-		</td>
-		<td align="center" bgcolor="<?php echo $input_bg; ?>" valign="middle"
-			height='30'>
-		<table width="100%" cellspacing="0" cellpadding="0">
-			<tr>
-				<td align=center><b> Auto Scroll: </b> <br>
-				<input type="button" value="Stop" onClick="scrl(0)"> <input
-					type="button" value="Start" onClick="scrl(1)"> <!-- color chooser table -->
-				</td>
+<table cellspacing="1" cellpadding="0" bgcolor="<?php echo $table_border; ?>" width='600' height='500'>
+<tr>
+<td bgcolor="<?php echo $chan_bg; ?>" width=100% height=100%>
+<table cellpadding=6 cellspacing=6 height=100% width=100%> <tr> <td >
+<iframe frameborder="0" height="100%" width="100%" name="out" src="main.php?licid=<?php echo $licid ?>&username=<?php echo "$user&channel=$channel&id=$id$extra_url"; ?>" valign="bottom" marginwidth="0" marginheight="0">Sorry your browser doesn't support this :S</iframe>
+</td> </tr> </table> 
+</td>
+<td bgcolor="<?php echo $chan_bg; ?>" width="150" valign="top" align="left">
+<iframe frameborder="0" height="100%" width="150" name="nicklist" src="nicklist.php" valign="bottom" marginwidth="0" marginheight="0">Sorry your browser doesn't support this :S</iframe>
+</td>
+</tr>
+<tr>
+<td align="left" bgcolor="<?php echo $input_bg; ?>" height='60'>
+<form name="input" onSubmit="sendSingle();return false;" style="margin:2pt; padding:2pt;">
+<table> <tr> <td ><input type="text" id=command name="command" size="68" > </td> <td ><input type="button" value="Send" onClick="sendSingle()"> </td> </table> 
+<b> MultiLine </b>  <textarea name=multiline id=multiline rows=4 cols=41></textarea><input type="button" value="Send" onClick="sendMultiLine()">
 
-			</tr>
-			<tr>
+<iframe frameborder="0" height="0" width="0" src="pcmnd.php" name="passcmnd" marginwidth="0" marginheight="0"></iframe>
+</form>
+</td>
+<td align="center" bgcolor="<?php echo $input_bg; ?>" valign="middle" height='30'>
+<table width="100%" cellspacing="0" cellpadding="0"><tr><td align=center>
+<b> Auto Scroll: </b>  <br> 
+<input type="button" value="Stop" onClick="scrl(0)">
+<input type="button" value="Start" onClick="scrl(1)">
+<!-- color chooser table -->
+</td>
+
+</tr>
+<tr>
 
 
-				<td align="right"></td>
+<td align="right"> </td>
 
-			</tr>
-		</table>
-		</td>
-	</tr>
+</tr></table>
+</td>
+</tr>
 </table>
 
 </body>

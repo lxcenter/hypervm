@@ -1,174 +1,153 @@
-<?PHP
-//
-//    HyperVM, Server Virtualization GUI for OpenVZ and Xen
-//
-//    Copyright (C) 2000-2009     LxLabs
-//    Copyright (C) 2009          LxCenter
-//
-//    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Affero General Public License as
-//    published by the Free Software Foundation, either version 3 of the
-//    License, or (at your option) any later version.
-//
-//    This program is distributed in the hope that it will be useful,
-//    but WITHOUT ANY WARRANTY; without even the implied warranty of
-//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Affero General Public License for more details.
-//
-//    You should have received a copy of the GNU Affero General Public License
-//    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-?>
-
-<?php
+<?php 
 
 class paymentDetail extends lxdb {
 
-	static $__desc = array("", "",  "payment");
+static $__desc = array("", "",  "payment");
 
-	static $__desc_nname =  array("n", "",  "payment");
+static $__desc_nname =  array("n", "",  "payment");
 
-	static $__desc_ddate = array("", "",  "date");
-	static $__desc_amount = array("", "",  "amount");
-	static $__desc_client = array("", "",  "client");
-	static $__desc_month = array("", "",  "month");
-	static $__desc_paymentgw = array("", "",  "payment_gateway");
-	static $__desc_transactionid = array("", "",  "transaction_id");
+static $__desc_ddate = array("", "",  "date");
+static $__desc_amount = array("", "",  "amount");
+static $__desc_client = array("", "",  "client");
+static $__desc_month = array("", "",  "month");
+static $__desc_paymentgw = array("", "",  "payment_gateway");
+static $__desc_transactionid = array("", "",  "transaction_id");
 
-	static $__rewrite_nname_const =  array("client", 'month');
+static $__rewrite_nname_const =  array("client", 'month');
 
-	function dosyncToSystem() { }
-
-
-	static function defaultSort() { return "ddate"; }
-	static function defaultSortDir() { return "desc"; }
-
-	static function createListAlist($parent, $class)
-	{
-		global $gbl, $sgbl, $login, $ghtml;
-
-		$alist[] = "a=list&c=billingamount";
-		if ($login->isAdmin()) {
-			$alist[] =  "a=addform&c=billingamount";
-		}
-
-		$alist[] = "a=list&c=invoice";
-
-		$alist[] = "a=list&c=paymentdetail";
-		if ($login->isAdmin()) {
-			$alist[] =  "a=addform&c=paymentdetail";
-			$alist[] = "a=updateform&sa=createinvoice";
-		}
+function dosyncToSystem() { }
 
 
+static function defaultSort() { return "ddate"; }
+static function defaultSortDir() { return "desc"; }
 
-		return $alist;
+static function createListAlist($parent, $class)
+{
+	global $gbl, $sgbl, $login, $ghtml; 
+
+	$alist[] = "a=list&c=billingamount";
+	if ($login->isAdmin()) {
+		$alist[] =  "a=addform&c=billingamount";
+	}
+	
+	$alist[] = "a=list&c=invoice";
+
+	$alist[] = "a=list&c=paymentdetail";
+	if ($login->isAdmin()) {
+		$alist[] =  "a=addform&c=paymentdetail";
+		$alist[] = "a=updateform&sa=createinvoice";
+	}
+	
+
+
+	return $alist;
+}
+
+static function add($parent, $class, $param)
+{
+	$param['client'] = $parent->nname;
+	$param['ddate'] = time();
+	return $param;
+}
+
+function isSync()
+{
+	return false;
+}
+static function addform($parent, $class, $typetd = null)
+{
+	global $gbl, $sgbl, $login, $ghtml; 
+	$vlist['client'] = array('M', $parent->nname);
+	$sq = new Sqlite(null, 'invoice');
+	$res = $sq->getRowsWhere("client = '$parent->nname'", array("month"));
+	$list = get_namelist_from_arraylist($res, 'month');
+	$list = array_reverse($list);
+	$vlist['month'] = array('s', $list);
+	$vlist['amount'] = null;
+	$vlist['paymentgw'] = null;
+	$vlist['transactionid'] = null;
+	$ret['variable'] = $vlist;
+	$ret['action'] = 'add';
+	return $ret;
+}
+
+
+static function createListNlist($parent, $view)
+{
+	if ($parent->isAdmin()) {
+		$nlist['client'] = '100%';
+	}
+	$nlist['month']  = '100%';
+	$nlist['ddate']  = '10%';
+	$nlist['amount'] = '10%';
+	$nlist['paymentgw'] = '10%';
+	$nlist['transactionid'] = '10%';
+	return $nlist;
+}
+
+static function initThisListRule($parent, $class)
+{
+	if ($parent->isAdmin()) {
+		return "__v_table";
 	}
 
-	static function add($parent, $class, $param)
-	{
-		$param['client'] = $parent->nname;
-		$param['ddate'] = time();
-		return $param;
-	}
-
-	function isSync()
-	{
-		return false;
-	}
-	static function addform($parent, $class, $typetd = null)
-	{
-		global $gbl, $sgbl, $login, $ghtml;
-		$vlist['client'] = array('M', $parent->nname);
-		$sq = new Sqlite(null, 'invoice');
-		$res = $sq->getRowsWhere("client = '$parent->nname'", array("month"));
-		$list = get_namelist_from_arraylist($res, 'month');
-		$list = array_reverse($list);
-		$vlist['month'] = array('s', $list);
-		$vlist['amount'] = null;
-		$vlist['paymentgw'] = null;
-		$vlist['transactionid'] = null;
-		$ret['variable'] = $vlist;
-		$ret['action'] = 'add';
-		return $ret;
-	}
+	return array('parent_clname', '=', "'" . createParentName($parent->getClass(), $parent->nname). "'");
+}
 
 
-	static function createListNlist($parent, $view)
-	{
-		if ($parent->isAdmin()) {
-			$nlist['client'] = '100%';
+static function checkIftransactionExists($transactionid)
+{
+	static $sq;
+	if (!$sq) { $sq = new Sqlite(null, 'paymentdetail'); }
+
+	if ($sq->getRowsWhere("transactionid = '$transactionid'")) {
+		return true;
+	}
+	return false;
+}
+
+static function process_paypal($list)
+{
+	initProgram('admin');
+
+	$sq = new Sqlite(null, 'paymentdetail');
+
+	$r = paymentdetail__paypal::createPaymentDetail($list);
+
+	if (self::checkIftransactionExists($r['transactionid'])) {
+		log_log("paypal_billing", "Transactionid {$r['transactionid']} already exists\n");
+		return;
+	}
+
+	$i = 0;
+	while (true) {
+		$r['nname'] = implode("___", array($r['client'], $r['month'], $i));
+		if (!$sq->getRowsWhere("nname = '{$r['nname']}'")) {
+			break;
 		}
-		$nlist['month']  = '100%';
-		$nlist['ddate']  = '10%';
-		$nlist['amount'] = '10%';
-		$nlist['paymentgw'] = '10%';
-		$nlist['transactionid'] = '10%';
-		return $nlist;
+		$i++;
 	}
 
-	static function initThisListRule($parent, $class)
-	{
-		if ($parent->isAdmin()) {
-			return "__v_table";
-		}
+	$r['parent_clname'] = createParentName('client', $r['client']);
 
-		return array('parent_clname', '=', "'" . createParentName($parent->getClass(), $parent->nname). "'");
+	$cl = new Client(null, null, $r['client']);
+	$cl->get();
+	if (!$cl->isOn('status')) {
+		$cl->updateEnable(null);
+		$cl->was();
 	}
 
+	$payp = new paymentDetail(null, null, $r['nname']);
 
-	static function checkIftransactionExists($transactionid)
-	{
-		static $sq;
-		if (!$sq) { $sq = new Sqlite(null, 'paymentdetail'); }
+	$r['complete_detail'] = $list;
 
-		if ($sq->getRowsWhere("transactionid = '$transactionid'")) {
-			return true;
-		}
-		return false;
-	}
+	$r['paymentgw'] = 'paypal';
 
-	static function process_paypal($list)
-	{
-		initProgram('admin');
+	$payp->create($r);
 
-		$sq = new Sqlite(null, 'paymentdetail');
+	$payp->write();
+	log_log("paypal_billing", "saved the payment detail $p->nname");
 
-		$r = paymentdetail__paypal::createPaymentDetail($list);
-
-		if (self::checkIftransactionExists($r['transactionid'])) {
-			log_log("paypal_billing", "Transactionid {$r['transactionid']} already exists\n");
-			return;
-		}
-
-		$i = 0;
-		while (true) {
-			$r['nname'] = implode("___", array($r['client'], $r['month'], $i));
-			if (!$sq->getRowsWhere("nname = '{$r['nname']}'")) {
-				break;
-			}
-			$i++;
-		}
-
-		$r['parent_clname'] = createParentName('client', $r['client']);
-
-		$cl = new Client(null, null, $r['client']);
-		$cl->get();
-		if (!$cl->isOn('status')) {
-			$cl->updateEnable(null);
-			$cl->was();
-		}
-
-		$payp = new paymentDetail(null, null, $r['nname']);
-
-		$r['complete_detail'] = $list;
-
-		$r['paymentgw'] = 'paypal';
-
-		$payp->create($r);
-
-		$payp->write();
-		log_log("paypal_billing", "saved the payment detail $p->nname");
-
-	}
+}
 
 }

@@ -1,315 +1,294 @@
-<?PHP
-//
-//    HyperVM, Server Virtualization GUI for OpenVZ and Xen
-//
-//    Copyright (C) 2000-2009     LxLabs
-//    Copyright (C) 2009          LxCenter
-//
-//    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Affero General Public License as
-//    published by the Free Software Foundation, either version 3 of the
-//    License, or (at your option) any later version.
-//
-//    This program is distributed in the hope that it will be useful,
-//    but WITHOUT ANY WARRANTY; without even the implied warranty of
-//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Affero General Public License for more details.
-//
-//    You should have received a copy of the GNU Affero General Public License
-//    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-?>
-
-<?php
+<?php 
 
 class ipaddress__debian extends lxlclass {
 
-	function createipconf()
-	{
+function createipconf()
+{
 
-		global $gbl, $sgbl, $login, $ghtml;
+	global $gbl, $sgbl, $login, $ghtml; 
 
+	
+	$fstring =$this->getlostring();
 
-		$fstring =$this->getlostring();
+	$pserver = $login->getFromList("pserver", "localhost");
+	
+	$ipl = $pserver->getList("ipaddress");
 
-		$pserver = $login->getFromList("pserver", "localhost");
+	$list  = array_reverse($ipl);
+ 
+	$count = count($list);
 
-		$ipl = $pserver->getList("ipaddress");
-
-		$list  = array_reverse($ipl);
-
-		$count = count($list);
-
-		foreach($list as $ip) {
-			$dev  = explode("-" , $ip->devname);
-			if(count($dev) >= 2) {
-				$actualname  = implode( ":", $dev);
-			} else
+	foreach($list as $ip) {
+		$dev  = explode("-" , $ip->devname);
+		if(count($dev) >= 2) {
+			$actualname  = implode( ":", $dev);
+		} else 
 			$actualname = $ip->devname;
 
-			$ip->network = $this->findnetworkaddress($ip->ipaddr , $ip->netmask);
+		$ip->network = $this->findnetworkaddress($ip->ipaddr , $ip->netmask);
 
-			$fstring .= $this->getstring($actualname, $ip->ipaddr, $ip->network,$ip->broadcast , $ip->gateway , $ip->netmask);
-		}
-		return $fstring;
+		$fstring .= $this->getstring($actualname, $ip->ipaddr, $ip->network,$ip->broadcast , $ip->gateway , $ip->netmask);
+ }		 
+return $fstring;
+}
+
+
+function getlostring() 
+{
+	$fstring =	"auto lo\n";
+	
+	$fstring .= "iface lo inet loopback\n";
+
+	return "$fstring\n\n\n";
+}
+
+function getstring($devname, $ipaddress, $network, $broadcast, $gateway , $netmask) 
+{
+
+	$fstring = "\n\n\n\n";
+
+	$fstring  = "auto $devname\n";
+
+	$fstring .= "iface $devname  inet static\n";
+
+	$fstring .=  "\t\t address $ipaddress\n";
+
+	$fstring .= "\t\t netmask $netmask\n"; 
+
+	$fstring .= "\t\t network $network\n"; 
+
+	$fstring .= "\t\t broadcast $broadcast\n";
+
+	$fstring .= "\t\t gateway $gateway\n";
+
+	return "$fstring\n\n\n";
+
+}
+
+static function listSystemIps($machinename)
+{
+	$result = self::getCurrentIps();
+	$res = ipaddress::listSystemIps($result);
+	foreach($res as $r) {
+		ipaddress::copyCertificate($r['devname'], $machinename);
+	}
+	return $res;
+}
+
+function findnetworkaddress($ipaddr , $netmask) 
+{
+
+	$temp_ipaddr=explode(".",$ipaddr);
+	$temp_netmask=explode(".",$netmask);
+	$i=0;
+	foreach($temp_ipaddr as $row)  { 
+		$ipaddr_binary[$i]=str_pad(base_convert($row,10,2),8,'0',STR_PAD_LEFT);
+		$i++;
+	}
+	$i=0;
+
+	foreach($temp_netmask as $row) {
+		$netmask_binary[$i]=str_pad(base_convert($row,10,2),8,'0',STR_PAD_LEFT);
+		$networkip[$i]=($netmask_binary[$i] & $ipaddr_binary[$i]);
+		$converted[$i]=base_convert($networkip[$i],2,10);
+		$i++;
 	}
 
-
-	function getlostring()
-	{
-		$fstring =	"auto lo\n";
-
-		$fstring .= "iface lo inet loopback\n";
-
-		return "$fstring\n\n\n";
-	}
-
-	function getstring($devname, $ipaddress, $network, $broadcast, $gateway , $netmask)
-	{
-
-		$fstring = "\n\n\n\n";
-
-		$fstring  = "auto $devname\n";
-
-		$fstring .= "iface $devname  inet static\n";
-
-		$fstring .=  "\t\t address $ipaddress\n";
-
-		$fstring .= "\t\t netmask $netmask\n";
-
-		$fstring .= "\t\t network $network\n";
-
-		$fstring .= "\t\t broadcast $broadcast\n";
-
-		$fstring .= "\t\t gateway $gateway\n";
-
-		return "$fstring\n\n\n";
-
-	}
-
-	static function listSystemIps($machinename)
-	{
-		$result = self::getCurrentIps();
-		$res = ipaddress::listSystemIps($result);
-		foreach($res as $r) {
-			ipaddress::copyCertificate($r['devname'], $machinename);
-		}
-		return $res;
-	}
-
-	function findnetworkaddress($ipaddr , $netmask)
-	{
-
-		$temp_ipaddr=explode(".",$ipaddr);
-		$temp_netmask=explode(".",$netmask);
-		$i=0;
-		foreach($temp_ipaddr as $row)  {
-			$ipaddr_binary[$i]=str_pad(base_convert($row,10,2),8,'0',STR_PAD_LEFT);
-			$i++;
-		}
-		$i=0;
-
-		foreach($temp_netmask as $row) {
-			$netmask_binary[$i]=str_pad(base_convert($row,10,2),8,'0',STR_PAD_LEFT);
-			$networkip[$i]=($netmask_binary[$i] & $ipaddr_binary[$i]);
-			$converted[$i]=base_convert($networkip[$i],2,10);
-			$i++;
-		}
-
-		$networkaddress = implode(".",$converted);
-		return $networkaddress;
-	}
+	$networkaddress = implode(".",$converted);
+	return $networkaddress;
+}
 
 
-	function dosyncToSystem()
-	{
+function dosyncToSystem()
+{
 
-		global $gbl, $sgbl, $login, $ghtml;
-		return;
+	global $gbl, $sgbl, $login, $ghtml; 
+	return;
 
-		$ipaddr=$this->main->ipaddr;
+	$ipaddr=$this->main->ipaddr;
+	
+	$netmask=$this->main->netmask;
 
-		$netmask=$this->main->netmask;
-
-		$networkaddress = $this->findnetworkaddress($ipaddr , $netmask);
+	$networkaddress = $this->findnetworkaddress($ipaddr , $netmask);
 
 		$dev  = explode("-" , $this->main->devname);
 		if(count($dev) >= 2) {
 			$actualname  = implode( ":", $dev);
-		} else
-		$actualname = $this->main->devname;
-		$this->main->network = $networkaddress;
+		} else 
+			$actualname = $this->main->devname;
+	$this->main->network = $networkaddress;
+	
+	$ipaddrfile = "/etc/network/interfaces";
 
-		$ipaddrfile = "/etc/network/interfaces";
-
-		$dir = "/etc/network";
+	$dir = "/etc/network";
 
 
 
-		switch ($this->main->dbaction)
-		{
-			case "add":
-				{
+	switch ($this->main->dbaction)
+	{ 
+		case "add":
+			{   
+				
+				$this->main->network = $networkaddress;
+	
+				$string = $this->createipconf();
 
-					$this->main->network = $networkaddress;
-
-					$string = $this->createipconf();
-
-					lfile_put_contents($ipaddrfile, $string);
-
-					break;
-				}
-
-			case "delete": {
-
-				$list = self::getCurrentIps();
-				foreach($list as $ip) {
-					if($ip['devname'] === $this->main->devname || $ip['devname'] === "lo") {
-						continue;
-				 } else
-				 $ipl[] = $ip ;
-				}
-
-				$string = $this->getlostring();
-
-				foreach($ipl as $i) {
-					$st = $i['devname'];
-					$dev  = explode("-" , $st );
-					if(count($dev) >= 1)
-					$actualname = implode(":", $dev);
-					else
-					$actualname = $st;
-
-					$string .= $this->getstring($actualname, $i['ipaddr'], $i['network'] , $i['broadcast'] , $i['gateway'] , $i['netmask']);
-
-				}
 				lfile_put_contents($ipaddrfile, $string);
+				
 				break;
 			}
 
-			case "update":
-				{
+		case "delete": {
+	
+			$list = self::getCurrentIps();
+                 foreach($list as $ip) {
+                  if($ip['devname'] === $this->main->devname || $ip['devname'] === "lo") {
+                    continue;
+				 } else 
+                   $ipl[] = $ip ;
+				 }
+				
+				$string = $this->getlostring();
+				
+				foreach($ipl as $i) {
+					$st = $i['devname'];
+				    $dev  = explode("-" , $st );
+                    if(count($dev) >= 1) 
+					   $actualname = implode(":", $dev); 
+                    else 
+                       $actualname = $st;
 
-					$list = self::getCurrentIps();
+					$string .= $this->getstring($actualname, $i['ipaddr'], $i['network'] , $i['broadcast'] , $i['gateway'] , $i['netmask']);
 
-					foreach($list as $ip) {
-						 
+				    }
+				lfile_put_contents($ipaddrfile, $string);
+				break;
+		}
+	
+	    case "update":
+                {
+
+				$list = self::getCurrentIps();
+                
+				foreach($list as $ip) {
+                 
 					 if($ip['devname'] === $this->main->devname) {
 					  $ip['devname'] =  $this->main->devname;
-					  $ip['ipaddr']  = $this->main->ipaddr;
+     			      $ip['ipaddr']  = $this->main->ipaddr; 
 					  $ip['network']  = $this->main->network;
 					  $ip['broadcast'] = $this->main->broadcast;
 					  $ip['gateway'] = $this->main->gateway;
 					  $ip['netmask'] = $this->main->netmask;
-					 }
+				    }
 					 if($ip['devname'] === "lo") {
 						 continue;
-					 }
-					 	
+					 } 
+					
 					 $ipl[] = $ip;
 
-					}
+			 }
+				
+			   $string = $this->getlostring();
+				
+				foreach($ipl as $i) {
+					$st = $i['devname'];
+				    $dev  = explode("-" , $st );
+                    if(count($dev) >= 1) 
+					   $actualname = implode(":", $dev); 
+                    else 
+                       $actualname = $st;
 
-					$string = $this->getlostring();
+					$string .= $this->getstring($actualname, $i['ipaddr'], $i['network'] , $i['broadcast'] , $i['gateway'] , $i['netmask']);
 
-					foreach($ipl as $i) {
-						$st = $i['devname'];
-						$dev  = explode("-" , $st );
-						if(count($dev) >= 1)
-						$actualname = implode(":", $dev);
-						else
-						$actualname = $st;
+		     }
+			
+	  		 lfile_put_contents($ipaddrfile, $string);
+				break;
+	 }
+   }
 
-						$string .= $this->getstring($actualname, $i['ipaddr'], $i['network'] , $i['broadcast'] , $i['gateway'] , $i['netmask']);
+  lunlink($tfile);
 
-					}
-						
-					lfile_put_contents($ipaddrfile, $string);
-					break;
-				}
+}
+
+static function getCurrentIps()
+{
+
+	global $gbl, $sgbl, $login, $ghtml; 
+
+	$contents = lfile_get_contents("/etc/network/interfaces");
+
+	$string = preg_replace('/[\n]+/' , "\n",  $contents);
+	
+	$array = explode("auto" , $string);
+
+	foreach($array as $a12) {
+		$a[]   =  self::getArrayFromString($a12); 
+	}	
+	foreach($a as $single ) {
+
+		if(count($single) >= 3) {
+			$ret[] = $single;
 		}
-
-		lunlink($tfile);
-
 	}
 
-	static function getCurrentIps()
+	return $ret;
+
+}
+
+static function getArrayFromString($t) 
+{
+	$array = explode("\n" , $t);
+
+	error_reporting(0);
+
+	foreach($array as $a ) 
 	{
+		$t = $a;
 
-		global $gbl, $sgbl, $login, $ghtml;
+		$a=ltrim($t);
 
-		$contents = lfile_get_contents("/etc/network/interfaces");
+		list($a1, $a2, $a3, $a4) = explode(" " , $a); 
+	
+		$b['parent_clname'] = createParentName("pserver", "localhost");
 
-		$string = preg_replace('/[\n]+/' , "\n",  $contents);
-
-		$array = explode("auto" , $string);
-
-		foreach($array as $a12) {
-			$a[]   =  self::getArrayFromString($a12);
-		}
-		foreach($a as $single ) {
-
-			if(count($single) >= 3) {
-				$ret[] = $single;
-			}
-		}
-
-		return $ret;
-
-	}
-
-	static function getArrayFromString($t)
-	{
-		$array = explode("\n" , $t);
-
-		error_reporting(0);
-
-		foreach($array as $a )
+		switch($a1) 
 		{
-			$t = $a;
+		case 'iface':
 
-			$a=ltrim($t);
+            list($name,$id) = explode(':' , $a2);
+		    if($id === " " || is_null($id)) 
+				$b['devname'] = $a2 ;
+			 else 
+                $b['devname'] = $name . "-" . $id;  
+			
+			$b['bootproto'] = $a4;
+			break;
 
-			list($a1, $a2, $a3, $a4) = explode(" " , $a);
+		case 'address':
+				$b['ipaddr'] = $a2;
+				break;
 
-			$b['parent_clname'] = createParentName("pserver", "localhost");
+	     case 'network':
+				$b['network'] = $a2;
+				break;
 
-			switch($a1)
-			{
-				case 'iface':
+		case 'netmask':
+				$b['netmask'] = $a2;
+				break;
 
-					list($name,$id) = explode(':' , $a2);
-					if($id === " " || is_null($id))
-					$b['devname'] = $a2 ;
-					else
-					$b['devname'] = $name . "-" . $id;
-						
-					$b['bootproto'] = $a4;
-					break;
+			case 'broadcast':
+				$b['broadcast'] = $a2;
+				break;
 
-				case 'address':
-					$b['ipaddr'] = $a2;
-					break;
-
-				case 'network':
-					$b['network'] = $a2;
-					break;
-
-				case 'netmask':
-					$b['netmask'] = $a2;
-					break;
-
-				case 'broadcast':
-					$b['broadcast'] = $a2;
-					break;
-
-				case 'gateway':
-					$b['gateway'] = $a2;
-					break;
+		case 'gateway': 
+				$b['gateway'] = $a2;
+				break;
 	  }
-		}
-		return $b;
+  }
+	return $b;
 
-	}
+}
 
 }
 

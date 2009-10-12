@@ -1,24 +1,3 @@
-<?PHP
-//
-//    HyperVM, Server Virtualization GUI for OpenVZ and Xen
-//
-//    Copyright (C) 2000-2009     LxLabs
-//    Copyright (C) 2009          LxCenter
-//
-//    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Affero General Public License as
-//    published by the Free Software Foundation, either version 3 of the
-//    License, or (at your option) any later version.
-//
-//    This program is distributed in the hope that it will be useful,
-//    but WITHOUT ANY WARRANTY; without even the implied warranty of
-//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Affero General Public License for more details.
-//
-//    You should have received a copy of the GNU Affero General Public License
-//    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-?>
-
 <?php
 /*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
@@ -58,7 +37,7 @@ class FCKeditor
 
 	// PHP 5 Constructor (by Marcus Bointon <coolbru@users.sourceforge.net>)
 	function __construct( $instanceName )
-	{
+ 	{
 		$this->InstanceName	= $instanceName ;
 		$this->BasePath		= '/fckeditor/' ;
 		$this->Width		= '100%' ;
@@ -83,14 +62,14 @@ class FCKeditor
 		if ( $this->IsCompatible() )
 		{
 			if ( isset( $_GET['fcksource'] ) && $_GET['fcksource'] == "true" )
-			$File = 'fckeditor.original.html' ;
+				$File = 'fckeditor.original.html' ;
 			else
-			$File = 'fckeditor.html' ;
+				$File = 'fckeditor.html' ;
 
 			$Link = "{$this->BasePath}editor/{$File}?InstanceName={$this->InstanceName}" ;
 
 			if ( $this->ToolbarSet != '' )
-			$Link .= "&amp;Toolbar={$this->ToolbarSet}" ;
+				$Link .= "&amp;Toolbar={$this->ToolbarSet}" ;
 
 			// Render the linked hidden field.
 			$Html .= "<input type=\"hidden\" id=\"{$this->InstanceName}\" name=\"{$this->InstanceName}\" value=\"{$HtmlValue}\" style=\"display:none\" />" ;
@@ -104,14 +83,14 @@ class FCKeditor
 		else
 		{
 			if ( strpos( $this->Width, '%' ) === false )
-			$WidthCSS = $this->Width . 'px' ;
+				$WidthCSS = $this->Width . 'px' ;
 			else
-			$WidthCSS = $this->Width ;
+				$WidthCSS = $this->Width ;
 
 			if ( strpos( $this->Height, '%' ) === false )
-			$HeightCSS = $this->Height . 'px' ;
+				$HeightCSS = $this->Height . 'px' ;
 			else
-			$HeightCSS = $this->Height ;
+				$HeightCSS = $this->Height ;
 
 			$Html .= "<textarea name=\"{$this->InstanceName}\" rows=\"4\" cols=\"40\" style=\"width: {$WidthCSS}; height: {$HeightCSS}\">{$HtmlValue}</textarea>" ;
 		}
@@ -126,9 +105,9 @@ class FCKeditor
 		global $HTTP_USER_AGENT ;
 
 		if ( isset( $HTTP_USER_AGENT ) )
-		$sAgent = $HTTP_USER_AGENT ;
+			$sAgent = $HTTP_USER_AGENT ;
 		else
-		$sAgent = $_SERVER['HTTP_USER_AGENT'] ;
+			$sAgent = $_SERVER['HTTP_USER_AGENT'] ;
 
 		if ( strpos($sAgent, 'MSIE') !== false && strpos($sAgent, 'mac') === false && strpos($sAgent, 'Opera') === false )
 		{
@@ -141,7 +120,7 @@ class FCKeditor
 			return ($iVersion >= 20030210) ;
 		}
 		else
-		return false ;
+			return false ;
 	}
 
 	function GetConfigFieldString()
@@ -152,16 +131,16 @@ class FCKeditor
 		foreach ( $this->Config as $sKey => $sValue )
 		{
 			if ( $bFirst == false )
-			$sParams .= '&amp;' ;
+				$sParams .= '&amp;' ;
 			else
-			$bFirst = false ;
+				$bFirst = false ;
 
 			if ( $sValue === true )
-			$sParams .= $this->EncodeConfig( $sKey ) . '=true' ;
+				$sParams .= $this->EncodeConfig( $sKey ) . '=true' ;
 			else if ( $sValue === false )
-			$sParams .= $this->EncodeConfig( $sKey ) . '=false' ;
+				$sParams .= $this->EncodeConfig( $sKey ) . '=false' ;
 			else
-			$sParams .= $this->EncodeConfig( $sKey ) . '=' . $this->EncodeConfig( $sValue ) ;
+				$sParams .= $this->EncodeConfig( $sKey ) . '=' . $this->EncodeConfig( $sValue ) ;
 		}
 
 		return $sParams ;

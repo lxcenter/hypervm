@@ -1,93 +1,72 @@
-<?PHP
-//
-//    HyperVM, Server Virtualization GUI for OpenVZ and Xen
-//
-//    Copyright (C) 2000-2009     LxLabs
-//    Copyright (C) 2009          LxCenter
-//
-//    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Affero General Public License as
-//    published by the Free Software Foundation, either version 3 of the
-//    License, or (at your option) any later version.
-//
-//    This program is distributed in the hope that it will be useful,
-//    but WITHOUT ANY WARRANTY; without even the implied warranty of
-//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Affero General Public License for more details.
-//
-//    You should have received a copy of the GNU Affero General Public License
-//    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-?>
-
-<?php
+<?php 
 
 class Process__Linux extends lxDriverClass {
 
-	static function readProcessList()
-	{
+static function readProcessList()
+{
 
 
-		$list = lscandir("/proc");
+	$list = lscandir("/proc");
 
-		foreach($list as $pid) {
-			if (is_numeric($pid) && $pid[0] != ".") {
+	foreach($list as $pid) {
+		if (is_numeric($pid) && $pid[0] != ".") {
 
-				$cmdlinearr = lfile("/proc/" . $pid. "/cmdline");
+			$cmdlinearr = lfile("/proc/" . $pid. "/cmdline");
 
-				$return[$pid]['nname'] = $pid;
+			$return[$pid]['nname'] = $pid;
 
-				if (!$cmdlinearr)  {
-					unset($return[$pid]);
-					continue;
+			if (!$cmdlinearr)  {
+				unset($return[$pid]);
+				continue;
+			}
+
+			$cmdline = $cmdlinearr[0];
+			$cmdline = preg_replace('+\0+i', " " , $cmdline);
+			$return[$pid]["command"] = substr($cmdline, 0, 100);
+			if (csa($cmdline, "display.php") && csa($cmdline, "kloxo")) {
+				unset($return[$pid]);
+				continue;
+			}
+			$arr  =  lfile("/proc/" . $return[$pid]["nname"] . "/status");
+			foreach($arr as $a) {
+				if (csb($a, "State:")) {
+					$a = trim($a);
+					$a = strtil($a, "(");
+					$a = strfrom($a, "State:");
+					$a = trim($a);
+					$return[$pid]["state"] = $a;
+					$return[$pid]["state"] = ($return[$pid]["state"] === "S")? "ZZ": $return[$pid]["state"];
 				}
 
-				$cmdline = $cmdlinearr[0];
-				$cmdline = preg_replace('+\0+i', " " , $cmdline);
-				$return[$pid]["command"] = substr($cmdline, 0, 100);
-				if (csa($cmdline, "display.php") && csa($cmdline, "kloxo")) {
-					unset($return[$pid]);
-					continue;
+				if (csa($a, "Uid")) {
+					$uidarr = explode(":", $a);
+					$value = trimSpaces($uidarr[1]);
+					$uidarr2 = explode(" ", $value);
+					$uid = trim($uidarr2[1]);
+					$pwd = posix_getpwuid($uid);
+					$username = $pwd['name'];
+					$return[$pid]["username"] = $username;
 				}
-				$arr  =  lfile("/proc/" . $return[$pid]["nname"] . "/status");
-				foreach($arr as $a) {
-					if (csb($a, "State:")) {
-						$a = trim($a);
-						$a = strtil($a, "(");
-						$a = strfrom($a, "State:");
-						$a = trim($a);
-						$return[$pid]["state"] = $a;
-						$return[$pid]["state"] = ($return[$pid]["state"] === "S")? "ZZ": $return[$pid]["state"];
-					}
 
-					if (csa($a, "Uid")) {
-						$uidarr = explode(":", $a);
-						$value = trimSpaces($uidarr[1]);
-						$uidarr2 = explode(" ", $value);
-						$uid = trim($uidarr2[1]);
-						$pwd = posix_getpwuid($uid);
-						$username = $pwd['name'];
-						$return[$pid]["username"] = $username;
-					}
-
-					if (csa($a, "VmSize")) {
-						$uidarr = explode(":", $a);
-						$uidarr = trimSpaces($uidarr[1]);
-						$uidarr = strtilfirst($uidarr, " ");
-						$return[$pid]['memory'] = round($uidarr/1024, 2);
-					}
+				if (csa($a, "VmSize")) {
+					$uidarr = explode(":", $a);
+					$uidarr = trimSpaces($uidarr[1]);
+					$uidarr = strtilfirst($uidarr, " ");
+					$return[$pid]['memory'] = round($uidarr/1024, 2);
 				}
 			}
 		}
-		return $return;
-
 	}
+  return $return;
+
+}
 
 
-	function dbactionUpdate($subaction)
-	{
-		if_demo_throw_exception('ps');
-		lxshell_return("kill", "-" . $this->main->signal, $this->main->nname);
-	}
+function dbactionUpdate($subaction)
+{
+	if_demo_throw_exception('ps');
+	lxshell_return("kill", "-" . $this->main->signal, $this->main->nname);
+}
 
 
 }

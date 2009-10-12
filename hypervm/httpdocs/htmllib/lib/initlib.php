@@ -1,29 +1,8 @@
-<?PHP
-//
-//    HyperVM, Server Virtualization GUI for OpenVZ and Xen
-//
-//    Copyright (C) 2000-2009     LxLabs
-//    Copyright (C) 2009          LxCenter
-//
-//    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Affero General Public License as
-//    published by the Free Software Foundation, either version 3 of the
-//    License, or (at your option) any later version.
-//
-//    This program is distributed in the hope that it will be useful,
-//    but WITHOUT ANY WARRANTY; without even the implied warranty of
-//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Affero General Public License for more details.
-//
-//    You should have received a copy of the GNU Affero General Public License
-//    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-?>
-
-<?php
+<?php 
 
 function create_mysql_db($type, $opt, $admin_pass)
 {
-	global $gbl, $sgbl, $login, $ghtml;
+	global $gbl, $sgbl, $login, $ghtml; 
 	$progname = $sgbl->__var_program_name;
 	if (!isset($opt['db-rootuser']) || !isset($opt['db-rootpassword'])) {
 		print("Need db Root User and password --db-rootuser, --db-rootpassword \n");
@@ -53,11 +32,11 @@ function create_mysql_db($type, $opt, $admin_pass)
 		@ mysql_query("create database $dbname");
 		mysql_query("grant all on $dbname.* to '$pguser'@'localhost' identified by '$dbadminpass';");
 	} else if ($sgbl->__var_database_type === 'mssql') {
-		mssql_query("create database $dbname;");
-		mssql_query("use master ");
-		mssql_query("sp_addlogin '$pguser', '$dbadminpass', '$dbname';");
-		mssql_query("use $dbname ");
-		mssql_query("grant all to $pguser");
+		 mssql_query("create database $dbname;");
+		 mssql_query("use master ");
+		 mssql_query("sp_addlogin '$pguser', '$dbadminpass', '$dbname';");
+		 mssql_query("use $dbname ");
+		 mssql_query("grant all to $pguser");
 	} else {
 	}
 
@@ -70,8 +49,8 @@ function create_mysql_db($type, $opt, $admin_pass)
 
 function add_admin($pass)
 {
-
-	global $gbl, $sgbl, $login, $ghtml;
+		
+	global $gbl, $sgbl, $login, $ghtml; 
 
 	$client = new Client(null, null, 'admin');
 	$login = $client;
@@ -119,7 +98,7 @@ function add_admin($pass)
 
 function create_general()
 {
-	global $sgbl, $login, $ghtml;
+	global $sgbl, $login, $ghtml; 
 	$gen = new General(null, null, 'admin');
 	$gen->initThisDef();
 	$g = $gen->generalmisc_b;

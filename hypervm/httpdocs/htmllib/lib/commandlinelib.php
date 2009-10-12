@@ -1,29 +1,8 @@
-<?PHP
-//
-//    HyperVM, Server Virtualization GUI for OpenVZ and Xen
-//
-//    Copyright (C) 2000-2009     LxLabs
-//    Copyright (C) 2009          LxCenter
-//
-//    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Affero General Public License as
-//    published by the Free Software Foundation, either version 3 of the
-//    License, or (at your option) any later version.
-//
-//    This program is distributed in the hope that it will be useful,
-//    but WITHOUT ANY WARRANTY; without even the implied warranty of
-//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Affero General Public License for more details.
-//
-//    You should have received a copy of the GNU Affero General Public License
-//    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-?>
-
-<?php
+<?php 
 
 function __cmd_desc_add($p, $parent = null)
 {
-	global $gbl, $sgbl, $login, $ghtml;
+	global $gbl, $sgbl, $login, $ghtml; 
 
 
 	if (!$parent) {
@@ -79,18 +58,18 @@ function __cmd_desc_add($p, $parent = null)
 
 function __cmd_desc_delete($p)
 {
-	global $gbl, $sgbl, $login, $ghtml;
+	global $gbl, $sgbl, $login, $ghtml; 
 	/*
-	 if (isset($p['parent-class']) && isset($p['parent-name'])) {
+	if (isset($p['parent-class']) && isset($p['parent-name'])) {
 		$parent = new $p['parent-class'](null, 'localhost', $p['parent-name']);
 		$parent->get();
 		if ($parent->dbaction === 'add') {
-		throw new lxException("parent_doesnt_exist", "nname", $class);
+			throw new lxException("parent_doesnt_exist", "nname", $class);
 		}
-		} else {
+	} else {
 		$parent = $login;
-		}
-		*/
+	}
+*/
 	$class = $p['class'];
 	$name = $p['name'];
 
@@ -110,7 +89,7 @@ function __cmd_desc_delete($p)
 
 function __cmd_desc_simplelist($p)
 {
-	global $gbl, $sgbl, $login, $ghtml;
+	global $gbl, $sgbl, $login, $ghtml; 
 
 	ob_start();
 	$resource = $p['resource'];
@@ -176,7 +155,7 @@ function copy_nname_to_name(&$p)
 
 function __cmd_desc_update($p)
 {
-	global $gbl, $sgbl, $login, $ghtml;
+	global $gbl, $sgbl, $login, $ghtml; 
 	copy_nname_to_name($p);
 	$object = new $p['class'](null, 'localhost', $p['name']);
 	$object->get();
@@ -206,7 +185,7 @@ function __cmd_desc_update($p)
 
 function __cmd_desc_getproperty($param)
 {
-	global $gbl, $sgbl, $login, $ghtml;
+	global $gbl, $sgbl, $login, $ghtml; 
 	if (isset($param['name']) && isset($param['class'])) {
 		$name = $param['name'];
 		$class = $param['class'];

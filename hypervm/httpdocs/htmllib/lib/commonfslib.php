@@ -1,25 +1,4 @@
-<?PHP
-//
-//    HyperVM, Server Virtualization GUI for OpenVZ and Xen
-//
-//    Copyright (C) 2000-2009     LxLabs
-//    Copyright (C) 2009          LxCenter
-//
-//    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Affero General Public License as
-//    published by the Free Software Foundation, either version 3 of the
-//    License, or (at your option) any later version.
-//
-//    This program is distributed in the hope that it will be useful,
-//    but WITHOUT ANY WARRANTY; without even the implied warranty of
-//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Affero General Public License for more details.
-//
-//    You should have received a copy of the GNU Affero General Public License
-//    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-?>
-
-<?php
+<?php 
 
 function shell_recurse_dir($dir, $func, $arglist = null)
 {
@@ -76,7 +55,7 @@ function lxshell_unzip_with_throw($dir, $file, $list = null)
 
 function lxshell_redirect($file, $cmd)
 {
-	global $gbl, $sgbl, $login, $ghtml;
+	global $gbl, $sgbl, $login, $ghtml; 
 	$start = 2;
 	eval($sgbl->arg_getting_string);
 	$cmd = getShellCommand($cmd, $arglist);
@@ -87,7 +66,7 @@ function lxshell_redirect($file, $cmd)
 
 function lxshell_directory($dir, $cmd)
 {
-	global $gbl, $sgbl, $login, $ghtml;
+	global $gbl, $sgbl, $login, $ghtml; 
 
 	$dir = expand_real_root($dir);
 	$username = '__system__';
@@ -101,7 +80,7 @@ function lxshell_directory($dir, $cmd)
 }
 function lxshell_output($cmd)
 {
-	global $gbl, $sgbl, $login, $ghtml;
+	global $gbl, $sgbl, $login, $ghtml; 
 
 	$username = '__system__';
 
@@ -169,7 +148,7 @@ function lxfile_rm($file)
 
 function lxfile_mv($src, $dst)
 {
-	global $gbl, $sgbl, $login, $ghtml;
+	global $gbl, $sgbl, $login, $ghtml; 
 	$src = expand_real_root($src);
 	$dst = expand_real_root($dst);
 	if (is_dir($dst)) {
@@ -186,7 +165,7 @@ function lxfile_mv($src, $dst)
 		return true;
 	}
 	return false;
-
+	
 }
 
 function lxfile_exists($file)
@@ -225,7 +204,7 @@ function lxfile_mkdir($dir)
 
 function lxfile_cp($src, $dst)
 {
-	global $gbl, $sgbl, $login, $ghtml;
+	global $gbl, $sgbl, $login, $ghtml; 
 	$src = expand_real_root($src);
 	$dst = expand_real_root($dst);
 	if (is_dir($dst)) {
@@ -365,7 +344,7 @@ function lxfile_tail($file, $getsize)
 		$ret .= fread($fp, 1024);
 	}
 	return $ret;
-
+	
 }
 
 function lxfile_touch($file)

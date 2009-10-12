@@ -1,25 +1,4 @@
-<?PHP
-//
-//    HyperVM, Server Virtualization GUI for OpenVZ and Xen
-//
-//    Copyright (C) 2000-2009     LxLabs
-//    Copyright (C) 2009          LxCenter
-//
-//    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Affero General Public License as
-//    published by the Free Software Foundation, either version 3 of the
-//    License, or (at your option) any later version.
-//
-//    This program is distributed in the hope that it will be useful,
-//    but WITHOUT ANY WARRANTY; without even the implied warranty of
-//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Affero General Public License for more details.
-//
-//    You should have received a copy of the GNU Affero General Public License
-//    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-?>
-
-<?php
+<?php 
 
 
 class Remote { }
@@ -34,14 +13,14 @@ monitor_main();
 
 function monitor_main()
 {
-	global $gbl, $sgbl, $login, $ghtml;
+	global $gbl, $sgbl, $login, $ghtml; 
 	global $argv;
 	global $global_ip_array;
 	global $global_remoteserver;
 	global $global_remoteport;
 
 	error_reporting(E_ALL);
-
+	
 
 	$list = parse_opt($argv);
 
@@ -182,7 +161,7 @@ function monitor_main()
 
 function get_my_name()
 {
-	global $global_remoteserver;
+	global $global_remoteserver; 
 
 	$rmt = new Remote();
 	$rmt->cmd = "my_name";
@@ -195,7 +174,7 @@ function send_alive_info()
 {
 
 	$host = `hostname`;
-	global $global_remoteserver;
+	global $global_remoteserver; 
 
 	$rmt = new Remote();
 	$rmt->cmd = "im_alive";
@@ -205,7 +184,7 @@ function send_alive_info()
 
 function send_data_to_server($serverhistlist)
 {
-	global $global_remoteserver;
+	global $global_remoteserver; 
 
 	$rmt = new Remote();
 	$rmt->cmd = "set_list";
@@ -258,7 +237,7 @@ function remote_http_exec_monitor($server, $port, $rmt)
 
 function send_to_some_http_server_monitor($raddress, $socket_type, $port, $var)
 {
-	global $gbl, $sgbl, $login, $ghtml;
+	global $gbl, $sgbl, $login, $ghtml; 
 
 	//print_time('server');
 
@@ -278,7 +257,7 @@ function send_to_some_http_server_monitor($raddress, $socket_type, $port, $var)
 
 function checkPort($sname, $num, $nname)
 {
-	global $gbl, $sgbl, $login, $ghtml;
+	global $gbl, $sgbl, $login, $ghtml; 
 
 
 	$sip = gethostbyname($sname);
@@ -365,7 +344,7 @@ function getDnsesFirst($list)
 		if (!isset($global_ip_array[$l['servername']])) {
 			$ip = gethostbyname($l['servername']);
 			$global_ip_array[$l['servername']] = $ip;
-		}
+		} 
 	}
 }
 

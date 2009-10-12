@@ -1,24 +1,3 @@
-<?PHP
-//
-//    HyperVM, Server Virtualization GUI for OpenVZ and Xen
-//
-//    Copyright (C) 2000-2009     LxLabs
-//    Copyright (C) 2009          LxCenter
-//
-//    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Affero General Public License as
-//    published by the Free Software Foundation, either version 3 of the
-//    License, or (at your option) any later version.
-//
-//    This program is distributed in the hope that it will be useful,
-//    but WITHOUT ANY WARRANTY; without even the implied warranty of
-//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Affero General Public License for more details.
-//
-//    You should have received a copy of the GNU Affero General Public License
-//    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-?>
-
 <?php
 ob_start();
 
@@ -45,7 +24,7 @@ flush();
 
 function convert_tree_to_frm_o()
 {
-	global $gbl, $sgbl, $login, $ghtml;
+	global $gbl, $sgbl, $login, $ghtml; 
 	$cid = $ghtml->node;
 
 	if (!csa($cid, "&")) {
@@ -84,7 +63,7 @@ function convert_tree_to_frm_o()
 
 function __ajax_desc_tree()
 {
-	global $gbl, $sgbl, $login, $ghtml;
+	global $gbl, $sgbl, $login, $ghtml; 
 	$object = $gbl->__c_object;
 	$icondir = get_image_path('/button/');
 	$rclist = $object->getResourceChildList();
@@ -130,7 +109,7 @@ function __ajax_desc_tree()
 						break;
 					}
 					continue;
-				}
+				} 
 				$insidetitle = true;
 				continue;
 			}
@@ -155,7 +134,7 @@ function __ajax_desc_tree()
 			if ($title === 'mailaccount') { continue; }
 			if ($title === 'custom') { continue; }
 			$icon = "{$icondir}/__title_$title.gif";
-			if (!lxfile_exists("__path_program_htmlbase/$icon")) {
+			if (!lxfile_exists("__path_program_htmlbase/$icon")) { 
 				//lfile_put_contents("title.img", "$title.gif\n", FILE_APPEND);
 				$icon = null;
 			}
@@ -176,7 +155,7 @@ function __ajax_desc_tree()
 
 function __ajax_desc_list()
 {
-	global $gbl, $sgbl, $login, $ghtml;
+	global $gbl, $sgbl, $login, $ghtml; 
 
 	$buttonpath = get_image_path("/button");
 
@@ -193,7 +172,7 @@ function __ajax_desc_list()
 
 function __ajax_desc_addform()
 {
-	global $gbl, $sgbl, $login, $ghtml;
+	global $gbl, $sgbl, $login, $ghtml; 
 	$object = $gbl->__c_object;
 	$ghtml->print_message();
 	$buttonpath = get_image_path("/button");
@@ -212,7 +191,7 @@ function __ajax_desc_addform()
 
 function __ajax_desc_updateform()
 {
-	global $gbl, $sgbl, $login, $ghtml;
+	global $gbl, $sgbl, $login, $ghtml; 
 	$object = $gbl->__c_object;
 	$ghtml->print_message();
 	$buttonpath = get_image_path("/button");
@@ -227,14 +206,14 @@ function __ajax_desc_updateform()
 
 function __ajax_desc_add()
 {
-	global $gbl, $sgbl, $login, $ghtml;
+	global $gbl, $sgbl, $login, $ghtml; 
 	$gbl->__ajax_refresh = true;
 	return __ajax_desc_update();
 }
 
 function __ajax_desc_update()
 {
-	global $gbl, $sgbl, $login, $ghtml;
+	global $gbl, $sgbl, $login, $ghtml; 
 	$caction = $ghtml->frm_action;
 	$cgi_action = "__ac_desc_{$ghtml->frm_action}";
 

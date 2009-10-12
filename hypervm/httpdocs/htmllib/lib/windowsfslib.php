@@ -1,25 +1,4 @@
-<?PHP
-//
-//    HyperVM, Server Virtualization GUI for OpenVZ and Xen
-//
-//    Copyright (C) 2000-2009     LxLabs
-//    Copyright (C) 2009          LxCenter
-//
-//    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Affero General Public License as
-//    published by the Free Software Foundation, either version 3 of the
-//    License, or (at your option) any later version.
-//
-//    This program is distributed in the hope that it will be useful,
-//    but WITHOUT ANY WARRANTY; without even the implied warranty of
-//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Affero General Public License for more details.
-//
-//    You should have received a copy of the GNU Affero General Public License
-//    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-?>
-
-<?php
+<?php 
 
 function lxshell_getzipcontent($path)
 {
@@ -83,18 +62,18 @@ function lxfile_rm_rec($file)
 	}
 }
 
-function lxfile_generic_chmod($file, $mod) {
+function lxfile_generic_chmod($file, $mod) { 
 }
 function lxfile_generic_chmod_rec($file, $mod) { }
 
-function lxfile_generic_chown($file, $mod) {
+function lxfile_generic_chown($file, $mod) { 
 }
 
-function lxfile_generic_chown_rec($file, $mod) {
+function lxfile_generic_chown_rec($file, $mod) { 
 }
-function lxfile_unix_chmod($file, $mod)
+function lxfile_unix_chmod($file, $mod) 
 {
-
+	
 	throw new lxException('unix_chmod_not_allowed_in_windows', '');
 }
 
@@ -133,8 +112,8 @@ function lxfile_mv_rec($dirsource, $dirdest)
 }
 
 function lxfile_cp_rec($dirsource, $dirdest)
-{
-
+{ 
+	
 	dprint("<b> I am here </b> ");
 	$obj = new COM("Scripting.FilesystemObject");
 	$username = "__system__";
@@ -150,12 +129,12 @@ function lxfile_cp_rec($dirsource, $dirdest)
 		log_filesys("copyFile $dirsource $dirdest");
 		$obj->CopyFile($dirsource, $dirdest);
 	}
-}
+} 
 
 
 function lxshell_background($cmd)
 {
-	global $gbl, $sgbl, $login, $ghtml;
+	global $gbl, $sgbl, $login, $ghtml; 
 	$username = '__system__';
 	$start = 1;
 	eval($sgbl->arg_getting_string);
@@ -165,10 +144,10 @@ function lxshell_background($cmd)
 	return true;
 }
 
-function do_exec_system($username, $dir, $cmd, &$out, &$err, &$ret, $input)
+function do_exec_system($username, $dir, $cmd, &$out, &$err, &$ret, $input) 
 {
 
-	global $gbl, $sgbl, $login, $ghtml;
+	global $gbl, $sgbl, $login, $ghtml; 
 	global $global_shell_out, $global_shell_error, $global_shell_ret;
 	dprint("<hr> $dir <br> $cmd <hr> ");
 
@@ -178,10 +157,10 @@ function do_exec_system($username, $dir, $cmd, &$out, &$err, &$ret, $input)
 
 	$execcmd = null;
 	/*
-	 if ($username !== '__system__') {
+	if ($username !== '__system__') {
 		$execcmd = "$path -u $username";
-		}
-		*/
+	}
+*/
 
 	os_set_path();
 
@@ -200,7 +179,7 @@ function do_exec_system($username, $dir, $cmd, &$out, &$err, &$ret, $input)
 	$err = null;
 	dprint("\n ** mmmmmm $dir $cmd **\n");
 
-
+	
 	$cmdobject = $sh->Exec($cmd);
 	if ($input) {
 		$cmdobject->StdIn->Write($input);
@@ -210,21 +189,21 @@ function do_exec_system($username, $dir, $cmd, &$out, &$err, &$ret, $input)
 	$ret = 0;
 
 	$sh->currentDirectory = $sgbl->__path_program_htmlbase;
+	
 
-
-	/*
-	 function ReadAllFromAny($ret)
-	 {
+/*
+	function ReadAllFromAny($ret)
+    {
 		if (!($ret->StdOut->AtEndOfStream)){
-		$Ret=$ret->StdOut->ReadAll();
-		return $Ret;
+  	      $Ret=$ret->StdOut->ReadAll();
+		  return $Ret;
 		}
 		if (!($ret->StdErr->AtEndOfStream)){
-		$Ret="STDERR: ".$ret->StdErr->ReadAll();
-		return $Ret;
+			$Ret="STDERR: ".$ret->StdErr->ReadAll();
+		    return $Ret;
 		}
-		return -1;
-		}*/
+        return -1;
+	}*/
 
 
 

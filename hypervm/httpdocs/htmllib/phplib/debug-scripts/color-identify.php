@@ -1,25 +1,4 @@
-<?PHP
-//
-//    HyperVM, Server Virtualization GUI for OpenVZ and Xen
-//
-//    Copyright (C) 2000-2009     LxLabs
-//    Copyright (C) 2009          LxCenter
-//
-//    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Affero General Public License as
-//    published by the Free Software Foundation, either version 3 of the
-//    License, or (at your option) any later version.
-//
-//    This program is distributed in the hope that it will be useful,
-//    but WITHOUT ANY WARRANTY; without even the implied warranty of
-//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Affero General Public License for more details.
-//
-//    You should have received a copy of the GNU Affero General Public License
-//    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-?>
-
-<?php
+<?php 
 
 include_once "htmllib/lib/include.php";
 
@@ -47,7 +26,7 @@ function read_rgb()
 	return $color;
 }
 
-function color_filter_list($c, $list, $n)
+function color_filter_list($c, $list, $n) 
 {
 
 	$sel = null;
@@ -76,7 +55,7 @@ function get_color($img)
 
 	$l = `identify -verbose $img`;
 	$linelist = explode("\n", $l);
-	$reachedred = $reachedgreen = $reachedblue = false;
+	$reachedred = $reachedgreen = $reachedblue = false; 
 
 
 	foreach($linelist as $l) {
@@ -92,7 +71,7 @@ function get_color($img)
 			$reachedblue = 1;
 			continue;
 		}
-
+		
 		if ($reachedblue || $reachedgreen || $reachedred) {
 			if (csa($l, "Min:")) {
 				preg_match("/Min: ([^ ]*).*/", $l, $match);
@@ -104,7 +83,7 @@ function get_color($img)
 					$res[1] = $match[1];
 					$reachedgreen = false;
 				}
-
+				
 				if ($reachedblue) {
 					$res[2] = $match[1];
 					$reachedblue = false;
@@ -118,7 +97,7 @@ function get_color($img)
 
 function color_main()
 {
-	global $gbl, $sgbl, $login, $ghtml, $argv, $argc;
+	global $gbl, $sgbl, $login, $ghtml, $argv, $argc; 
 
 	$color = read_rgb();
 
@@ -167,13 +146,13 @@ function color_main()
 		}
 
 		$nname = "$r[3]_$m[0]$m[1]$m[2]";
-		system("(cd {$argv[1]} ; rm -rf $nname ; cp -a $l $nname)");
+		system("(cd {$argv[1]} ; rm -rf $nname ; cp -a $l $nname)"); 
 		$linelist = file("htmllib/phplib/debug-scripts/template.css");
 		foreach($linelist as &$l) {
-			$l = str_replace("[%verydark]", "#" . implode("", $m4), $l);
-			$l = str_replace("[%dark]", "#" . implode("", $m3), $l);
-			$l = str_replace("[%medium]", "#" . implode("", $m2), $l);
-			$l = str_replace("[%light]", "#" . implode("", $m1), $l);
+			$l = str_replace("[%verydark]", "#" . implode("", $m4), $l); 
+			$l = str_replace("[%dark]", "#" . implode("", $m3), $l); 
+			$l = str_replace("[%medium]", "#" . implode("", $m2), $l); 
+			$l = str_replace("[%light]", "#" . implode("", $m1), $l); 
 		}
 
 		$ll = implode('', $linelist);

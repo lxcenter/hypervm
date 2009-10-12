@@ -1,25 +1,4 @@
-<?PHP
-//
-//    HyperVM, Server Virtualization GUI for OpenVZ and Xen
-//
-//    Copyright (C) 2000-2009     LxLabs
-//    Copyright (C) 2009          LxCenter
-//
-//    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Affero General Public License as
-//    published by the Free Software Foundation, either version 3 of the
-//    License, or (at your option) any later version.
-//
-//    This program is distributed in the hope that it will be useful,
-//    but WITHOUT ANY WARRANTY; without even the implied warranty of
-//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Affero General Public License for more details.
-//
-//    You should have received a copy of the GNU Affero General Public License
-//    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-?>
-
-<?php
+<?php 
 
 include_once "htmllib/phplib/lib/windowscorelib.php";
 include_once "htmllib/lib/windowsfslib.php";
@@ -64,7 +43,7 @@ function os_create_system_user($basename, $password, $id, $shell, $dir = "/tmp")
 
 function os_addto_iis()
 {
-	global $gbl, $sgbl, $login, $ghtml;
+	global $gbl, $sgbl, $login, $ghtml; 
 	$progname = $sgbl->__var_program_name;
 	$obj = new lxCOM("winmgmts://./root/WebAdministration");
 	$iiso = $obj->com_get("Site.Name='$progname'");
@@ -97,7 +76,7 @@ function os_addto_iis()
 		$sBinding = $obj->get("BindingElement")->SpawnInstance_();
 		$sBinding->BindingInformation = "*:7777:";
 		$sBinding->Protocol = "https";
-		$iisdfn->Create($progname, array($oBinding, $sBinding), $homedir);
+		$iisdfn->Create($progname, array($oBinding, $sBinding), $homedir); 
 		$iiso = $obj->com_get("Site.Name='$progname'");
 	}
 
@@ -120,7 +99,7 @@ function os_addto_iis()
 	$handle->Add("Handlers", $oHandler);
 	$handle->Refresh_();
 
-
+	 
 	//$newmap = lx_array_merge(array($ScriptMaps, $list));
 	dprint("\n");
 	foreach($handle->Handlers as $h) {
@@ -187,21 +166,21 @@ function os_getpid()
 function RemoveUserFromFolder($strUser, $strFolderPath)
 {
 	$Caclscommand = "cmd /c echo y| CACLS " . $strFolderPath;
-	$Caclscommand = $Caclscommand .  " /E /C /R " . $strUser;
-	$whs = new COM("WScript.Shell");
-	$whsRun = $whs->Run($Caclscommand, 0, True);
+    $Caclscommand = $Caclscommand .  " /E /C /R " . $strUser;
+    $whs = new COM("WScript.Shell");
+    $whsRun = $whs->Run($Caclscommand, 0, True);
 }
 
 function AddUserToFolder($strUser, $strFolderPath)
 {
 	$strPermission = "F";
 	$Caclscommand = "cmd /c echo y| CACLS " . $strFolderPath;
-	$Caclscommand = $Caclscommand . " /E /C /G " . $strUser . ":" . $strPermission;
-	$whs = new COM("WScript.Shell");
-	$whsRun = $whs->Run($Caclscommand, 0, True);
+    $Caclscommand = $Caclscommand . " /E /C /G " . $strUser . ":" . $strPermission;
+    $whs = new COM("WScript.Shell");
+    $whsRun = $whs->Run($Caclscommand, 0, True);
 }
 
- 
+   
 
 function convertTobackSlash($string)
 {

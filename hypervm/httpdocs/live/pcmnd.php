@@ -1,33 +1,12 @@
-<?PHP
-//
-//    HyperVM, Server Virtualization GUI for OpenVZ and Xen
-//
-//    Copyright (C) 2000-2009     LxLabs
-//    Copyright (C) 2009          LxCenter
-//
-//    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Affero General Public License as
-//    published by the Free Software Foundation, either version 3 of the
-//    License, or (at your option) any later version.
-//
-//    This program is distributed in the hope that it will be useful,
-//    but WITHOUT ANY WARRANTY; without even the implied warranty of
-//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Affero General Public License for more details.
-//
-//    You should have received a copy of the GNU Affero General Public License
-//    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-?>
-
 <?php
-if (preg_match("/Mozilla\/\d.+Compatible; MSIE/i", $_SERVER['HTTP_USER_AGENT']) && !preg_match("/Opera/i", $_SERVER['HTTP_USER_AGENT'])) {
-	header('Expires: 0');
-	header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
-	header('Pragma: public');
-} else {
-	header('Expires: 0');
-	header('Pragma: no-cache');
-}
+    if (preg_match("/Mozilla\/\d.+Compatible; MSIE/i", $_SERVER['HTTP_USER_AGENT']) && !preg_match("/Opera/i", $_SERVER['HTTP_USER_AGENT'])) {
+        header('Expires: 0');
+        header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+        header('Pragma: public');
+    } else {
+        header('Expires: 0');
+        header('Pragma: no-cache');
+    }
 
 include("common.php");
 
@@ -68,7 +47,7 @@ foreach($cmdlist as $cmd) {
 			$command = "QUIT$match[1]";
 
 		} elseif (preg_match("/^ME (.+)/i", $matches[1], $match)) {
-			$command = "PRIVMSG $channel :\001ACTION $match[1]\001";
+		$command = "PRIVMSG $channel :\001ACTION $match[1]\001";
 
 		} elseif (preg_match("/^NAMES(.*)/i", $matches[1], $match)) {
 			if ($match[1]) {
@@ -97,9 +76,9 @@ foreach($cmdlist as $cmd) {
 }
 
 /*
- echo <<<EOF
- <html>
- <head><title>passed command</title>
- </head><body bgcolor="$bgcolor"></body></html>
- EOF;
- */
+echo <<<EOF
+<html>
+<head><title>passed command</title>
+</head><body bgcolor="$bgcolor"></body></html>
+EOF;
+*/

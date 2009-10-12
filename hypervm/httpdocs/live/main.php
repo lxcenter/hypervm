@@ -1,33 +1,12 @@
-<?PHP
-//
-//    HyperVM, Server Virtualization GUI for OpenVZ and Xen
-//
-//    Copyright (C) 2000-2009     LxLabs
-//    Copyright (C) 2009          LxCenter
-//
-//    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Affero General Public License as
-//    published by the Free Software Foundation, either version 3 of the
-//    License, or (at your option) any later version.
-//
-//    This program is distributed in the hope that it will be useful,
-//    but WITHOUT ANY WARRANTY; without even the implied warranty of
-//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Affero General Public License for more details.
-//
-//    You should have received a copy of the GNU Affero General Public License
-//    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-?>
-
 <?php
-if (preg_match("/Mozilla\/\d.+Compatible; MSIE/i", $_SERVER['HTTP_USER_AGENT']) && !preg_match("/Opera/i", $_SERVER['HTTP_USER_AGENT'])) {
-	header('Expires: 0');
-	header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
-	header('Pragma: public');
-} else {
-	header('Expires: 0');
-	header('Pragma: no-cache');
-}
+    if (preg_match("/Mozilla\/\d.+Compatible; MSIE/i", $_SERVER['HTTP_USER_AGENT']) && !preg_match("/Opera/i", $_SERVER['HTTP_USER_AGENT'])) {
+        header('Expires: 0');
+        header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+        header('Pragma: public');
+    } else {
+        header('Expires: 0');
+        header('Pragma: no-cache');
+    }
 
 include("common.php");
 include("ircfunc.php");
@@ -39,18 +18,18 @@ if ($g_login) {
 	$livetrfp = lfopen("__path_program_etc/livetranscript.txt", "a");
 }
 /*
- $channel = $_GET['channel'];
- echo "$channel <br>";
- if (!$channel) {
- $channel = $channels[0];
- }
- */
+$channel = $_GET['channel'];
+echo "$channel <br>";
+if (!$channel) {
+    $channel = $channels[0];
+}
+*/
 
 
-if ($redirect)
-$channel  = "{$chanbase}-command";
+if ($redirect) 
+	$channel  = "{$chanbase}-command";
 else
-$channel = $chanbase;
+	$channel = $chanbase;
 
 
 $licid = $_GET['licid'];
@@ -73,7 +52,7 @@ $css
 
 EOF;
 flush();
-$smily_code = array("/:-?\)/",
+$smily_code = array("/:-?\)/", 
 		    "/;b/", 
 		    "/:-?P/i", 
 		    "/;-?\)/i", 
@@ -131,43 +110,43 @@ $nicktry = 0;
 $signontime = time();
 function einde() {
 	global $link, $user, $id;
-	global $socket,$signontime;
-	if ($socket) {
+    global $socket,$signontime;
+    if ($socket) {
 		irc_write($socket, "QUIT :lxlabs \r\n");
 		irc_close($socket);
-	}
-	sqlite_query($link, "DELETE FROM phpchat WHERE username = '$user' AND id = '$id'");
-	$signofftime = time();
-	$onlinetime = $signofftime-$signontime;
+    }
+    sqlite_query($link, "DELETE FROM phpchat WHERE username = '$user' AND id = '$id'");
+    $signofftime = time();
+    $onlinetime = $signofftime-$signontime;
 
-	$d1 = (floor($onlinetime/3600) < 10) ? "0".floor($onlinetime/3600) : floor($onlinetime/3600);
-	$rest = $onlinetime%3600;
-	$d1 .= (floor($rest/60) < 10) ? ":0".floor($rest/60) : ":".floor($rest/60);;
-	$rest = $rest%60;
-	$d1 .= ($rest < 10) ? ":0".$rest : ":".$rest;
-	echo "Signed on at: " . date("H:i:s d-m-Y", $signontime) . ", Signed off at: " . date("H:i:s d-m-Y", $signofftime) . "<br>";
-	echo "Online time: $d1 ($onlinetime seconds)";
+    $d1 = (floor($onlinetime/3600) < 10) ? "0".floor($onlinetime/3600) : floor($onlinetime/3600);
+    $rest = $onlinetime%3600;
+    $d1 .= (floor($rest/60) < 10) ? ":0".floor($rest/60) : ":".floor($rest/60);;
+    $rest = $rest%60;
+    $d1 .= ($rest < 10) ? ":0".$rest : ":".$rest;
+    echo "Signed on at: " . date("H:i:s d-m-Y", $signontime) . ", Signed off at: " . date("H:i:s d-m-Y", $signofftime) . "<br>";
+    echo "Online time: $d1 ($onlinetime seconds)";
 }
 
 
 function retn_color($fg, $bg) {
-	global $ircColors;
-	if ($bg != -1) {
-		return "<font style='color: ".$ircColors[$fg]."; background-color: ".$ircColors[$bg].";'>";
-	} else {
-		return "<font style='color: ".$ircColors[$fg].";'>";
-	}
+    global $ircColors;
+    if ($bg != -1) {
+    	return "<font style='color: ".$ircColors[$fg]."; background-color: ".$ircColors[$bg].";'>";
+    } else {
+	return "<font style='color: ".$ircColors[$fg].";'>";
+    }
 }
 function smile_repl($string) {
 	return $string;
-	global $smily_code, $smily_repl, $ircColors, $page_bg, $page_fg;
-	$string = preg_replace("/\003(\d+),(\d+)/e", "retn_color($1,$2)", $string);
-	$string = preg_replace("/\003(\d+)/e", "retn_color($1, -1)", $string);
-	$string = preg_replace("/\003/", "<font style='color: $page_fg; background-color: $page_bg;'>", $string);
-	for ($a = 0; $a < substr_count($string, "<font"); $a++) {
-		$string .= "</font>";
-	}
-	return preg_replace($smily_code, $smily_repl, $string);
+    global $smily_code, $smily_repl, $ircColors, $page_bg, $page_fg;
+    $string = preg_replace("/\003(\d+),(\d+)/e", "retn_color($1,$2)", $string);
+    $string = preg_replace("/\003(\d+)/e", "retn_color($1, -1)", $string);
+    $string = preg_replace("/\003/", "<font style='color: $page_fg; background-color: $page_bg;'>", $string);
+    for ($a = 0; $a < substr_count($string, "<font"); $a++) {
+	$string .= "</font>";
+    }
+    return preg_replace($smily_code, $smily_repl, $string);    
 }
 
 $link = lsqlite_open($g_db_file);
@@ -183,19 +162,19 @@ while($socket > 0) {
 	$writea = null;
 	$excpta = null;
 	/*
-	 foreach((array) $client as $c) {
+	foreach((array) $client as $c) {
 		$read[] = $c['sock'];
-		}
-		*/
+}
+*/
 	//dprint("Before: ");
-	//dprintr($read);
-	// Set up a blocking call to stream_select()
+		//dprintr($read);
+		// Set up a blocking call to stream_select()
 	$ready = stream_select($read, $writea, $excpta, 1);
 
 	//dprint("After: $ready");
-	//dprintr($read);
+		//dprintr($read);
 
-	// This means that sock - which is our main master socket - is ready for reading, which in turn signifies that a NEW connection has arrived. The other members of the read array
+		// This means that sock - which is our main master socket - is ready for reading, which in turn signifies that a NEW connection has arrived. The other members of the read array 
 	$full = null;
 	if ($ready) {
 		if (in_array($socket, $read)) {
@@ -230,271 +209,271 @@ while($socket > 0) {
 
 	$list = explode("\n", $full);
 	foreach($list as $out) {
-		if (strlen($out) > 1) {
-			//print($out . "<br> ");
-			if (preg_match("/PING (.+)/", $out, $matches)) {
-				irc_write($socket, "PONG $matches[1]\r\n");
-				//echo "ping-pong<br>";
+	if (strlen($out) > 1) {
+		//print($out . "<br> ");
+		if (preg_match("/PING (.+)/", $out, $matches)) {
+			irc_write($socket, "PONG $matches[1]\r\n");
+			//echo "ping-pong<br>";
 
-			} elseif (preg_match("/:([^\s]+) NOTICE ([^\s]+) :(.+)/", $out, $matches)) {
-				if (preg_match("/$nick/i", $matches[3])) {
-					$matches[1] = "<b>$matches[1]</b>";
-				}
-				$src = $matches[1];
-				$text = smile_repl(htmlspecialchars($matches[3]));
-				if (preg_match("/([^!]+)!.+/", $src, $matches)) {
-					$src = $matches[1];
-				}
-				//echo "<font color='$ircColors[5]'>-$src- $text</font><br>";
+		} elseif (preg_match("/:([^\s]+) NOTICE ([^\s]+) :(.+)/", $out, $matches)) {
+			if (preg_match("/$nick/i", $matches[3])) { 
+				$matches[1] = "<b>$matches[1]</b>"; 
+			}
+			$src = $matches[1];
+			$text = smile_repl(htmlspecialchars($matches[3]));
+			if (preg_match("/([^!]+)!.+/", $src, $matches)) {
+				$src = $matches[1]; 
+			}
+			//echo "<font color='$ircColors[5]'>-$src- $text</font><br>";
 
-			} elseif (preg_match("/:[^ ]* (\d+) ([^\s]+) (.+)/i", $out, $matches)) {
+		} elseif (preg_match("/:[^ ]* (\d+) ([^\s]+) (.+)/i", $out, $matches)) {
 
-				if ($matches[1] == "006" || $matches[1] == "001") {
-					if ($redirect) {
-						$cmdchan = "{$chanbase}_{$number_personnel}-command" ;
-						$realchan = $chanbase . "_" . $number_personnel . "-" . $per_personnel ;
-						irc_write($socket, "JOIN #$cmdchan\r\n");
-						irc_write($socket, "PRIVMSG #$cmdchan :lxcommand channel #$realchan\r\n");
-						irc_write($socket, "PART #$cmdchan\r\n");
-						//print($realchan);
-						irc_write($socket, "JOIN #$realchan\r\n");
-					} else {
-						irc_write($socket, "JOIN #$chanbase\r\n");
-					}
-					//print("gotcha<br> \n");
+			if ($matches[1] == "006" || $matches[1] == "001") {
+				if ($redirect) {
+					$cmdchan = "{$chanbase}_{$number_personnel}-command" ;
+					$realchan = $chanbase . "_" . $number_personnel . "-" . $per_personnel ;
+					irc_write($socket, "JOIN #$cmdchan\r\n");
+					irc_write($socket, "PRIVMSG #$cmdchan :lxcommand channel #$realchan\r\n");
+					irc_write($socket, "PART #$cmdchan\r\n");
+					//print($realchan);
+					irc_write($socket, "JOIN #$realchan\r\n");
+				} else {
+					irc_write($socket, "JOIN #$chanbase\r\n");
 				}
-				if ($matches[1] == "PONG") {
-				}
+				//print("gotcha<br> \n");
+			}
+			if ($matches[1] == "PONG") {
+			}
 
-				if ($matches[1] == "376") {
-					/*end of motd*/ $loggedin = true;
-				}
+			if ($matches[1] == "376") { 
+				/*end of motd*/ $loggedin = true; 
+			}
 
-				elseif($matches[1] == "433") {
-					//print($out);
-					if ($redirect) {
-						if ($number_personnel == $max_number_personnel) {
+			elseif($matches[1] == "433") {
+				//print($out);
+				if ($redirect) {
+					if ($number_personnel == $max_number_personnel) {
+						$number_personnel = 1;
+						if ($per_personnel == $max_per_personnel) {
+							$per_personnel  = 1;
 							$number_personnel = 1;
-							if ($per_personnel == $max_per_personnel) {
-								$per_personnel  = 1;
-								$number_personnel = 1;
-								print("All Personnel currently busy. Will try after 30 seconds.... <br> \n");
-								flush();
-								sleep(30);
-							} else {
-								$per_personnel++;
-							}
+							print("All Personnel currently busy. Will try after 30 seconds.... <br> \n");
+							flush();
+							sleep(30);
 						} else {
-							$number_personnel++;
+							$per_personnel++;
 						}
-						$nick = "{$base_nick}_{$number_personnel}-{$per_personnel}";
 					} else {
-
-						$nickcount++;
-						$nick = $base_nick . "$nickcount";
+						$number_personnel++;
 					}
-					//echo "<font color='$ircColors[7]'>Nick already in use, changing to: $nick</font><br>\n";
-					irc_write($socket, "NICK :$nick\r\n");
-				}
-
-
-				elseif ($matches[1] == "422") {
-					/* no motd, but logged in */ $loggedin = true;
-				}
-				elseif ($matches[1] == "353") { //names
-					if (preg_match("/= (\#[^\s]+) :(.+)/", $matches[3], $match)) {
-						$namen = $match[2];
-						//$namen = str_replace("@", "", $match[2]);
-						//$namen = str_replace("%", "", $namen);
-						//$namen = str_replace("+", "", $namen);
-						$names = preg_split("/\s+/", $namen);
-						natcasesort($names);
-						if (!isset($nicklist["$match[1]"])) {
-							$nicklist["$match[1]"]  = "";
-						}
-						foreach($names as $name) {
-							//echo "$name, ";
-							$name = str_replace("@", "", $name);
-							if ($redirect) {
-								if ($name == $nick) {
-									$name = "Myself";
-								}
-							}
-							$nicklist["$match[1]"] .= "$name:";
-						}
-
-							
-					}
-
-				} elseif ($matches[1] == "366") { // endofnames
-					if (preg_match("/(#[^\s]+)/", $matches[3], $match)) {
-
-						if (isset($nicklist[$match[1]])) {
-							$namelist = $nicklist[$match[1]];
-							echo "\n<script language='JavaScript'>\n<!--;\n\nparent.nixreload(':$namelist');\n\n//-->\n</script>\n\n";
-						}
-						$nicklist[$match[1]] = "";
-						$_tnlist = explode(":", $namelist);
-
-						echo "</font>";
-						if (!$fully_logged_in) {
-
-							if ($licid !== 'nobody') {
-								echo "Hello $licid, ";
-							}
-
-							echo "please type your message to start the conference <br> \n";
-							$fully_logged_in = 1;
-						}
-						flush();
-					}
-				} elseif ($matches[1] == "332") {
-					if (preg_match("/(#[^\s]+) :(.+)/", $matches[3], $match)) {
-						//echo "<font color='$ircColors[7]'>--- Topic for $match[1] is: $match[2]</font><br>";
-					}
-				} elseif (($matches[1] == "372" || $matches[1] == "375") && $hide_motd) {
-					// do nothing, the motd doesn't have to be displayed...
-				} elseif ($matches[1] == "317") {
-					// whois idle time and signon time
-					if (preg_match("/([^\s]+)\s+(\d+)\s+(\d+)\s+:.+/", $matches[3], $match)) {
-						$d1 = (floor($match[2]/3600) < 10) ? "0".floor($match[2]/3600) : floor($match[2]/3600);
-						$rest = $match[2]%3600;
-						$d1 .= (floor($rest/60) < 10) ? ":0".floor($rest/60) : ":".floor($rest/60);;
-						$rest = $rest%60;
-						$d1 .= ($rest < 10) ? ":0".$rest : ":".$rest;
-						$d2 = date("Y-m-d H:i:s", $match[3]);
-						//echo "<font color='$ircColors[12]'>-$serv_name- $match[1] idle: $d1, signon: $d2</font><br>";
-					}
+					$nick = "{$base_nick}_{$number_personnel}-{$per_personnel}";
 				} else {
-					//echo "<font color='$ircColors[12]'>-$serv_name- $matches[3]</font><br>";
+				
+					$nickcount++;
+					$nick = $base_nick . "$nickcount";
+				}
+				//echo "<font color='$ircColors[7]'>Nick already in use, changing to: $nick</font><br>\n";
+				irc_write($socket, "NICK :$nick\r\n");
+			}
+
+
+			elseif ($matches[1] == "422") { 
+				/* no motd, but logged in */ $loggedin = true; 
+			}
+			elseif ($matches[1] == "353") { //names
+				if (preg_match("/= (\#[^\s]+) :(.+)/", $matches[3], $match)) {
+					$namen = $match[2];
+					//$namen = str_replace("@", "", $match[2]);
+					//$namen = str_replace("%", "", $namen);
+					//$namen = str_replace("+", "", $namen);
+					$names = preg_split("/\s+/", $namen);
+					natcasesort($names);
+					if (!isset($nicklist["$match[1]"])) {
+						$nicklist["$match[1]"]  = "";
+					}
+					foreach($names as $name) {
+						//echo "$name, ";
+						$name = str_replace("@", "", $name);
+						if ($redirect) {
+							if ($name == $nick) {
+								$name = "Myself";
+							}
+						}
+						$nicklist["$match[1]"] .= "$name:";
+					}
+
+					
 				}
 
-			} elseif (preg_match("/Closing Link(.*)/i", $out, $matches)) {
-				//echo "<font color='$ircColors[4]'>Disconnected$matches[1]...</font><br>\n";
-				irc_close($socket);
-				sleep(60);
-				$socket = irc_open($serv_addr, $serv_port, $errno, $errstr);
+			} elseif ($matches[1] == "366") { // endofnames
+				if (preg_match("/(#[^\s]+)/", $matches[3], $match)) {
 
-				if ($socket < 0) { echo "failed... $errno: $errstr"; return; }
-				else { echo "Connecting Again....<br> "; }
-
-				$login_flag = 0;
-				$loggedin = false;
-				$inchan = false;
-				$nicktry = 0;
-				flush();
-				continue;
-
-			} elseif (preg_match("/:([^!]+)![^\s]+ PRIVMSG ([^\s]+) :(.+)/", $out, $matches)) {
-				if (preg_match("/$nick/i", $matches[3])) { $matches[1] = "<b>$matches[1]</b>"; }
-				$matches[3] = smile_repl(htmlspecialchars($matches[3]));
-
-				if (preg_match("/\001(\w+)(.*)/i", $matches[3], $match)) { // CTCP's
-					if ($match[1] == "VERSION") {
-						irc_write($socket, "NOTICE $matches[1] :\001VERSION \r\n");
-					} elseif ($match[1] == "PING") {
-						irc_write($socket, "NOTICE $matches[1] :\001PING$match[2]\r\n");
-					} elseif ($match[1] == "CLIENTINFO") {
-						irc_write($socket, "NOTICE $matches[1] :\001CLIENTINFO ip: {$_SERVER['REMOTE_ADDR']} ; {$HTTP_SERVER_VARS['REMOTE_HOST']}\001\r\n");
-						irc_write($socket, "NOTICE $matches[1] :\001CLIENTINFO useragent: {$_SERVER['HTTP_USER_AGENT']}\001\r\n");
-					} elseif ($match[1] == "ACTION") {
-						$matches[3] = substr($matches[3],7);
-						echo "<font color='$ircColors[6]'>* $matches[1] $matches[3]</font><br>";
-					} elseif ($match[1] == "DCC") {
-						preg_match("/^[\W]*(\w+)\s+([^\s]+)\s+\d+\s+\d+[\s\d]*/", "$match[2]", $blaat);
-						//echo "<font color='$ircColors[5]'>-- Ignored DCC from $matches[1] ($blaat[1] $blaat[2])</font><br>";
-						//irc_write($socket, "NOTICE $matches[1] :Sorry, but my client (PHPWebchat) doesn't support DCC transfers.\r\n");
-					} else {
-						echo "CTCP: $matches[3]<br>";
+					if (isset($nicklist[$match[1]])) {
+						$namelist = $nicklist[$match[1]];
+						echo "\n<script language='JavaScript'>\n<!--;\n\nparent.nixreload(':$namelist');\n\n//-->\n</script>\n\n";
 					}
-				} elseif (!preg_match("/^#.+/", $matches[2])) {
-					echo "&lt;<font color='$ircColors[7]'>$matches[1]-&gt;$nick</font>&gt; $matches[3]<br>";
-				} else {
+					$nicklist[$match[1]] = "";
+					$_tnlist = explode(":", $namelist);
 
-					$msg = preg_replace("/\s+/", " ", $matches[3]);
-					$msglist = explode(" ", $msg);
-					if ($msglist[0] == "lxbuzz")
+					echo "</font>";
+					if (!$fully_logged_in) {
+
+						if ($licid !== 'nobody') {
+							echo "Hello $licid, ";
+						}
+
+						echo "please type your message to start the conference <br> \n";
+						$fully_logged_in = 1;
+					}
+					flush();
+				}
+			} elseif ($matches[1] == "332") {
+				if (preg_match("/(#[^\s]+) :(.+)/", $matches[3], $match)) {
+					//echo "<font color='$ircColors[7]'>--- Topic for $match[1] is: $match[2]</font><br>";
+				}
+			} elseif (($matches[1] == "372" || $matches[1] == "375") && $hide_motd) {
+				// do nothing, the motd doesn't have to be displayed...
+			} elseif ($matches[1] == "317") {
+				// whois idle time and signon time
+				if (preg_match("/([^\s]+)\s+(\d+)\s+(\d+)\s+:.+/", $matches[3], $match)) {
+					$d1 = (floor($match[2]/3600) < 10) ? "0".floor($match[2]/3600) : floor($match[2]/3600);
+					$rest = $match[2]%3600;
+					$d1 .= (floor($rest/60) < 10) ? ":0".floor($rest/60) : ":".floor($rest/60);;
+					$rest = $rest%60;
+					$d1 .= ($rest < 10) ? ":0".$rest : ":".$rest;
+					$d2 = date("Y-m-d H:i:s", $match[3]);
+					//echo "<font color='$ircColors[12]'>-$serv_name- $match[1] idle: $d1, signon: $d2</font><br>";
+				}
+			} else {
+				//echo "<font color='$ircColors[12]'>-$serv_name- $matches[3]</font><br>";
+			}
+
+		} elseif (preg_match("/Closing Link(.*)/i", $out, $matches)) {
+			//echo "<font color='$ircColors[4]'>Disconnected$matches[1]...</font><br>\n";
+			irc_close($socket);
+			sleep(60);
+			$socket = irc_open($serv_addr, $serv_port, $errno, $errstr);
+
+			if ($socket < 0) { echo "failed... $errno: $errstr"; return; }
+			else { echo "Connecting Again....<br> "; }
+
+			$login_flag = 0;
+			$loggedin = false;
+			$inchan = false;
+			$nicktry = 0;
+			flush();
+			continue;
+
+		} elseif (preg_match("/:([^!]+)![^\s]+ PRIVMSG ([^\s]+) :(.+)/", $out, $matches)) {
+			if (preg_match("/$nick/i", $matches[3])) { $matches[1] = "<b>$matches[1]</b>"; }
+			$matches[3] = smile_repl(htmlspecialchars($matches[3]));
+
+			if (preg_match("/\001(\w+)(.*)/i", $matches[3], $match)) { // CTCP's
+				if ($match[1] == "VERSION") {
+					irc_write($socket, "NOTICE $matches[1] :\001VERSION \r\n");
+				} elseif ($match[1] == "PING") {
+					irc_write($socket, "NOTICE $matches[1] :\001PING$match[2]\r\n");
+				} elseif ($match[1] == "CLIENTINFO") {
+					irc_write($socket, "NOTICE $matches[1] :\001CLIENTINFO ip: {$_SERVER['REMOTE_ADDR']} ; {$HTTP_SERVER_VARS['REMOTE_HOST']}\001\r\n");
+					irc_write($socket, "NOTICE $matches[1] :\001CLIENTINFO useragent: {$_SERVER['HTTP_USER_AGENT']}\001\r\n");
+				} elseif ($match[1] == "ACTION") {
+					$matches[3] = substr($matches[3],7);
+					echo "<font color='$ircColors[6]'>* $matches[1] $matches[3]</font><br>";
+				} elseif ($match[1] == "DCC") {
+					preg_match("/^[\W]*(\w+)\s+([^\s]+)\s+\d+\s+\d+[\s\d]*/", "$match[2]", $blaat);
+					//echo "<font color='$ircColors[5]'>-- Ignored DCC from $matches[1] ($blaat[1] $blaat[2])</font><br>";
+					//irc_write($socket, "NOTICE $matches[1] :Sorry, but my client (PHPWebchat) doesn't support DCC transfers.\r\n");
+				} else {
+					echo "CTCP: $matches[3]<br>";
+				}
+			} elseif (!preg_match("/^#.+/", $matches[2])) {
+				echo "&lt;<font color='$ircColors[7]'>$matches[1]-&gt;$nick</font>&gt; $matches[3]<br>";
+			} else {
+				
+				$msg = preg_replace("/\s+/", " ", $matches[3]);
+				$msglist = explode(" ", $msg);
+				if ($msglist[0] == "lxbuzz") 
 					continue;
 
-					$msg = "";
-					if (isset($msglist[0]) && $msglist[0] == "lxquit") {
-						einde();
-						exit(0);
-					}
-					foreach($msglist as $m) {
-						$msg .= " " . $m;
-					}
-					if ($matches[1] == $nick) {
-						print("<font color=blue>&lt;$matches[1]&gt; </font> ");
-					} else {
-						print("<font color=black>&lt;$matches[1]&gt; </font> ");
-					}
-					print(" $msg<br>");
-					if ($livetrfp) {
-						fwrite($livetrfp, "$matches[1]: $msg\n");
-					}
-
-					$gl_never_responded = 0;
-
+				$msg = "";
+				if (isset($msglist[0]) && $msglist[0] == "lxquit") {
+					einde();
+					exit(0);
 				}
-
-			} elseif (preg_match("/:([^!]+)![^\s]+ NICK :(.+)/", $out, $matches)) {
-				if ($nick == $matches[1]) {
-					echo "<font color='$ircColors[3]'>-=- You are now known as $matches[2]</font><br>";
+				foreach($msglist as $m) {
+					$msg .= " " . $m;
+				}
+				if ($matches[1] == $nick) {
+					print("<font color=blue>&lt;$matches[1]&gt; </font> ");
 				} else {
-					echo "<font color='$ircColors[3]'>-=- $matches[1] is now known as $matches[2]</font><br>";
+					print("<font color=black>&lt;$matches[1]&gt; </font> ");
 				}
-				irc_write($socket, "NAMES $matches[2]\r\n");
-
-			} elseif (preg_match("/:([^!]+)![^\s]+ JOIN :(.+)/", $out, $matches)) {
-				//echo "<font color='$ircColors[3]'>--&gt; $matches[1] has joined  the channel</font><br>";
-				$channel = $matches[2];
-				$res = sqlite_query($link, "delete from channel where user = '$user' and id = '$id';");
-				$res = sqlite_query($link, "insert into channel (user, id, channel) values ('$user', '$id', '$channel');");
-				$inchan = true;
-				/*
-				 if ($matches[1] != $nick) {
-				 irc_write($socket, "NAMES $matches[2]\r\n");
-				 }
-				 */
-				irc_write($socket, "NAMES $matches[2]\r\n");
-
-			} elseif (preg_match("/:([^!]+)![^\s]+ PART (.+)/", $out, $matches)) {
-				if (preg_match("/(#[^\s]+) :(.+)/", $matches[2], $match)) {
-					//echo "<font color='$ircColors[3]'>&lt;-- $matches[1] has left $match[1] ($match[2])</font><br>";
-				} else {
-					//echo "<font color='$ircColors[3]'>&lt;-- $matches[1] has left $matches[2]</font><br>";
+				print(" $msg<br>");
+				if ($livetrfp) {
+					fwrite($livetrfp, "$matches[1]: $msg\n");
 				}
-				irc_write($socket, "NAMES $matches[2]\r\n");
 
-			} elseif (preg_match("/:([^!]+)![^\s]+ QUIT :(.*)/", $out, $matches)) {
-				//echo "<font color='$ircColors[3]'>&lt;-- $matches[1] has left</font><br>";
-				irc_write($socket, "NAMES #$channel\r\n");
+				$gl_never_responded = 0;
 
-			} elseif (preg_match("/:([^!]+)![^\s]+ TOPIC (#[^\s]+) :(.*)/", $out, $matches)) {
-				//echo "<font color='$ircColors[7]'>--- $matches[1] changed the topic for $matches[2] to: $matches[3]</font><br>";
-
-			} elseif (preg_match("/:([^!]+)![^\s]+ MODE (#[^\s]+) ([^\s]+) (.+)/", $out, $matches)) {
-				//echo "<font color='$ircColors[7]'>--- $matches[1] sets mode $matches[3] on $matches[4]</font><br>";
-				irc_write($socket, "NAMES $matches[2]\r\n");
-
-			} elseif (preg_match("/:([^\s]+) MODE ([^\s]+) :(.+)/", $out, $matches)) {
-				//echo "<font color='$ircColors[7]'>--- $matches[1] sets mode $matches[3] on $matches[2]</font><br>";
-
-			} else {
-				//echo "$out<br>";
 			}
-			echo "\n";
 
+		} elseif (preg_match("/:([^!]+)![^\s]+ NICK :(.+)/", $out, $matches)) {
+			if ($nick == $matches[1]) {
+				echo "<font color='$ircColors[3]'>-=- You are now known as $matches[2]</font><br>";
+			} else {
+				echo "<font color='$ircColors[3]'>-=- $matches[1] is now known as $matches[2]</font><br>";
+			}
+			irc_write($socket, "NAMES $matches[2]\r\n");
+
+		} elseif (preg_match("/:([^!]+)![^\s]+ JOIN :(.+)/", $out, $matches)) {
+			//echo "<font color='$ircColors[3]'>--&gt; $matches[1] has joined  the channel</font><br>";
+			$channel = $matches[2];
+			$res = sqlite_query($link, "delete from channel where user = '$user' and id = '$id';");
+			$res = sqlite_query($link, "insert into channel (user, id, channel) values ('$user', '$id', '$channel');");
+			$inchan = true;
+			/*
+			if ($matches[1] != $nick) { 
+				irc_write($socket, "NAMES $matches[2]\r\n"); 
+			}
+		*/
+			irc_write($socket, "NAMES $matches[2]\r\n"); 
+
+		} elseif (preg_match("/:([^!]+)![^\s]+ PART (.+)/", $out, $matches)) {
+			if (preg_match("/(#[^\s]+) :(.+)/", $matches[2], $match)) {
+				//echo "<font color='$ircColors[3]'>&lt;-- $matches[1] has left $match[1] ($match[2])</font><br>";
+			} else {
+				//echo "<font color='$ircColors[3]'>&lt;-- $matches[1] has left $matches[2]</font><br>";
+			}
+			irc_write($socket, "NAMES $matches[2]\r\n");
+
+		} elseif (preg_match("/:([^!]+)![^\s]+ QUIT :(.*)/", $out, $matches)) {
+			//echo "<font color='$ircColors[3]'>&lt;-- $matches[1] has left</font><br>";
+			irc_write($socket, "NAMES #$channel\r\n");
+
+		} elseif (preg_match("/:([^!]+)![^\s]+ TOPIC (#[^\s]+) :(.*)/", $out, $matches)) {
+			//echo "<font color='$ircColors[7]'>--- $matches[1] changed the topic for $matches[2] to: $matches[3]</font><br>";
+
+		} elseif (preg_match("/:([^!]+)![^\s]+ MODE (#[^\s]+) ([^\s]+) (.+)/", $out, $matches)) {
+			//echo "<font color='$ircColors[7]'>--- $matches[1] sets mode $matches[3] on $matches[4]</font><br>";
+			irc_write($socket, "NAMES $matches[2]\r\n");
+
+		} elseif (preg_match("/:([^\s]+) MODE ([^\s]+) :(.+)/", $out, $matches)) {
+			//echo "<font color='$ircColors[7]'>--- $matches[1] sets mode $matches[3] on $matches[2]</font><br>";
+
+		} else {
+			//echo "$out<br>";
 		}
+		echo "\n";
+
 	}
-	/**********************************************************************************************/
+	}
+    /**********************************************************************************************/
 
 
 
 
 
-	$result = sqlite_query("SELECT * FROM phpchat WHERE username = '$user' AND id = '$id' ORDER BY tijd", $link);
+    $result = sqlite_query("SELECT * FROM phpchat WHERE username = '$user' AND id = '$id' ORDER BY tijd", $link);
 	$a = 0;
 	while ($rij = sqlite_fetch_array($result, SQLITE_ASSOC)) {
 		$a++;
@@ -507,7 +486,7 @@ while($socket > 0) {
 					echo "<font color='$ircColors[6]'>* $nick $mat[1]</font><br>";
 				} elseif (preg_match("/\001(.+)\001/", $match[3], $mat)) { // CTCPs
 					echo "<font color='$ircColors[5]'>CTCP $match[2] $mat[1]</font><br>";
-						
+					
 				} elseif (preg_match("/^#.+/", $match[2])) { // The main client conversation
 					if ($redirect) {
 						echo "<font color=blue>&lt;Myself&gt; $match[3] </font> <br>";
@@ -545,16 +524,16 @@ while($socket > 0) {
 		echo "\n";
 	}
 	if ($a > 0) { @set_time_limit(3600); /* ten minutes extra to say sth */ }
-	/**********************************************************************************************/
-	if ($login_flag == 0) {
+    /**********************************************************************************************/
+    if ($login_flag == 0) {
 		$name = $_SERVER['REMOTE_ADDR'];
-		irc_write($socket, "USER phpchat {$_SERVER['REMOTE_ADDR']} $name :$name \r\nNICK :".$nick."\r\n");
-		$login_flag = 1;
-	}
-	if (connection_aborted()) {
+	    irc_write($socket, "USER phpchat {$_SERVER['REMOTE_ADDR']} $name :$name \r\nNICK :".$nick."\r\n");
+	    $login_flag = 1;
+    }
+    if (connection_aborted()) {
 		echo "<font color='$ircColors[4]'>Disconnected...</font><br>";
 		break 2;
-	}
+    }
 	echo "<!-- -->"; // keep connection alive
 
 	$timetoping--;
@@ -565,7 +544,7 @@ while($socket > 0) {
 	flush_server_buffer();
 	flush(); //output all...
 
-	//    sleep(1); // ony sleep() works on windoze apache :/
+//    sleep(1); // ony sleep() works on windoze apache :/
 }
 einde();
 

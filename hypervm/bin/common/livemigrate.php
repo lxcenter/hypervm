@@ -1,25 +1,4 @@
-<?PHP
-//
-//    HyperVM, Server Virtualization GUI for OpenVZ and Xen
-//
-//    Copyright (C) 2000-2009     LxLabs
-//    Copyright (C) 2009          LxCenter
-//
-//    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Affero General Public License as
-//    published by the Free Software Foundation, either version 3 of the
-//    License, or (at your option) any later version.
-//
-//    This program is distributed in the hope that it will be useful,
-//    but WITHOUT ANY WARRANTY; without even the implied warranty of
-//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Affero General Public License for more details.
-//
-//    You should have received a copy of the GNU Affero General Public License
-//    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-?>
-
-<?php
+<?php 
 
 include_once "htmllib/lib/include.php";
 
@@ -29,7 +8,7 @@ function switchserver_main()
 {
 
 	global $argc, $argv;
-	global $gbl, $sgbl, $login, $ghtml;
+	global $gbl, $sgbl, $login, $ghtml; 
 
 	//sleep(60);
 	initProgram("admin");
@@ -110,7 +89,7 @@ function switchserver_main()
 		$object->setUpdateSubaction();
 		$object->write();
 
-
+		
 	} catch (exception $e) {
 		print($e->getMessage());
 		/// hcak ahck... Chnage only the olddelete variable which is the mutex used for locking in the process of switch. The problem is we want to totally bail out if the switchserver fails. The corect way would be save after reverting the syncserve to the old value, but that's a bit risky. So we just use a hack to change only the olddeleteflag; Not a real hack.. This is the better way.

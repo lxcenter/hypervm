@@ -1,4 +1,4 @@
-<?php
+<?php 
 
 
 if (!$ghtml->iset("frm_action")) {

@@ -1,25 +1,4 @@
-<?PHP
-//
-//    HyperVM, Server Virtualization GUI for OpenVZ and Xen
-//
-//    Copyright (C) 2000-2009     LxLabs
-//    Copyright (C) 2009          LxCenter
-//
-//    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Affero General Public License as
-//    published by the Free Software Foundation, either version 3 of the
-//    License, or (at your option) any later version.
-//
-//    This program is distributed in the hope that it will be useful,
-//    but WITHOUT ANY WARRANTY; without even the implied warranty of
-//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Affero General Public License for more details.
-//
-//    You should have received a copy of the GNU Affero General Public License
-//    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-?>
-
-<?php
+<?php 
 
 chdir("../../");
 include_once "htmllib/lib/displayinclude.php";
@@ -29,7 +8,7 @@ lpanel_main();
 
 function lpanel_main()
 {
-	global $gbl, $login, $ghtml;
+	global $gbl, $login, $ghtml; 
 
 	initProgram();
 	init_language();
@@ -70,12 +49,12 @@ function lpanel_main()
 
 function print_ext_tree($object)
 {
-	global $gbl, $sgbl, $login, $ghtml;
+	global $gbl, $sgbl, $login, $ghtml; 
 
-	?>
+	?> 
 
 
-<script>
+	<script>
 	Ext.onReady(function(){
     // shorthand
     var Tree = Ext.tree;
@@ -103,7 +82,7 @@ function print_ext_tree($object)
     root.expand();
 });
 </script>
-	<?php
+<?php 
 
 }
 

@@ -1,24 +1,3 @@
-<?PHP
-//
-//    HyperVM, Server Virtualization GUI for OpenVZ and Xen
-//
-//    Copyright (C) 2000-2009     LxLabs
-//    Copyright (C) 2009          LxCenter
-//
-//    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Affero General Public License as
-//    published by the Free Software Foundation, either version 3 of the
-//    License, or (at your option) any later version.
-//
-//    This program is distributed in the hope that it will be useful,
-//    but WITHOUT ANY WARRANTY; without even the implied warranty of
-//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Affero General Public License for more details.
-//
-//    You should have received a copy of the GNU Affero General Public License
-//    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-?>
-
 <?php
 /*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
@@ -57,11 +36,11 @@ function SendResults( $errorNumber, $fileUrl = '', $fileName = '', $customMsg = 
 
 // Check if this uploader has been enabled.
 if ( !$Config['Enabled'] )
-SendResults( '1', '', '', 'This file uploader is disabled. Please check the "editor/filemanager/upload/php/config.php" file' ) ;
+	SendResults( '1', '', '', 'This file uploader is disabled. Please check the "editor/filemanager/upload/php/config.php" file' ) ;
 
 // Check if the file has been correctly uploaded.
 if ( !isset( $_FILES['NewFile'] ) || is_null( $_FILES['NewFile']['tmp_name'] ) || $_FILES['NewFile']['name'] == '' )
-SendResults( '202' ) ;
+	SendResults( '202' ) ;
 
 // Get the posted file.
 $oFile = $_FILES['NewFile'] ;
@@ -71,7 +50,7 @@ $sFileName = $oFile['name'] ;
 
 // Replace dots in the name with underscores (only one dot can be there... security issue).
 if ( $Config['ForceSingleExtension'] )
-$sFileName = preg_replace( '/\\.(?![^.]*$)/', '_', $sFileName ) ;
+	$sFileName = preg_replace( '/\\.(?![^.]*$)/', '_', $sFileName ) ;
 
 $sOriginalFileName = $sFileName ;
 
@@ -84,7 +63,7 @@ $sType = isset( $_GET['Type'] ) ? $_GET['Type'] : 'File' ;
 
 // Check if it is an allowed type.
 if ( !in_array( $sType, array('File','Image','Flash','Media') ) )
-SendResults( 1, '', '', 'Invalid type specified' ) ;
+    SendResults( 1, '', '', 'Invalid type specified' ) ;
 
 // Get the allowed and denied extensions arrays.
 $arAllowed	= $Config['AllowedExtensions'][$sType] ;
@@ -92,7 +71,7 @@ $arDenied	= $Config['DeniedExtensions'][$sType] ;
 
 // Check if it is an allowed extension.
 if ( ( count($arAllowed) > 0 && !in_array( $sExtension, $arAllowed ) ) || ( count($arDenied) > 0 && in_array( $sExtension, $arDenied ) ) )
-SendResults( '202' ) ;
+	SendResults( '202' ) ;
 
 $sErrorNumber	= '0' ;
 $sFileUrl		= '' ;
@@ -102,18 +81,18 @@ $iCounter = 0 ;
 
 // Get the target directory.
 if ( isset( $Config['UserFilesAbsolutePath'] ) && strlen( $Config['UserFilesAbsolutePath'] ) > 0 )
-$sServerDir = $Config['UserFilesAbsolutePath'] ;
+	$sServerDir = $Config['UserFilesAbsolutePath'] ;
 else
-$sServerDir = GetRootPath() . $Config["UserFilesPath"] ;
+	$sServerDir = GetRootPath() . $Config["UserFilesPath"] ;
 
 if ( $Config['UseFileType'] )
-$sServerDir .= strtolower($sType) . '/' ;
+	$sServerDir .= strtolower($sType) . '/' ;
 
 //check for the directory before uploading the file
 if(!is_dir($sServerDir))
 {
-	mkdir($sServerDir);
-}
+    mkdir($sServerDir);
+} 
 
 while ( true )
 {
@@ -139,9 +118,9 @@ while ( true )
 		}
 
 		if ( $Config['UseFileType'] )
-		$sFileUrl = $Config["UserFilesPath"] . strtolower($sType) . '/' . $sFileName ;
+			$sFileUrl = $Config["UserFilesPath"] . strtolower($sType) . '/' . $sFileName ;
 		else
-		$sFileUrl = $Config["UserFilesPath"] . $sFileName ;
+			$sFileUrl = $Config["UserFilesPath"] . $sFileName ;
 
 		break ;
 	}

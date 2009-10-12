@@ -1,144 +1,123 @@
-<?PHP
-//
-//    HyperVM, Server Virtualization GUI for OpenVZ and Xen
-//
-//    Copyright (C) 2000-2009     LxLabs
-//    Copyright (C) 2009          LxCenter
-//
-//    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Affero General Public License as
-//    published by the Free Software Foundation, either version 3 of the
-//    License, or (at your option) any later version.
-//
-//    This program is distributed in the hope that it will be useful,
-//    but WITHOUT ANY WARRANTY; without even the implied warranty of
-//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Affero General Public License for more details.
-//
-//    You should have received a copy of the GNU Affero General Public License
-//    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-?>
-
-<?php
+<?php 
 
 include_once "htmllib/lib/pserver/driver/ffile__commonlib.php";
 
 class ffile__linux extends lxDriverClass {
 
-	function dbactionUpdate($subaction)
-	{
+function dbactionUpdate($subaction)
+{
 
-		global $gbl, $sgbl, $login, $ghtml;
-		if_demo_throw_exception('ffile');
+	global $gbl, $sgbl, $login, $ghtml; 
+	if_demo_throw_exception('ffile');
 
-		$this->aux = new Ffile__common(null, null, $this->nname);
-		$this->aux->main = $this->main;
+	$this->aux = new Ffile__common(null, null, $this->nname);
+	$this->aux->main = $this->main;
 
-		if ($this->main->isOn('readonly')) {
-			throw new lxexception('file_manager_is_readonly', '');
-		}
-
-		$chownug = "{$this->main->__username_o}:{$this->main->__username_o}";
-
-		switch($subaction) {
-
-			case "fancyedit":
-			case "edit":
-				check_file_if_owned_by_and_throw($this->main->getFullPath(), $this->main->__username_o);
-				lfile_write_content($this->main->getFullPath(), $this->main->content, $chownug);
-				lxshell_return("dos2unix", $this->main->getFullPath());
-				lxfile_unix_chmod($this->main->getFullPath(), "0644");
-				break;
-
-			case "upload_s":
-				$filename = $this->aux->uploadDirect();
-				lxfile_unix_chown($filename, "{$this->main->__username_o}:{$this->main->__username_o}");
-				lxfile_unix_chmod($filename, "0644");
-				break;
-
-			case "rename":
-				$this->aux->reName();
-				//lxfile_unix_chown($new, $this->main->__username_o);
-				break;
-
-			case "paste":
-				$this->aux->filePaste();
-				break;
-
-			case "perm":
-				$arg = null;
-				$perm = $this->main->newperm;
-				$perm = 0 . $perm ;
-				if ($this->main->isOn('recursive_f')) {
-					new_process_chmod_rec($this->main->__username_o, $this->main->fullpath, $perm);
-				} else {
-					lxfile_unix_chmod($this->main->fullpath, "$perm");
-				}
-				break;
-
-			case "newdir":
-				$path = $this->aux->newDir();
-				lxfile_unix_chown($path, $this->main->__username_o);
-				lxfile_unix_chown($path, $chownug);
-				break;
-
-			case "content":
-				if ($this->main->is_image()) {
-					$this->aux->resizeImage();
-				} else {
-					throw new lxexception('cannot_save_content', '');
-				}
-				break;
-
-			case "thumbnail":
-				$this->aux->createThumbnail();
-				break;
-
-			case "convert_image":
-				$this->aux->convertImage();
-				break;
-
-			case "zip_file":
-				$zipfile = $this->aux->zipFile();
-				lxfile_unix_chown($zipfile, $this->main->__username_o);
-				lxfile_unix_chown($zipfile, $chownug);
-				break;
-
-			case "filedelete":
-				$this->aux->moveAllToTrash();
-				break;
-
-			case "filerealdelete":
-				$this->aux->fileRealDelete();
-				break;
-
-			case "restore_trash":
-				$this->aux->restoreTrash();
-				break;
-
-			case "clear_trash":
-				$this->aux->clearTrash();
-				break;
-
-			case "download_from_http":
-				$fullpath = $this->aux->downloadFromHttp();
-				lxfile_unix_chown($fullpath, $this->main->__username_o);
-				break;
-
-			case "download_from_ftp":
-				$fullpath = $this->aux->downloadFromFtp();
-				lxfile_unix_chown($fullpath, $this->main->__username_o);
-				break;
-
-			case "zipextract":
-				$dir = $this->aux->zipExtract();
-				if ($sgbl->isKloxo() && $this->main->__username_o !== 'root') {
-					//lxfile_unix_chown_rec($dir, "{$this->main->__username_o}");
-					//lxfile_unix_chown_rec($dir, $chownug);
-				}
-				break;
-		}
+	if ($this->main->isOn('readonly')) {
+		throw new lxexception('file_manager_is_readonly', '');
 	}
+
+	$chownug = "{$this->main->__username_o}:{$this->main->__username_o}";
+
+	switch($subaction) {
+
+		case "fancyedit":
+		case "edit":
+			check_file_if_owned_by_and_throw($this->main->getFullPath(), $this->main->__username_o);
+			lfile_write_content($this->main->getFullPath(), $this->main->content, $chownug);
+			lxshell_return("dos2unix", $this->main->getFullPath());
+			lxfile_unix_chmod($this->main->getFullPath(), "0644");
+			break;
+
+		case "upload_s":
+			$filename = $this->aux->uploadDirect();
+			lxfile_unix_chown($filename, "{$this->main->__username_o}:{$this->main->__username_o}");
+			lxfile_unix_chmod($filename, "0644");
+			break;
+
+		case "rename":
+			$this->aux->reName();
+			//lxfile_unix_chown($new, $this->main->__username_o);
+			break;
+
+		case "paste":
+			$this->aux->filePaste();
+			break;
+
+		case "perm":
+			$arg = null;
+			$perm = $this->main->newperm;
+			$perm = 0 . $perm ;
+			if ($this->main->isOn('recursive_f')) {
+				new_process_chmod_rec($this->main->__username_o, $this->main->fullpath, $perm);
+			} else {
+				lxfile_unix_chmod($this->main->fullpath, "$perm");
+			}
+			break;
+
+		case "newdir":
+			$path = $this->aux->newDir();
+			lxfile_unix_chown($path, $this->main->__username_o);
+			lxfile_unix_chown($path, $chownug);
+			break;
+
+		case "content":
+			if ($this->main->is_image()) {
+				$this->aux->resizeImage();
+			} else {
+				throw new lxexception('cannot_save_content', '');
+			}
+			break;
+
+		case "thumbnail":
+			$this->aux->createThumbnail();
+			break;
+
+		case "convert_image":
+			$this->aux->convertImage();
+			break;
+
+		case "zip_file":
+			$zipfile = $this->aux->zipFile();
+			lxfile_unix_chown($zipfile, $this->main->__username_o);
+			lxfile_unix_chown($zipfile, $chownug);
+			break;
+
+		case "filedelete":
+			$this->aux->moveAllToTrash();
+			break;
+
+		case "filerealdelete":
+			$this->aux->fileRealDelete();
+			break;
+
+		case "restore_trash":
+			$this->aux->restoreTrash();
+			break;
+
+		case "clear_trash":
+			$this->aux->clearTrash();
+			break;
+
+		case "download_from_http":
+			$fullpath = $this->aux->downloadFromHttp();
+			lxfile_unix_chown($fullpath, $this->main->__username_o);
+			break;
+
+		case "download_from_ftp":
+			$fullpath = $this->aux->downloadFromFtp();
+			lxfile_unix_chown($fullpath, $this->main->__username_o);
+			break;
+
+		case "zipextract":
+			$dir = $this->aux->zipExtract();
+			if ($sgbl->isKloxo() && $this->main->__username_o !== 'root') {
+				//lxfile_unix_chown_rec($dir, "{$this->main->__username_o}");
+				//lxfile_unix_chown_rec($dir, $chownug);
+			}
+			break;
+	}
+}
 
 
 }

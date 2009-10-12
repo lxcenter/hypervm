@@ -1,25 +1,4 @@
-<?PHP
-//
-//    HyperVM, Server Virtualization GUI for OpenVZ and Xen
-//
-//    Copyright (C) 2000-2009     LxLabs
-//    Copyright (C) 2009          LxCenter
-//
-//    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Affero General Public License as
-//    published by the Free Software Foundation, either version 3 of the
-//    License, or (at your option) any later version.
-//
-//    This program is distributed in the hope that it will be useful,
-//    but WITHOUT ANY WARRANTY; without even the implied warranty of
-//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Affero General Public License for more details.
-//
-//    You should have received a copy of the GNU Affero General Public License
-//    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-?>
-
-<?php
+<?php 
 include_once "htmllib/phplib/lib/linuxcorelib.php";
 include_once "htmllib/lib/linuxfslib.php";
 
@@ -170,7 +149,7 @@ function os_create_default_slave_driver_db()
 
 function os_fix_lxlabs_permission()
 {
-	global $gbl, $sgbl, $login, $ghtml;
+	global $gbl, $sgbl, $login, $ghtml; 
 	lxfile_mkdir("__path_program_root/session");
 	lxfile_unix_chown_rec("__path_program_root", "lxlabs");
 	lxfile_unix_chmod_rec("__path_program_root/sbin/", "0755");
@@ -179,7 +158,7 @@ function os_fix_lxlabs_permission()
 	lxfile_unix_chmod("__path_program_root/log", "0700");
 	lxfile_unix_chmod("__path_program_root/session", "0700");
 	lxfile_symlink("__path_php_path", "/usr/bin/lphp.exe");
-
+	
 }
 
 
@@ -222,7 +201,7 @@ function os_service_manage($serv, $act)
 
 function os_create_program_service()
 {
-	global $gbl, $sgbl, $login, $ghtml;
+	global $gbl, $sgbl, $login, $ghtml; 
 	$pgm = $sgbl->__var_program_name;
 
 	$pgminit = "__path_program_htmlbase/htmllib/filecore/$pgm.init.program";
@@ -240,28 +219,28 @@ function os_create_program_service()
 
 function os_is_arch_sixfour()
 {
-	if (!lxfile_exists("/proc/xen")) {
-		$arch = trim(`arch`);
-		return $arch === 'x86_64';
-	} else {
-		$q = lfile_get_contents("/etc/rpm/platform");
-		if ($q === "i686-redhat-linux") {
-			return false;
-		}
-		return true;
+    if (!lxfile_exists("/proc/xen")) {
+	$arch = trim(`arch`);
+	return $arch === 'x86_64';
+    } else {
+	$q = lfile_get_contents("/etc/rpm/platform");
+	if ($q === "i686-redhat-linux") {
+	    return false;
 	}
+	return true;
+    }
 }
 
 function os_is_php_six_four()
 {
-	$v = lxshell_output("rpm -q --queryformat '%{ARCH}' php");
-	$v = trim($v);
-	return ($v === "x86_64");
+    $v = lxshell_output("rpm -q --queryformat '%{ARCH}' php");
+    $v = trim($v);
+    return ($v === "x86_64");
 }
 
 function os_restart_program()
 {
-	global $gbl, $sgbl, $login, $ghtml;
+	global $gbl, $sgbl, $login, $ghtml; 
 	$pgm = $sgbl->__var_program_name;
 	// We just need to kill the main server, and leave the wrapper alone.
 	exec_with_all_closed("/etc/init.d/$pgm lxrestart");
@@ -324,8 +303,8 @@ function os_get_user_from_uid($uid)
 {
 	$pwd = posix_getpwuid($uid);
 
-	if ($pwd['name'])
-	return $pwd['name'];
+	if ($pwd['name']) 
+		return $pwd['name'];
 
 	return $uid;
 }
@@ -334,8 +313,8 @@ function os_get_uid_from_user($user)
 {
 	$pwd = posix_getpwnam($user);
 
-	if ($pwd['uid'])
-	return $pwd['uid'];
+	if ($pwd['uid']) 
+		return $pwd['uid'];
 	// If the user doesn't exist return a very large number.
 	return 10000000;
 }
@@ -344,8 +323,8 @@ function os_get_gid_from_user($user)
 {
 	$pwd = posix_getpwnam($user);
 
-	if ($pwd['gid'])
-	return $pwd['gid'];
+	if ($pwd['gid']) 
+		return $pwd['gid'];
 	// If the user doesn't exist return a very large number.
 	return 10000000;
 }
@@ -393,7 +372,7 @@ function os_killpid($pid)
 
 function os_set_path()
 {
-	global $gbl, $sgbl, $login, $ghtml;
+	global $gbl, $sgbl, $login, $ghtml; 
 	putenv("PATH=/sbin/:/usr/sbin/:/bin/:/usr/bin:/usr/local/bin/:/usr/local/sbin:$sgbl->__path_program_root/bin:$sgbl->__path_program_root/sbin:");
 }
 

@@ -1,27 +1,6 @@
-<?PHP
-//
-//    HyperVM, Server Virtualization GUI for OpenVZ and Xen
-//
-//    Copyright (C) 2000-2009     LxLabs
-//    Copyright (C) 2009          LxCenter
-//
-//    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Affero General Public License as
-//    published by the Free Software Foundation, either version 3 of the
-//    License, or (at your option) any later version.
-//
-//    This program is distributed in the hope that it will be useful,
-//    but WITHOUT ANY WARRANTY; without even the implied warranty of
-//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Affero General Public License for more details.
-//
-//    You should have received a copy of the GNU Affero General Public License
-//    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-?>
+<?php 
 
-<?php
-
-include_once "htmllib/lib/include.php";
+include_once "htmllib/lib/include.php"; 
 
 initProgram('admin');
 init_language();
@@ -77,7 +56,7 @@ foreach($param as $k => $v) {
 	$c = null;
 	$prep = null;
 	if ($v && is_array($v)) {
-		if ($v[0] === 'M') {
+		if ($v[0] === 'M') { 
 			$c = "Static: {$v[1]}";
 		}
 	}
@@ -97,12 +76,12 @@ function printProperty($class, $type)
 		if ($type === 'action') {
 			$istr = "__acdesc_";
 			if (!csb($s->name, "__acdesc_"))
-			continue;
+				continue;
 		}
 		if ($type === 'property') {
 			$istr = "__desc_";
 			if (!csb($s->name, "__desc_"))
-			continue;
+				continue;
 		}
 
 		$descr = get_classvar_description($class, $s->name);

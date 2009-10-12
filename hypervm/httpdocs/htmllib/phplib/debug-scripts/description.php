@@ -1,25 +1,4 @@
-<?PHP
-//
-//    HyperVM, Server Virtualization GUI for OpenVZ and Xen
-//
-//    Copyright (C) 2000-2009     LxLabs
-//    Copyright (C) 2009          LxCenter
-//
-//    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Affero General Public License as
-//    published by the Free Software Foundation, either version 3 of the
-//    License, or (at your option) any later version.
-//
-//    This program is distributed in the hope that it will be useful,
-//    but WITHOUT ANY WARRANTY; without even the implied warranty of
-//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Affero General Public License for more details.
-//
-//    You should have received a copy of the GNU Affero General Public License
-//    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-?>
-
-<?php
+<?php 
 
 include "htmllib/lib/include.php";
 
@@ -29,18 +8,18 @@ description_main();
 
 function description_main()
 {
-	global $gbl, $sgbl, $login, $ghtml;
+	global $gbl, $sgbl, $login, $ghtml; 
 
 	global $gl_class_array;
 
 	foreach($gl_class_array as $k => $g) {
 		if (csa($k, "__")) {
 			continue;
-		}
+		} 
 
 		if (cse($k, "base") || cse($k, "core")) {
 			continue;
-		}
+		} 
 
 		try {
 			$r = new ReflectionClass($k);
@@ -85,10 +64,10 @@ function description_main()
 	foreach($ret as $k => $v) {
 		foreach($v as $nk => $nv) {
 			/* Let the definitions be made multiple times, but it is better to have them rather than not have them... So the line below is not needed.
-			 if ($k != 'lxclass' && isset($ret['lxclass'][$nk])) {
+			if ($k != 'lxclass' && isset($ret['lxclass'][$nk])) {
 				continue;
-				}
-				*/
+			}
+		*/
 			if (cse($nk, "_o") || cse($nk, "_l")) {
 				continue;
 			}
@@ -108,7 +87,7 @@ function description_main()
 	foreach($description as $k => $v) {
 		$str .= "\$__description[\"$k\"] = array(\"$v\");\n";
 	}
-
+	
 	$str .= "\n";
 	file_put_contents("lang/en/desclib.php", $str);
 
@@ -128,7 +107,7 @@ function description_main()
 	system("cp htmllib/help-core/* help/");
 	system("cp help-base/* help/");
 
-
+	
 
 }
 

@@ -1,24 +1,3 @@
-<?PHP
-//
-//    HyperVM, Server Virtualization GUI for OpenVZ and Xen
-//
-//    Copyright (C) 2000-2009     LxLabs
-//    Copyright (C) 2009          LxCenter
-//
-//    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Affero General Public License as
-//    published by the Free Software Foundation, either version 3 of the
-//    License, or (at your option) any later version.
-//
-//    This program is distributed in the hope that it will be useful,
-//    but WITHOUT ANY WARRANTY; without even the implied warranty of
-//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Affero General Public License for more details.
-//
-//    You should have received a copy of the GNU Affero General Public License
-//    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-?>
-
 <?php
 chdir("..");
 include_once "htmllib/lib/displayinclude.php";
@@ -30,7 +9,7 @@ header_main();
 function header_main()
 {
 
-	global $gbl, $sgbl, $login, $ghtml;
+	global $gbl, $sgbl, $login, $ghtml; 
 	initProgram();
 	init_language();
 	print_meta_lan();
@@ -67,89 +46,88 @@ function print_logout()
 
 function print_header()
 {
-	global $gbl, $sgbl, $login, $ghtml;
+	global $gbl, $sgbl, $login, $ghtml; 
 	$lightskincolor = $login->getLightSkinColor();
 	createHeaderData();
-	print("<body topmargin=0 leftmargin=0> ");
-	print("<div id=statusbar  style='background:#$lightskincolor;scroll:auto;height:26;width:100%;border-bottom:4px solid #b1cfed;margin:2 2 2 2:vertical-align:top;text-align:top'>");
+print("<body topmargin=0 leftmargin=0> ");
+print("<div id=statusbar  style='background:#$lightskincolor;scroll:auto;height:26;width:100%;border-bottom:4px solid #b1cfed;margin:2 2 2 2:vertical-align:top;text-align:top'>");
 
-	$alist[] = "a=show";
-	$alist = $login->createShowAlist($alist);
-	/*
-	 if ($login->isLte('reseller')) {
-	 $alist[] = "a=list&c=all_domain";
-	 $alist[] = "a=list&c=client";
-	 }
-	 $alist[] = "a=show&k[class]=ffile&k[nname]=/";
-	 $alist[] = "a=updateform&sa=password";
-	 */
-	$gbl->__c_object = $login;
-	print("<table cellpadding=0 cellspacing=0 > <tr> ");
-	$count = 0;
-	$icount = 0;
-	foreach($alist as $k => $v) {
-		if (csa($k, "__title")) { $count++ ; continue; }
-		//if ($count >= 2) { break; }
-		$icount++;
-		if ($icount > 8) { continue; }
-		$v = $ghtml->getFullUrl($v);
-		$ghtml->print_div_button_on_header(null, true, $k, $v);
-	}
-	print("<td nowrap style='width:40px'></td> ");
-	$v = "a=list&c=ndskshortcut";
+$alist[] = "a=show";
+$alist = $login->createShowAlist($alist);
+/*
+if ($login->isLte('reseller')) {
+	$alist[] = "a=list&c=all_domain";
+	$alist[] = "a=list&c=client";
+}
+$alist[] = "a=show&k[class]=ffile&k[nname]=/";
+$alist[] = "a=updateform&sa=password";
+*/
+$gbl->__c_object = $login;
+print("<table cellpadding=0 cellspacing=0 > <tr> ");
+$count = 0;
+$icount = 0;
+foreach($alist as $k => $v) {
+	if (csa($k, "__title")) { $count++ ; continue; }
+	//if ($count >= 2) { break; }
+	$icount++;
+	if ($icount > 8) { continue; }
 	$v = $ghtml->getFullUrl($v);
-	$ghtml->print_div_button_on_header(null, true, 0, $v);
-	$ghtml->print_toolbar();
-
-	print("<td width=100%> </td> ");
-	$v =  $ghtml->getFullUrl("a=list&c=ssessionlist");
 	$ghtml->print_div_button_on_header(null, true, $k, $v);
-	$v =  create_simpleObject(array('url' => "javascript:top.mainframe.logOut()", 'purl' => '&a=updateform&sa=logout', 'target' => null));
-	$ghtml->print_div_button_on_header(null, true, $k, $v);
-	print("</tr> </table> ");
-	print("</div> </body> ");
-	return;
+}
+print("<td nowrap style='width:40px'></td> ");
+$v = "a=list&c=ndskshortcut";
+$v = $ghtml->getFullUrl($v);
+$ghtml->print_div_button_on_header(null, true, 0, $v);
+$ghtml->print_toolbar();
 
-	?>
-<body topmargin=0 bottommargin=0 leftmargin=0 rightmargin=0 class="bdy1"
-	onload="foc()">
-<link href="/htmllib/css/header_new.css" rel="stylesheet"
-	type="text/css" />
+print("<td width=100%> </td> ");
+$v =  $ghtml->getFullUrl("a=list&c=ssessionlist");
+$ghtml->print_div_button_on_header(null, true, $k, $v);
+$v =  create_simpleObject(array('url' => "javascript:top.mainframe.logOut()", 'purl' => '&a=updateform&sa=logout', 'target' => null));
+$ghtml->print_div_button_on_header(null, true, $k, $v);
+print("</tr> </table> ");
+print("</div> </body> ");
+return;
+
+	?> 
+<body topmargin=0 bottommargin=0 leftmargin=0 rightmargin=0 class="bdy1" onload="foc()">
+	<link href="/htmllib/css/header_new.css" rel="stylesheet" type="text/css" />
 <table id="tab1" border="0" cellpadding="0" cellspacing="0">
-	<tr>
-		<td class="top2">
-		<div class="menuover" style="margin-top: 2px; margin-left: 0%"><?php 
+<tr><td class="top2"><div class="menuover" style="margin-top:2px;margin-left:0%">
 
-		$list[] = "a=show";
-		if ($login->isLte('reseller')) {
-			$list[] = "a=list&c=all_vps";
-			$list[] = "a=list&c=client";
-		}
-		$list[] = "k[class]=ffile&k[nname]=/&a=show";
-		$list[] = "a=list&c=ticket";
 
-		$list = null;
-		$list[] = "home";
-		$list[] = "ffile";
-		$list[] = "ticket";
+<?php 
 
-		foreach($list as $k) {
-			print_one_link($k);
-		}
+	$list[] = "a=show";
+	if ($login->isLte('reseller')) {
+		$list[] = "a=list&c=all_vps";
+		$list[] = "a=list&c=client";
+	} 
+	$list[] = "k[class]=ffile&k[nname]=/&a=show";
+	$list[] = "a=list&c=ticket";
 
-		print("<span style='margin-left:39%;'> </span> \n");
+	$list = null;
+	$list[] = "home";
+	$list[] = "ffile";
+	$list[] = "ticket";
 
-		foreach(array("ssession", "help", "logout") as $k) {
-			print_one_link($k);
-		}
-		print("</div></td></tr>");
-		print("</table> ");
+	foreach($list as $k) {
+		print_one_link($k);
+	}
+
+	print("<span style='margin-left:39%;'> </span> \n");
+
+	foreach(array("ssession", "help", "logout") as $k) {
+		print_one_link($k);
+	}
+	print("</div></td></tr>");
+	print("</table> ");
 
 }
 
 function createHeaderData()
 {
-	global $gbl, $sgbl, $login, $ghtml;
+	global $gbl, $sgbl, $login, $ghtml; 
 	global $gdata;
 	$homedesc = $login->getKeywordUc('home');
 	$deskdesc = $login->getKeywordUc('desktop');

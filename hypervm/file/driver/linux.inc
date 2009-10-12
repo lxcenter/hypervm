@@ -1,4 +1,4 @@
-<?php
+<?php 
 
 $driver['hostdeny'] = "linux";
 $driver['ffile'] = "linux";

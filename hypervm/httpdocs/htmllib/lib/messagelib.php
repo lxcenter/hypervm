@@ -1,24 +1,3 @@
-<?PHP
-//
-//    HyperVM, Server Virtualization GUI for OpenVZ and Xen
-//
-//    Copyright (C) 2000-2009     LxLabs
-//    Copyright (C) 2009          LxCenter
-//
-//    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Affero General Public License as
-//    published by the Free Software Foundation, either version 3 of the
-//    License, or (at your option) any later version.
-//
-//    This program is distributed in the hope that it will be useful,
-//    but WITHOUT ANY WARRANTY; without even the implied warranty of
-//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Affero General Public License for more details.
-//
-//    You should have received a copy of the GNU Affero General Public License
-//    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-?>
-
 <?php
 $__emessage['blocked'] = "Your address is blocked";
 $__emessage['no_server'] = "Could not connect to the Server.";
@@ -95,7 +74,7 @@ $__information['updateform_ssl_authorized_keys_pre'] = "These are the SSH keys f
 $__information['updateform_ssl_hypervm_pre'] = $__information['updateform_ssl_kloxo_pre'];
 
 $__information['updateform_selfbackupconfig_pre'] = " This is primarily meant to configure the remote backup of the master database and nothing else. The database dump is taken everyday and is saved in a local folder in this machine. If an ftp account is configured here, the file will be uploaded to the machine. This is mainly useful in large cluster setup where the failure of master can have much larger impacts.";
-$__information['lxguard_updateform_update_pre'] = " Lxguard protects you against brute force attacks by monitoring the ssh and ftp log messages, and blocking ipaddresses that have too many failed attempts at logging into the server. Lxguard is default turned on, and will automatically block hosts, and cannot be turned off. You can configure Lxguard by specifying the [b] threshold of failed attempts [/b] or by adding certain ipaddresses to the whitelist. If an IP is found in the whitelist, it won't be blocked, even if it has crossed the threshold of failed attempts. To remove the warnings you get about Lxguard please click on the agreement checkbox below";
+$__information['lxguard_updateform_update_pre'] = " Lxguard protects you against brute force attacks by monitoring the ssh and ftp log messages, and blocking ipaddresses that have too many failed attempts at logging into the server. Lxguard is default turned on, and will automatically block hosts, and cannot be turned off. You can configure Lxguard by specifying the [b] threshold of failed attempts [/b] or by adding certain ipaddresses to the whitelist. If an IP is found in the whitelist, it won't be blocked, even if it has crossed the threshold of failed attempts. To remove the warnings you get about Lxguard please click on the agreement checkbox below"; 
 
 $__information['updateform_generalsetting_pre'] = " The 'HelpDesk Url' is a link to your Helpdesk, which will be used in place of the default help desk built into the software. Community Url is the link the client will see on his left page, and in normal cases can point to your forum.";
 $__information['custombutton_addform__pre'] = " In the url, you can use %nname%, which will be substituted with the name of the client. For Kloxo only, you can use %default_domain% for the default domain of the client.";

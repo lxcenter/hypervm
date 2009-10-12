@@ -1,25 +1,4 @@
-<?PHP
-//
-//    HyperVM, Server Virtualization GUI for OpenVZ and Xen
-//
-//    Copyright (C) 2000-2009     LxLabs
-//    Copyright (C) 2009          LxCenter
-//
-//    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Affero General Public License as
-//    published by the Free Software Foundation, either version 3 of the
-//    License, or (at your option) any later version.
-//
-//    This program is distributed in the hope that it will be useful,
-//    but WITHOUT ANY WARRANTY; without even the implied warranty of
-//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Affero General Public License for more details.
-//
-//    You should have received a copy of the GNU Affero General Public License
-//    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-?>
-
-<?php
+<?php 
 
 class dbpermission_b extends Lxaclass {
 	static $__desc_nname =  array("n", "",  "client_name", "a=show");
@@ -31,86 +10,86 @@ class dbhostlist_a extends Lxaclass {
 
 class databaseusercorelib extends lxdb {
 
-	static $__desc = array("", "",  "database_user");
-	static $__desc_nname =  array("n", "",  "database_user_name", "a=show");
-	static $__desc_username = array("n", "",  "database_user_name", URL_SHOW);
-	static $__desc_dbtype = array("", "",  "database_type");
-	static $__desc_syncserver = array("", "",  "database_server");
-	static $__desc_dbpassword = array("n", "",  "password");
-	//static $__desc_ddatabase_usage = array("q", "",  "database_disk_usage_(MB)");
+static $__desc = array("", "",  "database_user");
+static $__desc_nname =  array("n", "",  "database_user_name", "a=show");
+static $__desc_username = array("n", "",  "database_user_name", URL_SHOW);
+static $__desc_dbtype = array("", "",  "database_type");
+static $__desc_syncserver = array("", "",  "database_server");
+static $__desc_dbpassword = array("n", "",  "password");
+//static $__desc_ddatabase_usage = array("q", "",  "database_disk_usage_(MB)");
 
-	static $__acdesc_update_update = array("", "",  "edit_db");
-	static $__acdesc_update_phpmyadmin = array("", "",  "phpmyadmin");
+static $__acdesc_update_update = array("", "",  "edit_db");
+static $__acdesc_update_phpmyadmin = array("", "",  "phpmyadmin");
 
-	function createExtraVariables()
-	{
-		$parent = $this->getParentO();
-		if ($this->dbtype !== 'mssql') {
-			$ret = $parent->getDbAdminPass();
-			$this->__var_dbadmin = $ret['dbadmin'];
-			$this->__var_dbpassword = $ret['dbpassword'];
-		}
-		if (!isset($this->__var_enc_pass)) {
-			$this->__var_enc_pass = md5($this->dbpassword);
-		}
+function createExtraVariables()
+{
+	$parent = $this->getParentO();
+	if ($this->dbtype !== 'mssql') {
+		$ret = $parent->getDbAdminPass();
+		$this->__var_dbadmin = $ret['dbadmin'];
+		$this->__var_dbpassword = $ret['dbpassword'];
+	}
+	if (!isset($this->__var_enc_pass)) {
+		$this->__var_enc_pass = md5($this->dbpassword);
+	}
+}
+
+
+
+static function createListNlist($parent, $view)
+{
+	$nlist['nname'] = '10%';
+	$nlist['username'] = '100%';
+	return $nlist;
+}
+
+function createShowUpdateform()
+{
+	$vlist['update'] = null;
+	return $vlist;
+}
+static function add($parent, $class, $param)
+{
+
+	$param['nname'] = databasecore::getDbName($parent->getParentName(), $param['nname']);
+	$param['username'] = $param['nname'];
+	$param['dbname'] = $parent->dbname;
+	$param['syncserver'] = $parent->syncserver;
+
+	return $param;
+}
+
+
+function postAdd()
+{
+	$parent = $this->getParentO();
+	$nname = $this->username;
+	if (exists_in_db($parent->__masterserver, 'mysqldb', $nname)) {
+		throw new lxException('databaseuser_already_exists', 'dbname', '');
 	}
 
+}
 
 
-	static function createListNlist($parent, $view)
-	{
-		$nlist['nname'] = '10%';
-		$nlist['username'] = '100%';
-		return $nlist;
-	}
+static function addform($parent, $class, $typetd = null)
+{
+	$dbprefix = databasecore::fixDbname($parent->getParentName());
 
-	function createShowUpdateform()
-	{
-		$vlist['update'] = null;
-		return $vlist;
-	}
-	static function add($parent, $class, $param)
-	{
+	$vlist['dbtype'] === 'mysql';
+	$vlist['nname'] = array('m', array('pretext' => $dbprefix));
+	$vlist['dbpassword'] = null;
+	$res['variable'] = $vlist;
+	$res['action'] = 'add';
+	return $res;
 
-		$param['nname'] = databasecore::getDbName($parent->getParentName(), $param['nname']);
-		$param['username'] = $param['nname'];
-		$param['dbname'] = $parent->dbname;
-		$param['syncserver'] = $parent->syncserver;
+}
 
-		return $param;
-	}
-
-
-	function postAdd()
-	{
-		$parent = $this->getParentO();
-		$nname = $this->username;
-		if (exists_in_db($parent->__masterserver, 'mysqldb', $nname)) {
-			throw new lxException('databaseuser_already_exists', 'dbname', '');
-		}
-
-	}
-
-
-	static function addform($parent, $class, $typetd = null)
-	{
-		$dbprefix = databasecore::fixDbname($parent->getParentName());
-
-		$vlist['dbtype'] === 'mysql';
-		$vlist['nname'] = array('m', array('pretext' => $dbprefix));
-		$vlist['dbpassword'] = null;
-		$res['variable'] = $vlist;
-		$res['action'] = 'add';
-		return $res;
-
-	}
-
-	function updateform($subaction, $param)
-	{
-		$vlist['nname'] = array('M', $this->nname);
-		$vlist['dbpassword'] = null;
-		return $vlist;
-	}
+function updateform($subaction, $param)
+{
+	$vlist['nname'] = array('M', $this->nname);
+	$vlist['dbpassword'] = null;
+	return $vlist;
+}
 
 }
 

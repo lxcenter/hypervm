@@ -1,335 +1,307 @@
-<?PHP
-//
-//    HyperVM, Server Virtualization GUI for OpenVZ and Xen
-//
-//    Copyright (C) 2000-2009     LxLabs
-//    Copyright (C) 2009          LxCenter
-//
-//    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Affero General Public License as
-//    published by the Free Software Foundation, either version 3 of the
-//    License, or (at your option) any later version.
-//
-//    This program is distributed in the hope that it will be useful,
-//    but WITHOUT ANY WARRANTY; without even the implied warranty of
-//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Affero General Public License for more details.
-//
-//    You should have received a copy of the GNU Affero General Public License
-//    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-?>
-
 <?php
 
 class FormVar {
 
-	function __get($key)
-	{
-		return null;
-	}
+function __get($key) 
+{
+	return null;
+}
 }
 
 class HtmlLib {
 
-	public $__message;
+public $__message;
 
-	static function checkForScript($value)
-	{
-		if (csa($value, "<") || csa($value, ">") || csa($value, "(") || csa($value, ")")) {
-			dprint($value);
-			print("Detected <br> \n");
-			exit;
-		}
-
-		if (csa($value, "'")) {
-			dprint($value);
-			print("Detected quote <br> \n");
-			exit;
-		}
-
+static function checkForScript($value)
+{
+	if (csa($value, "<") || csa($value, ">") || csa($value, "(") || csa($value, ")")) {
+		dprint($value);
+		print("Detected <br> \n");
+		exit;
 	}
-	function __construct()
-	{
-		global $gbl, $sgbl;
-		$tmp = array_merge($_GET, $_POST);
+
+	if (csa($value, "'")) {
+		dprint($value);
+		print("Detected quote <br> \n");
+		exit;
+	}
+
+}
+function __construct()
+{
+	global $gbl, $sgbl;
+	$tmp = array_merge($_GET, $_POST);
 
 
-		if (isset($tmp['frm_o_o']) && $tmp['frm_o_o']) {
-			ksort($tmp['frm_o_o']);
+	if (isset($tmp['frm_o_o']) && $tmp['frm_o_o']) {
+		ksort($tmp['frm_o_o']);
 
-			foreach($tmp['frm_o_o'] as $k => $v) {
-				if ($v['class']) {
-					self::checkForScript($v['class']);
-				}
-				if (isset($v['nname'])) {
-					self::checkForScript($v['nname']);
+		foreach($tmp['frm_o_o'] as $k => $v) {
+			if ($v['class']) {
+				self::checkForScript($v['class']);
+			}
+			if (isset($v['nname'])) {
+				self::checkForScript($v['nname']);
+			}
+		}
+	}
+
+
+	if (isset($tmp['frm_hpfilter'])) {
+		foreach($tmp['frm_hpfilter'] as $k => $v) {
+			if (is_array($v)) {
+				foreach($v as $kk => $vv) {
+					self::checkForScript($vv);
 				}
 			}
 		}
+	}
 
 
-		if (isset($tmp['frm_hpfilter'])) {
-			foreach($tmp['frm_hpfilter'] as $k => $v) {
-				if (is_array($v)) {
-					foreach($v as $kk => $vv) {
-						self::checkForScript($vv);
-					}
-				}
-			}
-		}
+	if (isset($tmp['frm_action'])) {
+		self::checkForScript($tmp['frm_action']);
+	}
 
+	if (isset($tmp['frm_o_cname'])) {
+		self::checkForScript($tmp['frm_o_cname']);
+	}
 
-		if (isset($tmp['frm_action'])) {
-			self::checkForScript($tmp['frm_action']);
-		}
+	$hvar = array();
 
-		if (isset($tmp['frm_o_cname'])) {
-			self::checkForScript($tmp['frm_o_cname']);
-		}
+	$this->nname = 'html';
 
-		$hvar = array();
+	$gbl->frm_ev_list = null;
+	if (isset($tmp['frm_ev_list'])) {
+		$gbl->frm_ev_list = $tmp['frm_ev_list'];
+		unset($tmp['frm_ev_list']);
+	}
 
-		$this->nname = 'html';
-
-		$gbl->frm_ev_list = null;
-		if (isset($tmp['frm_ev_list'])) {
-			$gbl->frm_ev_list = $tmp['frm_ev_list'];
-			unset($tmp['frm_ev_list']);
-		}
-
-		foreach($tmp as $key => $value) {
-				
-			if (char_search_a($key, "_aaa_")) {
-				$arvar = substr($key, 0, strpos($key, "_aaa_"));
-				$arkey = substr($key, strpos($key, "_aaa_") + 5);
-				$arval = $value;
-				if (!csa($arvar, "password") && !csa($arvar, "text")) {
-					//$hvar[$arvar][$arkey] = trim($arval);
-					$hvar[$arvar][$arkey] = $arval;
-				} else {
-					$hvar[$arvar][$arkey] = $arval;
-				}
+	foreach($tmp as $key => $value) {
+			
+		if (char_search_a($key, "_aaa_")) {
+			$arvar = substr($key, 0, strpos($key, "_aaa_"));
+			$arkey = substr($key, strpos($key, "_aaa_") + 5);
+			$arval = $value;
+			if (!csa($arvar, "password") && !csa($arvar, "text")) {
+				//$hvar[$arvar][$arkey] = trim($arval);
+				$hvar[$arvar][$arkey] = $arval;
 			} else {
-				if (!is_array($value)) {
-					if (!csa($key, "password") && !csa($key, "text")) {
-						//$hvar[$key] = trim($value);
-						$hvar[$key] = $value;
-					} else {
-						$hvar[$key] = $value;
-					}
+				$hvar[$arvar][$arkey] = $arval;
+			}
+		} else {
+			if (!is_array($value)) {
+				if (!csa($key, "password") && !csa($key, "text")) {
+					//$hvar[$key] = trim($value);
+					$hvar[$key] = $value;
 				} else {
 					$hvar[$key] = $value;
 				}
-
-			}
-		}
-
-		//FIXME: HACK.. fixing the quota variables from arrays to strings. Moving teh unlimited to the value itself.
-		foreach($hvar as $key => $val) {
-			if (csa($key, '_c_priv_s_')) {
-				if (!is_array($val)) {
-					continue;
-				}
-				if (cse($key, "_flag")) {
-					if (isset($val['checked'])) {
-						$hvar[$key] = $val['checked'];
-					} else {
-						$hvar[$key] = $val['checkname'];
-					}
-					continue;
-				}
-
-				if (isset($val['unlimited'])) {
-					$hvar[$key] = "Unlimited";
-				} else {
-					if (cse($key, "_time")) {
-						$hvar[$key] = mktime(0, 0, 0, $val['month'], $val['day'], $val['year']);
-					} else {
-						if ($val['quotaname'] !== "") {
-							$hvar[$key] = $val['quotaname'];
-						} else {
-							$hvar[$key] = $val['quotamax'];
-						}
-					}
-				}
-			}
-		}
-		foreach($hvar as $key => $val) {
-			if (is_array($val)) {
-
-				if (isset($val['selectandvaluecheckname']) || isset($val['selectandvaluecheckhidden'])) {
-					if (isset($val['selectandvaluecheckname'])) {
-						$hvar[$key] = $val['selectandvaluecheckname'];
-					} else {
-						$hvar[$key] = $val['selectandvaluecheckhidden'];
-					}
-				}
-
-
-				if (isset($val['checked']) || isset($val['checkname'])) {
-					if (isset($val['checked'])) {
-						$hvar[$key] = $val['checked'];
-					} else {
-						$hvar[$key] = $val['checkname'];
-					}
-				}
-			}
-		}
-
-		//$this->do_url_decode($hvar);
-
-		$this->__http_vars = $hvar;
-
-	}
-
-	function do_url_decode(&$hvar)
-	{
-		foreach($hvar as $key => &$value) {
-			if (is_array($value)) {
-				foreach($value as $k => &$v) {
-					if (is_array($v)) {
-						foreach($v as $nk => &$nv) {
-							$nv = urldecode($nv);
-						}
-					} else {
-						$v = urldecode($v);
-					}
-				}
 			} else {
-				$value = urldecode($value);
+				$hvar[$key] = $value;
+			}
+
+		}
+	}
+
+	//FIXME: HACK.. fixing the quota variables from arrays to strings. Moving teh unlimited to the value itself.
+	foreach($hvar as $key => $val) {
+		if (csa($key, '_c_priv_s_')) {
+			if (!is_array($val)) {
+				continue;
+			}
+			if (cse($key, "_flag")) {
+				if (isset($val['checked'])) {
+					$hvar[$key] = $val['checked'];
+				} else {
+					$hvar[$key] = $val['checkname'];
+				}
+				continue;
+			}
+
+			if (isset($val['unlimited'])) {
+				$hvar[$key] = "Unlimited";
+			} else {
+				if (cse($key, "_time")) {
+					$hvar[$key] = mktime(0, 0, 0, $val['month'], $val['day'], $val['year']); 
+				} else {
+					if ($val['quotaname'] !== "") {
+						$hvar[$key] = $val['quotaname'];
+					} else {
+						$hvar[$key] = $val['quotamax'];
+					}
+				}
+			}
+		}
+	}
+	foreach($hvar as $key => $val) {
+		if (is_array($val)) {
+
+			if (isset($val['selectandvaluecheckname']) || isset($val['selectandvaluecheckhidden'])) {
+				if (isset($val['selectandvaluecheckname'])) {
+					$hvar[$key] = $val['selectandvaluecheckname'];
+				} else {
+					$hvar[$key] = $val['selectandvaluecheckhidden'];
+				}
+			}
+
+
+			if (isset($val['checked']) || isset($val['checkname'])) {
+				if (isset($val['checked'])) {
+					$hvar[$key] = $val['checked'];
+				} else {
+					$hvar[$key] = $val['checkname'];
+				}
 			}
 		}
 	}
 
-	function getpath($key)
-	{
-		return $this->__path[$key];
-	}
+	//$this->do_url_decode($hvar);
 
-	function gfrm($key)
-	{
-		if (isset($this->__http_vars[$key]))
-		return $this->__http_vars[$key];
-		else
-		return NULL;
-	}
+	$this->__http_vars = $hvar;
 
-	function cgi($key)
-	{
-		if (isset($this->__http_vars[$key]))
-		return $this->__http_vars[$key];
-		else
-		return NULL;
+} 
 
-	}
-
-	function isSelectShow()
-	{
-		return (strtolower($this->frm_action) === 'selectshow');
-	}
-
-	function get_htmlvar_details($key, &$class, &$variable, &$extra, &$value)
-	{
-
-		$string = $key;
-
-		if (char_search_a($string, "_v_")) {
-			$value = substr($string, strpos($string, "_v_") + 3);
-			$string = substr($string, 0, strpos($string, "_v_"));
-		}
-
-
-		if (char_search_a($string, "_t_")) {
-			$extra = substr($string, strpos($string, "_t_") + 3);
-			$string = substr($string, 0, strpos($string, "_t_"));
-		}
-
-		if (char_search_a($string, "_c_")) {
-			$variable = substr($string, strpos($string, "_c_") + 3);
-			$string = substr($string, 0, strpos($string, "_c_"));
-		}
-
-		$class = substr($string, 4);
-
-		//dprint("$class, $variable, $extra, $value       <br> ");
-
-	}
-
-
-	function getcgikey($key)
-	{
-		$nkey = substr($key, 4);
-		$nkey = "_cgi_" . $nkey;
-		return $nkey;
-	}
-	function getformkey($key)
-	{
-		$nkey = substr($key, 5);
-		$nkey = "frm_" . $nkey;
-		return $nkey;
-	}
-
-	function __get($key)
-	{
-		//$key = substr($key, 4);
-
-		if (char_search_beg($key, "__path")) {
-			dprint("Trying to access Path Variable in html $key");
-		}
-
-		if (char_search_beg($key, "__var")) {
-			dprint("Trying to access Var Variable in html $key");
-		}
-		if (char_search_beg($key, "__c")) {
-			dprint("Trying to access __c Variable in html $key");
-		}
-
-
-		//$newkey = $this->getformkey($key);
-		$newkey = $key;
-
-		if (!isset($this->__http_vars[$newkey])) {
-			return null;
-		}
-
-		$v = $this->__http_vars[$newkey];
-
-		if (is_array($v)) {
-			foreach($v as $kk => $vv) {
-				$nv[$kk] = $vv;
+function do_url_decode(&$hvar) 
+{
+	foreach($hvar as $key => &$value) {
+		if (is_array($value)) {
+			foreach($value as $k => &$v) {
+				if (is_array($v)) {
+					foreach($v as $nk => &$nv) {
+						$nv = urldecode($nv);
+					}
+				} else {
+					$v = urldecode($v);
+				}
 			}
 		} else {
-			$nv = $v;
+			$value = urldecode($value);
 		}
-		return $v;
+	}
+}
 
+function getpath($key) 
+{
+	return $this->__path[$key];
+}
+
+function gfrm($key) 
+{
+	if (isset($this->__http_vars[$key]))
+		return $this->__http_vars[$key];
+	else
+		return NULL;
+}
+
+function cgi($key) 
+{
+	if (isset($this->__http_vars[$key]))
+		return $this->__http_vars[$key];
+	else
+		return NULL;
+
+}
+
+function isSelectShow()
+{
+	return (strtolower($this->frm_action) === 'selectshow');
+}
+
+function get_htmlvar_details($key, &$class, &$variable, &$extra, &$value)
+{
+
+	$string = $key;
+
+	if (char_search_a($string, "_v_")) {
+		$value = substr($string, strpos($string, "_v_") + 3);
+		$string = substr($string, 0, strpos($string, "_v_"));
 	}
 
-	function get_server_string($object)
-	{
-		if (!$object->isLocalhost() && $object->syncserver != $object->nname) {
-			return "(on $object->syncserver)";
-		}
+
+	if (char_search_a($string, "_t_")) {
+		$extra = substr($string, strpos($string, "_t_") + 3);
+		$string = substr($string, 0, strpos($string, "_t_"));
+	}
+
+	if (char_search_a($string, "_c_")) {
+		$variable = substr($string, strpos($string, "_c_") + 3);
+		$string = substr($string, 0, strpos($string, "_c_"));
+	}
+
+	$class = substr($string, 4);
+
+	//dprint("$class, $variable, $extra, $value       <br> ");
+
+}
+
+
+function getcgikey($key) 
+{
+	$nkey = substr($key, 4);
+	$nkey = "_cgi_" . $nkey;
+	return $nkey;
+}
+function getformkey($key) 
+{
+	$nkey = substr($key, 5);
+	$nkey = "frm_" . $nkey;
+	return $nkey;
+}
+
+function __get($key) 
+{
+	//$key = substr($key, 4);
+
+	if (char_search_beg($key, "__path")) {
+		dprint("Trying to access Path Variable in html $key");
+	}
+
+	if (char_search_beg($key, "__var")) {
+		dprint("Trying to access Var Variable in html $key");
+	}
+	if (char_search_beg($key, "__c")) {
+		dprint("Trying to access __c Variable in html $key");
+	}
+
+
+	//$newkey = $this->getformkey($key);
+	$newkey = $key;
+
+	if (!isset($this->__http_vars[$newkey])) {
 		return null;
 	}
 
-	function print_info_block($obj, $ilist)
-	{
+	$v = $this->__http_vars[$newkey];
+
+	if (is_array($v)) {
+		foreach($v as $kk => $vv) {
+			$nv[$kk] = $vv;
+		}
+	} else {
+		$nv = $v;
+	}
+	return $v;
+
+}
+
+function get_server_string($object)
+{
+	if (!$object->isLocalhost() && $object->syncserver != $object->nname) {
+		return "(on $object->syncserver)";
+	}
+	return null;
+}
+
+function print_info_block($obj, $ilist)
+{
 
 
-		?>
-<table class=tableheader width=95%>
-	<tr align=right>
-		<td><b> <?= get_description($obj) . " Info for " . $obj->getId() ?> </b>
-	
-	</tr>
-	</td>
-</table>
+?> 
+	<table class=tableheader width=95%> <tr align=right> <td ><b> <?= get_description($obj) . " Info for " . $obj->getId() ?> </b> </tr> </td> </table> 
 
-<table cellpadding="0" cellspacing="0" border="0" width="70%"
-	align="center">
+	<table cellpadding="0" cellspacing="0" border="0" width="70%" align="center">
 	<tr height=20>
-	<?php
+	<?php 
 	$class = get_class($obj);
 	foreach($ilist as $i) {
 		$desc = "__desc_$i" ;
@@ -337,801 +309,485 @@ class HtmlLib {
 
 		$descr = get_classvar_description($class, $desc);
 		$descr[2] = getNthToken($descr[2], 1);
-		?>
-		<td width="16%" align="left"><font color="bb3333"><b><?=$descr[2] ?>:</font>
-		<?= $obj->display($i) ?> </b></font></td>
-		<?php
+		?> 
+		<td width="16%" align="left"><font color="bb3333"><b><?=$descr[2] ?>:</font>  <?= $obj->display($i) ?> </b></font> </td>
+		<?php 
 	}
 
-	?>
+	?> 
 
 	</tr>
-</table>
-	<?php
-	}
+	</table>
+	<?php 
+}
 
 
-	function whichTabSelect($alist)
-	{
+function whichTabSelect($alist)
+{
 
-		global $gbl, $sgbl, $login, $ghtml;
-		$psuedourl = NULL;
-		$target = NULL;
-		$img_path = $login->getSkinDir();
-		$imgtop = $img_path . "/top_line.gif";
-		$buttonpath = get_image_path() . "/button/";
-		foreach($alist as $key => $url) {
-			$this->resolve_int_ext($url, $psuedourl, $target);
-			$check = $this->compare_urls("display.php?{$this->get_get_from_current_post(null)}", $url);
-			$ret[$key] = $check;
-		}
-		return $ret;
-	}
-
-	function print_tab_block($alist)
-	{
-
-		global $gbl, $sgbl, $login, $ghtml;
-		if ($login->isDefaultSkin()) {
-			$this->print_tab_block_old($alist);
-		} else {
-			include_once "lib/print_tab.phps";
-			print_tab_for_feather($alist);
-		}
-
-	}
-
-
-
-
-
-
-	function print_tab_block_old($alist)
-	{
-
-		global $gbl, $sgbl, $login, $ghtml;
-		$img_path = $login->getSkinDir();
-		$imgtop = $img_path . "/top_line.gif";
-
-		foreach($alist as $k => $a) {
-			$alist[$k] = $ghtml->getFullUrl($a);
-		}
-
-		if ($login->getSpecialObject('sp_specialplay')->isOn('enable_ajax')) {
-			$this->print_dialog($alist, $gbl->__c_object);
-		}
-
-		print("<br> <table cellspacing=0 cellpadding=0 width=100% border=0> <tr align=left valign=bottom> <td width=10>  <img src=$imgtop width=10 height=2></td> <td ><table cellspacing=0 cellspacing=0> <tr valign=bottom> ");
-		foreach($alist as $k => $a) {
-			$sel = $this->printTabButtonOld($k, $a);
-		}
-		print(" </tr> </table> </td> <td width=100%>  <img src=$imgtop width=100% height=2></td></tr> </table> <br> <br> ");
-
-	}
-
-	function printTabButtonOld($key, $url)
-	{
-
-		global $gbl, $sgbl, $login, $ghtml;
-
-		$cobject = $gbl->__c_object;
-		static $after_sel = false;
-		$psuedourl = NULL;
-		$target = NULL;
-		$img_path = $login->getSkinDir();
-		$imgtop = $img_path . "/top_line.gif";
-
-		$buttonpath = get_image_path() . "/button/";
-		$bpath = $login->getSkinDir();
-		$bdpath=$login->getSkinColor();
-		$button = $bpath . "/top_line_medium.gif";
-
+	global $gbl, $sgbl, $login, $ghtml; 
+	$psuedourl = NULL;
+	$target = NULL;
+	$img_path = $login->getSkinDir();
+	$imgtop = $img_path . "/top_line.gif";
+	$buttonpath = get_image_path() . "/button/";
+	foreach($alist as $key => $url) {
 		$this->resolve_int_ext($url, $psuedourl, $target);
+		$check = $this->compare_urls("display.php?{$this->get_get_from_current_post(null)}", $url);
+		$ret[$key] = $check;
+	}
+	return $ret;
+}
 
-		$descr = $this->getActionDetails($url, $psuedourl, $buttonpath, $path, $post, $file, $name, $image, $__t_identity);
+function print_tab_block($alist)
+{
+
+	global $gbl, $sgbl, $login, $ghtml; 
+	if ($login->isDefaultSkin()) {
+		$this->print_tab_block_old($alist);
+	} else {
+		include_once "lib/print_tab.phps";
+		print_tab_for_feather($alist);
+	}
+
+}
 
 
-		//$this->save_non_existant_image($image);
 
-		$form_name = $this->createEncForm_name($file . "_" . $name);
-		//$bgcolorstring = null;
-		//$sel = null;
-		//$borderbottom = "style='border-bottom:1px solid black;'";
 
-		$borderbottom = "style =\"border-bottom:2px solid #$bdpath;\"";
-		$borderbot = "style =\"background:url($bpath/tab_select_bg2.gif) 0 0 repeat-x;\"";
-		if ($check=$this->compare_urls("display.php?{$this->get_get_from_current_post(null)}", $url))
-		{
-			//$bgcolorstring = "style=\"background:url('$button');\"";
-			$bgcolorstring = "bgcolor=#99aaff";
-			$sel = "_select";
-			$borderbottom = $borderbot;
-		} else {
-			$sel = "_select";
-			$bgcolorstring = "bgcolor=#99aaff";
-			//$image = null;
+
+
+function print_tab_block_old($alist)
+{
+
+	global $gbl, $sgbl, $login, $ghtml; 
+	$img_path = $login->getSkinDir();
+	$imgtop = $img_path . "/top_line.gif";
+
+	foreach($alist as $k => $a) {
+		$alist[$k] = $ghtml->getFullUrl($a);
+	}
+
+	if ($login->getSpecialObject('sp_specialplay')->isOn('enable_ajax')) {
+		$this->print_dialog($alist, $gbl->__c_object);
+	}
+
+	print("<br> <table cellspacing=0 cellpadding=0 width=100% border=0> <tr align=left valign=bottom> <td width=10>  <img src=$imgtop width=10 height=2></td> <td ><table cellspacing=0 cellspacing=0> <tr valign=bottom> ");
+	foreach($alist as $k => $a) {
+		$sel = $this->printTabButtonOld($k, $a);
+	}
+	print(" </tr> </table> </td> <td width=100%>  <img src=$imgtop width=100% height=2></td></tr> </table> <br> <br> ");
+
+}
+
+function printTabButtonOld($key, $url)
+{
+
+	global $gbl, $sgbl, $login, $ghtml; 
+
+	$cobject = $gbl->__c_object;
+	static $after_sel = false;
+ 	$psuedourl = NULL;
+	$target = NULL;
+	$img_path = $login->getSkinDir();
+	$imgtop = $img_path . "/top_line.gif";
+
+	$buttonpath = get_image_path() . "/button/";
+	$bpath = $login->getSkinDir();
+	$bdpath=$login->getSkinColor();
+	$button = $bpath . "/top_line_medium.gif";
+
+	$this->resolve_int_ext($url, $psuedourl, $target);
+
+	$descr = $this->getActionDetails($url, $psuedourl, $buttonpath, $path, $post, $file, $name, $image, $__t_identity);
+
+
+	//$this->save_non_existant_image($image);
+
+	$form_name = $this->createEncForm_name($file . "_" . $name);
+	//$bgcolorstring = null;
+	//$sel = null;
+	//$borderbottom = "style='border-bottom:1px solid black;'";
+
+	$borderbottom = "style =\"border-bottom:2px solid #$bdpath;\"";
+	$borderbot = "style =\"background:url($bpath/tab_select_bg2.gif) 0 0 repeat-x;\"";
+	if ($check=$this->compare_urls("display.php?{$this->get_get_from_current_post(null)}", $url)) 
+	{
+		//$bgcolorstring = "style=\"background:url('$button');\"";
+		$bgcolorstring = "bgcolor=#99aaff";
+		$sel = "_select";
+		$borderbottom = $borderbot;
+	} else { 
+		$sel = "_select";
+		$bgcolorstring = "bgcolor=#99aaff";
+		//$image = null;
+	}
+
+	$imageheight = 24;
+	$height = 34;
+	$imgp = $login->getSkinDir();
+	$imglt = $imgp . "/tab{$sel}_lt.gif";
+	$imgbg = $imgp . "/tab{$sel}_bg.gif";
+	$imgrt = $imgp . "/tab{$sel}_rt.gif";
+
+	$linkflag = true;
+	if (csa($key, "__var_")) {
+		$privar = strfrom($key, "__var_");
+		if (!$cobject->checkButton($privar)) {
+			$linkflag = false;
 		}
+	}
 
-		$imageheight = 24;
-		$height = 34;
-		$imgp = $login->getSkinDir();
-		$imglt = $imgp . "/tab{$sel}_lt.gif";
-		$imgbg = $imgp . "/tab{$sel}_bg.gif";
-		$imgrt = $imgp . "/tab{$sel}_rt.gif";
-
-		$linkflag = true;
-		if (csa($key, "__var_")) {
-			$privar = strfrom($key, "__var_");
-			if (!$cobject->checkButton($privar)) {
-				$linkflag = false;
-			}
-		}
-
-		$idstring = null;
-		if ($login->getSpecialObject('sp_specialplay')->isOn('enable_ajax') && csb($key, "__v_dialog")) {
-			$idstring = "id=$key-comment";
-		}
+	$idstring = null;
+	if ($login->getSpecialObject('sp_specialplay')->isOn('enable_ajax') && csb($key, "__v_dialog")) {
+		$idstring = "id=$key-comment";
+	}
 
 
-		?>
+	?> 
 
-<td>
-<table cellspacing=0 cellpadding=0 <?=$idstring?> <?=$borderbottom ?>
-	valign=bottom>
-	<tr valign=bottom>
-	<?php
+	<td ><table cellspacing=0 cellpadding=0  <?=$idstring?> <?=$borderbottom ?> valign=bottom> <tr valign=bottom> 
+	<?php 
 	if($check)
-	print("<td valign=middle wrap><img src=$imglt height=38 width=2></td>");
+		print("<td valign=middle wrap><img src=$imglt height=38 width=2></td>");
 	else
-	print("<td valign=middle wrap><img src=$imglt height=$height width=3></td>");
-	?>
-		<form method=get name=form_ <?=$form_name ?> action=<?=$path?>
-		<?=$target ?>><?php
-		$this->print_input_vars($post);
+		print("<td valign=middle wrap><img src=$imglt height=$height width=3></td>");
+	?> 
+		<form method=get name=form_<?=$form_name ?> action=<?=$path?> <?=$target ?>  >
+	<?php 
+	$this->print_input_vars($post);
 		print('</form>');
-		$this->printTabForTabButton($key, $linkflag, $height+2, $imageheight, $sel, $imgbg, $form_name, $name, $image, $descr, $check);
+	$this->printTabForTabButton($key, $linkflag, $height+2, $imageheight, $sel, $imgbg, $form_name, $name, $image, $descr, $check);
 
-		if($check) {
-			print("<td ><img src=$imgrt width=2 height=38></td>");
-		} else {
-			print("<td ><img src=$imgrt width=3 height=$height></td>");
+	if($check) {
+		print("<td ><img src=$imgrt width=2 height=38></td>");
+	} else {
+		print("<td ><img src=$imgrt width=3 height=$height></td>");
+	}
+
+	//This is where teh gap between teh tabs comes..
+	//print("<td width=1 valign=bottom><img width=3 height=1 src=$imgtop></td>");
+	?>
+	</tr> </table></td> 
+
+
+	<?php 
+	return $sel;
+}
+
+
+function compare_urls($a, $b)
+{
+
+	$rvar = array("frm_o_o", "frm_dttype", "frm_o_nname", "frm_o_parent", "frm_action", "frm_o_cname", "frm_subaction");
+
+
+
+
+
+	$this->get_post_from_get($a, $path, $pa);
+	$this->get_post_from_get($b, $path, $pb);
+
+	if (isset($pb["frm_o_cname"])) {
+		if (exec_class_method($pb['frm_o_cname'], "consumeUnderParent")) {
+			if ($pb['frm_action'] === 'list') {
+				$pb["frm_o_cname"] = null;
+				$pb['frm_action'] = 'show';
+			}
 		}
-
-		//This is where teh gap between teh tabs comes..
-		//print("<td width=1 valign=bottom><img width=3 height=1 src=$imgtop></td>");
-		?>
-	
-	</tr>
-</table>
-</td>
-
-
-		<?php
-		return $sel;
 	}
 
 
-	function compare_urls($a, $b)
-	{
-
-		$rvar = array("frm_o_o", "frm_dttype", "frm_o_nname", "frm_o_parent", "frm_action", "frm_o_cname", "frm_subaction");
-
-
-
-
-
-		$this->get_post_from_get($a, $path, $pa);
-		$this->get_post_from_get($b, $path, $pb);
-
-		if (isset($pb["frm_o_cname"])) {
-			if (exec_class_method($pb['frm_o_cname'], "consumeUnderParent")) {
-				if ($pb['frm_action'] === 'list') {
-					$pb["frm_o_cname"] = null;
-					$pb['frm_action'] = 'show';
-				}
-			}
-		}
-
-
-		foreach($rvar as $k) {
-			if (!isset($pa[$k]))
+	foreach($rvar as $k) {
+		if (!isset($pa[$k]))
 			$pa[$k] = null;
-			if (!isset($pb[$k]))
+		if (!isset($pb[$k]))
 			$pb[$k] = null;
-		}
-
-		foreach($rvar as $k) {
-			if($pa[$k] != $pb[$k]) {
-				return false;
-			}
-		}
-		return true;
 	}
 
-
-	function printTabForTabButton($key, $linkflag, $height, $imageheight, $sel, $imgbg, $formname, $name, $imagesrc, $descr, $check)
-	{
-
-		global $gbl, $sgbl, $login;
-
-		$help = $descr['help'];
-		$imgstr = null;
-		if ($imagesrc) {
-			$imgstr = "<img width=$imageheight imageheight=$imageheight src=$imagesrc>";
+	foreach($rvar as $k) {
+		if($pa[$k] != $pb[$k]) {
+			return false;
 		}
-		if ($linkflag) {
-			if ($login->getSpecialObject('sp_specialplay')->isOn('enable_ajax') && csb($key, "__v_dialog")) {
-				$displaystring = "<span title='$help'>  $descr[2] </span>";
-			} else {
-				$displaystring = "<span title='$help'> <a href=\"Javascript:document.form_$formname.submit()\"> $descr[2]</a> </span>";
-			}
+	}
+	return true;
+}
 
+
+function printTabForTabButton($key, $linkflag, $height, $imageheight, $sel, $imgbg, $formname, $name, $imagesrc, $descr, $check)
+{	  
+
+	global $gbl, $sgbl, $login;
+
+	$help = $descr['help'];
+	$imgstr = null;
+	if ($imagesrc) {
+		$imgstr = "<img width=$imageheight imageheight=$imageheight src=$imagesrc>";
+	}
+	if ($linkflag) {
+		if ($login->getSpecialObject('sp_specialplay')->isOn('enable_ajax') && csb($key, "__v_dialog")) {
+			$displaystring = "<span title='$help'>  $descr[2] </span>";
 		} else {
-			$displaystring = "<span title=\"You don't have permission\">$descr[2] </span>";
-		}
-		if($check){
-			?>
-<td height=34 wrap class=alink
-	style='cursor: pointer; padding: 3 0 0 0; vertical-align: middle'><?=$imgstr ?>
-</td>
-<td height=height nowrap class=alink
-	style='cursor: pointer; padding: 3 0 0 0; vertical-align: middle'><font
-	size=-1><?=$displaystring ?></td>
-			<?
-		}
-		else{
-			?>
-<td height=34 wrap class=alink  style='cursor:pointer;background:url(<?=$imgbg ?>);padding:3 0 0 0; vertical-align:middle'><?=$imgstr ?>
-</td>
-<td height=height nowrap class=alink  style='cursor:pointer;background:url(<?=$imgbg ?>);padding:3 0 0 0;vertical-align:middle'>
-<font size=-1><?=$displaystring ?></td>
-			<?php
+			$displaystring = "<span title='$help'> <a href=\"Javascript:document.form_$formname.submit()\"> $descr[2]</a> </span>";
 		}
 
-
+	} else {
+		$displaystring = "<span title=\"You don't have permission\">$descr[2] </span>";
 	}
-
-	function print_object_action_block($obj, $alist, $num)
-	{
-
-		global $gbl, $sgbl, $login, $ghtml;
-
-
-		$syncserver = $this->get_server_string($obj);
-		$buttonpath = get_image_path() . "/button/";
-		$image = $ghtml->get_image($buttonpath, '', 'resource', '.gif');
-		$this->print_action_block($obj, $obj->get__table(), $alist, $num);
-
+	if($check){ 
+		?><td height=34 wrap class=alink  style='cursor:pointer;padding:3 0 0 0;vertical-align:middle'><?=$imgstr ?> </td> <td height=height nowrap class=alink  style='cursor:pointer;padding:3 0 0 0;vertical-align:middle'> <font size=-1><?=$displaystring ?></td><?
+	}
+	else{
+	?>
+		<td height=34 wrap class=alink  style='cursor:pointer;background:url(<?=$imgbg ?>);padding:3 0 0 0; vertical-align:middle'><?=$imgstr ?> </td> <td height=height nowrap class=alink  style='cursor:pointer;background:url(<?=$imgbg ?>);padding:3 0 0 0;vertical-align:middle'> <font size=-1><?=$displaystring ?></td><?php 
 	}
 
 
-	function print_action_block_old($title, $alist)
-	{
+}	
 
-		$i = 0;
+function print_object_action_block($obj, $alist, $num)
+{
 
-		/// This is a mighty hack... The first element of $alist is supposed to be the main title. You use it as the first title and unset the variable. This is a hack from the previous code where the first title was preset here itself.
+	global $gbl, $sgbl, $login, $ghtml; 
 
 
-		if (!$title) {
-			$title = $alist['__title_main'];
-			unset($alist['__title_main']);
+	$syncserver = $this->get_server_string($obj);
+	$buttonpath = get_image_path() . "/button/";
+	$image = $ghtml->get_image($buttonpath, '', 'resource', '.gif');
+	$this->print_action_block($obj, $obj->get__table(), $alist, $num);
+
+}
+
+
+function print_action_block_old($title, $alist)
+{
+
+	$i = 0;
+
+	/// This is a mighty hack... The first element of $alist is supposed to be the main title. You use it as the first title and unset the variable. This is a hack from the previous code where the first title was preset here itself.
+
+
+	if (!$title) {
+		$title = $alist['__title_main'];
+		unset($alist['__title_main']);
+	}
+
+	?>
+	<table cellpadding=0 width=100% cellspacing=0 border=1> <tr> <td >
+		<table cellpadding="2" cellspacing="7" border="0" width="25%" >
+		<tr align=left> <td align=left>
+		<?php 
+	$t = 2;
+	foreach($alist as $k => $u) {
+		$i++;
+		if (csb($k, "__title")) {
+			$i = 0;
+			$t++;
+			?> 
+			</td> </tr> </table> </td> <td ><table cellpadding=0 border=0 cellspacing=0> <tr> <td >
+			<?php 
+			continue;
 		}
 
-		?>
-<table cellpadding=0 width=100% cellspacing=0 border=1>
-	<tr>
-		<td>
-		<table cellpadding="2" cellspacing="7" border="0" width="25%">
-			<tr align=left>
-				<td align=left><?php 
-				$t = 2;
-				foreach($alist as $k => $u) {
-					$i++;
-					if (csb($k, "__title")) {
-						$i = 0;
-						$t++;
-						?></td>
-			</tr>
-		</table>
-		</td>
-		<td>
-		<table cellpadding=0 border=0 cellspacing=0>
-			<tr>
-				<td><?php 
+
+		if ($t%4 === 1) {
+			?> 
+			</td> </tr> </table> </tr> <tr> <table cellpadding=0 cellspacing=0 border=2> <tr> <td >
+			<?php 
+		}
+
+		if ($i %2) {
+			?> 
+			</td> </tr> <tr> <td >
+			<?php 
+		}
+		$this->print_div_button(null, "block", false, $k, $u);
+	}
+	if ($i <= 7) {
+
+		for(; $i <=7 ; $i++) {
+			print("</td><td width=40>&nbsp;");
+		}
+	}
+
+
+	?> 	
+		</td> </tr>
+		</table> 
+
+		</td> </tr> </table> 
+			</fieldset>
+		<br> <br> 
+		<?php 
+}
+
+function print_action_block_dumb($title, $alist)
+{   
+	global $gbl, $sgbl, $login, $ghtml; 
+	$getskin = $login->getSkinDir();
+	$i = 0;
+
+	/// This is a mighty hack... The first element of $alist is supposed to be the main title. You use it as the first title and unset the variable. This is a hack from the previous code where the first title was preset here itself.
+
+
+	if (!$title) {
+		$title = $alist['__title_main'];
+		unset($alist['__title_main']);
+	}
+
+	?>
+	<table valign=top cellpadding=3 cellspacing=3> <tr> <td valign=top width=33% >
+	<table cellpadding=0 cellspacing=0 border=1> <tr> <td >
+	<table cellpadding=0 cellspacing=0 border=0 height=13 width=98% style="background:url('<?php echo
+	$getskin?>/bar.gif')"> <tr> <td > <?=$title ?>  </td> </table> 
+		<table cellpadding="2" cellspacing="7" border="0" height=100% width="90%" >
+		<tr align=left> <td align=left>
+		<?php 
+	$n = 1;
+	foreach($alist as $k => $u) {
+		$i++;
+		if ($i%3 === 1) {
+			print("</td> </tr> <tr align=left> <td align=left>");
+		}
+
+		if (csb($k, "__title")) {
+			$i = 0;
+			$n++;
+
+			$tr = null;
+			if ($n%3 == 1) {	
+				$tr = "</tr> <tr> ";
+			}
+			?> 
+			</td> </tr> </table> 
+
+			</td> </tr> </table> </td> <?=$tr ?>  <td width=33% valign=top> <table cellpadding=0 cellspacing=0 border=1> <tr> <td >
+	<table cellpadding=2 cellspacing=2 border=0 height=13 width=98% style="background:url('<?=$getskin?>/bar.gif')"> <tr> <td > <?=$u ?>  </td> </table> 
+
+			<table cellspacing=7 width=90% border=0> <tr align=left> <td align=left >
+			<?php 
+			continue;
+		}
+		$this->print_div_button(null, "block", true, $k, $u);
+	}
+	if ($i <= 7) {
+
+		for(; $i <=7 ; $i++) {
+			print("</td><td width=40>&nbsp;");
+		}
+	}
+
+
+	?> 	
+	</td> </tr> </table> 
+	</td> </tr> </table> 
+		</td> </tr>
+		</table> 
+			</fieldset>
+		<br> <br> 
+		<?php 
+}
+
+function create_action_block($class, $alist)
+{
+	global $gbl, $sgbl, $login, $ghtml; 
+
+	if (!$alist) {
+		return null;
+	}
+	$title = "main";
+	$i = 0;
+	$n = 0;
+	foreach($alist as $k => $a) {
+		if (csb($k, "__title")) {
+			$title = $k;
+			$ret[$k][$k] = $a;
+		}
+		$ret[$title][$k] = $a;
+		$ret[$title]['open'] = true;
+	}
+
+	if (isset($login->boxpos["{$class}_show"])) {
+		foreach($login->boxpos["{$class}_show"] as $k => $v) {
+			if (!isset($ret[$k])) {
 				continue;
-					}
-
-
-					if ($t%4 === 1) {
-						?></td>
-			</tr>
-		</table>
-	
-	</tr>
-	<tr>
-		<table cellpadding=0 cellspacing=0 border=2>
-			<tr>
-				<td><?php 
-					}
-
-					if ($i %2) {
-						?></td>
-			</tr>
-			<tr>
-				<td><?php 
-					}
-					$this->print_div_button(null, "block", false, $k, $u);
-				}
-				if ($i <= 7) {
-
-					for(; $i <=7 ; $i++) {
-						print("</td><td width=40>&nbsp;");
-					}
-				}
-
-
-				?></td>
-			</tr>
-		</table>
-
-		</td>
-	</tr>
-</table>
-</fieldset>
-<br>
-<br>
-				<?php
-	}
-
-	function print_action_block_dumb($title, $alist)
-	{
-		global $gbl, $sgbl, $login, $ghtml;
-		$getskin = $login->getSkinDir();
-		$i = 0;
-
-		/// This is a mighty hack... The first element of $alist is supposed to be the main title. You use it as the first title and unset the variable. This is a hack from the previous code where the first title was preset here itself.
-
-
-		if (!$title) {
-			$title = $alist['__title_main'];
-			unset($alist['__title_main']);
-		}
-
-		?>
-<table valign=top cellpadding=3 cellspacing=3>
-	<tr>
-		<td valign=top width=33%>
-		<table cellpadding=0 cellspacing=0 border=1>
-			<tr>
-				<td>
-				<table cellpadding=0 cellspacing=0 border=0 height=13 width=98% style="background:url('<?php echo
-	$getskin?>/bar.gif')">
-					<tr>
-						<td><?=$title ?></td>
-				
-				</table>
-				<table cellpadding="2" cellspacing="7" border="0" height=100%
-					width="90%">
-					<tr align=left>
-						<td align=left><?php 
-						$n = 1;
-						foreach($alist as $k => $u) {
-							$i++;
-							if ($i%3 === 1) {
-								print("</td> </tr> <tr align=left> <td align=left>");
-							}
-
-							if (csb($k, "__title")) {
-								$i = 0;
-								$n++;
-
-								$tr = null;
-								if ($n%3 == 1) {
-									$tr = "</tr> <tr> ";
-								}
-								?></td>
-					</tr>
-				</table>
-
-				</td>
-			</tr>
-		</table>
-		</td>
-		<?=$tr ?>
-		<td width=33% valign=top>
-		<table cellpadding=0 cellspacing=0 border=1>
-			<tr>
-				<td>
-				<table cellpadding=2 cellspacing=2 border=0 height=13 width=98% style="background:url('<?=$getskin?>/bar.gif')">
-					<tr>
-						<td><?=$u ?></td>
-				
-				</table>
-
-				<table cellspacing=7 width=90% border=0>
-					<tr align=left>
-						<td align=left><?php 
-						continue;
-							}
-							$this->print_div_button(null, "block", true, $k, $u);
-						}
-						if ($i <= 7) {
-
-							for(; $i <=7 ; $i++) {
-								print("</td><td width=40>&nbsp;");
-							}
-						}
-
-
-						?></td>
-					</tr>
-				</table>
-				</td>
-			</tr>
-		</table>
-		</td>
-	</tr>
-</table>
-</fieldset>
-<br>
-<br>
-						<?php
-	}
-
-	function create_action_block($class, $alist)
-	{
-		global $gbl, $sgbl, $login, $ghtml;
-
-		if (!$alist) {
-			return null;
-		}
-		$title = "main";
-		$i = 0;
-		$n = 0;
-		foreach($alist as $k => $a) {
-			if (csb($k, "__title")) {
-				$title = $k;
-				$ret[$k][$k] = $a;
 			}
-			$ret[$title][$k] = $a;
-			$ret[$title]['open'] = true;
+			$nret[$k] = $ret[$k];
+			$nret[$k]['open'] = $v;
 		}
-
-		if (isset($login->boxpos["{$class}_show"])) {
-			foreach($login->boxpos["{$class}_show"] as $k => $v) {
-				if (!isset($ret[$k])) {
-					continue;
-				}
+		foreach($ret as $k => $v) {
+			if (!isset($nret[$k])) {
 				$nret[$k] = $ret[$k];
-				$nret[$k]['open'] = $v;
 			}
-			foreach($ret as $k => $v) {
-				if (!isset($nret[$k])) {
-					$nret[$k] = $ret[$k];
-				}
-			}
-		} else {
-			$nret = $ret;
 		}
-		return $nret;
-
+	} else {
+		$nret = $ret;
 	}
+	return $nret;
 
-	function print_style_desktop()
-	{
-		global $gbl, $sgbl, $login, $ghtml;
-		$skindir = $login->getSkinDir();
-		$col = $login->getSkinColor();
-		?>
-<style type="text/css">
-.expanded a:hover {
-	cursor: pointer;
 }
 
-.trigger a:hover {
-	cursor: poiner;
-}
+function print_style_desktop()
+{
+	global $gbl, $sgbl, $login, $ghtml; 
+	$skindir = $login->getSkinDir();
+	$col = $login->getSkinColor();
+	?>
+<style type="text/css">	
+.expanded a:hover {cursor:pointer;} 
+.trigger a:hover {cursor:poiner;}	
+.trigger {cursor:pointer;background:url(<?=$skindir?>/expand.gif);border:1px solid #<?=$col?>;}
+.expanded {cursor:pointer;background:url(<?=$skindir?>/expand.gif);border:1px solid #<?=$col?>;} 
+.show {position:static; display:table; } 
+.hide {position:absolute; left:-999em; height:1px; width:100px; overflow:hidden;}
 
-.trigger {
-	cursor: pointer;
-	background: url(<?=$skindir?>/expand.gif);
-	border: 1px solid #<?=$col?>;
-}
-
-.expanded {
-	cursor: pointer;
-	background: url(<?=$skindir?>/expand.gif);
-	border: 1px solid #<?=$col?>;
-}
-
-.show {
-	position: static;
-	display: table;
-}
-
-.hide {
-	position: absolute;
-	left: -999em;
-	height: 1px;
-	width: 100px;
-	overflow: hidden;
-}
-
-body {
-	font-family: arial, sans-serif;
-	color: #333;
-}
-
-#boundary {
-	border-left: 1px solid #<?=$col?>;
-	border-right: 1px solid #<?=$col?>;
-	border-bottom: 1px solid #<?=$col?>;
-}
-
-a {
-	color: #369;
-}
-
-h1 {
-	font-family: "trebuchet ms", verdana, sans-serif;
-	font-size: 130%;
-	border-bottom: 1px solid #999;
-}
-
-h2 {
-	font-family: "trebuchet ms", verdana, sans-serif;
-	font-size: 130%;
-	color: #003360;
-	background: url(<?=$skindir?>/expand.gif);
-	margin-bottom: 0
-}
-
-h3 {
-	font-family: "trebuchet ms", verdana, sans-serif;
-	font-size: 100%;
-}
-
-p code {
-	font-size: 110%;
-	color: #666;
-	font-weight: bold;
-}
-
-pre {
-	background: #eee;
-	padding: .5em 1em;
-	border: 1px solid #<?=$col?>;
-}
-
-h1 code,h2 code,h3 code {
-	font-family: "trebuchet ms", verdana, sans-serif;
-}
-
-h1 code {
-	font-family: "Trebuchet MS", Arial, Sans-serif;
-}
-
-#header {
-	background: #69c;
-	border-top: 1px solid #9cf;
-	border-bottom: 1px solid #369;
-}
-
-#content {
-	font-size: 90%;
-}
-
-#download {
-	position: absolute;
-	top: 9em;
-	width: 15em;
-	right: 4em;
-}
-
-#download ul {
-	background: #ccf;
-	padding: .5em 0 .5em 1.5em;
-}
-
-#download h2 {
-	background: #369;
-	color: #fff;
-	font-size: 90%;
-	padding: 0.5em;
-	margin: .5em 0 0 0;
-	border-bottom: 1px solid #036;
-	border-right: 1px solid #036;
-	border-top: 1px solid #69c;
-	border-left: 1px solid #<?=$col?>;
-}
-
-#download li {
-	list-style-type: square;
-}
-
-#header a img {
-	padding: 5px 1em;
-}
+body {font-family:arial,sans-serif; color:#333;}#boundary{border-left:1px solid #<?=$col?>; border-right:1px solid #<?=$col?>; border-bottom:1px solid #<?=$col?>;} a{color:#369;} h1{ font-family:"trebuchet ms",verdana,sans-serif; font-size:130%; border-bottom:1px solid #999; } h2{ font-family:"trebuchet ms",verdana,sans-serif; font-size:130%; color:#003360; background:url(<?=$skindir?>/expand.gif); margin-bottom:0} h3{ font-family:"trebuchet ms",verdana,sans-serif; font-size:100%; } p code{ font-size:110%; color:#666; font-weight:bold; } pre{ background:#eee; padding:.5em 1em; border:1px solid #<?=$col?>; } h1 code, h2 code, h3 code{ font-family:"trebuchet ms",verdana,sans-serif; } h1 code{font-family:"Trebuchet MS",Arial,Sans-serif; } #header{ background:#69c; border-top:1px solid #9cf; border-bottom:1px solid #369; } #content{font-size:90%;} #download{ position:absolute; top:9em; width:15em; right:4em;} #download ul{background:#ccf; padding:.5em 0 .5em 1.5em; } #download h2{ background:#369; color:#fff; font-size:90%; padding:0.5em; margin:.5em 0 0 0; border-bottom:1px solid #036; border-right:1px solid #036; border-top:1px solid #69c; border-left:1px solid #<?=$col?>; } #download li{ list-style-type:square; } #header a img{padding:5px 1em;}
 </style>
-		<?
-	}
-
-
-	function print_style_home()
-	{
-		global $gbl, $sgbl, $login, $ghtml;
-		$skindir = $login->getSkinDir();
-		$col = $login->getSkinColor();
-
-		?>
-<style type="text/css">
-.expanded a:hover {
-	cursor: pointer;
+<?
 }
 
-.trigger a:hover {
-	cursor: pointer;
-}
 
-.trigger {
-	cursor: pointer;
-	background: url(<?=$skindir?>/expand.gif);
-	border: 1px solid #<?=$col?>;
-	height: 25px;
-}
+function print_style_home()
+{	
+	global $gbl, $sgbl, $login, $ghtml; 
+	$skindir = $login->getSkinDir();
+	$col = $login->getSkinColor();
 
-.expanded {
-	cursor: pointer;
-	background: url(<?=$skindir?>/expand.gif);
-	border: 1px solid #<?=$col?>;
-	height: 25px;
-}
+?>
+<style type="text/css">	
+.expanded a:hover {cursor:pointer;} 
+.trigger a:hover {cursor:pointer;}	
+.trigger {cursor:pointer;background:url(<?=$skindir?>/expand.gif);border:1px solid #<?=$col?>;height:25px;}
+.expanded {cursor:pointer;background:url(<?=$skindir?>/expand.gif);border:1px solid #<?=$col?>;height:25px;} 
+.show {position:static; display:table; } 
+.hide {position:absolute; left:-999em; height:1px; width:100px; overflow:hidden;}
 
-.show {
-	position: static;
-	display: table;
-}
-
-.hide {
-	position: absolute;
-	left: -999em;
-	height: 1px;
-	width: 100px;
-	overflow: hidden;
-}
-
-body {
-	font-family: arial, sans-serif;
-	color: #333;
-	margin: 0;
-	padding: 0;
-}
-
-#boundary {
-	margin-left: 20px;
-	margin-right: 100px;
-	border-left: 1px solid #<?=$col?>;
-	border-right: 1px solid #<?=$col?>;
-	border-bottom: 1px solid #<?=$col?>;
-}
-
-a {
-	color: #369;
-}
-
-h1 {
-	font-family: "trebuchet ms", verdana, sans-serif;
-	font-size: 130%;
-	border-bottom: 1px solid #999;
-}
-
-h2 {
-	font-family: "trebuchet ms", verdana, sans-serif;
-	font-size: 130%;
-	color: #003370;
-	background: url(<?=$skindir?>/expand.gif);
-	margin-bottom: 10px;
-	margin-top: 10px
-}
-
-h3 {
-	font-family: "trebuchet ms", verdana, sans-serif;
-	font-size: 100%;
-}
-
-p code {
-	font-size: 110%;
-	color: #666;
-	font-weight: bold;
-}
-
-pre {
-	background: #eee;
-	padding: .5em 1em;
-	border: 1px solid #<?=$col?>;
-}
-
-h1 code,h2 code,h3 code {
-	font-family: "trebuchet ms", verdana, sans-serif;
-}
-
-h1 code {
-	font-family: "Trebuchet MS", Arial, Sans-serif;
-}
-
-#header {
-	padding: 0;
-	left: 0;
-	top: 0;
-	background: #69c;
-	margin: 0;
-	border-top: 1px solid #9cf;
-	border-bottom: 1px solid #369;
-}
-
-#content {
-	font-size: 90%;
-	margin-top: 0;
-}
-
-#download {
-	position: absolute;
-	top: 9em;
-	width: 15em;
-	right: 4em;
-}
-
-#download ul {
-	background: #ccf;
-	margin: 0;
-	padding: .5em 0 .5em 1.5em;
-}
-
-#download h2 {
-	background: #369;
-	color: #fff;
-	font-size: 90%;
-	padding: 0 .5em;
-	margin: .5em 0 0 0;
-	border-bottom: 1px solid #036;
-	border-right: 1px solid #036;
-	border-top: 1px solid #69c;
-	border-left: 1px solid #<?=$col?>;
-}
-
-#download li {
-	list-style-type: square;
-}
-
-#header a img {
-	border: 0;
-	padding: 5px 1em;
-}
+body {font-family:arial,sans-serif; color:#333; margin:0; padding:0; }#boundary{margin-left:20px;margin-right:100px; border-left:1px solid #<?=$col?>; border-right:1px solid #<?=$col?>; border-bottom:1px solid #<?=$col?>;} a{color:#369;} h1{ font-family:"trebuchet ms",verdana,sans-serif; font-size:130%; border-bottom:1px solid #999; } h2{ font-family:"trebuchet ms",verdana,sans-serif; font-size:130%;color:#003370; background:url(<?=$skindir?>/expand.gif);margin-bottom:10px; margin-top:10px} h3{ font-family:"trebuchet ms",verdana,sans-serif; font-size:100%; } p code{ font-size:110%; color:#666; font-weight:bold; } pre{ background:#eee; padding:.5em 1em; border:1px solid #<?=$col?>; } h1 code, h2 code, h3 code{ font-family:"trebuchet ms",verdana,sans-serif; } h1 code{font-family:"Trebuchet MS",Arial,Sans-serif; } #header{ padding:0; left:0; top:0; background:#69c; margin:0; border-top:1px solid #9cf; border-bottom:1px solid #369; } #content{font-size:90%; margin-top:0;} #download{ position:absolute; top:9em; width:15em; right:4em;} #download ul{background:#ccf; margin:0; padding:.5em 0 .5em 1.5em; } #download h2{ background:#369; color:#fff; font-size:90%; padding:0 .5em; margin:.5em 0 0 0; border-bottom:1px solid #036; border-right:1px solid #036; border-top:1px solid #69c; border-left:1px solid #<?=$col?>; } #download li{ list-style-type:square; } #header a img{ border:0; padding:5px 1em;}
 </style>
-		<?
-	}
+<?
+}
 
 
-	function drag_drop()
-	{
-		global $gbl, $sgbl, $login, $ghtml;
-		?>
-<script
-	type="text/javascript" src="wz_dragdrop.js"></script>
-<div id="name" style="position: absolute;"><?
-	}
+function drag_drop()
+{
+	global $gbl, $sgbl, $login, $ghtml; 
+?>
+	<script type="text/javascript" src="wz_dragdrop.js"></script>
+	<div id="name" style="position:absolute;..."> 
+<?
+}
 
 
-	function print_domcollapse($sel)
-	{
-		global $gbl, $sgbl, $login, $ghtml;
-		$skinget = $login->getSkinDir();
-		if($sel=="des")
-		$style = $ghtml->print_style_desktop();
-		if($sel=="hom")
-		$style = $ghtml->print_style_home();
-		?> <script type="text/javascript">
+function print_domcollapse($sel)
+{		
+	global $gbl, $sgbl, $login, $ghtml; 
+	$skinget = $login->getSkinDir();
+	if($sel=="des")
+	$style = $ghtml->print_style_desktop();
+	if($sel=="hom")
+	$style = $ghtml->print_style_home();
+?>
+<script type="text/javascript">
 dc={
 	triggerElements:'*', 	// elements to trigger the effect
 	parentElementId:null,	// ID of the parent element (keep null if none)
@@ -1312,64 +968,64 @@ dc={
 	}
 }
 dc.addEvent(window, 'load', dc.init, false);
-</script> <?
+</script>
+<?
+}
+
+function print_dialog($alist, $obj)
+{
+
+	global $gbl, $sgbl, $login, $ghtml; 
+	$buttonpath = get_image_path("/button");
+	$lclass  = $login->get__table();
+	$talist = null;
+
+	$dwidth = "600";
+	$dheight = "400";
+	if ($login->dialogsize) {
+		list($dwidth, $dheight) = explode("x", $login->dialogsize);
 	}
 
-	function print_dialog($alist, $obj)
-	{
-
-		global $gbl, $sgbl, $login, $ghtml;
-		$buttonpath = get_image_path("/button");
-		$lclass  = $login->get__table();
-		$talist = null;
-
-		$dwidth = "600";
-		$dheight = "400";
-		if ($login->dialogsize) {
-			list($dwidth, $dheight) = explode("x", $login->dialogsize);
+	foreach($alist as $k => $a) {
+		if (!csb($k, "__v_dialog")) {
+			continue;
 		}
+		$talist[$k] = $a;
+	}
+	if (!$talist) {
+		return;
+	}
+	$buttonpath = get_image_path("/button");
+	?> 
 
-		foreach($alist as $k => $a) {
-			if (!csb($k, "__v_dialog")) {
-				continue;
+    <div id="comments-dlg" style="visibility:hidden;">
+        <div class="x-dlg-hd"><?=$obj->getId()?></div>
+        <div class="x-dlg-bd">
+
+		<?php 
+	$count = 0;
+	$first_tab = null;
+	foreach($talist as $k => $a) {
+			$descr = $this->getActionDetails($a, null, $buttonpath, $path, $post, $file, $name, $image, $__t_identity);
+			if ($count === 0) {
+				$first_tab = $k;
 			}
-			$talist[$k] = $a;
-		}
-		if (!$talist) {
-			return;
-		}
-		$buttonpath = get_image_path("/button");
-		?>
-
-<div id="comments-dlg" style="visibility: hidden;">
-<div class="x-dlg-hd"><?=$obj->getId()?></div>
-<div class="x-dlg-bd"><?php 
-$count = 0;
-$first_tab = null;
-foreach($talist as $k => $a) {
-	$descr = $this->getActionDetails($a, null, $buttonpath, $path, $post, $file, $name, $image, $__t_identity);
-	if ($count === 0) {
-		$first_tab = $k;
-	}
-	$count++;
-	?>
-<div id="<?=$k?>-tab" class="x-dlg-tab" title="<?=$descr[2]?>">
-<div id="<?=$k?>-list" class="inner-tab"></div>
-</div>
-	<?php } ?></div>
-<div class="x-dlg-ft">
-<div id="dlg-msg"><span id="post-error" class="posting-msg"><img
-	src="/img/extjs/warning.gif" width="16" height="16" align="absmiddle" />&nbsp;<span
-	id="post-error-msg"></span></span> <span id="post-wait"
-	class="posting-msg"><img src="/img/extjs/default/grid/loading.gif"
-	width="16" height="16" align="absmiddle" />&nbsp;Updating...</span></div>
-</div>
-</div>
+			$count++;
+			?> 
+			<div id="<?=$k?>-tab" class="x-dlg-tab" title="<?=$descr[2]?>"> <div id="<?=$k?>-list" class="inner-tab"> </div> </div>
+			<?php } ?> 
+        </div>
+        <div class="x-dlg-ft">
+            <div id="dlg-msg">
+                <span id="post-error" class="posting-msg"><img src="/img/extjs/warning.gif" width="16" height="16" align="absmiddle" />&nbsp;<span id="post-error-msg"></span></span>
+				<span id="post-wait"  class="posting-msg"><img src="/img/extjs/default/grid/loading.gif" width="16" height="16" align="absmiddle" />&nbsp;Updating...</span>
+            </div>
+        </div>
+    </div>
 
 
 
-<link rel="stylesheet" type="text/css"
-	href="/htmllib/extjs/examples/dialog/post.css" />
+<link rel="stylesheet" type="text/css" href="/htmllib/extjs/examples/dialog/post.css" />
 
 <script>
 var global_formname;
@@ -1627,21 +1283,27 @@ var CommentRenderer = function(list){
 Ext.EventManager.onDocumentReady(Comments.init, Comments, true);
 
 
-</script> <?php 
+</script>
+<?php 
 
-	}
+}
 
-	function print_drag_drop($obj, $ret, $class)
-	{
-		global $gbl, $sgbl, $login, $ghtml;
-		$lclass = $login->get__table();
-		$skindir = $login->getSkinDir();
-		$col = $login->getSkinColor();
-		$plus = "$skindir/plus.gif";
-		$minus = "$skindir/minus.gif";
-		$buttonpath = get_image_path() . "/button/";
+function print_drag_drop($obj, $ret, $class)
+{
+	global $gbl, $sgbl, $login, $ghtml; 
+	$lclass = $login->get__table();
+	$skindir = $login->getSkinDir();
+	$col = $login->getSkinColor();
+	$plus = "$skindir/plus.gif";
+	$minus = "$skindir/minus.gif";
+	$buttonpath = get_image_path() . "/button/";
 
-		?> <script>
+	?>
+
+
+
+
+	<script>
 (function() {
 
 var Dom = YAHOO.util.Dom;
@@ -1795,648 +1457,633 @@ Ext.EventManager.onDocumentReady(YAHOO.example.DDApp.init, YAHOO.example.DDApp, 
 
 
 
-</script> <?php 
+</script>
+
+
+
+
+<?php 
+}
+
+function print_div_button($actionlist, $type, $imgflag, $key, $url, $ddate = null)
+{
+
+	global $gbl, $sgbl, $login, $ghtml; 
+	$obj = $gbl->__c_object;
+ 	$psuedourl = NULL;
+	$target = NULL;
+
+	$buttonpath = get_image_path() . "/button/";
+
+	$linkflag = true;
+	if (csa($key, "__var_")) {
+		$privar = strfrom($key, "__var_");
+		if (!$obj->checkButton($privar)) {
+			$linkflag = false;
+		}
 	}
 
-	function print_div_button($actionlist, $type, $imgflag, $key, $url, $ddate = null)
-	{
-
-		global $gbl, $sgbl, $login, $ghtml;
-		$obj = $gbl->__c_object;
-		$psuedourl = NULL;
-		$target = NULL;
-
-		$buttonpath = get_image_path() . "/button/";
-
-		$linkflag = true;
-		if (csa($key, "__var_")) {
-			$privar = strfrom($key, "__var_");
-			if (!$obj->checkButton($privar)) {
-				$linkflag = false;
-			}
-		}
-
-		$complete = $this->resolve_int_ext($url, $psuedourl, $target);
-
-		if ($complete) {
-			$this->get_post_from_get($url, $path, $post);
-			$descr  = $this->getActionDescr($path, $post, $class, $name, $identity);
-			$complete['name'] = str_replace("<", "&lt;", $complete['name']);
-			$complete['name'] = str_replace(">", "&gt;", $complete['name']);
-			$name = $complete['name'];
-			$bname = $complete['bname'];
-			$descr[1] = $complete['name'];
-			$descr[2] = $complete['name'];
-			$descr['desc'] = $complete['name'];
-			$file = $class;
-			if (lxfile_exists("img/custom/$bname.gif")) {
-				$image = "/img/custom/$bname.gif";
-			} else {
-				$image = "/img/image/collage/button/custom_button.gif";
-			}
-			$__t_identity = $identity;
+	$complete = $this->resolve_int_ext($url, $psuedourl, $target);
+	
+	if ($complete) {
+		$this->get_post_from_get($url, $path, $post);
+		$descr  = $this->getActionDescr($path, $post, $class, $name, $identity);
+		$complete['name'] = str_replace("<", "&lt;", $complete['name']);
+		$complete['name'] = str_replace(">", "&gt;", $complete['name']);
+		$name = $complete['name'];
+		$bname = $complete['bname'];
+		$descr[1] = $complete['name'];
+		$descr[2] = $complete['name'];
+		$descr['desc'] = $complete['name'];
+		$file = $class;
+		if (lxfile_exists("img/custom/$bname.gif")) {
+			$image = "/img/custom/$bname.gif";
 		} else {
-			$url = str_replace("[%s]", $obj->nname, $url);
-
-			$descr = $this->getActionDetails($url, $psuedourl, $buttonpath, $path, $post, $file, $name, $image, $__t_identity);
+			$image = "/img/image/collage/button/custom_button.gif";
 		}
+		$__t_identity = $identity;
+	} else {
+		$url = str_replace("[%s]", $obj->nname, $url);
+
+		$descr = $this->getActionDetails($url, $psuedourl, $buttonpath, $path, $post, $file, $name, $image, $__t_identity);
+	}
 
 
 
-		$this->save_non_existant_image($image);
+	$this->save_non_existant_image($image);
 
-		$str = randomString(8);
-		$form_name = $this->createEncForm_name("{$file}_{$name}_$str");
-		$form_name = fix_nname_to_be_variable($form_name);
+	$str = randomString(8);
+	$form_name = $this->createEncForm_name("{$file}_{$name}_$str");
+	$form_name = fix_nname_to_be_variable($form_name);
 
-		if (csb($url, "http:/")) {
-			$formmethod = "get";
-		} else {
-			$formmethod = $sgbl->method;
+	if (csb($url, "http:/")) {
+		$formmethod = "get";
+	} else {
+		$formmethod = $sgbl->method;
+	}
+	// Use get always. Only in forms should post be used.
+	$formmethod = 'get';
+
+	$dividentity = "searchdiv_{$descr['desc']}";
+
+	$dividentity = str_replace(" ", "_", $dividentity);
+	$dividentity = strtolower($dividentity);
+	for($i = 0; $i < 10; $i++) {
+		if (!isset($actionlist[$dividentity])) {
+			break;
 		}
-		// Use get always. Only in forms should post be used.
-		$formmethod = 'get';
-
-		$dividentity = "searchdiv_{$descr['desc']}";
-
-		$dividentity = str_replace(" ", "_", $dividentity);
-		$dividentity = strtolower($dividentity);
-		for($i = 0; $i < 10; $i++) {
-			if (!isset($actionlist[$dividentity])) {
-				break;
-			}
-			$dividentity = "{$dividentity}$i";
-		}
+		$dividentity = "{$dividentity}$i";
+	}
 
 
-		?>
+	?> 
 
-<td valign="middle" align="left" width=5>
-<div id="<?php echo $dividentity ?>"
-	style="visibility: visible; display: block">
+		<td  valign="middle"  align="left" width=5>
+	<div id="<?php echo $dividentity ?>" style="visibility:visible;display:block"> 
 
-<form method=<?=$formmethod ?> name=form_ <?=$form_name ?>
-	action=<?=$path?> <?=$target ?>><?php 
+		<form method=<?=$formmethod ?> name=form_<?=$form_name ?> action=<?=$path?> <?=$target ?>  >
+	<?php 
 	$this->print_input_vars($post);
-	?> <?
+?>
+<?
 	$this->print_div_for_divbutton($key, $imgflag, $linkflag, $form_name, $name, $image, $descr);
 
-	?></form>
-</div>
-</td>
-	<?php
+	?> 
+	</form> 
+		</div> 
+		</td> 
+	<?php 
 
 	return $dividentity;
+}
+
+function print_action_block($obj, $class, $alist, $num)
+{
+	global $gbl, $sgbl, $login, $ghtml; 
+	$lclass = $login->get__table();
+	$skindir = $login->getSkinDir();
+	$talist = $alist;
+	$ret = $this->create_action_block($class, $alist);
+	$col = $login->getSkinColor();
+	$plus = "$skindir/plus.gif";
+	$minus = "$skindir/minus.gif";
+	$buttonpath = get_image_path() . "/button/";
+
+	if ($sgbl->isDebug()) {
+		$outputdisplay = 'inline';
+	} else {
+		$outputdisplay = 'none';
 	}
 
-	function print_action_block($obj, $class, $alist, $num)
-	{
-		global $gbl, $sgbl, $login, $ghtml;
-		$lclass = $login->get__table();
-		$skindir = $login->getSkinDir();
-		$talist = $alist;
-		$ret = $this->create_action_block($class, $alist);
-		$col = $login->getSkinColor();
-		$plus = "$skindir/plus.gif";
-		$minus = "$skindir/minus.gif";
-		$buttonpath = get_image_path() . "/button/";
+	if ($login->getSpecialObject('sp_specialplay')->isOn('enable_ajax')) {
+		$this->print_dialog($talist, $obj);
+		$this->print_drag_drop($obj, $ret, $class);
+	}
 
-		if ($sgbl->isDebug()) {
-			$outputdisplay = 'inline';
-		} else {
-			$outputdisplay = 'none';
+	if ($sgbl->isBlackBackground()) {
+		$backgimage = "$skindir/black.gif";
+		$minus = "$skindir/black.gif";
+		$plus = "$skindir/black.gif";
+		$col = "333";
+	} else {
+		$backgimage = "$skindir/expand.gif";
+	}
+
+	?> 
+
+	<style>
+
+	div.section,div#createNew {
+		border: 1px solid #<?echo $col?>;
+		margin: 9px 5px;
+		padding: 0px 0px 10px 0px;
+		width: 520;
 		}
 
-		if ($login->getSpecialObject('sp_specialplay')->isOn('enable_ajax')) {
-			$this->print_dialog($talist, $obj);
-			$this->print_drag_drop($obj, $ret, $class);
-		}
+	div#createNew input { margin-left: 5px; }
 
-		if ($sgbl->isBlackBackground()) {
-			$backgimage = "$skindir/black.gif";
-			$minus = "$skindir/black.gif";
-			$plus = "$skindir/black.gif";
-			$col = "333";
-		} else {
-			$backgimage = "$skindir/expand.gif";
-		}
+	div#createNew h3, div.section h3{
+		font-size: 12px;
+		padding: 2px 5px;
+		margin: 0 0 10px 0;
+		display: block;
+		font-family:"trebuchet ms",verdana,sans-serif; 
+		color:#003360; 
+		background:url(<?=$skindir?>/expand.gif); 
+		border-bottom: 1px solid #<?echo $col?>;
+	}
+	
+	div.section h3 {
+		cursor: move;
+	}
 
-		?>
+	div.demo div.example span {
+	    margin:0px;
+	    margin-bottom:0px;
+		padding:0px;
+		font-size:  1.0em;
+		text-align: center;
+		display: block;
+	}
 
-<style>
-div.section,div#createNew {
-	border: 1px solid #<? echo $col ?>;
-	margin: 9px 5px;
-	padding: 0px 0px 10px 0px;
-	width: 520;
-}
+	div.demo {
+		  margin:0px;
+		  overflow:visible;
+		  position:relative;
+    	  width:100%;
+	}
 
-div#createNew input {
-	margin-left: 5px;
-}
 
-div#createNew h3,div.section h3 {
-	font-size: 12px;
-	padding: 2px 5px;
-	margin: 0 0 10px 0;
-	display: block;
-	font-family: "trebuchet ms", verdana, sans-serif;
-	color: #003360;
-	background: url(<?=$skindir?>/expand.gif);
-	border-bottom: 1px solid #<? echo $col ?>;
-}
-
-div.section h3 {
-	cursor: move;
-}
-
-div.demo div.example span {
-	margin: 0px;
-	margin-bottom: 0px;
-	padding: 0px;
-	font-size: 1.0em;
-	text-align: center;
-	display: block;
-}
-
-div.demo {
-	margin: 0px;
-	overflow: visible;
-	position: relative;
-	width: 100%;
-}
-
-h1 {
-	margin-bottom: 0;
-	font-size: 18px;
-}
+	h1 {
+		margin-bottom: 0;
+		font-size: 18px;
+	}
 </style>
-<div id="show_page"><?php 
+<div id="show_page" >
+	<?php 
 
-if (!$login->getSpecialObject('sp_specialplay')->isOn('enable_ajax')) {
-	$dragstring = "Enable Ajax to Drag";
-} else  {
-	$dragstring = "Drag";
-}
-
-$div_id_list = null;
-$completedivlist = null;
-
-$count=1;
-
-foreach($ret as $title => $a) {
-	$count++;
-	if (!isset($a[$title])) {
-		continue;
+	if (!$login->getSpecialObject('sp_specialplay')->isOn('enable_ajax')) {
+		$dragstring = "Enable Ajax to Drag";
+	} else  {
+		$dragstring = "Drag";
 	}
-	$dispstring = "display:none";
-	if ($a['open']) {
-		$dispstring = "";
-	}
-	unset($a['open']);
-	$nametitle = strfrom($title, "__title_");
-	?>
 
-<div id="item_<?="$nametitle" ?>" class="section">
+	$div_id_list = null;
+	$completedivlist = null;
 
-<table cellpadding=0 cellspacing=0>
-	<tr class=handle id="handle_<?=$nametitle ?>" style="background:url(<?=$backgimage?>)" onMouseover="document.getElementById('font_<?=$nametitle ?>').style.visibility='visible'; this.style.background='url<?=$backgimage?>()'" onMouseout="document.getElementById('font_<?=$nametitle?>').style.visibility='hidden'; this.style.background='url(<?=$backgimage?>)'">
-		<td nowrap style='cursor: move'><font id=font_ <?=$nametitle?>
-			style='visibility: hidden'>&nbsp;<?=$dragstring?> </font></td>
-		<td width=100% style="cursor: move;" align=center><font
-			style='font-weight: bold'><?= $a[$title]?></font></td>
-		<td nowrap style='cursor: move'><font id=font_ <?=$nametitle?>
-			style='visibility: hidden'>&nbsp;<?=$dragstring?> </font></td>
-		<td class=handle style='cursor: pointer'
-			onclick="blindUpOrDown('<?=$lclass?>', '<?=$class ?>', '<?=$skindir?>', '<?=$nametitle ?>')"><img
-			id=img_ <?=$nametitle?> name=img_ <?=$nametitle ?> src=<?=$minus?>></td>
-	</tr>
-</table>
-<div   style="<?=$dispstring?>;" id="internal_<?=$nametitle?>" >
-<table cellpadding="10" cellspacing="4" style="padding: 1 2 1 1">
-	<tr>
+	$count=1;
+
+	foreach($ret as $title => $a) {
+		$count++;
+			if (!isset($a[$title])) {
+				continue;
+			}
+			$dispstring = "display:none";
+			if ($a['open']) {
+				$dispstring = "";
+			}
+			unset($a['open']);
+			$nametitle = strfrom($title, "__title_");
+	?>	
+
+	<div id="item_<?="$nametitle" ?>" class="section">
+
+<table cellpadding=0 cellspacing=0> <tr class=handle id="handle_<?=$nametitle ?>" style="background:url(<?=$backgimage?>)" onMouseover="document.getElementById('font_<?=$nametitle ?>').style.visibility='visible'; this.style.background='url<?=$backgimage?>()'" onMouseout="document.getElementById('font_<?=$nametitle?>').style.visibility='hidden'; this.style.background='url(<?=$backgimage?>)'"> <td nowrap style='cursor: move' > <font id=font_<?=$nametitle?> style='visibility:hidden'>&nbsp;<?=$dragstring?> </font></td><td width=100%  style="cursor: move; " align=center ><font style='font-weight: bold'><?= $a[$title]?></font> </td> <td nowrap style='cursor: move' > <font id=font_<?=$nametitle?> style='visibility:hidden'>&nbsp;<?=$dragstring?> </font></td><td class=handle style='cursor: pointer' onclick="blindUpOrDown('<?=$lclass?>', '<?=$class ?>', '<?=$skindir?>', '<?=$nametitle ?>')"><img id=img_<?=$nametitle?> name=img_<?=$nametitle ?> src=<?=$minus?>></td> </tr> </table> 
+	<div   style="<?=$dispstring?>;" id="internal_<?=$nametitle?>" > 
+		<table cellpadding="10" cellspacing="4" style="padding:1 2 1 1"><tr> 
+   		<? 
+			array_shift($a);
+			$n = 0;
+			foreach($a as $k => $u) {
+				$n++;
+				if ($n === $num) {
+					print("</tr><tr>");
+					$n = 1;
+				}
+				print("<td>");
+				$ret = $this->print_div_button($completedivlist, "block", true, $k, $u);
+				$completedivlist[$ret] = $ret;
+				$div_id_list[$nametitle][$ret] = $ret;
+				print("</td>");
+			}		
+	?>	 
+			</td></tr></table>
+			</div>
+	</div>
 	<?
-	array_shift($a);
-	$n = 0;
-	foreach($a as $k => $u) {
-		$n++;
-		if ($n === $num) {
-			print("</tr><tr>");
-			$n = 1;
-		}
-		print("<td>");
-		$ret = $this->print_div_button($completedivlist, "block", true, $k, $u);
-		$completedivlist[$ret] = $ret;
-		$div_id_list[$nametitle][$ret] = $ret;
-		print("</td>");
 	}
+	print("</td></tr></table>");
 	?>
-		</td>
-	</tr>
-</table>
 </div>
-</div>
-	<?
-}
-print("</td></tr></table>");
-?></div>
 
-
+		
 
 
 <?php
 
-print("<script>");
-$count = 0;
-print("global_action_box = new Array()\n");
-foreach($div_id_list as $k => $v) {
-	print("global_action_box[$count] = new Array();\n");
-	print("global_action_box[$count][0] = '$k';\n");
-	$j = 1;
-	foreach($v as $kk => $vv) {
-		print("global_action_box[$count][$j] = '$vv';\n");
-		$j++;
+	print("<script>");
+	$count = 0;
+	print("global_action_box = new Array()\n");
+	foreach($div_id_list as $k => $v) {
+		print("global_action_box[$count] = new Array();\n");
+		print("global_action_box[$count][0] = '$k';\n");
+		$j = 1;
+		foreach($v as $kk => $vv) {
+			print("global_action_box[$count][$j] = '$vv';\n");
+			$j++;
+		}
+		$count++;
 	}
-	$count++;
+	print("</script>");
+
+
 }
-print("</script>");
 
+function print_action_blockold($title, $alist, $num)
+{
 
+	$i = 0;
+	$total = $num;
+
+	/// This is a mighty hack... The first element of $alist is supposed to be the main title. You use it as the first title and unset the variable. This is a hack from the previous code where the first title was preset here itself.
+
+	foreach($alist as $k => $a) {
+		if (csb($k, "__title")) {
+			$title = $a;
+			unset($alist[$k]);
+			break;
+		}
 	}
 
-	function print_action_blockold($title, $alist, $num)
-	{
-
-		$i = 0;
-		$total = $num;
-
-		/// This is a mighty hack... The first element of $alist is supposed to be the main title. You use it as the first title and unset the variable. This is a hack from the previous code where the first title was preset here itself.
-
-		foreach($alist as $k => $a) {
-			if (csb($k, "__title")) {
-				$title = $a;
-				unset($alist[$k]);
-				break;
-			}
+	?>
+	<fieldset width=100% style='border: 0px; border-top: 1px solid #d0d0d0'><legend style='font-weight:normal;border:0px'><b> <font color=#303030 style='font-weight:normal'><?=$title ?> </font></b> </legend>
+		<table cellpadding="2" cellspacing="7" border="0" width="95%" >
+		<tr align=left> <td align=left>
+		<?php 
+	foreach($alist as $k => $u) {
+		$i++;
+		if ($i% $total === 1) {
+			print("</td> </tr> <tr align=left> <td align=left>");
 		}
 
-		?>
-<fieldset width=100% style='border: 0px; border-top: 1px solid #d0d0d0'><legend
-	style='font-weight: normal; border: 0px'><b> <font color=#303030
-	style='font-weight: normal'><?=$title ?> </font></b> </legend>
-<table cellpadding="2" cellspacing="7" border="0" width="95%">
-	<tr align=left>
-		<td align=left><?php 
-		foreach($alist as $k => $u) {
-			$i++;
-			if ($i% $total === 1) {
-				print("</td> </tr> <tr align=left> <td align=left>");
-			}
-
-			if (csb($k, "__title")) {
-				if ($i <= $total) {
-					for(; $i <=$total ; $i++) {
-						print("</td><td width=60>&nbsp;");
-					}
+		if (csb($k, "__title")) {
+			if ($i <= $total) {
+				for(; $i <=$total ; $i++) {
+					print("</td><td width=60>&nbsp;");
 				}
-				$i = 0;
-				?></td>
-	</tr>
-</table>
-</fieldset>
-<fieldset
-	style='font-weight: normal; border: 0px; border-top: 1px solid #d0d0d0'><legend
-	style='font-weight: normal'> <b> <font color=#303030
-	style='font-weight: normal'><?=$u ?> </font> </b> </legend>
-<table cellspacing=7 width=95% border=0>
-	<tr align=left>
-		<td align=left><?php 
-		continue;
 			}
-			$this->print_div_button(null, "block", true, $k, $u);
+			$i = 0;
+			?> 
+			</td> </tr> </table> 
+			</fieldset><fieldset style='font-weight:normal;border: 0px; border-top: 1px solid #d0d0d0'><legend style='font-weight:normal'> <b> <font color=#303030 style='font-weight:normal'><?=$u ?> </font> </b> </legend>
+			<table cellspacing=7 width=95% border=0> <tr align=left> <td align=left >
+			<?php 
+			continue;
 		}
-		if ($i <= $total) {
+		$this->print_div_button(null, "block", true, $k, $u);
+	}
+	if ($i <= $total) {
 
-			for(; $i <=$total ; $i++) {
-				print("</td><td width=40>&nbsp;");
-			}
+		for(; $i <=$total ; $i++) {
+			print("</td><td width=40>&nbsp;");
 		}
-
-
-		?></td>
-	</tr>
-</table>
-</fieldset>
-<br>
-<br>
-		<?php
 	}
 
-	function cginum($key)
-	{
-		if (isset($this->__http_vars[$key]))
+
+	?> 	
+		</td> </tr>
+		</table> 
+			</fieldset>
+		<br> <br> 
+		<?php 
+}
+
+function cginum($key)
+{
+	if (isset($this->__http_vars[$key]))
 		return $this->__http_vars[$key];
-		else
+	else
 		return 0;
-	}
+}
 
-	function cgiset($key, $value)
-	{
-		// Needs to be Fixed.
-		$this->__http_vars[$key] = $value;
-	}
+function cgiset($key, $value)
+{
+	// Needs to be Fixed.
+	$this->__http_vars[$key] = $value;
+}
 
-	function frmiset($key)
-	{
-		if (isset($this->__http_vars[$key]))
+function frmiset($key)
+{
+	if (isset($this->__http_vars[$key]))
 		return 1;
-		else
+	else
 		return 0;
-	}
+}
 
-	function iset($key)
-	{
-		if (isset($this->__http_vars[$key]))
+function iset($key)
+{
+	if (isset($this->__http_vars[$key]))
 		return 1;
-		else
+	else
 		return 0;
+}
+
+
+function get_image($path,$class, $variable, $extension) 
+{
+
+	return add_http_host($this->get_image_without_host($path,$class, $variable, $extension));
+
+}
+
+function createMissingName($name)
+{
+	global $gbl, $sgbl, $login, $ghtml; 
+	$val = 0;
+	if ($sgbl->isKloxo()) {
+		return "/img/general/default/default.gif";
+	}
+	for($i = 0; $i < strlen($name); $i++) {
+		//dprint($name[$i]);
+		$val += ord($name[$i]);
 	}
 
+	$val = $val % 10;
 
-	function get_image($path,$class, $variable, $extension)
-	{
+	return "/img/general/default/default_$val.gif";
+}
 
-		return add_http_host($this->get_image_without_host($path,$class, $variable, $extension));
 
+function get_image_without_host($path, $class, $variable, $extension) 
+{
+
+	global $gbl, $sgbl, $login, $ghtml; 
+
+	$variable = strtolower($variable);
+	$class = strtolower($class);
+
+
+	$realv = $variable;
+
+	//hack hack...
+	if ($class === 'installsoft') {
+		if (strstr($variable, "addform")) {
+			$variable = strfrom($variable, "_");
+		}
 	}
 
-	function createMissingName($name)
-	{
-		global $gbl, $sgbl, $login, $ghtml;
-		$val = 0;
-		if ($sgbl->isKloxo()) {
-			return "/img/general/default/default.gif";
-		}
-		for($i = 0; $i < strlen($name); $i++) {
-			//dprint($name[$i]);
-			$val += ord($name[$i]);
-		}
-
-		$val = $val % 10;
-
-		return "/img/general/default/default_$val.gif";
+	if (csa($variable, "_nn_")) {
+		$variable = substr($variable, 0, strpos($variable, '_nn_'));
 	}
 
-
-	function get_image_without_host($path, $class, $variable, $extension)
-	{
-
-		global $gbl, $sgbl, $login, $ghtml;
-
-		$variable = strtolower($variable);
-		$class = strtolower($class);
-
-
-		$realv = $variable;
-
-		//hack hack...
-		if ($class === 'installsoft') {
-			if (strstr($variable, "addform")) {
-				$variable = strfrom($variable, "_");
-			}
-		}
-
-		if (csa($variable, "_nn_")) {
-			$variable = substr($variable, 0, strpos($variable, '_nn_'));
-		}
-
-		if ($class) {
-			$name = $class . "_" . $variable;
-		} else {
-			$name = $variable;
-		}
-
-
-		$fpath = $path . "/" . $name . $extension;
-
-
-		if (lfile_exists(getreal($fpath))) {
-			return $fpath;
-		}
-
+	if ($class) {
+		$name = $class . "_" . $variable;
+	} else {
 		$name = $variable;
-
-		$fnpath = $path . "/" . $name . $extension;
-
-		if (lfile_exists(getreal($fnpath))) {
-			return $fnpath;
-		}
-
-		$name = substr($variable, 0, strpos($variable, "_"));
-		$fnpath = $path . "/" . $name . $extension;
-
-		if (lfile_exists(getreal($fnpath))) {
-			return $fnpath;
-		}
-
-		$name = substr($variable, strrpos($variable, "_") + 1) ;
-		$fnpath = $path . "/" . $name . $extension;
+	}
 
 
-		if (lfile_exists(getreal($fnpath))) {
-			return $fnpath;
-		}
-
-		if ($realv === 'show') {
-			return $this->get_image_without_host($path, $class, "list", $extension);
-		}
-
-		if (csb($realv, "update_")) {
-			$qname = strfrom($realv, "update_");
-			$qname = "updateform_$qname";
-			return $this->get_image_without_host($path, $class, $qname, $extension);
-		}
-
-		$name = strfrom("{$class}_$variable", "all_");
-		$fnpath = "$path/$name$extension";
-
-		if (lfile_exists(getreal($fnpath))) {
-			return $fnpath;
-		}
+	$fpath = $path . "/" . $name . $extension;
 
 
-		if ($sgbl->dbg < 0) {
-			$imgname = $this->createMissingName($fpath);
-			return $imgname;
-		}
-
+	if (lfile_exists(getreal($fpath))) {
 		return $fpath;
-
 	}
 
-	function save_non_existant_image($path)
-	{
+	$name = $variable;
 
-		global $gbl, $sgbl, $login, $ghtml;
+	$fnpath = $path . "/" . $name . $extension;
 
+	if (lfile_exists(getreal($fnpath))) {
+		return $fnpath;
+	}
+
+	$name = substr($variable, 0, strpos($variable, "_"));
+	$fnpath = $path . "/" . $name . $extension;
+
+	if (lfile_exists(getreal($fnpath))) {
+		return $fnpath;
+	} 
+
+	$name = substr($variable, strrpos($variable, "_") + 1) ;
+	$fnpath = $path . "/" . $name . $extension;
+
+	
+	if (lfile_exists(getreal($fnpath))) {
+		return $fnpath;
+	} 
+
+	if ($realv === 'show') {
+		return $this->get_image_without_host($path, $class, "list", $extension);
+	}
+
+	if (csb($realv, "update_")) {
+		$qname = strfrom($realv, "update_");
+		$qname = "updateform_$qname";
+		return $this->get_image_without_host($path, $class, $qname, $extension);
+	}
+
+	$name = strfrom("{$class}_$variable", "all_");
+	$fnpath = "$path/$name$extension";
+
+	if (lfile_exists(getreal($fnpath))) {
+		return $fnpath;
+	} 
+
+
+	if ($sgbl->dbg < 0) {
+		$imgname = $this->createMissingName($fpath);
+		return $imgname;
+	}
+	
+	return $fpath;
+
+}
+
+function save_non_existant_image($path)
+{
+
+	global $gbl, $sgbl, $login, $ghtml; 
+
+	return;
+
+	// We need only the form images, and the normal non form action images need not be saved.
+	if (!csa($path, "list") && !csa($path, "form")) {
 		return;
+	}
 
-		// We need only the form images, and the normal non form action images need not be saved.
-		if (!csa($path, "list") && !csa($path, "form")) {
-			return;
-		}
+	if ($sgbl->dbg <= 1) {
+		return;
+	}
 
-		if ($sgbl->dbg <= 1) {
-			return;
-		}
+	if (lfile_exists(getreal($path))) {
+		return;
+	}
 
-		if (lfile_exists(getreal($path))) {
-			return;
-		}
+	$cont = null;
+	$icon = $login->getSpecialObject('sp_specialplay')->icon_name;
 
-		$cont = null;
-		$icon = $login->getSpecialObject('sp_specialplay')->icon_name;
+	$file = "__path_program_htmlbase/$icon.missing_image.txt";
 
-		$file = "__path_program_htmlbase/$icon.missing_image.txt";
-
-		if (lfile_exists($file)) {
-			$cont = lfile($file);
-			foreach($cont as $k => &$__c) {
-				$__c = trim($__c);
-				if (!$__c) {
-					unset ($cont[$k]);
-				}
+	if (lfile_exists($file)) { 
+		$cont = lfile($file);
+		foreach($cont as $k => &$__c) {
+			$__c = trim($__c);
+			if (!$__c) {
+				unset ($cont[$k]);
 			}
 		}
-		$cont = array_push_unique($cont, $path);
-		$cont = implode("\n", $cont);
-		$cont .= "\n";
-		lfile_put_contents($file, $cont);
+	}
+	$cont = array_push_unique($cont, $path);
+	$cont = implode("\n", $cont);
+	$cont .= "\n";
+	lfile_put_contents($file, $cont);
+}
+
+
+function get_date()
+{
+	$day = date("d");
+	$month = date("m");
+	$year = date("Y");
+
+  $date[0] = $day;
+  $date[1] = $month;
+  $date[2] = $year;
+
+  return $date;
+
+}
+
+
+
+
+function get_post_from_get($url, &$path, &$post)
+{
+
+	$post = NULL;
+	$array = parse_url($url);
+	$path = "";
+	if (isset($array["host"])) {
+		$path .= $array['scheme'] . "://" . $array["host"];
 	}
 
-
-	function get_date()
-	{
-		$day = date("d");
-		$month = date("m");
-		$year = date("Y");
-
-		$date[0] = $day;
-		$date[1] = $month;
-		$date[2] = $year;
-
-		return $date;
-
+	if (isset($array["port"])) {
+		$path .= ":" . $array["port"];
 	}
 
-
-
-
-	function get_post_from_get($url, &$path, &$post)
-	{
-
-		$post = NULL;
-		$array = parse_url($url);
-		$path = "";
-		if (isset($array["host"])) {
-			$path .= $array['scheme'] . "://" . $array["host"];
-		}
-
-		if (isset($array["port"])) {
-			$path .= ":" . $array["port"];
-		}
-
-		if (isset($array["path"])) {
-			$path .= $array["path"];
-		}
-
-		if (isset($array["query"])) {
-			parse_str($array["query"], $post);
-		}
-		return $post;
-
+	if (isset($array["path"])) {
+		$path .= $array["path"];
 	}
 
-	function createCurrentParam($class)
-	{
-		$param = null;
+	if (isset($array["query"])) {
+		parse_str($array["query"], $post);
+	}
+	return $post;
 
-		foreach($this->__http_vars as $key => $val) {
+}
 
-			if (csb($key, "__m_")) {
-				$param[$key] = $val;
-				continue;
-			}
-			if (!csa($key, "_c_")) {
-				continue;
-			}
+function createCurrentParam($class)
+{
+	$param = null;
 
-			$realname = substr($key, strlen('frm_'));
-			$this->get_htmlvar_details($key, $newclass, $variable, $extra, $htmlvalue);
+	foreach($this->__http_vars as $key => $val) {
 
-
-			$param[$variable] = $val;
-
+		if (csb($key, "__m_")) {
+			$param[$key] = $val;
+			continue;
 		}
-		check_for_select_one($param);
-		return $param;
+		if (!csa($key, "_c_")) {
+			continue;
+		}
+
+		$realname = substr($key, strlen('frm_'));
+		$this->get_htmlvar_details($key, $newclass, $variable, $extra, $htmlvalue);
+
+
+		$param[$variable] = $val;
+
 	}
+	check_for_select_one($param);
+	return $param;
+}
 
 
-	function get_form_variable_name($descr)
-	{
-		return getNthToken($descr, 1);
-	}
+function get_form_variable_name($descr)
+{
+	return getNthToken($descr, 1);
+}
 
-	function fix_stuff_or_class($stuff, $variable,  &$class, &$value)
-	{
-		$value = null;
-		if (is_object($stuff)) {
-			$class = lget_class($stuff);
-			lxclass::resolve_class_differences($class, $variable, $dclass, $dvariable);
-			if ($dclass != $class) {
-				if (cse($dclass, "_b")) {
-					$value = $stuff->$dclass->$dvariable;
-				}
-			} else {
-				if ($stuff->isQuotaVariable($variable)) {
-					$value = $stuff->priv->$variable;
-				} else if ($stuff->isListQuotaVariable($variable)) {
-					$value = $stuff->listpriv->$variable;
-				} else {
-					if (!cse($variable, "_f")) {
-						$value = $stuff->getVariable($variable);
-					}
-				}
+function fix_stuff_or_class($stuff, $variable,  &$class, &$value)
+{
+	$value = null;
+	if (is_object($stuff)) {
+		$class = lget_class($stuff);
+		lxclass::resolve_class_differences($class, $variable, $dclass, $dvariable);
+		if ($dclass != $class) {
+			if (cse($dclass, "_b")) {
+				$value = $stuff->$dclass->$dvariable;
 			}
 		} else {
-			$class = $stuff;
+			if ($stuff->isQuotaVariable($variable)) {
+				$value = $stuff->priv->$variable;
+			} else if ($stuff->isListQuotaVariable($variable)) {
+				$value = $stuff->listpriv->$variable;
+			} else {
+				if (!cse($variable, "_f")) {
+					$value = $stuff->getVariable($variable);
+				}
+			}
 		}
-
-		if (!is_array($value)) {
-			$value = htmlspecialchars($value);
-		}
+	} else {
+		$class = $stuff;
 	}
 
-	function print_file_permissions($ffile)
-	{
+	if (!is_array($value)) {
+		$value = htmlspecialchars($value);
+	}
+}
 
-		global $gbl, $sgbl, $login, $ghtml;
+function print_file_permissions($ffile)
+{
 
-		$ffile->getPermissions($perm);
+	global $gbl, $sgbl, $login, $ghtml;
 
-		if($perm[0]==="") $user=0;  else $user  = $perm[0];
-		if($perm[1]==="") $group=0; else $group = $perm[1];
-		if($perm[2]==="") $other=0; else $other = $perm[2];
+	$ffile->getPermissions($perm);
 
-		$imgheadleft  = $login->getSkinDir() . "/top_lt.gif" ;
-		$imgheadright = $login->getSkinDir() . "/top_rt.gif" ;
-		$imgheadbg    = $login->getSkinDir() . "/top_bg.gif" ;
-		$imgtopline   = $login->getSkinDir() . "/top_line.gif" ;
-		$tablerow_head   = $login->getSkinDir() . "/tablerow_head.gif" ;
+	if($perm[0]==="") $user=0;  else $user  = $perm[0];
+	if($perm[1]==="") $group=0; else $group = $perm[1];
+	if($perm[2]==="") $other=0; else $other = $perm[2];
 
-		?> <br>
-<br>
+	$imgheadleft  = $login->getSkinDir() . "/top_lt.gif" ;
+	$imgheadright = $login->getSkinDir() . "/top_rt.gif" ;
+	$imgheadbg    = $login->getSkinDir() . "/top_bg.gif" ;
+	$imgtopline   = $login->getSkinDir() . "/top_line.gif" ;
+	$tablerow_head   = $login->getSkinDir() . "/tablerow_head.gif" ;
+
+	?> 
+
+<br><br>
 <script>
 function sendchmode(a,b) {
 	b.frm_ffile_c_file_permission_f.value = a.user.value + a.group.value + a.other.value;
@@ -2454,125 +2101,55 @@ function sendchmode(a,b) {
 }
 </script>
 
-<form name=frmsendchmod action="display.php"><input type=hidden
-	name=frm_ffile_c_file_permission_f> <?php 
+<form name=frmsendchmod action="display.php">
+<input type=hidden name=frm_ffile_c_file_permission_f>
+<?php 
 	$post['frm_o_o'] = $this->__http_vars['frm_o_o'];
 	$ghtml->print_input_vars($post);
 
-	?> <input type=hidden name=frm_ffile_c_recursive_f value=Off> <input
-	type=hidden name=frm_action value="update"> <input type=hidden
-	name=frm_subaction value="perm"></form>
+	?> 
+<input type=hidden name=frm_ffile_c_recursive_f value=Off>
+<input type=hidden name=frm_action value="update">
+<input type=hidden name=frm_subaction value="perm">
+</form>
 
 
 <table cellpadding=0 cellspacing=0 border=0 width=325>
-	<tr>
-		<td width=60% valign=bottom>
-		<table cellpadding=0 cellspacing=0 border=0 width=100%>
-			<tr>
-				<td width=100% height=2 background="<?=$imgtopline; ?>"></td>
-			</tr>
-		</table>
-		</td>
-		<td align=right>
-		<table cellpadding=0 cellspacing=0 border=0 width=100%>
-			<tr>
-				<td><img src="<?=$imgheadleft; ?>"></td>
-				<td nowrap width=100% background="<?=$imgheadbg; ?>"><b><font
-					color="#ffffff">Change Permissions</font></b></td>
-				<td><img src="<?=$imgheadright; ?>"></td>
-			</tr>
-		</table>
-		</td>
-	</tr>
-</table>
+<tr><td width=60% valign=bottom><table cellpadding=0 cellspacing=0 border=0 width=100%><tr><td width=100% height=2 background="<?=$imgtopline; ?>"></td></tr></table></td><td align=right>
+<table cellpadding=0 cellspacing=0 border=0 width=100% >
+<tr><td><img src="<?=$imgheadleft; ?>"></td><td nowrap width=100% background="<?=$imgheadbg; ?>" ><b><font color="#ffffff">Change Permissions</font></b></td><td><img src="<?=$imgheadright; ?>"></td></tr>
+</table>			
+</td></tr></table>
 <form name="chmod" method=<?=$sgbl->method ?> action="">
 <table cellpadding=0 cellspacing=0 border=0 width=325>
-	<tr style='background:url(<?=$tablerow_head ?>)'>
-		<td width=100 class=col></td>
-		<td width=75 align=center>User</td>
-		<td width=75 align=center>Group</td>
-		<td align=center width=75>Others</td>
-	</tr>
-	<tr style='background:url(<?=$tablerow_head ?>)'>
-		<td width=100 class=col></td>
-		<td align=center><input type=checkbox name="userall"
-			onclick="allrights(document.chmod,this,'user');"></td>
-		<td align=center><input type=checkbox name="groupall"
-			onclick="allrights(document.chmod,this,'group');"></td>
-		<td align=center><input type=checkbox name="otherall"
-			onclick="allrights(document.chmod,this,'other');"></td>
-	</tr>
+<tr style='background:url(<?=$tablerow_head ?>)'><td width=100 class=col></td><td width=75 align=center >User</td><td width=75 align=center>Group</td><td align=center width=75 >Others</td></tr>
+<tr style='background:url(<?=$tablerow_head ?>)'><td width=100 class=col></td><td align=center  ><input type=checkbox name="userall" onclick="allrights(document.chmod,this,'user');"></td><td align=center ><input type=checkbox name="groupall"  onclick="allrights(document.chmod,this,'group');"></td><td align=center ><input type=checkbox name="otherall"  onclick="allrights(document.chmod,this,'other');"></td></tr>
 
-</table>
+</table> 
 <table cellpadding=0 cellspacing=0 border=0 width=325>
 
-	<tr class=tablerow0>
-		<td class=col width=100>Write</td>
-		<td align=center><input type=checkbox name=wu
-			onclick="changerights(document.chmod,this,'user',2);"></td>
-		<td align=center><input type=checkbox name=wg
-			onclick="changerights(document.chmod,this,'group',2);"></td>
-		<td align=center><input type=checkbox name=wo
-			onclick="changerights(document.chmod,this,'other',2);"></td>
-	</tr>
+<tr class=tablerow0><td class=col width=100>Write</td><td align=center ><input type=checkbox name=wu   onclick="changerights(document.chmod,this,'user',2);" ></td><td align=center ><input type=checkbox name=wg   onclick="changerights(document.chmod,this,'group',2);"></td><td align=center ><input type=checkbox name=wo   onclick="changerights(document.chmod,this,'other',2);" ></td></tr>
 
-	<tr class=tablerow1>
-		<td class=col width=100>Execute</td>
-		<td width=75 align=center><input type=checkbox name=eu
-			onclick="changerights(document.chmod,this,'user',1);"></td>
-		<td width=75 align=center><input type=checkbox name=eg
-			onclick="changerights(document.chmod,this,'group',1);"></td>
-		<td width=75 align=center><input type=checkbox name=eo
-			onclick="changerights(document.chmod,this,'other',1);"></td>
-	</tr>
+<tr class=tablerow1><td class=col width=100>Execute</td><td  width=75 align=center ><input type=checkbox name=eu onclick="changerights(document.chmod,this,'user',1);"></td><td width=75 align=center ><input type=checkbox name=eg  onclick="changerights(document.chmod,this,'group',1);"></td><td width=75  align=center ><input type=checkbox name=eo   onclick="changerights(document.chmod,this,'other',1);"></td></tr>
 
-	<tr class=tablerow0>
-		<td class=col width=100>Read</td>
-		<td align=center><input type=checkbox name=ru
-			onclick="changerights(document.chmod,this,'user',4);"></td>
-		<td align=center><input type=checkbox name=rg
-			onclick="changerights(document.chmod,this,'group',4);"></td>
-		<td align=center><input type=checkbox name=ro
-			onclick="changerights(document.chmod,this,'other',4);"></td>
-	</tr>
+<tr class=tablerow0><td class=col width=100>Read</td><td align=center ><input type=checkbox name=ru   onclick="changerights(document.chmod,this,'user',4);"></td><td align=center ><input type=checkbox name=rg   onclick="changerights(document.chmod,this,'group',4);"></td><td align=center ><input type=checkbox name=ro   onclick="changerights(document.chmod,this,'other',4);" > </td></tr>
 </table>
 <table cellpadding=0 cellspacing=0 border=0 width=325>
-	<!--<tr><td colspan=4 bgcolor="#ffffff" height=2></td></tr>
+<!--<tr><td colspan=4 bgcolor="#ffffff" height=2></td></tr>
 <tr><td colspan=4 bgcolor="#a5c7e7" height=1></td></tr>-->
-	<tr>
-		<td colspan=4 bgcolor="#ffffff" height=2></td>
-	</tr>
-	<tr class=tablerow1>
-		<td class=tableheadtext width=100>&nbsp;&nbsp;Total</td>
-		<td align=center width=75><input type=text size=1 name=user
-			class=textchmoddisable value="<?=$user; ?>"></td>
-		<td width=75 align=center><input type=text size=1 name=group
-			class=textchmoddisable value="<?=$group; ?>"></td>
-		<td width=75 align=center><input type=text size=1 name=other
-			class=textchmoddisable value="<?=$other; ?>"></td>
-	</tr>
-	<!--<tr><td colspan=4 bgcolor="#ffffff" height=2></td></tr>
+<tr><td colspan=4 bgcolor="#ffffff" height=2></td></tr>
+<tr class=tablerow1><td class=tableheadtext width=100 >&nbsp;&nbsp;Total</td><td align=center width=75 ><input type=text size=1 name=user class=textchmoddisable value="<?=$user; ?>"></td><td width=75 align=center ><input type=text size=1 name=group class=textchmoddisable value="<?=$group; ?>"></td><td width=75 align=center ><input type=text size=1 name=other class=textchmoddisable value="<?=$other; ?>"></td></tr>
+<!--<tr><td colspan=4 bgcolor="#ffffff" height=2></td></tr>
 <tr><td colspan=4 bgcolor="#a5c7e7" height=1></td></tr>-->
 
-	<tr>
-		<td colspan=3>&nbsp; <b> Change Permssion Recursively <b></td>
-		<td><input type=checkbox name=frm_ffile_c_recursive_f></td>
-	</tr>
+<tr> <td colspan=3> &nbsp; <b>  Change Permssion Recursively <b>  </td> <td >
+<input type=checkbox name=frm_ffile_c_recursive_f >
+</td></tr>
 
-	<tr>
-		<td colspan=4 bgcolor="#ffffff" height=4></td>
-	</tr>
-	<tr>
-		<td colspan=4 align=right><input type=button
-			onclick="sendchmode(document.chmod,document.frmsendchmod)"
-			class=submitbutton name=change value=Change></td>
-	</tr>
-	<tr>
-		<td colspan=2 bgcolor="#ffffff" height=4></td>
-	</tr>
-	<tr>
-		<td colspan=4 style='background:url(<?=$imgtopline?>)' height=1></td>
-	</tr>
+<tr><td colspan=4 bgcolor="#ffffff" height=4></td></tr>
+<tr><td colspan=4 align=right ><input type=button onclick="sendchmode(document.chmod,document.frmsendchmod)" class=submitbutton name=change value=Change> </td></tr>
+<tr><td colspan=2 bgcolor="#ffffff" height=4></td></tr>
+<tr><td colspan=4 style='background:url(<?=$imgtopline?>)' height=1></td></tr>
 </table>
 </form>
 
@@ -2584,1717 +2161,1685 @@ function sendchmode(a,b) {
 	setpermission(document.chmod,'user',<?=$user;?>);
 	setpermission(document.chmod,'group',<?=$group; ?>);
 	setpermission(document.chmod,'other',<?=$other; ?>);
-</script> <?php
+</script>
 
+<?php
+
+}
+
+
+function object_variable_file($stuff, $variable)
+{
+
+	global $gbl, $sgbl, $login, $ghtml; 
+
+	$sgbl->method = "post";
+
+	$this->fix_stuff_or_class($stuff,  $variable, $class, $value);
+	$descr = $this->get_classvar_description_after_overload($class,  $variable);
+
+	$rv = new FormVar();
+	$rv->name = $variable;
+	$rv->desc = $descr[2];
+	$rv->type = "file";
+	return $rv;
+
+}
+
+	
+
+function object_variable_fileselect($stuff, $variable, $opt = null) 
+{
+	$valstring = null;
+
+	$this->fix_stuff_or_class($stuff,  $variable, $class, $value);
+
+	$rvr = new formVar();
+
+	if ($value) {
+		$rvr->value = $value;
 	}
 
 
-	function object_variable_file($stuff, $variable)
-	{
+	$needstr = null;
+	$descr = $this->get_classvar_description_after_overload($class,  $variable);
 
-		global $gbl, $sgbl, $login, $ghtml;
+	$desc = getNthToken($descr[2], 1);
+	if (char_search_a($descr[0], "n")) {
+		$rvr->need = "yes";
+	} 
 
-		$sgbl->method = "post";
 
-		$this->fix_stuff_or_class($stuff,  $variable, $class, $value);
-		$descr = $this->get_classvar_description_after_overload($class,  $variable);
-
-		$rv = new FormVar();
-		$rv->name = $variable;
-		$rv->desc = $descr[2];
-		$rv->type = "file";
-		return $rv;
-
+	$estring = null;
+	if ($opt)
+	foreach($opt as $key => $val) {
+		$rvr->$key = $val;
 	}
 
+	$rvr->name = "frm_{$class}_c_$variable";
+	$rvr->desc = $desc;
+	$rvr->type = "fileselect";
+	return $rvr;
+}
 
 
-	function object_variable_fileselect($stuff, $variable, $opt = null)
-	{
-		$valstring = null;
 
-		$this->fix_stuff_or_class($stuff,  $variable, $class, $value);
+function object_variable_image($stuff, $variable, $opt = null) 
+{
+	$valstring = null;
 
-		$rvr = new formVar();
-
-		if ($value) {
-			$rvr->value = $value;
-		}
+	$this->fix_stuff_or_class($stuff,  $variable, $class, $value);
 
 
-		$needstr = null;
-		$descr = $this->get_classvar_description_after_overload($class,  $variable);
+	$needstr = null;
+	$descr = $this->get_classvar_description_after_overload($class,  $variable);
 
-		$desc = getNthToken($descr[2], 1);
-		if (char_search_a($descr[0], "n")) {
-			$rvr->need = "yes";
-		}
+	$desc = getNthToken($descr[2], 1);
 
 
-		$estring = null;
-		if ($opt)
-		foreach($opt as $key => $val) {
-			$rvr->$key = $val;
-		}
-
-		$rvr->name = "frm_{$class}_c_$variable";
-		$rvr->desc = $desc;
-		$rvr->type = "fileselect";
-		return $rvr;
+	$rvr = new formVar();
+	$estring = null;
+	if ($opt) foreach($opt as $key => $val) {
+		$rvr->$key = $val;
 	}
 
+	$rvr->name = "frm_{$class}_c_$variable";
+	$rvr->desc	= $desc;
+	$rvr->type = "image";
+
+	return $rvr;
+}
 
 
-	function object_variable_image($stuff, $variable, $opt = null)
-	{
-		$valstring = null;
+function url_encode($value)
+{
+	return urlencode($value);
+}
 
-		$this->fix_stuff_or_class($stuff,  $variable, $class, $value);
+function object_variable_modify($stuff, $variable, $opt = null) 
+{
+	$valstring = null;
+
+	$this->fix_stuff_or_class($stuff,  $variable, $class, $value);
 
 
-		$needstr = null;
-		$descr = $this->get_classvar_description_after_overload($class,  $variable);
+	$rvr = new FormVar();
 
-		$desc = getNthToken($descr[2], 1);
-
-
-		$rvr = new formVar();
-		$estring = null;
-		if ($opt) foreach($opt as $key => $val) {
-			$rvr->$key = $val;
-		}
-
-		$rvr->name = "frm_{$class}_c_$variable";
-		$rvr->desc	= $desc;
-		$rvr->type = "image";
-
-		return $rvr;
+	if ($value) {
+		$rvr->value = $value;
 	}
 
+	$needstr = null;
+	$descr = $this->get_classvar_description_after_overload($class,  $variable);
 
-	function url_encode($value)
-	{
-		return urlencode($value);
-	}
-
-	function object_variable_modify($stuff, $variable, $opt = null)
-	{
-		$valstring = null;
-
-		$this->fix_stuff_or_class($stuff,  $variable, $class, $value);
+	$desc = getNthToken($descr[2], 1);
+	if (char_search_a($descr[0], "n")) {
+		$rvr->need = "yes";
+	} 
 
 
-		$rvr = new FormVar();
-
-		if ($value) {
-			$rvr->value = $value;
-		}
-
-		$needstr = null;
-		$descr = $this->get_classvar_description_after_overload($class,  $variable);
-
-		$desc = getNthToken($descr[2], 1);
-		if (char_search_a($descr[0], "n")) {
-			$rvr->need = "yes";
-		}
-
-
-		$estring = null;
-		if ($opt) foreach($opt as $key => $value) {
-			if ($key === 'postvar') {
-				$postvar = new FormVar();
-				$postvar->option = $value['val'][1];
-				$postvar->name = "frm_{$class}_c_{$value['var']}";
-				$postvar->type = "select";
-				$rvr->postvar = $postvar;
-			} else {
-				$rvr->$key = $value;
-			}
-		}
-
-		$rvr->name = "frm_{$class}_c_$variable";
-		$rvr->desc = $desc;
-		$rvr->type = "modify";
-		return $rvr;
-	}
-
-
-
-
-
-	function object_variable_show_select($stuff, $variable, $list)
-	{
-		$value = null;
-
-		//$this->fix_stuff_or_class($stuff, $variable,  $class, $value);
-
-		//$descr = $this->get_classvar_description_after_overload($class, $variable);
-
-		//$desc = $this->get_form_variable_name($descr[2]);
-
-		$rvr = new FormVar();
-		$rvr->name = $variable;
-		$rvr->desc = "Show";
-		$rvr->type = "select";
-
-		$rvr->option =  $this->object_variable_option(false, $list, $value, true);
-
-		return $rvr;
-
-	}
-
-
-
-	function is_special_url($stuff)
-	{
-		return is_object($stuff);
-	}
-
-	function is_special_variable($stuff)
-	{
-		return is_object($stuff);
-	}
-
-
-	function object_variable_select($stuff, $variable, $list, $assoc = false)
-	{
-		$value = null;
-
-
-		$this->fix_stuff_or_class($stuff, $variable,  $class, $value);
-
-		if (!is_object($stuff)) {
-			if ($assoc) {
-				$flist = array_keys($list);
-			} else {
-				$flist = $list;
-			}
-			$value = getFirstFromList($flist);
-		}
-
-		if ($this->is_special_variable($list)) {
-			$descr = $list->descr;
-			$list = $list->list;
+	$estring = null;
+	if ($opt) foreach($opt as $key => $value) {
+		if ($key === 'postvar') {
+			$postvar = new FormVar(); 
+			$postvar->option = $value['val'][1];
+			$postvar->name = "frm_{$class}_c_{$value['var']}";
+			$postvar->type = "select";
+			$rvr->postvar = $postvar;
 		} else {
-			$descr = $this->get_classvar_description_after_overload($class, $variable);
+			$rvr->$key = $value;
 		}
-
-		$desc = $this->get_form_variable_name($descr[2]);
-
-
-		$string = $this->do_object_variable_select($class, $variable, $desc, $list, $value, $assoc);
-		return $string;
-
 	}
 
+	$rvr->name = "frm_{$class}_c_$variable";
+	$rvr->desc = $desc;
+	$rvr->type = "modify";
+	return $rvr;
+}
 
-	function do_object_variable_select($class, $variable, $desc, $list, $value, $assoc = false)
-	{
-		$rvr = new FormVar();
-		$rvr->name =  "frm_{$class}_c_$variable" ;
-		$rvr->desc = $desc ;
-		$rvr->type = "select";
 
-		$rvr->option = $this->object_variable_option(false, $list, $value, $assoc);
 
-		return $rvr;
+
+
+function object_variable_show_select($stuff, $variable, $list)
+{
+	$value = null;
+
+	//$this->fix_stuff_or_class($stuff, $variable,  $class, $value);
+
+	//$descr = $this->get_classvar_description_after_overload($class, $variable);
+
+	//$desc = $this->get_form_variable_name($descr[2]);
+
+	$rvr = new FormVar();
+	$rvr->name = $variable;
+	$rvr->desc = "Show";
+	$rvr->type = "select";
+
+	$rvr->option =  $this->object_variable_option(false, $list, $value, true);
+
+	return $rvr;
+
+}
+
+
+
+function is_special_url($stuff)
+{
+	return is_object($stuff);
+}
+
+function is_special_variable($stuff)
+{
+	return is_object($stuff);
+}
+
+
+function object_variable_select($stuff, $variable, $list, $assoc = false)
+{
+	$value = null;
+
+
+	$this->fix_stuff_or_class($stuff, $variable,  $class, $value);
+
+	if (!is_object($stuff)) {
+		if ($assoc) {
+			$flist = array_keys($list);
+		} else {
+			$flist = $list;
+		}
+		$value = getFirstFromList($flist);
 	}
 
-
-	function object_variable_multiselect($stuff, $variable, $list)
-	{
-		$value = null;
-
-		$this->fix_stuff_or_class($stuff, $variable,  $class, $value);
-
-		// This is done so that at the time of adding, the form will be filled in.
-		//if (!is_object($stuff)) { $value = $list; }
-
+	if ($this->is_special_variable($list)) {
+		$descr = $list->descr;
+		$list = $list->list;
+	} else {
 		$descr = $this->get_classvar_description_after_overload($class, $variable);
+	}
 
-		$desc = $this->get_form_variable_name($descr[2]);
+	$desc = $this->get_form_variable_name($descr[2]);
 
-		$string = $this->do_object_variable_multiselect($class, $variable, $desc, $list, $value);
-		//dprint(htmlspecialchars($string));
-		return $string;
 
+	$string = $this->do_object_variable_select($class, $variable, $desc, $list, $value, $assoc);
+	return $string;
+
+}
+
+
+function do_object_variable_select($class, $variable, $desc, $list, $value, $assoc = false)
+{
+	$rvr = new FormVar();
+	$rvr->name =  "frm_{$class}_c_$variable" ;
+	$rvr->desc = $desc ;
+	$rvr->type = "select";
+
+	$rvr->option = $this->object_variable_option(false, $list, $value, $assoc);
+
+	return $rvr;
+}
+
+
+function object_variable_multiselect($stuff, $variable, $list)
+{
+	$value = null;
+
+	$this->fix_stuff_or_class($stuff, $variable,  $class, $value);
+
+	// This is done so that at the time of adding, the form will be filled in.
+	//if (!is_object($stuff)) { $value = $list; }
+
+	$descr = $this->get_classvar_description_after_overload($class, $variable);
+
+	$desc = $this->get_form_variable_name($descr[2]);
+
+	$string = $this->do_object_variable_multiselect($class, $variable, $desc, $list, $value);
+	//dprint(htmlspecialchars($string));
+	return $string;
+
+}
+
+
+
+function do_object_variable_multiselect($class, $variable, $desc, $list, $value)
+{
+	$ret = new FormVar();
+	$ret->name =  "frm_{$class}_c_$variable" ;
+	$ret->desc = $desc ;
+	$ret->type = "multiselect";
+
+
+	$rvr = new FormVar();
+	$rvr->name =  "frm_{$class}_a_$variable" ;
+	$rvr->option = $this->object_variable_option(true, $list);
+	$ret->variable1 = $rvr;
+
+
+	$rvr = new FormVar();
+	$rvr->name =  "frm_{$class}_b_$variable" ;
+	$rvr->option = $this->object_variable_option(true, $value);
+	$ret->variable2 = $rvr;
+
+
+	return $ret;
+}
+
+
+
+
+function object_variable_nomodify($stuff, $variable, $value = null)
+{
+
+	$this->fix_stuff_or_class($stuff, $variable,  $class, $svalue);
+	if ($value === null) {
+		$value = $svalue;
+	}
+
+	if ($this->is_special_variable($value)) {
+		$descr = $value->descr;
+		$value = $value->value;
+	} else {
+		$descr = $this->get_classvar_description_after_overload($class, $variable);
+	}
+
+	$desc = $descr[2];
+
+	if (is_array($value)) {
+		$value = implode("\n", $value);
 	}
 
 
+	$rvr = new FormVar();
+	$rvr->name =  "frm_{$class}_c_$variable" ;
+	$rvr->desc =  $desc ;
+	$rvr->type =  "nomodify" ;
+	$rvr->value =  $value ;
 
-	function do_object_variable_multiselect($class, $variable, $desc, $list, $value)
-	{
-		$ret = new FormVar();
-		$ret->name =  "frm_{$class}_c_$variable" ;
-		$ret->desc = $desc ;
-		$ret->type = "multiselect";
-
-
-		$rvr = new FormVar();
-		$rvr->name =  "frm_{$class}_a_$variable" ;
-		$rvr->option = $this->object_variable_option(true, $list);
-		$ret->variable1 = $rvr;
+	return $rvr;
 
 
-		$rvr = new FormVar();
-		$rvr->name =  "frm_{$class}_b_$variable" ;
-		$rvr->option = $this->object_variable_option(true, $value);
-		$ret->variable2 = $rvr;
+}
 
 
-		return $ret;
+
+
+function xml_variable_endblock()
+{
+	
+	$string = " </block> </start>";
+	return $string;
+}
+
+
+function object_variable_button($name)
+{
+	$name = ucfirst($name);
+	$rvr = new FormVar();
+	$rvr->type = "button";
+	$rvr->name = "frm_change";
+	$rvr->value = $name;
+	return $rvr;
+}
+
+
+function object_variable_check($stuff, $variable, $def = null)
+{
+	$value = null;
+
+	$this->fix_stuff_or_class($stuff, $variable,  $class, $value);
+
+	/*
+	if (char_search_a($class, "template")) {
+		$class = substr($class, 0, strpos($class, "template"));
+	}
+*/
+
+	//Hack Hack... Handling used separately...
+	if (csb($variable, "used_s_")) {
+		$nclass = $class;
+		$nvariable =  strfrom($variable, 'used_s_');
+		$value = $stuff->used->$nvariable;
+	} else {
+		$nvariable = $variable;
+		$nclass = $class;
 	}
 
+	if ($value === 'on') {
+		$value = 'yes';
+	}
+
+	$descr = $this->get_classvar_description_after_overload($nclass, $nvariable);
+
+	$rvr = new FormVar();
+	$rvr->name = "frm_{$class}_c_{$variable}_aaa_checkname";
+	$rvr->desc = $descr[2];
+	$rvr->type = "hidden";
+	$rvr->value = "off";
+	$ret[] = $rvr;
+
+	$rvr = new FormVar();
+	$rvr->name = "frm_{$class}_c_{$variable}_aaa_checked";
+	$rvr->desc =  $descr[2];
+	$rvr->type = "checkbox";
+	$rvr->checked =  $value;
+	$rvr->value = "on";
+	$ret[] = $rvr;
+	return $ret;
+
+}
 
 
 
-	function object_variable_nomodify($stuff, $variable, $value = null)
-	{
 
-		$this->fix_stuff_or_class($stuff, $variable,  $class, $svalue);
-		if ($value === null) {
-			$value = $svalue;
+function object_variable_hidden($key, $value)
+{
+	$string = null;
+
+	if (is_array($value)) {
+		foreach($value as $k => $v) {
+			$str = "{$key}" . "[$k]";
+			$rvr = new FormVar();
+			$rvr->name =  $str ;
+			$rvr->value =  $v ;
+			$rvr->type =  "hidden" ;
+			$ret[] = $rvr;
 		}
-
-		if ($this->is_special_variable($value)) {
-			$descr = $value->descr;
-			$value = $value->value;
-		} else {
-			$descr = $this->get_classvar_description_after_overload($class, $variable);
-		}
-
-		$desc = $descr[2];
-
-		if (is_array($value)) {
-			$value = implode("\n", $value);
-		}
-
-
+	} else {
 		$rvr = new FormVar();
-		$rvr->name =  "frm_{$class}_c_$variable" ;
-		$rvr->desc =  $desc ;
-		$rvr->type =  "nomodify" ;
+		$rvr->name =  $key ;
 		$rvr->value =  $value ;
+		$rvr->type =  "hidden" ;
+		$ret[] = $rvr;
+	}
+	return $ret;
 
-		return $rvr;
+
+}
 
 
+function object_variable_hiddenlist($hlist)
+{
+
+	foreach($hlist as $key => $val)
+		$a[] = $this->object_variable_hidden($key, $val);
+
+	return lx_array_merge($a);
+
+}
+
+
+
+function object_variable_htmltextarea($stuff, $variable, $value = null, $nonameflag = false)
+{
+
+
+	$this->fix_stuff_or_class($stuff, $variable,  $class, $nvalue);
+	$name = "frm_{$class}_c_{$variable}";
+
+	if (!$value) {
+		$value = $nvalue;
 	}
 
-
-
-
-	function xml_variable_endblock()
-	{
-
-		$string = " </block> </start>";
-		return $string;
+	if ($nonameflag) {
+		$name = null;
 	}
 
+	$descr = $this->get_classvar_description_after_overload($class, $variable);
+	$val = exec_class_method($class, "getTextAreaProperties", $variable);
 
-	function object_variable_button($name)
-	{
-		$name = ucfirst($name);
-		$rvr = new FormVar();
-		$rvr->type = "button";
-		$rvr->name = "frm_change";
-		$rvr->value = $name;
-		return $rvr;
+	/*
+	if ($value) {
+		$value = htmlspecialchars($value);
+	}
+*/
+	$rvr = new FormVar();
+	$rvr->name = $name;
+	$rvr->desc =  $descr[2] ;
+	$rvr->height = $val['height'];
+	$rvr->width = $val['width'];
+	$rvr->value = $value;
+	$rvr->type =  "htmltextarea" ;
+
+	return $rvr;
+
+}
+
+
+function object_variable_textarea($stuff, $variable, $value = null, $nonameflag = false)
+{
+
+
+	$this->fix_stuff_or_class($stuff, $variable,  $class, $nvalue);
+	$name = "frm_{$class}_c_{$variable}";
+
+	if (!$value) {
+		$value = $nvalue;
 	}
 
+	if ($nonameflag) {
+		$name = null;
+	}
 
-	function object_variable_check($stuff, $variable, $def = null)
-	{
-		$value = null;
+	$descr = $this->get_classvar_description_after_overload($class, $variable);
+	$val = exec_class_method($class, "getTextAreaProperties", $variable);
 
-		$this->fix_stuff_or_class($stuff, $variable,  $class, $value);
+	/*
+	if ($value) {
+		$value = htmlspecialchars($value);
+	}
+*/
+	$rvr = new FormVar();
+	$rvr->name = $name;
+	$rvr->desc =  $descr[2] ;
+	$rvr->height = $val['height'];
+	$rvr->width = $val['width'];
+	$rvr->value = $value;
+	$rvr->type =  "textarea" ;
 
-		/*
-		 if (char_search_a($class, "template")) {
-		 $class = substr($class, 0, strpos($class, "template"));
-		 }
-		 */
+	return $rvr;
 
-		//Hack Hack... Handling used separately...
-		if (csb($variable, "used_s_")) {
-			$nclass = $class;
-			$nvariable =  strfrom($variable, 'used_s_');
-			$value = $stuff->used->$nvariable;
+}
+
+
+function object_variable_command($type, $desc)
+{
+	$rvr = new FormVar();
+	$rvr->type =  $type ;
+	$rvr->desc =  $desc ;
+	return $rvr;
+}
+
+function object_inherit_filter()
+{
+	// Don't inherit hpfilter.
+	return null;
+}
+
+
+
+function object_inherit_accountselect()
+{
+	return $this->object_variable_inherit("frm_accountselect");
+
+}
+
+
+function object_inherit_classpath()
+{
+	$a1 = $this->object_variable_inherit("frm_o_o");
+	$a2 = $this->object_variable_inherit("frm_consumedlogin");
+	return lx_merge_good($a1, $a2);
+
+}
+
+
+
+function html_variable_inherit($var = null)
+{
+	$string = null;
+	foreach($this->__http_vars as $key => $value) {
+		if ($var) {
+			if ($var != $key) {
+				continue;
+			}
 		} else {
-			$nvariable = $variable;
-			$nclass = $class;
+			if (!char_search_a($key, "_c_")) {
+				continue;
+			}
 		}
-
-		if ($value === 'on') {
-			$value = 'yes';
-		}
-
-		$descr = $this->get_classvar_description_after_overload($nclass, $nvariable);
-
-		$rvr = new FormVar();
-		$rvr->name = "frm_{$class}_c_{$variable}_aaa_checkname";
-		$rvr->desc = $descr[2];
-		$rvr->type = "hidden";
-		$rvr->value = "off";
-		$ret[] = $rvr;
-
-		$rvr = new FormVar();
-		$rvr->name = "frm_{$class}_c_{$variable}_aaa_checked";
-		$rvr->desc =  $descr[2];
-		$rvr->type = "checkbox";
-		$rvr->checked =  $value;
-		$rvr->value = "on";
-		$ret[] = $rvr;
-		return $ret;
-
-	}
-
-
-
-
-	function object_variable_hidden($key, $value)
-	{
-		$string = null;
-
 		if (is_array($value)) {
 			foreach($value as $k => $v) {
-				$str = "{$key}" . "[$k]";
-				$rvr = new FormVar();
-				$rvr->name =  $str ;
-				$rvr->value =  $v ;
-				$rvr->type =  "hidden" ;
-				$ret[] = $rvr;
+				if (is_array($v)) {
+					foreach($v as $nk => $nv) {
+						$str = "{$key}" . "[$k][$nk]";
+						print("<input type=hidden name=$str value=$nv>");
+					}
+
+				} else {
+					$str = "{$key}" . "[$k]";
+					print("<input type=hidden name=$str value=$v>");
+				}
 			}
 		} else {
+			if (!$value) {
+				continue;
+			}
+			print("<input type=hidden name=$str value=$value>");
+
+		}
+
+	}
+	return $string;
+}
+
+function object_variable_inherit($var = null)
+{
+	$ret = null;
+
+	foreach($this->__http_vars as $key => $value) {
+		if ($var) {
+			if ($var != $key) {
+				continue;
+			}
+		} else {
+			if (!char_search_a($key, "_c_")) {
+				continue;
+			}
+		}
+		if (is_array($value)) {
+			foreach($value as $k => $v) {
+				if (is_array($v)) {
+					foreach($v as $nk => $nv) {
+						$rvr = new FormVar();
+						//$str = "{$key}[$k][$nk]";
+						$str = "{$key}" . "[$k][$nk]";
+						$rvr->name =  $str ;
+						$rvr->value =  $nv ;
+						$rvr->type =  "hidden" ;
+						$ret[] = $rvr;
+					}
+
+				} else {
+					$rvr = new FormVar();
+					$str = "{$key}" . "[$k]";
+					$rvr->name =  $str ;
+					$rvr->value =  $v ;
+					$rvr->type =  "hidden" ;
+					$ret[] = $rvr;
+				}
+			}
+		} else {
+
+			if (!$value) {
+				continue;
+			}
 			$rvr = new FormVar();
 			$rvr->name =  $key ;
 			$rvr->value =  $value ;
 			$rvr->type =  "hidden" ;
 			$ret[] = $rvr;
 		}
+
+	}
+	return $ret;
+
+}
+
+
+function object_variable_listquota($parent, $stuff, $variable, $list = null)
+{
+
+	global $gbl, $sgbl, $ghtml; 
+
+
+	$value = null;
+
+	$this->fix_stuff_or_class($stuff, $variable,  $class, $value);
+
+	/*
+	if (char_search_a($class, "template")) {
+		$class = substr($class, 0, strpos($class, "template"));
+	}
+*/
+
+	$descr = $this->get_classvar_description_after_overload($class, $variable);
+	$desc = $this->get_form_variable_name($descr[2]);
+
+	$cvar = $variable;
+
+	$listvariable = "listpriv_s_" . $variable;
+
+	if (cse($cvar, "_sing")) {
+		$realvar = strtil($cvar, "_sing");
+		$listvar = $realvar . "_list";
+		if (!$list) {
+			$list = $parent->listpriv->$listvar;
+		}
+		$string = $this->do_object_variable_select($class, $listvariable, $desc, $list, $value);
+	} else {
+		$listvar = $cvar;
+		if (!$list) {
+			$list = $parent->listpriv->$listvar;
+		}
+		$string = $this->do_object_variable_multiselect($class, $listvariable, $desc, $list, $value);
+	}
+
+
+	return $string;
+
+}
+
+
+function object_variable_quota($parent, $stuff, $variable)
+{
+
+	global $gbl, $sgbl, $ghtml; 
+
+	$parent = $parent->getClientParentO();
+
+	$value = null;
+
+	$this->fix_stuff_or_class($stuff, $variable,  $class, $value);
+
+	/*
+	if (char_search_a($class, "template")) {
+		$class = substr($class, 0, strpos($class, "template"));
+	}
+*/
+
+	$descr = $this->get_classvar_description_after_overload($class, $variable);
+
+	$cvar = $variable;
+
+	If ($value === "Unlimited") {
+		$value = null;
+	}
+
+	$check = (trim($value) !== "")? "no": "yes";
+
+
+	if (is_object($stuff)) {
+		if (isOn($value)) {
+			$chval = 'yes';
+		} else {
+			$chval = 'no';
+		}
+	} else {
+		$cl = get_name_without_template($stuff);
+		if (isOn(exec_class_method($cl, "getDefaultValue", $variable))) {
+			$chval = 'yes';
+		} else {
+			$chval = "no";
+		}
+	}
+
+	if (cse($variable, "_flag")) {
+		$rvr = new FormVar();
+		$rvr->name = "frm_{$class}_c_priv_s_{$variable}_aaa_checkname";
+		$rvr->desc =  $descr[2] ;
+		$rvr->type =  "hidden" ;
+		$rvr->value =  "off" ;
+		$ret[] = $rvr;
+
+		if ($parent->priv->isOn($variable)) {
+			$rvr = new FormVar();
+			$rvr->name = "frm_{$class}_c_priv_s_{$variable}_aaa_checked";
+			$rvr->desc =  $descr[2] ;
+			$rvr->type =  "checkbox" ;
+			$rvr->checked =  $chval ;
+			$rvr->value =  "on" ;
+			$ret[] = $rvr;
+		} else {
+			$rvr = new FormVar();
+			$rvr->name = "frm_{$class}_c_priv_s_{$variable}_aaa_checked";
+			$rvr->desc =  $descr[2] ;
+			$rvr->type =  "checkbox" ;
+			$rvr->checked =  "disabled" ;
+			$rvr->value =  "off" ;
+			$ret[] = $rvr;
+		}
 		return $ret;
-
-
 	}
 
 
-	function object_variable_hiddenlist($hlist)
-	{
-
-		foreach($hlist as $key => $val)
-		$a[] = $this->object_variable_hidden($key, $val);
-
-		return lx_array_merge($a);
-
-	}
+	if (is_unlimited($parent->priv->$cvar)) {
 
 
-
-	function object_variable_htmltextarea($stuff, $variable, $value = null, $nonameflag = false)
-	{
-
-
-		$this->fix_stuff_or_class($stuff, $variable,  $class, $nvalue);
-		$name = "frm_{$class}_c_{$variable}";
-
-		if (!$value) {
-			$value = $nvalue;
-		}
-
-		if ($nonameflag) {
-			$name = null;
-		}
-
-		$descr = $this->get_classvar_description_after_overload($class, $variable);
-		$val = exec_class_method($class, "getTextAreaProperties", $variable);
-
-		/*
-		 if ($value) {
-		 $value = htmlspecialchars($value);
-		 }
-		 */
 		$rvr = new FormVar();
-		$rvr->name = $name;
+		$rvr->name =  "frm_{$class}_c_$variable" ;
+		$rvr->type = "checkboxwithtext";
 		$rvr->desc =  $descr[2] ;
-		$rvr->height = $val['height'];
-		$rvr->width = $val['width'];
-		$rvr->value = $value;
-		$rvr->type =  "htmltextarea" ;
+		$rvr->mode =  "or" ;
 
-		return $rvr;
+		$text = new FormVar();
+		$text->name = "frm_{$class}_c_priv_s_{$variable}_aaa_quotaname";
+		$text->value = $value;
+		$rvr->text = $text;
 
-	}
+		$checkbox = new FormVar();
+		$checkbox->desc = "Unlimited";
+		$checkbox->name = "frm_{$class}_c_priv_s_{$variable}_aaa_unlimited";
+		$checkbox->checked = $check;
+		$checkbox->value = "yes";
+		$rvr->checkbox = $checkbox;
+		$ret[] = $rvr;
 
-
-	function object_variable_textarea($stuff, $variable, $value = null, $nonameflag = false)
-	{
-
-
-		$this->fix_stuff_or_class($stuff, $variable,  $class, $nvalue);
-		$name = "frm_{$class}_c_{$variable}";
-
-		if (!$value) {
-			$value = $nvalue;
-		}
-
-		if ($nonameflag) {
-			$name = null;
-		}
-
-		$descr = $this->get_classvar_description_after_overload($class, $variable);
-		$val = exec_class_method($class, "getTextAreaProperties", $variable);
-
-		/*
-		 if ($value) {
-		 $value = htmlspecialchars($value);
-		 }
-		 */
 		$rvr = new FormVar();
-		$rvr->name = $name;
+		$rvr->type = "hidden";
+		$rvr->value =  "Unlimited" ;
+		$rvr->name = "frm_{$class}_c_priv_s_{$variable}_aaa_quotamax";
+		$ret[] = $rvr;
+
+	
+	} else {
+
+		$quotaleft = $parent->getEffectivePriv($cvar, $class);
+
+		if (isHardQuotaVariableInClass($class, $cvar)) {
+			$quotaleft += $value;
+		}
+
+		$totalstring = null;
+		$totalstring = "Total: " . $parent->priv->$cvar;
+
+		if (cse($class, "template")) {
+			$totalstring = null;
+			$quotaleft = $parent->priv->$cvar;
+		}
+
+		if ($value === "") {
+			$value = $quotaleft;
+		}
+
+		$rvr = new FormVar();
+		$rvr->type = "modify";
+		$rvr->texttype = "text";
+		$rvr->value =  $value ;
 		$rvr->desc =  $descr[2] ;
-		$rvr->height = $val['height'];
-		$rvr->width = $val['width'];
-		$rvr->value = $value;
-		$rvr->type =  "textarea" ;
+		$rvr->name = "frm_{$class}_c_priv_s_{$variable}_aaa_quotaname";
+		$rvr->posttext =  "Max $quotaleft $totalstring" ;
+		$rvr->format = "integer";
+		$ret[] = $rvr;
 
-		return $rvr;
-
-	}
-
-
-	function object_variable_command($type, $desc)
-	{
 		$rvr = new FormVar();
-		$rvr->type =  $type ;
-		$rvr->desc =  $desc ;
-		return $rvr;
+		$rvr->type = "hidden";
+		$rvr->value =  $quotaleft ;
+		$rvr->name = "frm_{$class}_c_priv_s_{$variable}_aaa_quotamax";
+		$ret[] = $rvr;
+
+	}
+	return $ret;
+}
+
+
+function object_variable_startblock($obj, $class, $title, $url = null)
+{
+
+
+	if (!$url) {
+		$url = $_SERVER['PHP_SELF'];
 	}
 
-	function object_inherit_filter()
-	{
-		// Don't inherit hpfilter.
+	if (!$class) {
+		$class = get_class($obj);
+	}
+
+
+	$domdesc = get_classvar_description($class);
+
+
+
+	$server = $this->print_machine($obj);
+
+	//$formname = fix_nname_to_be_variable("$title{$obj->getId()}");
+	// Removing the object id so that it can be easily added to the dialog box. Normally, we do only action only on a single object in a single page, and even otherwise, we wont' do the same action on mutilple objects in the same page, so it shouldn't cause problem.
+	$formname = fix_nname_to_be_variable("$title{$obj->getId()}");
+
+	$header = new FormVar();
+	$header->form = $formname;
+	$header->formtype = "enctype=\"multipart/form-data\"";
+
+	if ($title) {
+		$header->title =  "$title for {$obj->getId()} $server";
+	} else {
+		$header->title =  null;
+	}
+	$header->url = $url;
+	return $header;
+
+}
+
+
+function object_variable_oldpassword($class, $var, $descr)
+{
+
+	$rvr = new FormVar();
+	$rvr->name = "frm_{$class}_c_{$var}";
+	$rvr->desc = $descr[2];
+	$rvr->texttype = "password";
+	$rvr->valid = "yes";
+	$rvr->type = "modify";
+	$rvr->need = "yes";
+	return $rvr;
+}
+
+
+
+
+function printbr($val = 2)
+{
+	for ($i = 0; $i < $val ; $i++) {
+		print("<br> ");
+	}
+}
+
+function object_variable_password($class, $var)
+{
+
+	$desc = get_classvar_description($class, $var);
+
+	$rvr = new FormVar();
+	$rvr->name = "frm_{$class}_c_{$var}";
+	$rvr->desc = $desc[2];
+	$rvr->texttype = "password";
+	$rvr->confirm_password = true;
+	$rvr->valid = "yes";
+	$rvr->type = "modify";
+	$rvr->need = "yes";
+	$ret[] = $rvr;
+
+	$rvr = new FormVar();
+	$rvr->name = "frm_confirm_password";
+	$rvr->desc = "Confirm Password";
+	$rvr->texttype = "password";
+	$rvr->type = "modify";
+	$rvr->valid = "yes";
+	$rvr->need = "yes";
+	$rvr->match = "frm_{$class}_c_{$var}";
+	$rvr->matchdesc = $desc[2];
+	$ret[] = $rvr;
+
+	return $ret;
+
+}
+
+
+function object_variable_option($multi, $list, $select = null, $assoc = null)
+{
+	$string = null;
+
+	$sel = null;
+
+	if (!$list) {
 		return null;
 	}
 
 
+	$match = false;
+	foreach((array) $list as $k => $l) {
 
-	function object_inherit_accountselect()
-	{
-		return $this->object_variable_inherit("frm_accountselect");
-
-	}
-
-
-	function object_inherit_classpath()
-	{
-		$a1 = $this->object_variable_inherit("frm_o_o");
-		$a2 = $this->object_variable_inherit("frm_consumedlogin");
-		return lx_merge_good($a1, $a2);
-
-	}
-
-
-
-	function html_variable_inherit($var = null)
-	{
-		$string = null;
-		foreach($this->__http_vars as $key => $value) {
-			if ($var) {
-				if ($var != $key) {
-					continue;
-				}
-			} else {
-				if (!char_search_a($key, "_c_")) {
-					continue;
-				}
-			}
-			if (is_array($value)) {
-				foreach($value as $k => $v) {
-					if (is_array($v)) {
-						foreach($v as $nk => $nv) {
-							$str = "{$key}" . "[$k][$nk]";
-							print("<input type=hidden name=$str value=$nv>");
-						}
-
-					} else {
-						$str = "{$key}" . "[$k]";
-						print("<input type=hidden name=$str value=$v>");
-					}
-				}
-			} else {
-				if (!$value) {
-					continue;
-				}
-				print("<input type=hidden name=$str value=$value>");
-
-			}
-
-		}
-		return $string;
-	}
-
-	function object_variable_inherit($var = null)
-	{
-		$ret = null;
-
-		foreach($this->__http_vars as $key => $value) {
-			if ($var) {
-				if ($var != $key) {
-					continue;
-				}
-			} else {
-				if (!char_search_a($key, "_c_")) {
-					continue;
-				}
-			}
-			if (is_array($value)) {
-				foreach($value as $k => $v) {
-					if (is_array($v)) {
-						foreach($v as $nk => $nv) {
-							$rvr = new FormVar();
-							//$str = "{$key}[$k][$nk]";
-							$str = "{$key}" . "[$k][$nk]";
-							$rvr->name =  $str ;
-							$rvr->value =  $nv ;
-							$rvr->type =  "hidden" ;
-							$ret[] = $rvr;
-						}
-
-					} else {
-						$rvr = new FormVar();
-						$str = "{$key}" . "[$k]";
-						$rvr->name =  $str ;
-						$rvr->value =  $v ;
-						$rvr->type =  "hidden" ;
-						$ret[] = $rvr;
-					}
-				}
-			} else {
-
-				if (!$value) {
-					continue;
-				}
-				$rvr = new FormVar();
-				$rvr->name =  $key ;
-				$rvr->value =  $value ;
-				$rvr->type =  "hidden" ;
-				$ret[] = $rvr;
-			}
-
-		}
-		return $ret;
-
-	}
-
-
-	function object_variable_listquota($parent, $stuff, $variable, $list = null)
-	{
-
-		global $gbl, $sgbl, $ghtml;
-
-
-		$value = null;
-
-		$this->fix_stuff_or_class($stuff, $variable,  $class, $value);
-
-		/*
-		 if (char_search_a($class, "template")) {
-		 $class = substr($class, 0, strpos($class, "template"));
-		 }
-		 */
-
-		$descr = $this->get_classvar_description_after_overload($class, $variable);
-		$desc = $this->get_form_variable_name($descr[2]);
-
-		$cvar = $variable;
-
-		$listvariable = "listpriv_s_" . $variable;
-
-		if (cse($cvar, "_sing")) {
-			$realvar = strtil($cvar, "_sing");
-			$listvar = $realvar . "_list";
-			if (!$list) {
-				$list = $parent->listpriv->$listvar;
-			}
-			$string = $this->do_object_variable_select($class, $listvariable, $desc, $list, $value);
+		if ($assoc) {
+			$value = $k;
 		} else {
-			$listvar = $cvar;
-			if (!$list) {
-				$list = $parent->listpriv->$listvar;
-			}
-			$string = $this->do_object_variable_multiselect($class, $listvariable, $desc, $list, $value);
+			$value = $l;
 		}
 
 
-		return $string;
-
-	}
-
-
-	function object_variable_quota($parent, $stuff, $variable)
-	{
-
-		global $gbl, $sgbl, $ghtml;
-
-		$parent = $parent->getClientParentO();
-
-		$value = null;
-
-		$this->fix_stuff_or_class($stuff, $variable,  $class, $value);
-
-		/*
-		 if (char_search_a($class, "template")) {
-		 $class = substr($class, 0, strpos($class, "template"));
-		 }
-		 */
-
-		$descr = $this->get_classvar_description_after_overload($class, $variable);
-
-		$cvar = $variable;
-
-		If ($value === "Unlimited") {
-			$value = null;
+		if ($l === '--Disabled--') {
+			$match = true;
 		}
 
-		$check = (trim($value) !== "")? "no": "yes";
 
 
-		if (is_object($stuff)) {
-			if (isOn($value)) {
-				$chval = 'yes';
-			} else {
-				$chval = 'no';
-			}
+		if ($select !== "" && "$value" === "$select") {
+			$match = true;
+			$option["__v_selected_$value"] = $l;
 		} else {
-			$cl = get_name_without_template($stuff);
-			if (isOn(exec_class_method($cl, "getDefaultValue", $variable))) {
-				$chval = 'yes';
-			} else {
-				$chval = "no";
-			}
+			$option[$value] = $l;
 		}
+	}
 
-		if (cse($variable, "_flag")) {
-			$rvr = new FormVar();
-			$rvr->name = "frm_{$class}_c_priv_s_{$variable}_aaa_checkname";
-			$rvr->desc =  $descr[2] ;
-			$rvr->type =  "hidden" ;
-			$rvr->value =  "off" ;
-			$ret[] = $rvr;
-
-			if ($parent->priv->isOn($variable)) {
-				$rvr = new FormVar();
-				$rvr->name = "frm_{$class}_c_priv_s_{$variable}_aaa_checked";
-				$rvr->desc =  $descr[2] ;
-				$rvr->type =  "checkbox" ;
-				$rvr->checked =  $chval ;
-				$rvr->value =  "on" ;
-				$ret[] = $rvr;
-			} else {
-				$rvr = new FormVar();
-				$rvr->name = "frm_{$class}_c_priv_s_{$variable}_aaa_checked";
-				$rvr->desc =  $descr[2] ;
-				$rvr->type =  "checkbox" ;
-				$rvr->checked =  "disabled" ;
-				$rvr->value =  "off" ;
-				$ret[] = $rvr;
-			}
-			return $ret;
-		}
-
-
-		if (is_unlimited($parent->priv->$cvar)) {
-
-
-			$rvr = new FormVar();
-			$rvr->name =  "frm_{$class}_c_$variable" ;
-			$rvr->type = "checkboxwithtext";
-			$rvr->desc =  $descr[2] ;
-			$rvr->mode =  "or" ;
-
-			$text = new FormVar();
-			$text->name = "frm_{$class}_c_priv_s_{$variable}_aaa_quotaname";
-			$text->value = $value;
-			$rvr->text = $text;
-
-			$checkbox = new FormVar();
-			$checkbox->desc = "Unlimited";
-			$checkbox->name = "frm_{$class}_c_priv_s_{$variable}_aaa_unlimited";
-			$checkbox->checked = $check;
-			$checkbox->value = "yes";
-			$rvr->checkbox = $checkbox;
-			$ret[] = $rvr;
-
-			$rvr = new FormVar();
-			$rvr->type = "hidden";
-			$rvr->value =  "Unlimited" ;
-			$rvr->name = "frm_{$class}_c_priv_s_{$variable}_aaa_quotamax";
-			$ret[] = $rvr;
-
-
+	// IF the select is nonnull and the the damn thing doesn't match, then there is some problem. That is the current value isn't in the list of acceptable values.
+	if (!$match && !$multi) {
+		if ($select) {
+			$sel['--Select One--'] = "--Select One ($select not in List)--";
 		} else {
-
-			$quotaleft = $parent->getEffectivePriv($cvar, $class);
-
-			if (isHardQuotaVariableInClass($class, $cvar)) {
-				$quotaleft += $value;
-			}
-
-			$totalstring = null;
-			$totalstring = "Total: " . $parent->priv->$cvar;
-
-			if (cse($class, "template")) {
-				$totalstring = null;
-				$quotaleft = $parent->priv->$cvar;
-			}
-
-			if ($value === "") {
-				$value = $quotaleft;
-			}
-
-			$rvr = new FormVar();
-			$rvr->type = "modify";
-			$rvr->texttype = "text";
-			$rvr->value =  $value ;
-			$rvr->desc =  $descr[2] ;
-			$rvr->name = "frm_{$class}_c_priv_s_{$variable}_aaa_quotaname";
-			$rvr->posttext =  "Max $quotaleft $totalstring" ;
-			$rvr->format = "integer";
-			$ret[] = $rvr;
-
-			$rvr = new FormVar();
-			$rvr->type = "hidden";
-			$rvr->value =  $quotaleft ;
-			$rvr->name = "frm_{$class}_c_priv_s_{$variable}_aaa_quotamax";
-			$ret[] = $rvr;
-
+			$sel['--Select One--'] = '--Select One--';
 		}
-		return $ret;
+	} 
+
+	if ($sel) {
+		$option = $sel + $option;
 	}
 
-
-	function object_variable_startblock($obj, $class, $title, $url = null)
-	{
-
-
-		if (!$url) {
-			$url = $_SERVER['PHP_SELF'];
-		}
-
-		if (!$class) {
-			$class = get_class($obj);
-		}
-
-
-		$domdesc = get_classvar_description($class);
-
-
-
-		$server = $this->print_machine($obj);
-
-		//$formname = fix_nname_to_be_variable("$title{$obj->getId()}");
-		// Removing the object id so that it can be easily added to the dialog box. Normally, we do only action only on a single object in a single page, and even otherwise, we wont' do the same action on mutilple objects in the same page, so it shouldn't cause problem.
-		$formname = fix_nname_to_be_variable("$title{$obj->getId()}");
-
-		$header = new FormVar();
-		$header->form = $formname;
-		$header->formtype = "enctype=\"multipart/form-data\"";
-
-		if ($title) {
-			$header->title =  "$title for {$obj->getId()} $server";
-		} else {
-			$header->title =  null;
-		}
-		$header->url = $url;
-		return $header;
-
-	}
-
-
-	function object_variable_oldpassword($class, $var, $descr)
-	{
-
-		$rvr = new FormVar();
-		$rvr->name = "frm_{$class}_c_{$var}";
-		$rvr->desc = $descr[2];
-		$rvr->texttype = "password";
-		$rvr->valid = "yes";
-		$rvr->type = "modify";
-		$rvr->need = "yes";
-		return $rvr;
-	}
-
-
-
-
-	function printbr($val = 2)
-	{
-		for ($i = 0; $i < $val ; $i++) {
-			print("<br> ");
-		}
-	}
-
-	function object_variable_password($class, $var)
-	{
-
-		$desc = get_classvar_description($class, $var);
-
-		$rvr = new FormVar();
-		$rvr->name = "frm_{$class}_c_{$var}";
-		$rvr->desc = $desc[2];
-		$rvr->texttype = "password";
-		$rvr->confirm_password = true;
-		$rvr->valid = "yes";
-		$rvr->type = "modify";
-		$rvr->need = "yes";
-		$ret[] = $rvr;
-
-		$rvr = new FormVar();
-		$rvr->name = "frm_confirm_password";
-		$rvr->desc = "Confirm Password";
-		$rvr->texttype = "password";
-		$rvr->type = "modify";
-		$rvr->valid = "yes";
-		$rvr->need = "yes";
-		$rvr->match = "frm_{$class}_c_{$var}";
-		$rvr->matchdesc = $desc[2];
-		$ret[] = $rvr;
-
-		return $ret;
-
-	}
-
-
-	function object_variable_option($multi, $list, $select = null, $assoc = null)
-	{
-		$string = null;
-
-		$sel = null;
-
-		if (!$list) {
-			return null;
-		}
-
-
-		$match = false;
-		foreach((array) $list as $k => $l) {
-
-			if ($assoc) {
-				$value = $k;
-			} else {
-				$value = $l;
-			}
-
-
-			if ($l === '--Disabled--') {
-				$match = true;
-			}
-
-
-
-			if ($select !== "" && "$value" === "$select") {
-				$match = true;
-				$option["__v_selected_$value"] = $l;
-			} else {
-				$option[$value] = $l;
-			}
-		}
-
-		// IF the select is nonnull and the the damn thing doesn't match, then there is some problem. That is the current value isn't in the list of acceptable values.
-		if (!$match && !$multi) {
-			if ($select) {
-				$sel['--Select One--'] = "--Select One ($select not in List)--";
-			} else {
-				$sel['--Select One--'] = '--Select One--';
-			}
-		}
-
-		if ($sel) {
-			$option = $sel + $option;
-		}
-
-		//dprintr($option);
-		/*
-		if (!$match && !$multi) {
+	//dprintr($option);
+	/*
+	if (!$match && !$multi) {
 		$string = "<option><desc>--Select One--</desc><value>--Select One--value</value></option>" . $string;
+	}
+*/
+
+	return $option;
+}
+
+
+function isSelectOne($var)
+{
+	return ($var === '--Select One--');
+}
+
+function print_current_input_vars($ignore)
+{
+
+	$this->print_input_vars($this->__http_vars, $ignore);
+}
+
+function print_current_input_var_unset_filter($key1, $arr)
+{
+	if (!isset($this->__http_vars['frm_hpfilter'])) {
+		return;
+	}
+	$post['frm_hpfilter'] = $this->__http_vars['frm_hpfilter'];
+	foreach($arr as $key2) {
+		if (isset($post['frm_hpfilter'][$key1][$key2])) {
+			unset($post['frm_hpfilter'][$key1][$key2]);
 		}
-		*/
-
-		return $option;
 	}
+	$this->print_input_vars($post);
+}
 
-
-	function isSelectOne($var)
-	{
-		return ($var === '--Select One--');
-	}
-
-	function print_current_input_vars($ignore)
-	{
-
-		$this->print_input_vars($this->__http_vars, $ignore);
-	}
-
-	function print_current_input_var_unset_filter($key1, $arr)
-	{
-		if (!isset($this->__http_vars['frm_hpfilter'])) {
-			return;
+function print_input_vars($post, $ignore = array())
+{
+	foreach((array) $post as $key => $value) {
+		//$key = urlencode($key);
+		if (array_search_bool($key, $ignore)) {
+			continue;
 		}
-		$post['frm_hpfilter'] = $this->__http_vars['frm_hpfilter'];
-		foreach($arr as $key2) {
-			if (isset($post['frm_hpfilter'][$key1][$key2])) {
-				unset($post['frm_hpfilter'][$key1][$key2]);
-			}
-		}
-		$this->print_input_vars($post);
-	}
 
-	function print_input_vars($post, $ignore = array())
-	{
-		foreach((array) $post as $key => $value) {
-			//$key = urlencode($key);
-			if (array_search_bool($key, $ignore)) {
-				continue;
-			}
-
-			if (is_array($value)) {
-				foreach($value as $k => $v) {
-					//$k = urlencode($k);
-					if (is_array($v)) {
-						foreach($v as $nk => $nv) {
-							//$nk = urlencode($nk);
-							//$nv = urlencode($nv);
-							print("<input type=hidden name=\"" . $key . "[" . $k . "]" . "[" . $nk . "]\" value =\"$nv\"> \n");
-						}
-
-					} else {
-						//$v = urlencode($v);
-						print("<input type=hidden name=\"" . $key . "[" . $k . "]\" value =\"$v\"> \n");
+		if (is_array($value)) {
+			foreach($value as $k => $v) {
+				//$k = urlencode($k);
+				if (is_array($v)) {
+					foreach($v as $nk => $nv) {
+						//$nk = urlencode($nk);
+						//$nv = urlencode($nv);
+						print("<input type=hidden name=\"" . $key . "[" . $k . "]" . "[" . $nk . "]\" value =\"$nv\"> \n");
 					}
-				}
-			} else {
-				//$value = urlencode($value);
-				print("<input type=hidden name=\"$key\" value =\"$value\"> \n");
+
+				} else {
+					//$v = urlencode($v);
+					print("<input type=hidden name=\"" . $key . "[" . $k . "]\" value =\"$v\"> \n");
+				} 
 			}
+		} else {
+			//$value = urlencode($value);
+			print("<input type=hidden name=\"$key\" value =\"$value\"> \n");
 		}
 	}
+}
 
-	function get_get_from_post($ignore, $list)
-	{
-		$string = "";
-		if (!$list) {
-			return $string;
-		}
-		foreach($list as $key => $value) {
-			if ($ignore && array_search_bool($key, $ignore)) {
-				continue;
-			}
-			//$key = urlencode($key);
-			if (is_array($value)) {
-				foreach($value as $k => $v) {
-					//$k = urlencode($k);
-					if (is_array($v)) {
-						foreach($v as $nk => $nv) {
-							//$nk = urlencode($nk);
-							//$nv = urlencode($nv);
-							$string .= $key ."[" . $k . "]" . "[" . $nk . "]=" . $nv . "&";
-						}
-					} else {
-						//$k = urlencode($k);
-						//$v = urlencode($v);
-						$string .= $key . "[" . $k . "]=" . $v . "&";
-					}
-				}
-			} else {
-				//$value = urlencode($value);
-				$string .= "$key=$value&";
-			}
-
-		}
-		$string = preg_replace("/&$/", "", $string);
+function get_get_from_post($ignore, $list)
+{
+	$string = "";
+	if (!$list) {
 		return $string;
 	}
-
-	function get_get_from_current_post($ignore)
-	{
-		return $this->get_get_from_post($ignore, $this->__http_vars);
-	}
-
-
-	function get_classvar_description_after_overload($class, $property)
-	{
-		global $gbl, $sgbl, $login;
-
-		lxclass::resolve_class_differences($class, $property, $dclass, $dproperty);
-
-
-
-		$classdesc =  get_classvar_description($dclass);
-		$prop_descr = get_classvar_description($dclass, $dproperty);
-		$this->fix_variable_overload($prop_descr, $classdesc[2]);
-		$prop_descr[2] = getNthToken($prop_descr[2], 1);
-		return $prop_descr;
-	}
-
-	function fix_variable_overload(&$descr, $classdesc)
-	{
-		foreach($descr as &$d) {
-			if (strstr($d, "[%v]") !== false) {
-				$d = str_replace("[%v]", $classdesc, $d);
-			}
+	foreach($list as $key => $value) {
+		if ($ignore && array_search_bool($key, $ignore)) {
+			continue;
 		}
-	}
-
-	function generateParentListUrl($nobject)
-	{
-		$object = clone $nobject;
-		$object->__parent_o = null;
-		$parent = $object->getParentO();
-
-		if (!$parent) {
-			log_log("parent_state", "object {$object->getClName()} has no parent...");
-			return null;
+		//$key = urlencode($key);
+		if (is_array($value)) {
+			foreach($value as $k => $v) {
+				//$k = urlencode($k);
+				if (is_array($v)) {
+					foreach($v as $nk => $nv) {
+						//$nk = urlencode($nk);
+						//$nv = urlencode($nv);
+						$string .= $key ."[" . $k . "]" . "[" . $nk . "]=" . $nv . "&";
+					}	
+				} else {
+					//$k = urlencode($k);
+					//$v = urlencode($v);
+					$string .= $key . "[" . $k . "]=" . $v . "&";
+				}
+			} 
+		} else {
+			//$value = urlencode($value);
+			$string .= "$key=$value&";
 		}
 
+	}
+	$string = preg_replace("/&$/", "", $string);
+	return $string;
+}
+
+function get_get_from_current_post($ignore)
+{
+	return $this->get_get_from_post($ignore, $this->__http_vars);
+}
+
+
+function get_classvar_description_after_overload($class, $property)
+{
+	global $gbl, $sgbl, $login;
+
+	lxclass::resolve_class_differences($class, $property, $dclass, $dproperty);
+
+
+
+	$classdesc =  get_classvar_description($dclass);
+	$prop_descr = get_classvar_description($dclass, $dproperty);
+	$this->fix_variable_overload($prop_descr, $classdesc[2]);
+	$prop_descr[2] = getNthToken($prop_descr[2], 1);
+	return $prop_descr;
+}
+
+function fix_variable_overload(&$descr, $classdesc)
+{
+	foreach($descr as &$d) {
+		if (strstr($d, "[%v]") !== false) {
+			$d = str_replace("[%v]", $classdesc, $d);
+		}
+	}
+}
+
+function generateParentListUrl($nobject)
+{
+	$object = clone $nobject;
+	$object->__parent_o = null;
+	$parent = $object->getParentO();
+
+	if (!$parent) {
+		log_log("parent_state", "object {$object->getClName()} has no parent...");
+		return null;
+	}
+
+	$plist[] = $parent;
+	while (is_object($parent) && !$parent->isAdmin()) {
+		$parent = $parent->getParentO();
 		$plist[] = $parent;
-		while (is_object($parent) && !$parent->isAdmin()) {
-			$parent = $parent->getParentO();
-			$plist[] = $parent;
-		}
-		$plist = array_reverse($plist);
-		$i = 0;
-		$string = null;
-		$str = null;
-		foreach($plist as $p) {
-			if (!$p || $p->isAdmin()) {
-				continue;
-			}
-			if ($p->getParentO() && $p->getParentO()->isSingleObject($p->getClass())) {
-				$string[] = "frm_o_o[$i][class]={$p->get__table()}";
-			} else {
-				$string[] = "frm_o_o[$i][class]={$p->get__table()}&frm_o_o[$i][nname]={$p->nname}";
-			}
-
-			$i++;
-		}
-		$class = strfrom($object->getClass(), "all_");
-		if ($string) {
-			$str = implode("&", $string);
-		}
-		return "?frm_action=list&frm_o_cname=$class&$str";
-
 	}
-
-	function generateEntireUrl($nobject, $top)
-	{
-		$object = clone $nobject;
-		$object->__parent_o = null;
-		$parent = $object->getParentO();
-
-		if (!$parent) {
-			log_log("parent_state", "object {$object->getClName()} has no parent...");
-			return null;
+	$plist = array_reverse($plist);
+	$i = 0;
+	$string = null;
+	$str = null;
+	foreach($plist as $p) {
+		if (!$p || $p->isAdmin()) {
+			continue;
+		}
+		if ($p->getParentO() && $p->getParentO()->isSingleObject($p->getClass())) {
+			$string[] = "frm_o_o[$i][class]={$p->get__table()}";
+		} else {
+			$string[] = "frm_o_o[$i][class]={$p->get__table()}&frm_o_o[$i][nname]={$p->nname}";
 		}
 
-		$plist[] = $parent;
-		while (!$parent->hasSameId($top)) {
-			$parent = $parent->getParentO();
-
-			if (!$parent) {
-				log_log("parent_state", "object {$object->getClName()} has no parent...");
-				return null;
-			}
-			$plist[] = $parent;
-		}
-		$plist = array_reverse($plist);
-		$i = 0;
-		foreach($plist as $p) {
-			if ($p->hasSameId($top)) {
-				continue;
-			}
-
-			if ($p->getParentO() && $p->getParentO()->isSingleObject($p->getClass())) {
-				$string[] = "frm_o_o[$i][class]={$p->get__table()}";
-			} else {
-				//dprint("{$p->getClass()} is list in {$p->getParentO()->getClName()}");
-				$string[] = "frm_o_o[$i][class]={$p->get__table()}&frm_o_o[$i][nname]={$p->nname}";
-			}
-			$i++;
-		}
-		$class = strfrom($object->getClass(), "all_");
-		$string[] = "frm_o_o[$i][class]=$class&frm_o_o[$i][nname]={$object->nname}";
-
+		$i++;
+	}
+	$class = strfrom($object->getClass(), "all_");
+	if ($string) {
 		$str = implode("&", $string);
-		return "?frm_action=show&$str";
+	}
+	return "?frm_action=list&frm_o_cname=$class&$str";
 
+}
+
+function generateEntireUrl($nobject, $top)
+{
+	$object = clone $nobject;
+	$object->__parent_o = null;
+	$parent = $object->getParentO();
+
+	if (!$parent) {
+		log_log("parent_state", "object {$object->getClName()} has no parent...");
+		return null;
 	}
 
+	$plist[] = $parent;
+	while (!$parent->hasSameId($top)) {
+		$parent = $parent->getParentO();
 
-
-	function getFullUrl($url, $p = "default")
-	{
-
-		if (is_array($url) || $this->is_special_url($url) || csb($url, "?") || csa($url, "display.php")) {
-			return $url;
+		if (!$parent) {
+			log_log("parent_state", "object {$object->getClName()} has no parent...");
+			return null;
+		}
+		$plist[] = $parent;
+	}
+	$plist = array_reverse($plist);
+	$i = 0;
+	foreach($plist as $p) {
+		if ($p->hasSameId($top)) {
+			continue;
 		}
 
-		if ($p === "default") {
-			$p = $this->frm_o_o;
+		if ($p->getParentO() && $p->getParentO()->isSingleObject($p->getClass())) {
+			$string[] = "frm_o_o[$i][class]={$p->get__table()}";
+		} else {
+			//dprint("{$p->getClass()} is list in {$p->getParentO()->getClName()}");
+			$string[] = "frm_o_o[$i][class]={$p->get__table()}&frm_o_o[$i][nname]={$p->nname}";
 		}
+		$i++;
+	}
+	$class = strfrom($object->getClass(), "all_");
+	$string[] = "frm_o_o[$i][class]=$class&frm_o_o[$i][nname]={$object->nname}";
 
-		$np = array();
+	$str = implode("&", $string);
+	return "?frm_action=show&$str";
 
-		$url = "display.php?" . $url;
-		$this->get_post_from_get($url, $path, $post);
-
-		$k = 0;
-		$k = count($p);
-		if (isset($post['goback'])) {
-			for($i = 0; $i < $post['goback']; $i++) {
-				unset($p[--$k]);
-			}
-		}
-
-		if(isset($post['j'])) {
-			$desc = get_classvar_description($post['j']['class']);
-			if (csa($desc[0], "N")) {
-				if ($p[$k - 1]['class'] === $post['j']['class'])
-				$k--;
-			}
-			$p[$k]['class'] = $post['j']['class'];
-			$p[$k]['nname'] = $post['j']['nname'];
-			$k++;
-		}
-
-		if(isset($post['n'])) {
-			$obj = $post['n'];
-			if (csa($obj, "_s_")) {
-				$l = explode("_s_", $obj);
-				foreach($l as $o) {
-					$p[$k++]['class'] = $o;
-				}
-			} else {
-				$p[$k++]['class'] = $post['n'];
-			}
-		}
-
-		// Ka has to come AFTER n. Otherwise it won't work in the getshowalist, especially for web/installsoft combo.
-		if(isset($post['k'])) {
-			$desc = get_classvar_description($post['k']['class']);
-			if (csa($desc[0], "N")) {
-				if ($p[$k - 1]['class'] === $post['k']['class'])
-				$k--;
-			}
-			$p[$k]['class'] = $post['k']['class'];
-			$p[$k]['nname'] = $post['k']['nname'];
-			$k++;
-		}
-		if(isset($post['o'])) {
-			$obj = $post['o'];
-			if (csa($obj, "_s_")) {
-				$l = explode("_s_", $obj);
-				foreach($l as $o) {
-					$p[$k++]['class'] = $o;
-				}
-			} else {
-				$p[$k++]['class'] = $post['o'];
-			}
-		}
-
-		if(isset($post['l'])) {
-			$desc = get_classvar_description($post['l']['class']);
-			if (csa($desc[0], "N")) {
-				if ($p[$k - 1]['class'] === $post['l']['class'])
-				$k--;
-			}
-			$p[$k]['class'] = $post['l']['class'];
-			$p[$k]['nname'] = $post['l']['nname'];
-		}
+}
 
 
-		$npost['frm_action'] = $post['a'];
 
-		if (isset($post['sa'])) {
-			$npost['frm_subaction'] = $post['sa'];
-		}
+function getFullUrl($url, $p = "default")
+{
 
-		if (isset($post['dta'])) {
-			$npost['frm_dttype']['var'] = $post['dta']['var'];
-			$npost['frm_dttype']['val'] = $post['dta']['val'];
-		}
-
-		foreach((array) $post as $k => $v) {
-			if (csa($k, "_c_")) {
-				$npost[$k] = $v;
-			}
-		}
-
-
-		if ($p) {
-			$npost['frm_o_o'] = $p;
-		}
-
-		if (isset($post['c'])) {
-			$npost['frm_o_cname'] = $post['c'];
-		}
-
-		if (isset($post['frm_filter'])) {
-			$npost['frm_filter'] = $post['frm_filter'];
-		}
-
-		if ($this->frm_consumedlogin) {
-			$npost['frm_consumedlogin'] = 'true';
-		}
-
-		$url = "/display.php?" . $this->get_get_from_post(null, $npost);
-
-		//print($url . '<br> ');
+	if (is_array($url) || $this->is_special_url($url) || csb($url, "?") || csa($url, "display.php")) {
 		return $url;
 	}
 
+	if ($p === "default") {
+		$p = $this->frm_o_o;
+	}
 
+	$np = array();
 
-	function printObjectElement($parent, $class, $classdesc, $obj, $name, $width, $descr, $colcount)
-	{
+	$url = "display.php?" . $url;
+	$this->get_post_from_get($url, $path, $post);
 
-		global $gbl, $sgbl, $login;
-
-
-		//list($iclass, $mclass, $rclass) = get_composite($class);
-		$rclass = $class;
-
-		list($graphtype, $graphwidth)  = exec_class_method($rclass, "getGraphType");
-
-		if ($name === 'syncserver') {
-			$serverdiscr = pserver::createServerInfo(array($obj->syncserver), $class);
+	$k = 0;
+	$k = count($p);
+	if (isset($post['goback'])) {
+		for($i = 0; $i < $post['goback']; $i++) {
+			unset($p[--$k]);
 		}
+	}
 
-		$__external = 0;
-		$iconpath = get_image_path() . "/button/";
-		if (isset($descr[$name]) && (csa($descr[$name][0], 'q') || csa($descr[$name][0], "D"))) {
-			// For hard quota you need priv. For soft quota, you use used.
-			if (csa($descr[$name][0], 'h')) {
-				$pname = $obj->priv->display($name);
-			} else {
-				$pname = $obj->used->display($name);
-			}
-		} else if (isset($descr[$name]) && csa($descr[$name][0], 'p')){
-			if (cse($name, "_per_f")) {
-				$qrname = strtil($name, "_per_f");
-				$pname = array($obj->priv->$qrname, $obj->used->$qrname, null);
-			} else {
-				$pname = $obj->perDisplay($name);
+	if(isset($post['j'])) {
+		$desc = get_classvar_description($post['j']['class']);
+		if (csa($desc[0], "N")) {
+			if ($p[$k - 1]['class'] === $post['j']['class'])
+				$k--;
+        }
+		$p[$k]['class'] = $post['j']['class'];
+		$p[$k]['nname'] = $post['j']['nname'];
+        $k++;
+	}
+
+	if(isset($post['n'])) {
+		$obj = $post['n'];
+		if (csa($obj, "_s_")) {
+			$l = explode("_s_", $obj);
+			foreach($l as $o) {
+				$p[$k++]['class'] = $o;
 			}
 		} else {
-			$pname = $obj->display($name);
-			$pname = Htmllib::fix_lt_gt($pname);
-			if (csa($pname, "_lximg:")) {
-				$pname = preg_replace("/_lximg:([^:]*):([^:]*):([^:]*):/", "<img src=$1 width=$2 height=$3>", $pname);
-			}
-			if (csa($pname, "_lxspan:")) {
-				$pname = preg_replace("/_lxspan:([^:]*):([^:]*):/", "<span title='$2'>$1 </span> ", $pname);
-			}
-			if (csa($pname, "_lxurl:")) {
-				$pname = preg_replace("/_lxurl:([^:]*):([^:]*):/", "<a class=insidelist target=_blank href=http://$1> $2 </a>", $pname);
-			}
-			if (csa($pname, "_lxinurl:")) {
-				$url = preg_replace("/_lxinurl:([^:]*):([^:]*):/", "$1", $pname);
-				$url = $this->getFullUrl($url);
-				$url = "\"$url\"";
-				$pname = preg_replace("/_lxinurl:([^:]*):([^:]*):/", "<a class=insidelist href=$url> $2 </a>", $pname);
-			}
-			if ($name === 'syncserver') {
-				$pname = "<span title='$serverdiscr'>  $pname </span> ";
-			}
+			$p[$k++]['class'] = $post['n'];
 		}
+	}
 
-		$wrapstr = ($width === "100%")? "wrap" : "nowrap";
-
-		$target = NULL;
-		$purl = NULL;
-
-		$url = null;
-
-		$__full_url = false;
-		if ($name === 'parent_name_f' && csb($class, "all_")) {
-			$url = $this->generateParentListUrl($obj);
-			$ac_descr = $this->getActionDetails($url, $purl, $iconpath, $path, $post, $_t_file, $_t_name, $_t_image, $__t_identity);
-			$__full_url = true;
-			$__full_url_t_identity = $__t_identity;
+	// Ka has to come AFTER n. Otherwise it won't work in the getshowalist, especially for web/installsoft combo.
+	if(isset($post['k'])) {
+		$desc = get_classvar_description($post['k']['class']);
+		if (csa($desc[0], "N")) {
+			if ($p[$k - 1]['class'] === $post['k']['class'])
+				$k--;
 		}
-
-		if (isset($descr[$name][3]) || csa($name, "abutton_")) {
-			if (csa($name, "abutton_")) {
-				$urlname = $obj->nname;
-				$str = strfrom($name, "abutton_");
-				$_tv = explode("_s_", $str);
-				if ($_tv[0] === 'list') {
-					$url = "a=list&c={$_tv[1]}";
-				} else if ($_tv[0] === 'show') {
-					$url = "a=show&o={$_tv[1]}";
-				} else {
-					$url = "a=$_tv[0]&sa={$_tv[1]}";
-				}
-				$url = "&k[class]=$class&k[nname]=$urlname&$url";
-
-			} else if ($this->is_special_url($descr[$name][3])) {
-				$url = $descr[$name][3];
-			} else if (csb($descr[$name][3], "__stub")) {
-				$url = $obj->getStubUrl($descr[$name][3]);
-			} else if (csb($class, "all_")) {
-				$url = $this->generateEntireUrl($obj, $login);
-				if (!$url) {
-					/// That means that the object is dangling and has no parent.
-					throw new lxException("object_found_without_proper_parent");
-				}
-			} else {
-				$urlname = $obj->nname;
-				$url = $descr[$name][3] . "&k[class]=$class&k[nname]=$urlname";
+		$p[$k]['class'] = $post['k']['class'];
+		$p[$k]['nname'] = $post['k']['nname'];
+		$k++;
+	}
+	if(isset($post['o'])) {
+		$obj = $post['o'];
+		if (csa($obj, "_s_")) {
+			$l = explode("_s_", $obj);
+			foreach($l as $o) {
+				$p[$k++]['class'] = $o;
 			}
-			if ($this->is_special_url($url)) {
-				$purl = $url->purl;
-				$target = $url->target;
-				$url = $url->url;
-				$purl = $this->getFullUrl($purl);
-				$url = str_replace("[%s]", $obj->nname, $url);
-
-				if (strpos($url, "http:/") !== false) {
-					$__external = 1;
-				}
-			} else {
-				$url = $this->getFullUrl($url);
-			}
-			$ac_descr = $this->getActionDetails($url, $purl, $iconpath, $path, $post, $_t_file, $_t_name, $_t_image, $__t_identity);
-
+		} else {
+			$p[$k++]['class'] = $post['o'];
 		}
+	}
 
-
-
-		$align = "left";
-		$valign  = "middle" ;
-		$image = 0;
-		if (csa($descr[$name][0], "e")) {
-			$pname = strtolower($pname);
-			$property = "{$name}_v_$pname";
-			$prop_descr = get_classvar_description($rclass, $property);
-
-
-			if (!$prop_descr) {
-				dprint("Property Description for $rclass $property not Found <br> \n");
-			}
-			$this->fix_variable_overload($prop_descr, $classdesc[2]);
-			$image = $this->get_image($iconpath ,  $class,  $property,  ".gif");
-			$help = $this->get_full_help($prop_descr['help'], $obj->getId());
-			$alt = lx_strip_tags($help);
-			$help = $this->get_action_or_display_help($help, "notice");
-
-			$align = "center onmouseover=\"changeContent('help',' $help')\" onmouseout=\"changeContent('help','helparea')\"";
-
-			if (!$sgbl->isBlackBackground()) {
-				$pname = " <span title='$alt'><img src=$image width=16 height=16 >" ;
-			}
-			$this->save_non_existant_image($image);
-			$image = 1;
+	if(isset($post['l'])) {
+		$desc = get_classvar_description($post['l']['class']);
+		if (csa($desc[0], "N")) {
+			if ($p[$k - 1]['class'] === $post['l']['class'])
+				$k--;
 		}
+		$p[$k]['class'] = $post['l']['class'];
+		$p[$k]['nname'] = $post['l']['nname'];
+	}
 
-		if (!$obj->isAction($name) && char_search_a($descr[$name][0], "b")) {
-			$pname = "";
+
+	$npost['frm_action'] = $post['a'];
+
+	if (isset($post['sa'])) {
+		$npost['frm_subaction'] = $post['sa'];
+	}
+
+	if (isset($post['dta'])) {
+		$npost['frm_dttype']['var'] = $post['dta']['var'];
+		$npost['frm_dttype']['val'] = $post['dta']['val'];
+	}
+
+	foreach((array) $post as $k => $v) {
+		if (csa($k, "_c_")) {
+			$npost[$k] = $v;
 		}
+	}
 
 
-		$bgcolorstring = null; $forecolorstring = null; if ($sgbl->isBlackBackground()) { $bgcolorstring = "bgcolor=#000"; $forecolorstring = "color=#999999"; }
+	if ($p) {
+		$npost['frm_o_o'] = $p;
+	}
 
-		if ($url && $obj->isAction($name)) {
+	if (isset($post['c'])) {
+		$npost['frm_o_cname'] = $post['c'];
+	}
 
-			$urlhelp = "";
-			if (!$image) {
-				$this->fix_variable_overload($ac_descr, $classdesc[2]);
-				// When it is showing the parent name, it is showing the resource under that parent, nad not under this object.
-				if ($__full_url) {
-					$help = $this->get_full_help($ac_descr[2], $__full_url_t_identity);
-				} else {
-					$help = $this->get_full_help($ac_descr[2], $obj->getId());
-				}
-				$alt = lx_strip_tags($help);
-				$help = $this->get_action_or_display_help($help, "action");
-				$urlhelp = "onmouseover=\"changeContent('help',' $help')\" onmouseout=\"changeContent('help','helparea')\"";
-				if (strstr($descr[$name][0], "b") != NULL || csb($name, "abutton")) {
-					if ($obj->isButton($name)) {
-						if ($sgbl->isBlackBackground()) {
-							$pname = "b";
-						} else {
-							$pname = " <span title='$alt'><img src='$_t_image'  height=15 width=15>";
-						}
+	if (isset($post['frm_filter'])) {
+		$npost['frm_filter'] = $post['frm_filter'];
+	}
 
-						$align = "center";
-					} else {
-						$pname = "";
-					}
-				}
-			}
-			print("<td $bgcolorstring class=collist $wrapstr align=$align > <span title='$alt'>");
+	if ($this->frm_consumedlogin) {
+		$npost['frm_consumedlogin'] = 'true';
+	}
 
-			$method = ($__external)? "get" : $sgbl->method;
+	$url = "/display.php?" . $this->get_get_from_post(null, $npost);
 
-			?>
-
-<form name=form <?=$colcount ?> method=<?=$method?> action=<?=$path ?>
-<?=$target ?>><?php
-if ($this->frm_action  === 'selectshow') {
-	$post['frm_action'] = 'selectshow';
-	$post['frm_selectshowbase'] = $this->frm_selectshowbase;
+	//print($url . '<br> ');
+	return $url;
 }
-$this->print_input_vars($post);
-?></form>
 
-<a class=insidelist
-	href="javascript:document.form<?=$colcount ?>.submit()" <?=$urlhelp ?>>
-<?=$pname ?> </a> </span>
-</td>
-<?php
 
-		} else if (char_search_a($descr[$name][0], "p")) {
-			print("<td $bgcolorstring class=collist $wrapstr align=$align > ");
-			$arr = $pname;
-			$this->show_graph($arr[0], $arr[1], null, $graphwidth, $arr[2], $graphtype, $obj->getId(), $name) ;
-			print("</td>  ");
+
+function printObjectElement($parent, $class, $classdesc, $obj, $name, $width, $descr, $colcount)
+{
+
+	global $gbl, $sgbl, $login;
+
+
+	//list($iclass, $mclass, $rclass) = get_composite($class);
+	$rclass = $class;
+
+	list($graphtype, $graphwidth)  = exec_class_method($rclass, "getGraphType");
+
+	if ($name === 'syncserver') {
+		$serverdiscr = pserver::createServerInfo(array($obj->syncserver), $class);
+	}
+
+	$__external = 0;
+	$iconpath = get_image_path() . "/button/";
+	if (isset($descr[$name]) && (csa($descr[$name][0], 'q') || csa($descr[$name][0], "D"))) {
+		// For hard quota you need priv. For soft quota, you use used.
+		if (csa($descr[$name][0], 'h')) {
+			$pname = $obj->priv->display($name);
 		} else {
+			$pname = $obj->used->display($name);
+		}
+	} else if (isset($descr[$name]) && csa($descr[$name][0], 'p')){
+		if (cse($name, "_per_f")) {
+			$qrname = strtil($name, "_per_f");
+			$pname = array($obj->priv->$qrname, $obj->used->$qrname, null);
+		} else {
+			$pname = $obj->perDisplay($name);
+		}
+	} else {
+		$pname = $obj->display($name);
+		$pname = Htmllib::fix_lt_gt($pname);
+		if (csa($pname, "_lximg:")) {
+			$pname = preg_replace("/_lximg:([^:]*):([^:]*):([^:]*):/", "<img src=$1 width=$2 height=$3>", $pname);
+		}
+		if (csa($pname, "_lxspan:")) {
+			$pname = preg_replace("/_lxspan:([^:]*):([^:]*):/", "<span title='$2'>$1 </span> ", $pname);
+		}
+		if (csa($pname, "_lxurl:")) {
+			$pname = preg_replace("/_lxurl:([^:]*):([^:]*):/", "<a class=insidelist target=_blank href=http://$1> $2 </a>", $pname);
+		}
+		if (csa($pname, "_lxinurl:")) {
+			$url = preg_replace("/_lxinurl:([^:]*):([^:]*):/", "$1", $pname);
+			$url = $this->getFullUrl($url);
+			$url = "\"$url\"";
+			$pname = preg_replace("/_lxinurl:([^:]*):([^:]*):/", "<a class=insidelist href=$url> $2 </a>", $pname);
+		}
+		if ($name === 'syncserver') {
+			$pname = "<span title='$serverdiscr'>  $pname </span> ";
+		}
+	}
 
-			if (csa($descr[$name][0], "W")) {
-				$pname = str_replace("\n", "<br>\n", $pname);
-				$pname = str_replace("[code]", "<div style='padding: 10 10 10 10; margin: 10 10 10 10; border: 1px solid #43a1a1'>", $pname);
-				$pname = str_replace("[quote]", "<div style='background:#eee; padding: 10 10 10 10; margin: 10 10 10 10; border: 1px solid #aaa'> [b] QUOTE [/b]", $pname);
-				$pname = str_replace("[b]", "<font style='font-weight:bold'>", $pname);
-				$pname = str_replace("[/b]", "</font>", $pname);
-				$pname = str_replace("[/code]", "</div>", $pname);
-				$pname = str_replace("[/quote]", "</div>", $pname);
-				$pname = "<table width=100% style='background:white;padding:20 20 20 20; margin: 8 8 8 8 ;border: 1px solid grey;' cellpadding=0 cellspacing=0> <tr> <td  > $pname </td> </tr> </table>  ";
+	$wrapstr = ($width === "100%")? "wrap" : "nowrap";
+
+	$target = NULL;
+	$purl = NULL;
+
+	$url = null;
+
+	$__full_url = false;
+	if ($name === 'parent_name_f' && csb($class, "all_")) {
+		$url = $this->generateParentListUrl($obj);
+		$ac_descr = $this->getActionDetails($url, $purl, $iconpath, $path, $post, $_t_file, $_t_name, $_t_image, $__t_identity);
+		$__full_url = true;
+		$__full_url_t_identity = $__t_identity;
+	}
+
+	if (isset($descr[$name][3]) || csa($name, "abutton_")) {
+		if (csa($name, "abutton_")) {
+			$urlname = $obj->nname;
+			$str = strfrom($name, "abutton_");
+			$_tv = explode("_s_", $str);
+			if ($_tv[0] === 'list') {
+				$url = "a=list&c={$_tv[1]}";
+			} else if ($_tv[0] === 'show') {
+				$url = "a=show&o={$_tv[1]}";
+			} else {
+				$url = "a=$_tv[0]&sa={$_tv[1]}";
 			}
-			print("<td $bgcolorstring class=collist $wrapstr align=$align >  $pname   </td>  ");
-			//print("<td class=collist $wrapstr align=$align onClick=\"javascript:getElementById('input$oname$name').type='text'; getElementById('font$oname$name').style.display='none'\"> <input \"style=width:60\" id=input$oname$name type=hidden name=hello value=$pname> <font id=font$oname$name> $pname </font>  </td>  ");
-		}
-	}
+			$url = "&k[class]=$class&k[nname]=$urlname&$url";
 
-	function print_input($type, $name, $value, $extra = null)
-	{
-		print("<input type=$type name=$name value=\"$value\" $extra>");
-	}
-
-	function print_next_previous_link($object, $class, $place, $iconpath, $name, $page_value)
-	{
-		global $gbl, $sgbl, $login, $ghtml;
-
-		$filtername = $object->getFilterVariableForThis($class);
-		print("<form name=form{$name}_page_$place method=$sgbl->method  action={$_SERVER["PHP_SELF"]}>");
-		$this->print_current_input_var_unset_filter($filtername, array('pagenum'));
-		$this->print_current_input_vars(array('frm_hpfilter'));
-		$this->print_input("hidden", "frm_hpfilter[$filtername][pagenum]", $page_value);
-		print("</form>");
-		$help = "<font class=bold> Action: </font> <br> <br> ";
-		if ($name === "forward" || $name === "rewind") {
-			$help .= ucfirst($name) . "  a few Pages.";
+		} else if ($this->is_special_url($descr[$name][3])) {
+			$url = $descr[$name][3];
+		} else if (csb($descr[$name][3], "__stub")) {
+			$url = $obj->getStubUrl($descr[$name][3]);
+		} else if (csb($class, "all_")) {
+			$url = $this->generateEntireUrl($obj, $login);
+			if (!$url) {
+				/// That means that the object is dangling and has no parent.
+				throw new lxException("object_found_without_proper_parent");
+			}
 		} else {
-			$help .= "Go To " . ucfirst($name) . " Page.";
+			$urlname = $obj->nname;
+			$url = $descr[$name][3] . "&k[class]=$class&k[nname]=$urlname";
 		}
+		if ($this->is_special_url($url)) {
+			$purl = $url->purl;
+			$target = $url->target;
+			$url = $url->url;
+			$purl = $this->getFullUrl($purl);
+			$url = str_replace("[%s]", $obj->nname, $url);
 
-		$link = "<a  onmouseover=\"javascript:changeContent('help','$help')\" onmouseout=\"changeContent('help','helparea')\" href=javascript:document.form{$name}_page_$place.submit()><img src=$iconpath/{$name}_page.gif align=absbottom ></a> ";
-		return $link;
+			if (strpos($url, "http:/") !== false) {
+				$__external = 1;
+			}
+		} else {
+			$url = $this->getFullUrl($url);
+		}
+		$ac_descr = $this->getActionDetails($url, $purl, $iconpath, $path, $post, $_t_file, $_t_name, $_t_image, $__t_identity);
+
 	}
 
-	function print_next_previous($object, $class, $place,$cgi_pagenum, $total_num, $pagesize)
-	{
-		global $gbl, $sgbl, $login, $ghtml;
-
-		$iconpath = get_general_image_path() . "/icon";
-
-		$search_brack_o = "<b> ";
-		$search_brack_c = " </b> ";
 
 
-		$prev_link = NULL;
-		$first_link = NULL;
-		$rewind_link = NULL;
-
-		print("<table width=10 > <tr> <td bgcolor=#ffffff nowrap>");
-		$first_link = $this->print_next_previous_link($object, $class, $place, $iconpath, "first", 1);
-
-		$rewind_link = $this->print_next_previous_link($object, $class, $place, $iconpath, "rewind", ($cgi_pagenum + $cgi_pagenum %2)/2);
-		$prev_link = $this->print_next_previous_link($object, $class, $place, $iconpath, "prev", max(1, ($cgi_pagenum  - 1)));
+	$align = "left";
+	$valign  = "middle" ;
+	$image = 0;
+	if (csa($descr[$name][0], "e")) {
+		$pname = strtolower($pname);
+		$property = "{$name}_v_$pname";
+		$prop_descr = get_classvar_description($rclass, $property);
 
 
-		$next_link = NULL;
-		$forward_link = NULL;
-		$last_link = NULL;
-		if ($total_num > $pagesize) {
-
-			$page = $total_num/$pagesize;
-			$page = explode('.', $page);
-			$page = (isset($page[1]))? $page[0] + 1 : $page[0];
-
-			$left = $page - $cgi_pagenum;
-			$next_link = $this->print_next_previous_link($object, $class, $place, $iconpath, "next", min(($cgi_pagenum + 1), $page));
-			$forward_link = $this->print_next_previous_link($object, $class, $place, $iconpath, "forward", min($cgi_pagenum + ($left + ($left %2))/2, $page));
-			$last_link = $this->print_next_previous_link($object, $class, $place, $iconpath, "last", $page);
-
-			print(" $first_link &nbsp; $rewind_link &nbsp; $prev_link <b> <font class=pagetext>&nbsp;Page $cgi_pagenum (of $page) </b> </font> $next_link $forward_link $last_link");
-			$search_brack_o = "  &nbsp;  (";
-			$search_brack_c = ") ";
+		if (!$prop_descr) {
+			dprint("Property Description for $rclass $property not Found <br> \n");
 		}
-		/*
-		 if ($this->iset("frm_searchstring") && $place != 'bottom') {
+		$this->fix_variable_overload($prop_descr, $classdesc[2]);
+		$image = $this->get_image($iconpath ,  $class,  $property,  ".gif");
+		$help = $this->get_full_help($prop_descr['help'], $obj->getId());
+		$alt = lx_strip_tags($help);
+		$help = $this->get_action_or_display_help($help, "notice");
+
+		$align = "center onmouseover=\"changeContent('help',' $help')\" onmouseout=\"changeContent('help','helparea')\"";
+
+		if (!$sgbl->isBlackBackground()) {
+			$pname = " <span title='$alt'><img src=$image width=16 height=16 >" ;
+		}
+		$this->save_non_existant_image($image);
+		$image = 1;
+	}
+
+	if (!$obj->isAction($name) && char_search_a($descr[$name][0], "b")) {
+		$pname = "";
+	}
+
+
+	$bgcolorstring = null; $forecolorstring = null; if ($sgbl->isBlackBackground()) { $bgcolorstring = "bgcolor=#000"; $forecolorstring = "color=#999999"; }
+
+	if ($url && $obj->isAction($name)) { 
+
+		$urlhelp = "";
+		if (!$image) {
+			$this->fix_variable_overload($ac_descr, $classdesc[2]);
+			// When it is showing the parent name, it is showing the resource under that parent, nad not under this object.
+			if ($__full_url) {
+				$help = $this->get_full_help($ac_descr[2], $__full_url_t_identity);
+			} else {
+				$help = $this->get_full_help($ac_descr[2], $obj->getId());
+			}
+			$alt = lx_strip_tags($help);
+			$help = $this->get_action_or_display_help($help, "action");
+			$urlhelp = "onmouseover=\"changeContent('help',' $help')\" onmouseout=\"changeContent('help','helparea')\"";
+			if (strstr($descr[$name][0], "b") != NULL || csb($name, "abutton")) {
+				if ($obj->isButton($name)) {
+					if ($sgbl->isBlackBackground()) {
+						$pname = "b";
+					} else {
+						$pname = " <span title='$alt'><img src='$_t_image'  height=15 width=15>";
+					}
+
+					$align = "center";
+				} else {
+					$pname = "";
+				}
+			}
+		}
+		print("<td $bgcolorstring class=collist $wrapstr align=$align > <span title='$alt'>"); 
+
+		$method = ($__external)? "get" : $sgbl->method;
+
+		?> 
+
+			<form name=form<?=$colcount ?>  method=<?=$method?> action=<?=$path ?> <?=$target ?> >
+
+
+			<?php 
+		if ($this->frm_action  === 'selectshow') {
+			$post['frm_action'] = 'selectshow';
+			$post['frm_selectshowbase'] = $this->frm_selectshowbase;
+		}
+		$this->print_input_vars($post);
+		?> 
+			</form> 
+
+		<a class=insidelist href="javascript:document.form<?=$colcount ?>.submit()" <?=$urlhelp ?> > <?=$pname ?>   </a>  </span> </td>
+		<?php 
+
+	} else if (char_search_a($descr[$name][0], "p")) {
+		print("<td $bgcolorstring class=collist $wrapstr align=$align > "); 
+		$arr = $pname;
+		$this->show_graph($arr[0], $arr[1], null, $graphwidth, $arr[2], $graphtype, $obj->getId(), $name) ;
+		print("</td>  ");
+	} else {
+
+		if (csa($descr[$name][0], "W")) {
+			$pname = str_replace("\n", "<br>\n", $pname);
+			$pname = str_replace("[code]", "<div style='padding: 10 10 10 10; margin: 10 10 10 10; border: 1px solid #43a1a1'>", $pname);
+			$pname = str_replace("[quote]", "<div style='background:#eee; padding: 10 10 10 10; margin: 10 10 10 10; border: 1px solid #aaa'> [b] QUOTE [/b]", $pname);
+			$pname = str_replace("[b]", "<font style='font-weight:bold'>", $pname);
+			$pname = str_replace("[/b]", "</font>", $pname);
+			$pname = str_replace("[/code]", "</div>", $pname);
+			$pname = str_replace("[/quote]", "</div>", $pname);
+			$pname = "<table width=100% style='background:white;padding:20 20 20 20; margin: 8 8 8 8 ;border: 1px solid grey;' cellpadding=0 cellspacing=0> <tr> <td  > $pname </td> </tr> </table>  ";
+		}
+		print("<td $bgcolorstring class=collist $wrapstr align=$align >  $pname   </td>  ");
+		//print("<td class=collist $wrapstr align=$align onClick=\"javascript:getElementById('input$oname$name').type='text'; getElementById('font$oname$name').style.display='none'\"> <input \"style=width:60\" id=input$oname$name type=hidden name=hello value=$pname> <font id=font$oname$name> $pname </font>  </td>  ");
+	}
+}
+
+function print_input($type, $name, $value, $extra = null)
+{
+	print("<input type=$type name=$name value=\"$value\" $extra>");
+}
+
+function print_next_previous_link($object, $class, $place, $iconpath, $name, $page_value)
+{
+	global $gbl, $sgbl, $login, $ghtml; 
+
+	$filtername = $object->getFilterVariableForThis($class);
+	print("<form name=form{$name}_page_$place method=$sgbl->method  action={$_SERVER["PHP_SELF"]}>");
+	$this->print_current_input_var_unset_filter($filtername, array('pagenum'));
+	$this->print_current_input_vars(array('frm_hpfilter'));
+	$this->print_input("hidden", "frm_hpfilter[$filtername][pagenum]", $page_value);
+	print("</form>");
+	$help = "<font class=bold> Action: </font> <br> <br> ";
+	if ($name === "forward" || $name === "rewind") {
+		$help .= ucfirst($name) . "  a few Pages.";
+	} else {
+		$help .= "Go To " . ucfirst($name) . " Page.";
+	}
+
+	$link = "<a  onmouseover=\"javascript:changeContent('help','$help')\" onmouseout=\"changeContent('help','helparea')\" href=javascript:document.form{$name}_page_$place.submit()><img src=$iconpath/{$name}_page.gif align=absbottom ></a> ";
+	return $link;
+}
+
+function print_next_previous($object, $class, $place,$cgi_pagenum, $total_num, $pagesize)
+{
+	global $gbl, $sgbl, $login, $ghtml; 
+
+	$iconpath = get_general_image_path() . "/icon";
+
+	$search_brack_o = "<b> ";
+	$search_brack_c = " </b> ";
+
+
+	$prev_link = NULL;
+	$first_link = NULL;
+	$rewind_link = NULL;
+
+	print("<table width=10 > <tr> <td bgcolor=#ffffff nowrap>");
+	$first_link = $this->print_next_previous_link($object, $class, $place, $iconpath, "first", 1);
+
+	$rewind_link = $this->print_next_previous_link($object, $class, $place, $iconpath, "rewind", ($cgi_pagenum + $cgi_pagenum %2)/2);
+	$prev_link = $this->print_next_previous_link($object, $class, $place, $iconpath, "prev", max(1, ($cgi_pagenum  - 1)));
+
+
+	$next_link = NULL;
+	$forward_link = NULL;
+	$last_link = NULL;
+	if ($total_num > $pagesize) {
+
+		$page = $total_num/$pagesize;
+		$page = explode('.', $page);
+		$page = (isset($page[1]))? $page[0] + 1 : $page[0];
+
+		$left = $page - $cgi_pagenum;
+		$next_link = $this->print_next_previous_link($object, $class, $place, $iconpath, "next", min(($cgi_pagenum + 1), $page));
+		$forward_link = $this->print_next_previous_link($object, $class, $place, $iconpath, "forward", min($cgi_pagenum + ($left + ($left %2))/2, $page));
+		$last_link = $this->print_next_previous_link($object, $class, $place, $iconpath, "last", $page);
+
+		print(" $first_link &nbsp; $rewind_link &nbsp; $prev_link <b> <font class=pagetext>&nbsp;Page $cgi_pagenum (of $page) </b> </font> $next_link $forward_link $last_link");
+		$search_brack_o = "  &nbsp;  (";
+		$search_brack_c = ") ";
+	}
+	/*
+	if ($this->iset("frm_searchstring") && $place != 'bottom') {
 			print("$search_brack_o<font class=searchtext >Searched for '<i>" . $this->frm_searchstring ."'</i></font>$search_brack_c");
 
-			}
-			*/
-
-		print("</td> </tr> </table> ");
-	}
-
-
-	function print_machine($object)
-	{
-
-		if (!$object->isClass('client') && !$object->isLocalhost() && $object->syncserver != $object->nname) {
-			return "(on $object->syncserver)";
 		}
-		return "";
+*/
+
+	print("</td> </tr> </table> ");
+}
+
+
+function print_machine($object)
+{
+
+	if (!$object->isClass('client') && !$object->isLocalhost() && $object->syncserver != $object->nname) {
+		return "(on $object->syncserver)";
 	}
+	return "";
+}
 
 
 
-	function printSearchTable($name_list, $parent, $class)
-	{
-		global $gbl, $sgbl, $login, $ghtml;
-		$this->print_real_search($name_list, $parent, $class);
+function printSearchTable($name_list, $parent, $class)
+{
+	global $gbl, $sgbl, $login, $ghtml; 
+	$this->print_real_search($name_list, $parent, $class); 
 
+}
+
+
+
+
+function get_class_description($class, $display = null)
+{
+	$classdesc =  get_classvar_description($class);
+
+	if (!$classdesc) {
+		print("Cannot access $class::\$__desc");
+		exit(0);
 	}
+	return $classdesc;
+}
 
+function display_count(&$obj_list, $disp) 
+{
+	global $gbl, $sgbl, $login, $ghtml; 
+	$n = 0;
 
-
-
-	function get_class_description($class, $display = null)
-	{
-		$classdesc =  get_classvar_description($class);
-
-		if (!$classdesc) {
-			print("Cannot access $class::\$__desc");
-			exit(0);
-		}
-		return $classdesc;
-	}
-
-	function display_count(&$obj_list, $disp)
-	{
-		global $gbl, $sgbl, $login, $ghtml;
-		$n = 0;
-
-		if (!$obj_list)
+	if (!$obj_list)
 		return $n;
 
-		$filter = $this->frm_filter;
+	$filter = $this->frm_filter;
 
-		if (!$filter && !$ghtml->frm_searchstring) {
-			return count($obj_list);
-		}
-
-		foreach($obj_list as $o) {
-			if (if_search_continue($o) || !$o->isDisplay($filter)) {
-				$obj_list[$o->nname] = null;
-				unset($obj_list[$o->nname]);
-				continue;
-			}
-			$n++;
-		}
-
-		return $n;
+	if (!$filter && !$ghtml->frm_searchstring) {
+		return count($obj_list);
 	}
 
-
-	function print_crappy_header()
-	{
-		if (0 && !$sellist && $class !== 'permission' && $class !== 'resource' && $class !== 'information') {
-			?>
-
-<table cellpadding=0 width=100% cellspacing=0 border=0 height=27>
-
-	<tr width=20% nowrap valign=top>
-		<td><img src="<?=$imgheadleft; ?>"></td>
-		<td nowrap valign=middle background="<?=$imgheadbg; ?>"><b><font
-			color="#234355" style="font-weight: bold"><?=get_plural($classdesc[2])?>
-			<?=$showvar ?> <?=$login->getKeyword('under')?> <?="{$parent->getId()} $filterundermes" ?></b>
-			<?=$this->print_machine($parent) ?> <b> (<?=$total_num ?>)</b></font></td>
-		<td><img src="<?=$imgheadright; ?>"></td>
-
-
-
-		<td align=right width=100%><?php $this->print_next_previous($parent, $class, "top", $cgi_pagenum, $total_num, $pagesize); ?>
-		</td>
-
-	</tr>
-</table>
-</td>
-</tr>
-
-
-<tr>
-	<td colspan=3>
-	<table cellpadding=0 cellspacing=0 border=0 width=100% height=35
-		background="<?=$imgbtnbg; ?>">
-		<tr>
-			<td width=80% align=left>
-			<table width=100% cellpadding=0 cellspacing=0 border=0>
-				<tr>
-					<td valign=bottom><?php  ?></td>
-				</tr>
-			</table>
-			</td>
-			<td width=15% align=right><b><font color="#ffffff"><?php $this->print_search($parent, $class); ?></font></b></td>
-			<td valign=bottom><img src=<?=$imgbtncrv ?>></td>
-		</tr>
-	</table>
-
-	<?php
-		} else if (0 && $class !== 'resource' && $class !== 'permission' && $class !== 'information') {
-
-			$descr = $this->getActionDescr($_SERVER['PHP_SELF'], $this->__http_vars, $class, $var, $identity);
-			?>
-	<table cellpadding=0 cellspacing=0 border=0 width=100%>
-		<tr>
-			<td align=left>
-			<table cellpadding=0 cellspacing=0 border=0 width=100%>
-				<tr>
-					<td><img src="<?=$imgheadleft; ?>"></td>
-					<td nowrap width=100% background="<?=$imgheadbg; ?>"><b><font
-						color="#000000"> Confirm <?=$descr[1] ?>: </b><?=get_plural($classdesc[2])?>
-					from <?=$parent->display("nname"); ?></font></td>
-					<td><img src="<?=$imgheadright; ?>"></td>
-				</tr>
-			</table>
-			</td>
-			<td width=100%>&nbsp;</td>
-		</tr>
-	</table>
-
-
-	<?php
+	foreach($obj_list as $o) {
+		if (if_search_continue($o) || !$o->isDisplay($filter)) {
+			$obj_list[$o->nname] = null;
+			unset($obj_list[$o->nname]);
+			continue;
 		}
+		$n++;
 	}
-	function printListAddFormBad($parent, $class)
-	{
-		global $gbl, $sgbl, $login, $ghtml;
-		$col = $login->getSkinColor();
-		//list($iclass, $mclass, $rclass) = get_composite($class);
-		$rclass = $class;
-		$vlist = exec_class_method($rclass, "addListForm", $parent, $class);
-		if (!$vlist) {
-			return;
-		}
 
-		$buttonpath = get_image_path() . "/button/";
-		?>
+	return $n;
+}
 
-	<table cellpadding=0  width=90% cellspacing=1 style='border: 1px solid #<?=$col?>;  background:#fffafa;'>
-	<?php
+
+function print_crappy_header()
+{
+	if (0 && !$sellist && $class !== 'permission' && $class !== 'resource' && $class !== 'information') {
+		?> 
+
+			<table cellpadding=0 width=100% cellspacing=0 border=0 height=27 >
+
+			<tr width=20% nowrap valign=top><td><img src="<?=$imgheadleft; ?>"></td><td  nowrap valign=middle background="<?=$imgheadbg; ?>"><b><font color="#234355" style="font-weight: bold"><?=get_plural($classdesc[2])?> <?=$showvar ?> <?=$login->getKeyword('under')?> <?="{$parent->getId()} $filterundermes" ?> </b> <?=$this->print_machine($parent) ?> <b>  (<?=$total_num ?>)</b></font></td><td><img src="<?=$imgheadright; ?>"></td> 
+			
+		
+			
+			<td align=right width=100%> <?php $this->print_next_previous($parent, $class, "top", $cgi_pagenum, $total_num, $pagesize); ?> </td>
+  
+			</tr>
+			</table>			
+			</td>
+			</tr>
+
+
+			<tr><td colspan=3> <table cellpadding=0 cellspacing=0 border=0 width=100% height=35 background="<?=$imgbtnbg; ?>">
+			<tr><td width=80% align=left >
+			<table width=100% cellpadding=0 cellspacing=0 border=0><tr><td valign=bottom><?php  ?></td></tr></table></td><td width=15% align=right><b><font color="#ffffff"><?php $this->print_search($parent, $class); ?></font></b></td> <td valign=bottom> <img src=<?=$imgbtncrv ?>> </td> </tr>
+			</table>
+
+		<?php 
+	} else if (0 && $class !== 'resource' && $class !== 'permission' && $class !== 'information') {
+
+		$descr = $this->getActionDescr($_SERVER['PHP_SELF'], $this->__http_vars, $class, $var, $identity);
+		?> 
+<table cellpadding=0 cellspacing=0 border=0 width=100%><tr><td align=left><table cellpadding=0 cellspacing=0 border=0 width=100% ><tr><td><img src="<?=$imgheadleft; ?>"></td><td nowrap width=100% background="<?=$imgheadbg; ?>" ><b><font color="#000000">  Confirm <?=$descr[1] ?>:  </b><?=get_plural($classdesc[2])?> from <?=$parent->display("nname"); ?></font></td><td><img src="<?=$imgheadright; ?>"></td></tr></table></td><td width=100%> &nbsp; </td> </tr></table>
+
+
+		<?php 
+	}
+}
+function printListAddFormBad($parent, $class)
+{
+	global $gbl, $sgbl, $login, $ghtml; 
+	$col = $login->getSkinColor();
+	//list($iclass, $mclass, $rclass) = get_composite($class);
+	$rclass = $class;
+	$vlist = exec_class_method($rclass, "addListForm", $parent, $class);
+	if (!$vlist) {
+		return;
+	}
+
+	$buttonpath = get_image_path() . "/button/";
+	?> 
+
+	<table cellpadding=0  width=90% cellspacing=1 style='border: 1px solid #<?=$col?>;  background:#fffafa;'> 
+	<?php 
 	print("<tr> <td height=10 colspan=10> &nbsp;</td> </tr> <tr> <td width=20 color=#fffafa> &nbsp; </td> <td > </td> ");
 	print("<form name=addlist method=get action=/display.php >");
 	foreach($vlist as $k => $v) {
@@ -4333,138 +3878,119 @@ $this->print_input_vars($post);
 	$this->print_current_input_vars(array('frm_action'));
 	$desc = $this->get_class_description($rclass);
 	$desc = $desc[2];
-	?>
-		</td>
-		<td><input type=submit class=submitbutton name=Search
-			value="Quick Add <?=$desc ?>"></td>
-		</form>
-		<?php
-		print("</td> <td width=100%> </td> </tr> <tr> <td height=10 colspan=10> </td> </tr>  </table>  ");
+	?> 
+	</td>  <td > <input type=submit class=submitbutton name=Search value="Quick Add <?=$desc ?>"> </td>
+	</form> 
+	<?php 
+	print("</td> <td width=100%> </td> </tr> <tr> <td height=10 colspan=10> </td> </tr>  </table>  "); 
+}
+
+function printListAddForm($parent, $class)
+{
+
+	global $gbl, $sgbl, $login, $ghtml; 
+	$vlist = exec_class_method($class, "addListForm", $parent, $class);
+	if (!$vlist) { return; }
+
+	$unique_name = "{$parent->getClName()}_$class";
+	$showstring = "Show/Hide";
+	$show_all_string = null;
+	if ($login->getSpecialObject('sp_specialplay')->isOn('close_add_form')) {
+		$visiblity = "visibility:hidden;display:none";
+	} else {
+		$visiblity = "visibility:visible;display:block";
 	}
 
-	function printListAddForm($parent, $class)
-	{
 
-		global $gbl, $sgbl, $login, $ghtml;
-		$vlist = exec_class_method($class, "addListForm", $parent, $class);
-		if (!$vlist) { return; }
+	$cdesc = get_description($class);
+	$cdesc .= " for $parent->nname";
 
-		$unique_name = "{$parent->getClName()}_$class";
+	$backgroundstring = "background:#fff;";
+	$fontcolor = "black";
+	$bordertop = "#d0d0d0";
+	if ($sgbl->isBlackBackground()) {
+		$backgroundstring = "background:#000;"; 
+		$fontcolor = "#333333";
+		$bordertop = "#444444";
+
+	}
+
+	?> 
+		
+	<table cellpadding=0 cellspacing=0 background=img/skin/kloxo/default/default/expand.gif> <tr> <td ><font align=left style='color:<?= $fontcolor ?> ;font-weight:bold'><a style='color:<?= $fontcolor ?> ;font-weight:bold' href="javascript:toggleVisibility('listaddform_<?=$unique_name?>');"> &nbsp; &nbsp;  Click Here to Add <?=$cdesc?> (<?=$showstring?>) </a> <?=$show_all_string?> </font> &nbsp; &nbsp; &nbsp; </td> </tr> </table> 
+		
+	<div id=listaddform_<?=$unique_name?> style='<?=$visiblity?>'>
+		<table width=100% border=0  cellpadding=0 style=' border: 0px solid '> <tr> <td width=10> </td> <td > <table cellpadding=0 align=center cellspacing=0 width=90%> <tr> <td >
+	<?php 
+	do_addform($parent, $class, null, true);
+	?> 
+ </td> </tr> </table> </td> </tr> </table>  </div> 
+	<?php 
+}
+
+function print_real_search($name_list, $parent, $class)
+{ 
+	global $gbl, $sgbl, $login, $ghtml; 
+	$col = $login->getSkinColor();
+
+	//list($iclass, $mclass, $rclass) = get_composite($class);
+	$rclass = $class;
+	$filtername = $parent->getFilterVariableForThis($class);
+	$url = $_SERVER['PHP_SELF'];
+	$gen_image_path = get_general_image_path();
+	$btnpath = $gen_image_path . "/icon/";
+	$imgpath = $gen_image_path . "/button/";
+
+	$classdesc = $this->get_class_description($rclass);
+
+	$unique_name = trim($parent->nname) . trim($class) . trim($classdesc[2]);
+	$unique_name = fix_nname_to_be_variable($unique_name);
+
+	$imgpath = $login->getSkinDir();
+	$buttonpath = get_image_path() . "/button/";
+	$img = $this->get_image($buttonpath, $rclass, "list", ".gif");
+
+
+
+
+	$global_visible = false;
+	$value = null;
+	foreach($name_list as $name => $width) {
+		if (isset($this->frm_hpfilter[$filtername]["{$name}_o_cont"])) {
+			$value = $this->frm_hpfilter[$filtername]["{$name}_o_cont"];
+		} else {
+			if ($login->issetHpFilter($filtername, "{$name}_o_cont")) {
+				$value = $login->getHPFilter($filtername, "{$name}_o_cont");
+			}
+		}
+
+		if ($value && $value !== '--any--') {
+			//dprint($value);
+			$global_visible = true; 
+			break;
+		}
+	}
+
+	if ($global_visible) {
+		$visiblity = "visibility:visible;display:block";
+		$showstring = null;
+		$show_all_string = "(Click on show-all to hide)";
+	} else {
 		$showstring = "Show/Hide";
 		$show_all_string = null;
-		if ($login->getSpecialObject('sp_specialplay')->isOn('close_add_form')) {
-			$visiblity = "visibility:hidden;display:none";
-		} else {
-			$visiblity = "visibility:visible;display:block";
-		}
-
-
-		$cdesc = get_description($class);
-		$cdesc .= " for $parent->nname";
-
-		$backgroundstring = "background:#fff;";
-		$fontcolor = "black";
-		$bordertop = "#d0d0d0";
-		if ($sgbl->isBlackBackground()) {
-			$backgroundstring = "background:#000;";
-			$fontcolor = "#333333";
-			$bordertop = "#444444";
-
-		}
-
-		?>
-
-		<table cellpadding=0 cellspacing=0
-			background=img/skin/kloxo/default/default/expand.gif>
-			<tr>
-				<td><font align=left style='color:<?= $fontcolor ?> ;font-weight:bold'><a style='color:<?= $fontcolor ?> ;font-weight:bold' href="javascript:toggleVisibility('listaddform_<?=$unique_name?>');">
-				&nbsp; &nbsp; Click Here to Add <?=$cdesc?> (<?=$showstring?>) </a>
-				<?=$show_all_string?> </font> &nbsp; &nbsp; &nbsp;</td>
-			</tr>
-		</table>
-
-		<div id=listaddform_<?=$unique_name?> style='<?=$visiblity?>'>
-		<table width=100% border=0 cellpadding=0 style='border: 0px solid'>
-			<tr>
-				<td width=10></td>
-				<td>
-				<table cellpadding=0 align=center cellspacing=0 width=90%>
-					<tr>
-						<td><?php 
-						do_addform($parent, $class, null, true);
-						?></td>
-					</tr>
-				</table>
-				</td>
-			</tr>
-		</table>
-		</div>
-		<?php
+		$visiblity = "visibility:hidden;display:none";
 	}
 
-	function print_real_search($name_list, $parent, $class)
-	{
-		global $gbl, $sgbl, $login, $ghtml;
-		$col = $login->getSkinColor();
-
-		//list($iclass, $mclass, $rclass) = get_composite($class);
-		$rclass = $class;
-		$filtername = $parent->getFilterVariableForThis($class);
-		$url = $_SERVER['PHP_SELF'];
-		$gen_image_path = get_general_image_path();
-		$btnpath = $gen_image_path . "/icon/";
-		$imgpath = $gen_image_path . "/button/";
-
-		$classdesc = $this->get_class_description($rclass);
-
-		$unique_name = trim($parent->nname) . trim($class) . trim($classdesc[2]);
-		$unique_name = fix_nname_to_be_variable($unique_name);
-
-		$imgpath = $login->getSkinDir();
-		$buttonpath = get_image_path() . "/button/";
-		$img = $this->get_image($buttonpath, $rclass, "list", ".gif");
-
-
-
-
-		$global_visible = false;
-		$value = null;
-		foreach($name_list as $name => $width) {
-			if (isset($this->frm_hpfilter[$filtername]["{$name}_o_cont"])) {
-				$value = $this->frm_hpfilter[$filtername]["{$name}_o_cont"];
-			} else {
-				if ($login->issetHpFilter($filtername, "{$name}_o_cont")) {
-					$value = $login->getHPFilter($filtername, "{$name}_o_cont");
-				}
-			}
-
-			if ($value && $value !== '--any--') {
-				//dprint($value);
-				$global_visible = true;
-				break;
-			}
-		}
-
-		if ($global_visible) {
-			$visiblity = "visibility:visible;display:block";
-			$showstring = null;
-			$show_all_string = "(Click on show-all to hide)";
-		} else {
-			$showstring = "Show/Hide";
-			$show_all_string = null;
-			$visiblity = "visibility:hidden;display:none";
-		}
-
-		$backgroundstring =  "background:#fffafa;";
-		$backgroundnullstring = null;
-		$bordertop = "#d0d0d0";
-		if ($sgbl->isBlackBackground()) {
-			$backgroundstring = "background:gray;";
-			$backgroundnullstring = "background:gray;";
-			$bordertop = "#333";
-		}
-		?>
-		<!--
+	$backgroundstring =  "background:#fffafa;";
+	$backgroundnullstring = null;
+	$bordertop = "#d0d0d0";
+	if ($sgbl->isBlackBackground()) {
+		$backgroundstring = "background:gray;"; 
+		$backgroundnullstring = "background:gray;"; 
+		$bordertop = "#333";
+	}
+	?> 
+<!--
 <table cellspacing=0 cellpadding=0>
 <tr>
 	<td><img src="lside.gif"></td>
@@ -4495,716 +4021,645 @@ $this->print_input_vars($post);
 -->
 
 
-		<fieldset style='<?=$backgroundnullstring?> padding: 0 ; text-align: middle ; margin: 0; border: 0px; border-top: 1px solid <?= $bordertop ?> '><legend>
-		<font style='font-weight: bold'>Advanced Search <a
-			href="javascript:toggleVisibility('search_<?=$unique_name?>');"><?=$showstring ?>
-		</a> <?=$show_all_string?> </font></legend></fieldset>
-		<table width=90% border=0 cellspacing=0 cellpadding=0>
-			<tr>
-				<td><font style='font-weight: bold'>
+		<fieldset style='<?=$backgroundnullstring?> padding: 0 ; text-align: middle ; margin: 0; border: 0px; border-top: 1px solid <?= $bordertop ?> '><legend> <font style='font-weight:bold'>Advanced Search <a href="javascript:toggleVisibility('search_<?=$unique_name?>');"><?=$showstring ?> </a> <?=$show_all_string?> </font></legend> </fieldset>
+	<table width=90% border=0 cellspacing=0 cellpadding=0> <tr> <td > <font style='font-weight:bold'> 
+	
+	
+	<div id=search_<?=$unique_name?> style='<?=$visiblity?>'>
+		<table width=100% border=0 align=left cellpadding=0 style='<?=$backgroundstring?> border: 1px solid #<?=$col?>'> <tr> <td > <img width=26 height=26 src=<?=$img?>> </td></tr> <tr>  <td width=10> &nbsp; </td> <td >   <table width=90% height=90% cellpadding=0 cellspacing=0> 
+		<form name=lpfform_rsearch method=<?=$sgbl->method ?>  action=<?=$url ?> onsubmit="return true;">
 
 
-				<div id=search_<?=$unique_name?> style='<?=$visiblity?>'>
-				<table width=100% border=0 align=left cellpadding=0 style='<?=$backgroundstring?> border: 1px solid #<?=$col?>'>
-					<tr>
-						<td><img width=26 height=26 src=<?=$img?>></td>
-					</tr>
-					<tr>
-						<td width=10>&nbsp;</td>
-						<td>
-						<table width=90% height=90% cellpadding=0 cellspacing=0>
-							<form name=lpfform_rsearch method=<?=$sgbl->method ?>
-								action=<?=$url ?> onsubmit="return true;"><?php 
+		<?php 
 
-								$filarr[] = 'pagenum';
-								$count = 0;
+	$filarr[] = 'pagenum';
+	$count = 0;
 
-								foreach($name_list as $name => $width) {
+	foreach($name_list as $name => $width) {
 
-									$count++;
-									$desc = "__desc_{$name}" ;
+		$count++;
+		$desc = "__desc_{$name}" ;
 
-									$descr[$name] = get_classvar_description($rclass, $desc);
+		$descr[$name] = get_classvar_description($rclass, $desc);
 
-									if (!$descr[$name]) {
-										print("Cannot access static variable $rclass::$desc");
-										exit(0);
-									}
+		if (!$descr[$name]) {
+			print("Cannot access static variable $rclass::$desc");
+			exit(0);
+		}
 
-									if (csa($descr[$name][2], ':')) {
-										$_tlist = explode(':', $descr[$name][2]);
-										$descr[$name][2] = $_tlist[1];
-									}
+		if (csa($descr[$name][2], ':')) {
+			$_tlist = explode(':', $descr[$name][2]);
+			$descr[$name][2] = $_tlist[1];
+		}
 
-									foreach($descr[$name] as &$d) {
-										if ($this->is_special_url($d)) {
-											continue;
-										}
-										if (strstr($d, "%v") !== false) {
-											$d = str_replace("[%v]", $classdesc[2], $d);
-										}
-									}
-
-									print("<td nowrap align=right> <font style='font-weight: bold'>{$descr[$name][2]} </font> &nbsp; </td> <td>");
-									$filarr[] = "{$name}_o_cont";
-									$value = null;
-									if (isset($this->frm_hpfilter[$filtername]["{$name}_o_cont"])) {
-										$value = $this->frm_hpfilter[$filtername]["{$name}_o_cont"];
-									} else {
-										if ($login->issetHpFilter($filtername, "{$name}_o_cont")) {
-											$value = $login->getHPFilter($filtername, "{$name}_o_cont");
-										}
-									}
-
-
-									if ($width) {
-
-										if ($width[0] === 's') {
-											print("<select name=frm_hpfilter[$filtername][{$name}_o_cont]  class=searchbox size=1 width=10 maxlength=30>");
-											foreach($width[1] as $v) {
-												$sel = null;
-												if ($v === $value) {
-													$sel = "SELECTED";
-												}
-												print("<option value='$v' $sel> $v </option>");
-											}
-											print("</select>");
-
-
-										}
-									} else {
-										print("<input type=text name=frm_hpfilter[$filtername][{$name}_o_cont] value='$value'  class=searchbox size=11 maxlength=30>");
-									}
-
-
-									print("</td> ");
-
-									if ($count === 3) {
-										$count = 0;
-										print("</tr> <tr> ");
-									}
-								}
-
-								$this->print_current_input_var_unset_filter($filtername, $filarr);
-								$this->print_current_input_vars(array('frm_hpfilter'));
-
-
-								?>
-							
-							
-							</td>
-							</tr>
-						</table>
-
-						</td>
-						<td><input type=submit class=submitbutton name=Search value=Search>
-						</form>
-
-						</td>
-					</tr>
-					<tr>
-						<td width=10>&nbsp;</td>
-					</tr>
-				</table>
-				</div></td>
-			</tr>
-		</table>
-
-		<?php
-	}
-
-
-	function isResourceClass($class)
-	{
-		return ($class === 'permission' || $class === 'resource' || $class === 'information');
-	}
-
-	function checkIfFilter($filter)
-	{
-
-		foreach($filter as $k => $f) {
-			if ($k !== 'view' && $k !== 'pagesize' && $k !== 'pagenum' && $k !== 'sortby' && $k !== 'sortdir' && $f && $f !== '--any--') {
-				return true;
+		foreach($descr[$name] as &$d) {
+			if ($this->is_special_url($d)) {
+				continue;
+			}
+			if (strstr($d, "%v") !== false) {
+				$d = str_replace("[%v]", $classdesc[2], $d);
 			}
 		}
-		return false;
-	}
 
-	function printObjectTable($name_list, $parent, $class, $blist = array(),  $display = NULL)
-	{
-		global $gbl, $sgbl, $login, $ghtml;
-		$col = $login->getSkinColor();
-
-		$view = null;
-
-
-		if (exec_class_method($class, "hasViews")) {
-			$blist[] = array($ghtml->getFullUrl("a=list&c=$class&frm_filter[view]=quota"), 1);
-			$blist[] = array($ghtml->getFullUrl("a=list&c=$class&frm_filter[view]=normal"), 1);
-		}
-
-
-		print_time("$class.objecttable");
-
-		//list($iclass, $mclass, $rclass) = get_composite($class);
-		$rclass = $class;
-
-		if ($this->frm_accountselect !== null) {
-			$sellist = explode(',', $this->frm_accountselect);
+		print("<td nowrap align=right> <font style='font-weight: bold'>{$descr[$name][2]} </font> &nbsp; </td> <td>");
+		$filarr[] = "{$name}_o_cont";
+		$value = null;
+		if (isset($this->frm_hpfilter[$filtername]["{$name}_o_cont"])) {
+			$value = $this->frm_hpfilter[$filtername]["{$name}_o_cont"];
 		} else {
-			$sellist = null;
-		}
-
-		$filtername = $parent->getFilterVariableForThis($class);
-		$sortdir = null;
-		$sortby = null;
-		$fil = $login->getHPFilter();
-		if (isset($fil[$filtername]['sortby'])) {
-			$sortby = $fil[$filtername]['sortby'];
-		}
-		if (isset($fil[$filtername]['sortdir'])) {
-			$sortdir = $fil[$filtername]['sortdir'];
-		}
-
-		$pagesize = (int) $login->issetHpFilter($filtername, 'pagesize')? $login->getHPFilter($filtername, 'pagesize'): exec_class_method($rclass, "perPage");
-
-		if (!(int)$pagesize) {
-			$pagesize = 10;
-		}
-
-		$view = null;
-		if (isset($fil[$filtername]['view'])) {
-			$view = $fil[$filtername]['view'];
-			dprintr($view);
+			if ($login->issetHpFilter($filtername, "{$name}_o_cont")) {
+				$value = $login->getHPFilter($filtername, "{$name}_o_cont");
+			}
 		}
 
 
-		if (!$name_list) {
-			if (csa($class, "all_")) {
-				$__tcl = strfrom($class, "all_");
-				$name_list = exec_class_method($__tcl, "createListNlist", $parent, $view);
-				foreach($name_list as $k => $v) {
-					if (csa($k, "abutton")) {
-						unset($name_list[$k]);
+		if ($width) {
+
+			if ($width[0] === 's') {
+				print("<select name=frm_hpfilter[$filtername][{$name}_o_cont]  class=searchbox size=1 width=10 maxlength=30>");
+				foreach($width[1] as $v) {
+					$sel = null;
+					if ($v === $value) {
+						$sel = "SELECTED";
 					}
+					print("<option value='$v' $sel> $v </option>");
 				}
-				$name_list = lx_merge_good(array('parent_name_f' => '10%'), $name_list);
-			} else {
-				$name_list = exec_class_method($class, "createListNlist", $parent, $view);
+				print("</select>");
+
+
 			}
+		} else {
+			print("<input type=text name=frm_hpfilter[$filtername][{$name}_o_cont] value='$value'  class=searchbox size=11 maxlength=30>");
 		}
 
 
+		print("</td> ");
 
+		if ($count === 3) {
+			$count = 0;
+			print("</tr> <tr> ");
+		}
+	}
 
+	$this->print_current_input_var_unset_filter($filtername, $filarr);
+	$this->print_current_input_vars(array('frm_hpfilter')); 
 
+		
+	?> 
+		
+	</td> </tr> 
+   </table> 
 
+  </td> <td > 
+  
+		<input type=submit class=submitbutton name=Search value=Search></form>
+  
+  </td>  </tr> <tr> <td width=10> &nbsp; </td> </tr>  </table> </div>  </td> </tr> </table> 
 
-
-		$iconpath = get_image_path() . "/button";
-
-		$buttonpath = get_image_path() . "/button/";
-		$nlcount = count($name_list) + 1;
-		$imgheadleft  = $login->getSkinDir() . "/top_lt.gif" ;
-		$imgheadleft  = $login->getSkinDir() . "/top_lt.gif" ;
-		$imgheadleft2  = $login->getSkinDir() . "/top_lt.gif" ;
-		$imgheadright = $login->getSkinDir() . "/top_slope_rt.gif" ;
-		$imgheadbg    = $login->getSkinDir() . "/top_bg.gif" ;
-		$imgbtnbg  = $login->getSkinDir() . "/btn_bg.gif" ;
-		$imgtablerowhead  = $login->getSkinDir() . "/tablerow_head.gif" ;
-		$imgtablerowheadselect  = $login->getSkinDir() . "/top_line_medium.gif" ;
-		$imgbtncrv  = $login->getSkinDir() . "/btn_crv_right.gif" ;
-		$imgtopline  = $login->getSkinDir() . "/top_line.gif" ;
-		$skindir = $login->getSkinDir();
-
-
-		$classdesc = $this->get_class_description($rclass, $display);
-
-		$unique_name = trim($parent->nname) . trim($class) . trim($display) . trim($classdesc[2]);
-
-		$unique_name = fix_nname_to_be_variable($unique_name);
-
-		//dprint("-- ".$unique_name. " --", 2);
-
-		?>
-		<br>
-		<script> var ckcount<?=$unique_name; ?> ; </script>
 		<?php
-		if (!$sortby) {
-			$sortby = exec_class_method($rclass, "defaultSort");
+}
+
+
+function isResourceClass($class)
+{
+	return ($class === 'permission' || $class === 'resource' || $class === 'information');
+}
+
+function checkIfFilter($filter)
+{
+
+	foreach($filter as $k => $f) {
+		if ($k !== 'view' && $k !== 'pagesize' && $k !== 'pagenum' && $k !== 'sortby' && $k !== 'sortdir' && $f && $f !== '--any--') {
+			return true;
 		}
-		if (!$sortdir) {
-			$sortdir = exec_class_method($rclass, "defaultSortDir");
+	}
+	return false;
+}
+
+function printObjectTable($name_list, $parent, $class, $blist = array(),  $display = NULL)
+{ 
+	global $gbl, $sgbl, $login, $ghtml; 
+	$col = $login->getSkinColor();
+
+	$view = null;
+
+
+	if (exec_class_method($class, "hasViews")) {
+		$blist[] = array($ghtml->getFullUrl("a=list&c=$class&frm_filter[view]=quota"), 1);
+		$blist[] = array($ghtml->getFullUrl("a=list&c=$class&frm_filter[view]=normal"), 1);
+	}
+
+
+	print_time("$class.objecttable");
+
+	//list($iclass, $mclass, $rclass) = get_composite($class);
+	$rclass = $class;
+    
+	if ($this->frm_accountselect !== null) {
+		$sellist = explode(',', $this->frm_accountselect);
+	} else {
+		$sellist = null;
+	}
+
+	$filtername = $parent->getFilterVariableForThis($class);
+	$sortdir = null;
+	$sortby = null;
+	$fil = $login->getHPFilter();
+	if (isset($fil[$filtername]['sortby'])) {
+		$sortby = $fil[$filtername]['sortby'];
+	}
+	if (isset($fil[$filtername]['sortdir'])) {
+		$sortdir = $fil[$filtername]['sortdir'];
+	}
+
+	$pagesize = (int) $login->issetHpFilter($filtername, 'pagesize')? $login->getHPFilter($filtername, 'pagesize'): exec_class_method($rclass, "perPage");
+
+	if (!(int)$pagesize) {
+		$pagesize = 10;
+	}
+
+	$view = null;
+	if (isset($fil[$filtername]['view'])) {
+		$view = $fil[$filtername]['view'];
+		dprintr($view);
+	}
+
+
+	if (!$name_list) {
+		if (csa($class, "all_")) {
+			$__tcl = strfrom($class, "all_");
+			$name_list = exec_class_method($__tcl, "createListNlist", $parent, $view);
+			foreach($name_list as $k => $v) {
+				if (csa($k, "abutton")) {
+					unset($name_list[$k]);
+				}
+			}
+			$name_list = lx_merge_good(array('parent_name_f' => '10%'), $name_list);
+		} else {
+			$name_list = exec_class_method($class, "createListNlist", $parent, $view);
 		}
-
-		//print_time("objecttable");
-		$obj_list = $parent->getVirtualList($class, $total_num, $sortby, $sortdir);
+	}
 
 
-		if (exec_class_method($rclass, "isdefaultHardRefresh")) {
+
+
+
+
+
+
+	$iconpath = get_image_path() . "/button";
+
+	$buttonpath = get_image_path() . "/button/";
+	$nlcount = count($name_list) + 1;
+	$imgheadleft  = $login->getSkinDir() . "/top_lt.gif" ;
+	$imgheadleft  = $login->getSkinDir() . "/top_lt.gif" ;
+	$imgheadleft2  = $login->getSkinDir() . "/top_lt.gif" ;
+	$imgheadright = $login->getSkinDir() . "/top_slope_rt.gif" ;
+	$imgheadbg    = $login->getSkinDir() . "/top_bg.gif" ; 
+	$imgbtnbg  = $login->getSkinDir() . "/btn_bg.gif" ; 
+	$imgtablerowhead  = $login->getSkinDir() . "/tablerow_head.gif" ; 
+	$imgtablerowheadselect  = $login->getSkinDir() . "/top_line_medium.gif" ; 
+	$imgbtncrv  = $login->getSkinDir() . "/btn_crv_right.gif" ; 
+	$imgtopline  = $login->getSkinDir() . "/top_line.gif" ;
+	$skindir = $login->getSkinDir();
+
+
+	$classdesc = $this->get_class_description($rclass, $display);
+
+	$unique_name = trim($parent->nname) . trim($class) . trim($display) . trim($classdesc[2]);
+ 
+	$unique_name = fix_nname_to_be_variable($unique_name);
+
+	//dprint("-- ".$unique_name. " --", 2);
+
+?>
+<br>
+      <script> var ckcount<?=$unique_name; ?> ; </script>
+<?php
+	if (!$sortby) {
+		$sortby = exec_class_method($rclass, "defaultSort");
+	}
+	if (!$sortdir) {
+		$sortdir = exec_class_method($rclass, "defaultSortDir");
+	}
+
+	//print_time("objecttable");
+	$obj_list = $parent->getVirtualList($class, $total_num, $sortby, $sortdir);
+
+
+	if (exec_class_method($rclass, "isdefaultHardRefresh")) {
+		exec_class_method($rclass, "getExtraParameters", $parent, $obj_list);
+
+	} else {
+		if ($this->frm_hardrefresh === 'yes') {
 			exec_class_method($rclass, "getExtraParameters", $parent, $obj_list);
+		}
+	}
+	 
+	$pluraldesc = get_plural($classdesc[2]);
 
+	if ($login->issetHpFilter($filtername, 'pagenum')) {
+		$cgi_pagenum = $login->getHPFilter($filtername, 'pagenum');
+	} else {
+		$cgi_pagenum = 1;
+	}
+
+
+
+	$showvar = null;
+	if ($login->issetHpFilter($filtername, 'show')) {
+		$showvar = $login->getHPFilter($filtername, 'show');
+	}
+
+	if ($showvar) {
+		$showvar = "(" . ucfirst($showvar) . ")";
+	}
+
+	$filterundermes = null;
+	if ($login->issetHpFilter($filtername) && $this->checkIfFilter($login->getHPFilter($filtername))) {
+		$filterundermes = "({$login->getKeywordUc('search_on')}";
+		if ($total_num == 0) {
+			$filterundermes .= ". Click on show all to see all the objects";
+		}
+		$filterundermes .= ")";
+	}
+
+	$perpageof = null;
+	$lower = $pagesize * ($cgi_pagenum - 1) + 1;
+	if ($lower > $total_num) {
+		$lower = $total_num;
+	}
+	if ($pagesize * $cgi_pagenum > $total_num) {
+		$upper = $total_num;
+	} else {
+		$upper = $pagesize * $cgi_pagenum;
+	}
+	$total_page = strtil($total_num/ $pagesize, ".") + 1;
+	$perpageof = "$lower to $upper of ";
+
+
+	if ($sgbl->isBlackBackground()) {
+		$backgroundstring = "background:#222222;"; 
+		$stylebackgroundstring = "style='background-color:#000000; background:#000000;'";
+		$filteropacitystringspan = "<span style='background:black' > ";
+		$filteropacitystring =  "style='FILTER:progid;-moz-opacity:0.5'";
+		$filteropacitystringspanend = "</span>";
+
+		$backgroundcolorstring = "#000000";
+		$imgtopline  = $login->getSkinDir() . "/black.gif";
+		$blackstyle = "style='background:black;color:gray;border:1px solid gray;'";
+		$imgtablerowhead = null;
+		$col = "333";
+		$bordertop = "#444444";
+
+	} else {
+		$blackstyle = null;
+		$backgroundstring = "background:#fffafa;";
+		$stylebackgroundstring = null;
+		$filteropacitystring = null;
+		$filteropacitystringspan = null;
+		$filteropacitystringspanend = null;
+		$backgroundcolorstring = "#ffffff";
+		$bordertop = "#d0d0d0";
+	}
+
+
+	if (!$sellist && !$this->isResourceClass($class)) {
+		print(" <fieldset style='$backgroundstring padding: 0 ; text-align: middle ; margin: 0; border: 0px; border-top: 1px solid $bordertop'><legend><font style='font-weight:bold'>$pluraldesc $showvar  {$login->getKeyword('under')} {$parent->getId()} <font color=red>$filterundermes </font> {$this->print_machine($parent)} ({$perpageof}$total_num)</font> </legend> </fieldset> ");
+	}
+
+	if (!$sellist && !$this->isResourceClass($class) && !$gbl->__inside_ajax) {
+		?> 
+		<table width=90% cellpadding=0 cellspacing=0 border=0 style=' <?=$backgroundstring ?>  border: 1px solid #<?=$col?>; '><tr><td valign=bottom height=10> &nbsp;  </td> <tr>  <td width=10 > &nbsp;  </td> <td ><?php $this->print_list_submit($class, $blist, $unique_name); ?></td> <td > <?php $this->print_search($parent, $class); ?> </td width=10> &nbsp;  </td> </tr> <tr > <td height=10> &nbsp; </td>  </tr></table>
+		<?php 
+	}
+
+	//print_time("objecttable", 'objecttable');
+	if (!$sellist)  {
+		//$total_num = $this->display_count($obj_list, $display) ;
+	}
+
+	if (!$sellist && !$this->isResourceClass($class) && !$gbl->__inside_ajax) {
+		$imgshow = get_general_image_path() . "/button/btn_show.gif" ;
+
+
+		print("<table cellpadding=0 cellspacing=0 width=95% border=0  valign=middle> <tr> <td colspan=100 height=6></td> </tr> <tr valign=middle >");
+		
+
+        $imgbtm1 = get_general_image_path() . "/button/btm_01.gif" ;
+        $imgbtm2 = get_general_image_path() . "/button/btm_02.gif" ;
+        $imgbtm3 = get_general_image_path() . "/button/btm_03.gif" ;
+        $imgshow = get_general_image_path() . "/button/btn_show.gif" ;
+
+	    
+		$rpagesize = exec_class_method($rclass, "perPage");
+		if ($rpagesize > 1000) {
+			$width = 50;
 		} else {
-			if ($this->frm_hardrefresh === 'yes') {
-				exec_class_method($rclass, "getExtraParameters", $parent, $obj_list);
+			$width = 70;
+		}
+	
+		print("<td nowrap> &nbsp;&nbsp;</td>");
+		
+
+
+		print("<td ><b>Page</b>&nbsp;</td> ");
+		
+		$last = false;
+		foreach (range(1, $total_page) as $i) {
+			if ($i > 6) {
+				$last = true;
 			}
-		}
-
-		$pluraldesc = get_plural($classdesc[2]);
-
-		if ($login->issetHpFilter($filtername, 'pagenum')) {
-			$cgi_pagenum = $login->getHPFilter($filtername, 'pagenum');
-		} else {
-			$cgi_pagenum = 1;
-		}
-
-
-
-		$showvar = null;
-		if ($login->issetHpFilter($filtername, 'show')) {
-			$showvar = $login->getHPFilter($filtername, 'show');
-		}
-
-		if ($showvar) {
-			$showvar = "(" . ucfirst($showvar) . ")";
-		}
-
-		$filterundermes = null;
-		if ($login->issetHpFilter($filtername) && $this->checkIfFilter($login->getHPFilter($filtername))) {
-			$filterundermes = "({$login->getKeywordUc('search_on')}";
-			if ($total_num == 0) {
-				$filterundermes .= ". Click on show all to see all the objects";
+			if ($sgbl->isBlackBackground()) {
+				$col = "333";
 			}
-			$filterundermes .= ")";
-		}
-
-		$perpageof = null;
-		$lower = $pagesize * ($cgi_pagenum - 1) + 1;
-		if ($lower > $total_num) {
-			$lower = $total_num;
-		}
-		if ($pagesize * $cgi_pagenum > $total_num) {
-			$upper = $total_num;
-		} else {
-			$upper = $pagesize * $cgi_pagenum;
-		}
-		$total_page = strtil($total_num/ $pagesize, ".") + 1;
-		$perpageof = "$lower to $upper of ";
-
-
-		if ($sgbl->isBlackBackground()) {
-			$backgroundstring = "background:#222222;";
-			$stylebackgroundstring = "style='background-color:#000000; background:#000000;'";
-			$filteropacitystringspan = "<span style='background:black' > ";
-			$filteropacitystring =  "style='FILTER:progid;-moz-opacity:0.5'";
-			$filteropacitystringspanend = "</span>";
-
-			$backgroundcolorstring = "#000000";
-			$imgtopline  = $login->getSkinDir() . "/black.gif";
-			$blackstyle = "style='background:black;color:gray;border:1px solid gray;'";
-			$imgtablerowhead = null;
-			$col = "333";
-			$bordertop = "#444444";
-
-		} else {
-			$blackstyle = null;
-			$backgroundstring = "background:#fffafa;";
-			$stylebackgroundstring = null;
-			$filteropacitystring = null;
-			$filteropacitystringspan = null;
-			$filteropacitystringspanend = null;
-			$backgroundcolorstring = "#ffffff";
-			$bordertop = "#d0d0d0";
-		}
-
-
-		if (!$sellist && !$this->isResourceClass($class)) {
-			print(" <fieldset style='$backgroundstring padding: 0 ; text-align: middle ; margin: 0; border: 0px; border-top: 1px solid $bordertop'><legend><font style='font-weight:bold'>$pluraldesc $showvar  {$login->getKeyword('under')} {$parent->getId()} <font color=red>$filterundermes </font> {$this->print_machine($parent)} ({$perpageof}$total_num)</font> </legend> </fieldset> ");
-		}
-
-		if (!$sellist && !$this->isResourceClass($class) && !$gbl->__inside_ajax) {
-			?>
-		<table width=90% cellpadding=0 cellspacing=0 border=0 style=' <?=$backgroundstring ?>  border: 1px solid #<?=$col?>; '>
-			<tr>
-				<td valign=bottom height=10>&nbsp;</td>
-			
-			
-			<tr>
-				<td width=10>&nbsp;</td>
-				<td><?php $this->print_list_submit($class, $blist, $unique_name); ?></td>
-				<td><?php $this->print_search($parent, $class); ?></td width=10>
-				&nbsp;
-				</td>
-			</tr>
-			<tr>
-				<td height=10>&nbsp;</td>
-			</tr>
-		</table>
-		<?php
-		}
-
-		//print_time("objecttable", 'objecttable');
-		if (!$sellist)  {
-			//$total_num = $this->display_count($obj_list, $display) ;
-		}
-
-		if (!$sellist && !$this->isResourceClass($class) && !$gbl->__inside_ajax) {
-			$imgshow = get_general_image_path() . "/button/btn_show.gif" ;
-
-
-			print("<table cellpadding=0 cellspacing=0 width=95% border=0  valign=middle> <tr> <td colspan=100 height=6></td> </tr> <tr valign=middle >");
-
-
-			$imgbtm1 = get_general_image_path() . "/button/btm_01.gif" ;
-			$imgbtm2 = get_general_image_path() . "/button/btm_02.gif" ;
-			$imgbtm3 = get_general_image_path() . "/button/btm_03.gif" ;
-			$imgshow = get_general_image_path() . "/button/btn_show.gif" ;
-
-
-			$rpagesize = exec_class_method($rclass, "perPage");
-			if ($rpagesize > 1000) {
-				$width = 50;
+			if ($i == $cgi_pagenum) {
+				$bgcolorstring = "background: #$col";
 			} else {
-				$width = 70;
+				$bgcolorstring = "";
 			}
+			print("<form name=page$unique_name$i method=$sgbl->method action=''>") ;
+			print("<td width=6 style='border: 1px solid #$col; $bgcolorstring'>");
+			$this->print_current_input_var_unset_filter($filtername, array('pagenum'));
+			$this->print_current_input_vars(array('frm_hpfilter'));
+			if ($last) {
+				print(" <input type=hidden name=\"frm_hpfilter[$filtername][pagenum]\" type=text value=$total_page class=small>");
+				print("<a  href=javascript:page$unique_name$i.submit()>...Last&nbsp; </a>");
+			} else {
+				print(" <input type=hidden name=\"frm_hpfilter[$filtername][pagenum]\" type=text value=$i class=small>");
+				print("<a  href=javascript:page$unique_name$i.submit()> &nbsp;$i&nbsp; </a>");
+			}
+			print("</form> </td>");
 
-			print("<td nowrap> &nbsp;&nbsp;</td>");
+			if ($last) {
+				break;
+			}
+		}
 
 
 
-			print("<td ><b>Page</b>&nbsp;</td> ");
+		print("<td width=100%> </td>");
 
-			$last = false;
-			foreach (range(1, $total_page) as $i) {
-				if ($i > 6) {
-					$last = true;
-				}
-				if ($sgbl->isBlackBackground()) {
-					$col = "333";
-				}
-				if ($i == $cgi_pagenum) {
+
+
+
+
+		print("<td nowrap> <b>Show</b> &nbsp;</td>\n");
+		$f_page = (int) $login->issetHpFilter($filtername, 'pagesize')? $login->getHPFilter($filtername, 'pagesize'): $pagesize;
+		if ($rpagesize < 1000) {
+			$list = array($rpagesize/2, $rpagesize, $rpagesize *2 , $rpagesize *4, $rpagesize *8, $rpagesize * 16);
+			$i = 0;
+			foreach($list as $l) {
+				$i++;
+				if ($l == $f_page) {
 					$bgcolorstring = "background: #$col";
 				} else {
 					$bgcolorstring = "";
 				}
-				print("<form name=page$unique_name$i method=$sgbl->method action=''>") ;
 				print("<td width=6 style='border: 1px solid #$col; $bgcolorstring'>");
-				$this->print_current_input_var_unset_filter($filtername, array('pagenum'));
+				print("<form name=perpage_$i$unique_name method=$sgbl->method action=/display.php>") ;
+				$this->print_current_input_var_unset_filter($filtername, array('pagesize', 'pagenum'));
 				$this->print_current_input_vars(array('frm_hpfilter'));
-				if ($last) {
-					print(" <input type=hidden name=\"frm_hpfilter[$filtername][pagenum]\" type=text value=$total_page class=small>");
-					print("<a  href=javascript:page$unique_name$i.submit()>...Last&nbsp; </a>");
-				} else {
-					print(" <input type=hidden name=\"frm_hpfilter[$filtername][pagenum]\" type=text value=$i class=small>");
-					print("<a  href=javascript:page$unique_name$i.submit()> &nbsp;$i&nbsp; </a>");
-				}
-				print("</form> </td>");
-
-				if ($last) {
-					break;
-				}
+				print("<input type=hidden name=frm_hpfilter[$filtername][pagesize] value=$l>");
+				print("</form> ");
+				print("<a href=javascript:perpage_$i$unique_name.submit() >&nbsp;$l&nbsp;</a> ");
+				print('</td> ');
 			}
-
-
-
-			print("<td width=100%> </td>");
-
-
-
-
-
-			print("<td nowrap> <b>Show</b> &nbsp;</td>\n");
-			$f_page = (int) $login->issetHpFilter($filtername, 'pagesize')? $login->getHPFilter($filtername, 'pagesize'): $pagesize;
-			if ($rpagesize < 1000) {
-				$list = array($rpagesize/2, $rpagesize, $rpagesize *2 , $rpagesize *4, $rpagesize *8, $rpagesize * 16);
-				$i = 0;
-				foreach($list as $l) {
-					$i++;
-					if ($l == $f_page) {
-						$bgcolorstring = "background: #$col";
-					} else {
-						$bgcolorstring = "";
-					}
-					print("<td width=6 style='border: 1px solid #$col; $bgcolorstring'>");
-					print("<form name=perpage_$i$unique_name method=$sgbl->method action=/display.php>") ;
-					$this->print_current_input_var_unset_filter($filtername, array('pagesize', 'pagenum'));
-					$this->print_current_input_vars(array('frm_hpfilter'));
-					print("<input type=hidden name=frm_hpfilter[$filtername][pagesize] value=$l>");
-					print("</form> ");
-					print("<a href=javascript:perpage_$i$unique_name.submit() >&nbsp;$l&nbsp;</a> ");
-					print('</td> ');
-				}
-			}
-
-
-
-
-
-
-
-			print("</tr></table>");
 		}
+
+
+
+
+
+
+
+		print("</tr></table>");
+	}
+
+	?>
+
+	<table width=100%> <tr> <td align=center style='border:0px solid black'>
+	<table cellspacing=2 cellpadding=2 width=97%  align=center>
+	<tr><td class=rowpoint></td><td colspan= <?=$nlcount; ?>>
+
+<!--	</td></tr><tr><td height=2 colspan=2></td></tr></table> -->
+	<tr height=25 valign=middle>
+	
+
+	<?php 
+	if (!$sgbl->isBlackBackground()) {
+		print("<td bgcolor=$backgroundcolorstring> </td> ");
+	}
+	?> 
+
+ <?php 
+
+	if(!$this->isResourceClass($class) && !$gbl->__inside_ajax){
+		?> 
+		<td width=10 background=<?=$imgtablerowhead ?> >   <form name="formselectall<?=$unique_name; ?>" value=hello> <?=$filteropacitystringspan ?>  <input <?=$filteropacitystring ?>   type=checkbox name="selectall<?=$unique_name; ?>" value=on <?php if ($sellist) echo "checked disabled" ;  ?> onclick="javascript:calljselectall<?=$unique_name; ?> ()"> <?=$filteropacitystringspanend ?> </form> </td>
+		<?php 
+	}
+        
+		 
+	$imguparrow   = get_general_image_path() . "/button/uparrow.gif" ;
+	$imgdownarrow = get_general_image_path() . "/button/downarrow.gif" ;
+
+
+
+
+	foreach($name_list as $name => $width) {
+
+
+		$desc = "__desc_{$name}" ;
+
+		if (csa($name, "abutton")) {
+			$descr[$name] = array("b", "", "", "", 'help' => "");
+		} else {
+			$descr[$name] = get_classvar_description($rclass, $desc);
+		}
+
+
+		if (!$descr[$name]) {
+			print("Cannot access static variable $rclass::$desc");
+			exit(0);
+		}
+
+		if (csa($descr[$name][2], ':')) {
+			$_tlist = explode(':', $descr[$name][2]);
+			$descr[$name][2] = $_tlist[0];
+		}
+
+		foreach($descr[$name] as &$d) {
+			if ($this->is_special_url($d)) {
+				continue;
+			}
+			if (strstr($d, "%v") !== false) {
+				$d = str_replace("[%v]", $classdesc[2], $d);
+			}
+		}
+
+
+
+
+		if ($width === "100%")
+			$wrapstr = "wrap";
+		else
+			$wrapstr = "nowrap";
+ 
+		if ($sortby && $sortby === $name) {
+			if ($sgbl->isBlackBackground()) {
+				$wrapstr .= " style='background:gray'";
+			} else {
+				$wrapstr .= " style='background:url($skindir/listsort.gif)'";
+			}
+			print("<td width=$width $wrapstr ><table cellspacing=0 cellpadding=2  border=0> <tr> <td class=collist rowspan=2 $wrapstr>");
+		} else {
+			if ($sgbl->isBlackBackground()) {
+				$wrapstr .= " style='background:gray'";
+			} else {
+				$wrapstr .= " style='background:url($skindir/expand.gif)'";
+			}
+			print("<td width=$width $wrapstr class=collist>");
+		}
+
+
+			?> 
+		<b><?php $this->print_sortby($parent, $class, $unique_name, $name, $descr[$name])?> </b></font>
+
+		<?php 
+
+
+		$imgarrow = ($sortdir === "desc")? $imgdownarrow: $imguparrow;
+
+
+
+		if ($sortby && $sortby === $name)
+			print("</td> <td width=15><img src=".$imgarrow." ></td><td ></td></tr></table>");
+
+			?> 
+
+ </td>
+
+ <?php 
+	}
+		
+	$count = 0;
+	$rowcount = 0;
+
+
+		print("</tr> ");
+
+					
+
+
+		print_time('loop');
+
+	$n = 1;
+	foreach((array) $obj_list as $okey => $obj) {
+
+
+		if (!$obj) {
+			continue;
+		}
+		// Admin object should not be listed ever.
+		if ($obj->isAdmin() && $obj->isClient()) {
+			continue;
+		}
+
+		$checked = $obj->isSelect()? "": "disabled";
+
+
+		// Fix This.
+		if ($sellist) {
+			$checked = "checked disabled";
+			if (!array_search_bool($obj->nname, $sellist)) 
+				continue;
+		}
+
+
+        $imgpointer = get_general_image_path() . "/button/pointer.gif" ;
+        $imgblank = get_general_image_path() . "/button/blank.gif" ;
+
+
+		$rowuniqueid = "tr$unique_name$rowcount";
 
 		?>
 
-		<table width=100%>
-			<tr>
-				<td align=center style='border: 0px solid black'>
-				<table cellspacing=2 cellpadding=2 width=97% align=center>
-					<tr>
-						<td class=rowpoint></td>
-						<td colspan=<?=$nlcount; ?>><!--	</td></tr><tr><td height=2 colspan=2></td></tr></table> -->
-					
-					
-					<tr height=25 valign=middle>
 
-
-					<?php
-					if (!$sgbl->isBlackBackground()) {
-						print("<td bgcolor=$backgroundcolorstring> </td> ");
-					}
-					?>
-
-					<?php
-
-					if(!$this->isResourceClass($class) && !$gbl->__inside_ajax){
-						?>
-						<td width=10 background=<?=$imgtablerowhead ?>>
-						<form name="formselectall<?=$unique_name; ?>" value=hello><?=$filteropacitystringspan ?>
-						<input <?=$filteropacitystring ?> type=checkbox
-							name="selectall<?=$unique_name; ?>" value=on
-							<?php if ($sellist) echo "checked disabled" ;  ?>
-							onclick="javascript:calljselectall<?=$unique_name; ?> ()"> <?=$filteropacitystringspanend ?>
-						</form>
-						</td>
-						<?php
-					}
-
-
-					$imguparrow   = get_general_image_path() . "/button/uparrow.gif" ;
-					$imgdownarrow = get_general_image_path() . "/button/downarrow.gif" ;
-
-
-
-
-					foreach($name_list as $name => $width) {
-
-
-						$desc = "__desc_{$name}" ;
-
-						if (csa($name, "abutton")) {
-							$descr[$name] = array("b", "", "", "", 'help' => "");
-						} else {
-							$descr[$name] = get_classvar_description($rclass, $desc);
-						}
-
-
-						if (!$descr[$name]) {
-							print("Cannot access static variable $rclass::$desc");
-							exit(0);
-						}
-
-						if (csa($descr[$name][2], ':')) {
-							$_tlist = explode(':', $descr[$name][2]);
-							$descr[$name][2] = $_tlist[0];
-						}
-
-						foreach($descr[$name] as &$d) {
-							if ($this->is_special_url($d)) {
-								continue;
-							}
-							if (strstr($d, "%v") !== false) {
-								$d = str_replace("[%v]", $classdesc[2], $d);
-							}
-						}
-
-
-
-
-						if ($width === "100%")
-						$wrapstr = "wrap";
-						else
-						$wrapstr = "nowrap";
-
-						if ($sortby && $sortby === $name) {
-							if ($sgbl->isBlackBackground()) {
-								$wrapstr .= " style='background:gray'";
-							} else {
-								$wrapstr .= " style='background:url($skindir/listsort.gif)'";
-							}
-							print("<td width=$width $wrapstr ><table cellspacing=0 cellpadding=2  border=0> <tr> <td class=collist rowspan=2 $wrapstr>");
-						} else {
-							if ($sgbl->isBlackBackground()) {
-								$wrapstr .= " style='background:gray'";
-							} else {
-								$wrapstr .= " style='background:url($skindir/expand.gif)'";
-							}
-							print("<td width=$width $wrapstr class=collist>");
-						}
-
-
-						?>
-						<b><?php $this->print_sortby($parent, $class, $unique_name, $name, $descr[$name])?>
-						</b>
-						</font>
-
-						<?php
-
-
-						$imgarrow = ($sortdir === "desc")? $imgdownarrow: $imguparrow;
-
-
-
-						if ($sortby && $sortby === $name)
-						print("</td> <td width=15><img src=".$imgarrow." ></td><td ></td></tr></table>");
-
-						?>
-
-						</td>
-
-						<?php
-					}
-
-					$count = 0;
-					$rowcount = 0;
-
-
-					print("</tr> ");
-
-
-
-
-					print_time('loop');
-
-					$n = 1;
-					foreach((array) $obj_list as $okey => $obj) {
-
-
-						if (!$obj) {
-							continue;
-						}
-						// Admin object should not be listed ever.
-						if ($obj->isAdmin() && $obj->isClient()) {
-							continue;
-						}
-
-						$checked = $obj->isSelect()? "": "disabled";
-
-
-						// Fix This.
-						if ($sellist) {
-							$checked = "checked disabled";
-							if (!array_search_bool($obj->nname, $sellist))
-							continue;
-						}
-
-
-						$imgpointer = get_general_image_path() . "/button/pointer.gif" ;
-						$imgblank = get_general_image_path() . "/button/blank.gif" ;
-
-
-						$rowuniqueid = "tr$unique_name$rowcount";
-
-						?>
-
-
-						<script> loadImage('<?=$imgpointer?>') </script>
-						<script> loadImage('<?=$imgblank?>') </script>
-					
-					
-					<tr height=22 id=<?=$rowuniqueid ?> class=tablerow <?=$count; ?>
-						onmouseover=" swapImage('imgpoint<?=$rowcount; ?>','','<?=$imgpointer; ?>',1);document.getElementById('<?=$rowuniqueid ?>').className='tablerowhilite';"
-						onmouseout="swapImgRestore();restoreListOnMouseOver('<?=$rowuniqueid ?>', 'tablerow<?=$count ?>','ckbox<?=$unique_name.$rowcount ?>')">
-						<?php
-
-						if (!$sgbl->isBlackBackground()) {
-							print("<td $stylebackgroundstring id=td$unique_name.$rowcount width=5 class=rowpoint><img name=imgpoint$rowcount src=\"$imgblank\"></td>");
-						}
-
-
-						if(!$this->isResourceClass($class) && !$gbl->__inside_ajax){
-							?>
-						<td width=10 style='<?=$backgroundstring ?>'  ><?=$filteropacitystringspan ?>
-						<input <?=$filteropacitystring ?> id=ckbox
-						<?=$unique_name.$rowcount; ?> class=ch1 type=checkbox
-						<?=$checked ?> name=frm_accountselect
-							onclick="hiliteRowColor('tr<?=$unique_name.$rowcount; ?>','tablerow<?=$count; ?>',document.formselectall<?=$unique_name; ?>.selectall<?=$unique_name; ?>)"
-							;  value="<?=$obj->nname ?>"> <?=$filteropacitystringspanend ?></td>
-							<?php
-						}
-
-						$colcount = 1;
-						foreach($name_list as $name => $width) {
-							try {
-								$this->printObjectElement($parent, $class, $classdesc, $obj, $name, $width, $descr, $colcount . "_" . $rowcount);
-							} catch (exception $e) {
-								break;
-							}
-							$colcount++;
-						}
-
-
-						print("</tr> ");
-						if($count===0) $count=1; else $count=0;
-						$rowcount++;
-
-
-						if (!$sellist) {
-							if ($n === ($pagesize * $cgi_pagenum)) {
-								break;
-							}
-						}
-
-						$n++;
-
-					}
-
-
-					print("<tr><td></td><td colspan=$nlcount>");
-					if (!$rowcount) {
-						if ($login->issetHpFilter($filtername, 'searchstring') && $login->getHPFilter($filtername, 'searchstring')) {
-							?>
-						<table width=95%>
-							<tr align=center>
-								<td width=100%><b> <?= $login->getKeyword('no_matches_found') ?>
-								</b></td>
-							</tr>
-						</table>
-						<?php
-						} else {
-							$filtermessagstring = null;
-							if ($login->issetHpFilter($filtername)) {
-								$filtermessagstring = $login->getKeyword('search_note');
-
-								?>
-						<table width=95%>
-							<tr align=center>
-								<td width=100%><b> <?=$filtermessagstring?> </b></td>
-							</tr>
-						</table>
-						<?php
-
-							} else {
-								?>
-						<table width=95%>
-							<tr align=center>
-								<td width=100%><b> <?=$login->getKeyword('no') ?> <?=get_plural($classdesc[2]) ?>
-								<?=$login->getKeyword('under')?> <?="{$parent->getId()}" ?> </b>
-								</td>
-							</tr>
-						</table>
-						<?php
-							}
-						}
-					}
-					print("</td></tr>");
-					print("<tr><td class=rowpoint></td><td colspan=".$nlcount." > <table cellpadding=0 cellspacing=0 border=0 width=100%> <tr height=1 style='background:url($imgtopline)'><td></td></tr> <tr><td>");
-
-					if ($this->frm_action === 'selectshow') {
-						return;
-					}
-					?>
-						<script>ckcount<?=$unique_name;?> = <?=$rowcount.";  ";?>
+		<script> loadImage('<?=$imgpointer?>') </script>
+		<script> loadImage('<?=$imgblank?>') </script>
+
+			<tr  height=22 id=<?=$rowuniqueid ?>  class=tablerow<?=$count; ?> onmouseover=" swapImage('imgpoint<?=$rowcount; ?>','','<?=$imgpointer; ?>',1);document.getElementById('<?=$rowuniqueid ?>').className='tablerowhilite';" onmouseout="swapImgRestore();restoreListOnMouseOver('<?=$rowuniqueid ?>', 'tablerow<?=$count ?>','ckbox<?=$unique_name.$rowcount ?>')">
+		<?php   
+
+		if (!$sgbl->isBlackBackground()) {
+			print("<td $stylebackgroundstring id=td$unique_name.$rowcount width=5 class=rowpoint><img name=imgpoint$rowcount src=\"$imgblank\"></td>");
+		}
+
+
+		if(!$this->isResourceClass($class) && !$gbl->__inside_ajax){
+			?>
+			<td width=10 style='<?=$backgroundstring ?>'  > <?=$filteropacitystringspan ?>   <input <?=$filteropacitystring ?> id=ckbox<?=$unique_name.$rowcount; ?>  class=ch1 type=checkbox <?=$checked ?> name=frm_accountselect  onclick="hiliteRowColor('tr<?=$unique_name.$rowcount; ?>','tablerow<?=$count; ?>',document.formselectall<?=$unique_name; ?>.selectall<?=$unique_name; ?>)";  value="<?=$obj->nname ?>"> <?=$filteropacitystringspanend ?> </td>
+			<?php
+		}
+
+		$colcount = 1;
+		foreach($name_list as $name => $width) {
+			try {
+					$this->printObjectElement($parent, $class, $classdesc, $obj, $name, $width, $descr, $colcount . "_" . $rowcount);
+			} catch (exception $e) {
+				break;
+			}
+			$colcount++;
+		}
+
+
+		print("</tr> ");
+		if($count===0) $count=1; else $count=0; 
+		$rowcount++;
+
+
+		if (!$sellist) {
+			if ($n === ($pagesize * $cgi_pagenum)) {
+				break;
+			}
+		}
+
+		$n++;
+
+	}
+
+
+	print("<tr><td></td><td colspan=$nlcount>");
+	if (!$rowcount) {
+		if ($login->issetHpFilter($filtername, 'searchstring') && $login->getHPFilter($filtername, 'searchstring')) {
+			?> 
+			<table width=95%> <tr align=center> <td width=100%> <b> <?= $login->getKeyword('no_matches_found') ?>  </b> </td> </tr> </table> 
+			<?php 
+		} else {
+			$filtermessagstring = null;
+			if ($login->issetHpFilter($filtername)) {
+				$filtermessagstring = $login->getKeyword('search_note');
+
+				?> 
+			<table width=95%> <tr align=center> <td width=100%> <b> <?=$filtermessagstring?>   </b> </td> </tr> </table> 
+			<?php 
+
+			} else {
+			?> 
+			<table width=95%> <tr align=center> <td width=100%> <b>  <?=$login->getKeyword('no') ?> <?=get_plural($classdesc[2]) ?>   <?=$login->getKeyword('under')?> <?="{$parent->getId()}" ?>   </b> </td> </tr> </table> 
+			<?php 
+			}
+		}
+	}
+	print("</td></tr>");
+	print("<tr><td class=rowpoint></td><td colspan=".$nlcount." > <table cellpadding=0 cellspacing=0 border=0 width=100%> <tr height=1 style='background:url($imgtopline)'><td></td></tr> <tr><td>");
+
+	if ($this->frm_action === 'selectshow') {
+		return;
+	}
+?>
+<script>ckcount<?=$unique_name;?> = <?=$rowcount.";  ";?>
 function calljselectall<?=$unique_name; ?>(){
 	jselectall(document.formselectall<?=$unique_name; ?>.selectall<?=$unique_name; ?>,ckcount<?=$unique_name; ?>,'<?=$unique_name;?>')
 }
@@ -5215,91 +4670,91 @@ function calljselectall<?=$unique_name; ?>(){
 
 
 
-if ($sellist ) {
+	if ($sellist ) {
 
-	print("<table $blackstyle> <tr> <td >");
-	print("<form method=$sgbl->method action={$_SERVER["PHP_SELF"]}>");
+		print("<table $blackstyle> <tr> <td >");
+		print("<form method=$sgbl->method action={$_SERVER["PHP_SELF"]}>");
+	
+		$ghtml->print_current_input_vars(array("frm_confirmed"));
+		$ghtml->print_input("hidden", "frm_confirmed", "yes");
+		$ghtml->print_input("submit", "Confrm", "Confirm", "class=submitbutton");
+		print("</form> ");
 
-	$ghtml->print_current_input_vars(array("frm_confirmed"));
-	$ghtml->print_input("hidden", "frm_confirmed", "yes");
-	$ghtml->print_input("submit", "Confrm", "Confirm", "class=submitbutton");
-	print("</form> ");
+		print("</td> <td  width=30> &nbsp; </td> <td >");
+		print("<form method=$sgbl->method action=\"/display.php\">");
+		$this->print_current_input_vars(array("frm_action", "frm_accountselect"));
+		$ghtml->print_input("hidden", "frm_action", "list");
+		$ghtml->print_input("submit", "Cancel", "Cancel", "class=submitbutton");
+		print("</form> ");
 
-	print("</td> <td  width=30> &nbsp; </td> <td >");
-	print("<form method=$sgbl->method action=\"/display.php\">");
-	$this->print_current_input_vars(array("frm_action", "frm_accountselect"));
-	$ghtml->print_input("hidden", "frm_action", "list");
-	$ghtml->print_input("submit", "Cancel", "Cancel", "class=submitbutton");
-	print("</form> ");
+		print("</td> </tr> </table> ");
 
-	print("</td> </tr> </table> ");
-
-}
-if ($sgbl->isBlackBackground()) {
-
-	print("</td></tr></table>");
-	print("</td></tr></table>");
-	print("</td></tr></table>");
-	return ;
-
-}
-
-if (!$sellist && !$this->isResourceClass($class) && !$gbl->__inside_ajax) {
-	$imgbtm1 = get_general_image_path() . "/button/btm_01.gif" ;
-	$imgbtm2 = get_general_image_path() . "/button/btm_02.gif" ;
-	$imgbtm3 = get_general_image_path() . "/button/btm_03.gif" ;
-	$imgshow = get_general_image_path() . "/button/btn_show.gif" ;
-
-	print("<table cellpadding=0 cellspacing=0 border=0 width=100%><tr><td >");
-
-	print("<table cellpadding=0 cellspacing=0 border=0>");
-	print("<form name=perpage_{$unique_name} method=$sgbl->method action=''>") ;
-	print("<tr><td><img src='".$imgbtm1."'></td><td background='".$imgbtm2."'>");
-	$rpagesize = exec_class_method($rclass, "perPage");
-	if ($rpagesize > 1000) {
-		$width = 50;
-	} else {
-		$width = 70;
+	}
+	if ($sgbl->isBlackBackground()) { 
+		
+		print("</td></tr></table>");
+		print("</td></tr></table>");
+		print("</td></tr></table>");
+		return ;
+	
 	}
 
-	print("<table width=90% cellpadding=0 cellspacing=0><tr><td width=40><b>Show</b></td><td width=$width>");
-	$this->print_current_input_var_unset_filter($filtername, array('pagesize', 'pagenum'));
-	$this->print_current_input_vars(array('frm_hpfilter'));
-	$f_page = (int) $login->issetHpFilter($filtername, 'pagesize')? $login->getHPFilter($filtername, 'pagesize'): $pagesize;
-	if ($rpagesize < 1000) {
+	if (!$sellist && !$this->isResourceClass($class) && !$gbl->__inside_ajax) {
+        $imgbtm1 = get_general_image_path() . "/button/btm_01.gif" ;
+        $imgbtm2 = get_general_image_path() . "/button/btm_02.gif" ;
+        $imgbtm3 = get_general_image_path() . "/button/btm_03.gif" ;
+        $imgshow = get_general_image_path() . "/button/btn_show.gif" ;
 
-		print("<select class=textbox onchange='document.perpage_{$unique_name}.submit()' style='width:40' name=frm_hpfilter[$filtername][pagesize]>");
-		$list = array($rpagesize/2, $rpagesize, $rpagesize *2 , $rpagesize *4, $rpagesize *8, $rpagesize * 16);
-		foreach($list as $l) {
-			$sel = null;
-			if ($l == $f_page) {
-				$sel = "SELECTED";
-			}
-			print("<option value=$l $sel> $l </option>");
+        print("<table cellpadding=0 cellspacing=0 border=0 width=100%><tr><td >");
+	    
+		print("<table cellpadding=0 cellspacing=0 border=0>");
+		print("<form name=perpage_{$unique_name} method=$sgbl->method action=''>") ;
+		print("<tr><td><img src='".$imgbtm1."'></td><td background='".$imgbtm2."'>");
+		$rpagesize = exec_class_method($rclass, "perPage");
+		if ($rpagesize > 1000) {
+			$width = 50;
+		} else {
+			$width = 70;
 		}
-		print("</select>");
-	} else {
-		print("<input type=text class=textbox style='width:25' name=frm_hpfilter[$filtername][pagesize] value=$f_page>");
-	}
-	print("<input type=image src='".$imgshow."'>");
-	print("</td></tr></table>");
-
-	print("</td><td><img src='".$imgbtm3."'></td></tr></form></table>");
-
-	print("</td><td align=right >");
-
-	if ($rpagesize < 1000) {
-		print("<form method=$sgbl->method action=''>") ;
-		print("<table cellpadding=0 cellspacing=0  border=0 valign=middle><tr valign=middle><td><b> Page </b>");
-		$this->print_current_input_var_unset_filter($filtername, array('pagenum'));
+	
+		print("<table width=90% cellpadding=0 cellspacing=0><tr><td width=40><b>Show</b></td><td width=$width>");
+		$this->print_current_input_var_unset_filter($filtername, array('pagesize', 'pagenum'));
 		$this->print_current_input_vars(array('frm_hpfilter'));
-		print("<input class=textbox style='width:25px' name=\"frm_hpfilter[$filtername][pagenum]\" type=text value=$cgi_pagenum class=small></td><td >");
-		print("<input type=image src='$imgshow'>");
-		print("</form> </td></tr></table> ");
+		$f_page = (int) $login->issetHpFilter($filtername, 'pagesize')? $login->getHPFilter($filtername, 'pagesize'): $pagesize;
+		if ($rpagesize < 1000) {
+
+			print("<select class=textbox onchange='document.perpage_{$unique_name}.submit()' style='width:40' name=frm_hpfilter[$filtername][pagesize]>");
+			$list = array($rpagesize/2, $rpagesize, $rpagesize *2 , $rpagesize *4, $rpagesize *8, $rpagesize * 16);
+			foreach($list as $l) {
+				$sel = null;
+				if ($l == $f_page) {
+					$sel = "SELECTED";
+				}
+				print("<option value=$l $sel> $l </option>");
+			}
+			print("</select>");
+		} else {
+			print("<input type=text class=textbox style='width:25' name=frm_hpfilter[$filtername][pagesize] value=$f_page>");
+		}
+		print("<input type=image src='".$imgshow."'>");
+		print("</td></tr></table>");
+	
+		print("</td><td><img src='".$imgbtm3."'></td></tr></form></table>");
+		
+		print("</td><td align=right >");
+		
+		if ($rpagesize < 1000) {
+			print("<form method=$sgbl->method action=''>") ;
+			print("<table cellpadding=0 cellspacing=0  border=0 valign=middle><tr valign=middle><td><b> Page </b>");
+			$this->print_current_input_var_unset_filter($filtername, array('pagenum'));
+			$this->print_current_input_vars(array('frm_hpfilter'));
+			print("<input class=textbox style='width:25px' name=\"frm_hpfilter[$filtername][pagenum]\" type=text value=$cgi_pagenum class=small></td><td >");
+			print("<input type=image src='$imgshow'>");
+			print("</form> </td></tr></table> ");
+		}
+
+	
 	}
-
-
-}
 
 print("</td></tr></table>");
 print("</td></tr></table>");
@@ -5311,259 +4766,264 @@ print("</td> </tr></table>");
 
 
 
-//print_time("$class.objecttable", "$class.objecttable");
-	}
+	//print_time("$class.objecttable", "$class.objecttable");
+}
 
-	function getInheritVar()
-	{
-		$v = array("frm_o_o", "frm_o_cname", 'frm_action', 'frm_sortby', 'frm_sortdir', 'frm_searchstring', "frm_selectshowbase", "frm_consumedlogin");
-		return $v;
-	}
+function getInheritVar()
+{
+	$v = array("frm_o_o", "frm_o_cname", 'frm_action', 'frm_sortby', 'frm_sortdir', 'frm_searchstring', "frm_selectshowbase", "frm_consumedlogin");
+	return $v;
+}
 
-	function getCurrentInheritVar()
-	{
-		$inherit_var = $this->getInheritVar();
+function getCurrentInheritVar()
+{
+	$inherit_var = $this->getInheritVar();
 
-		foreach($inherit_var as $v) {
-			if (isset($this->__http_vars[$v])) {
-				$refreshpost[$v] = $this->__http_vars[$v];
-			}
-		}
-		return $refreshpost;
-	}
-
-	function print_list_submit($class, $blist, $uniquename)
-	{
-		//list($iclass, $mclass, $rclass) = get_composite($class);
-		$rclass = $class;
-		$this->print_list_submit_start();
-
-		foreach((array) $blist as $b) {
-			$this->print_list_submit_middle($b,$uniquename);
-		}
-		$refreshpost = $this->getCurrentInheritVar();
-		$refreshpost['frm_list_refresh'] = 'yes';
-		$url = $this->get_get_from_post(null, $refreshpost);
-
-		$refresh = create_simpleObject(array( 'url' => "display.php?$url", 'purl' => "/display.php?frm_action=refresh&frm_o_cname=ffile", 'target' => ''));
-
-		$this->print_list_submit_middle(array($refresh, 1), $uniquename);
-
-		if (exec_class_method($rclass, "isHardRefresh")) {
-			$hardrefresh = create_simpleObject(array( 'url' => "display.php?$url&frm_hardrefresh=yes", 'purl' => "/display.php?frm_action=hardrefresh&frm_o_cname=ffile", 'target' => ''));
-			$this->print_list_submit_middle(array($hardrefresh, 1), $uniquename);
-		}
-
-		$this->print_list_submit_end();
-	}
-
-	function print_list_submit_start()
-	{
-		?>
-						<table height=100% cellpadding=0 cellspacing=0 border=0
-							style="border-collapse: collapse;">
-							<tr align=left>
-							<?php
-	}
-
-	function print_list_submit_middle($button, $uniquename)
-	{
-
-
-		global $gbl, $sgbl, $login, $ghtml;
-		$iconpath = get_image_path() . "/button";
-
-		$url = $button[0];
-		$purl = NULL;
-		if ($this->is_special_url($url)) {
-			$purl = $url->purl;
-			$target = $url->target;
-			$url = $url->url;
-			//$url = str_replace("[%s]", $obj->nname, $url);
-		}
-		$ac_descr = $this->getActionDetails($url, $purl, $iconpath, $path, $post, $_t_file, $_t_name, $_t_image, $__t_identity);
-
-
-
-		$descr = $ac_descr;
-		$var = $_t_name;
-		$file = $_t_file;
-
-		$help = $this->get_full_help($descr['help']);
-
-		$name = $descr[2];
-		$form_name =str_replace(" ","_",$file . "_" . $var);
-
-		$form_name = $this->createEncForm_name($form_name);
-
-
-		$image = $_t_image;
-		$this->save_non_existant_image($image);
-
-		$noselect = (isset($button[1]) && $button[1]) ? 1: 0;
-		$doconfirm = (isset($button[3]) && $button[3]) ? 1: 0;
-		$imgbtnsep = $login->getSkinDir() . "/btn_sep.gif" ;
-
-		//	print(" <script> \n ");
-		//	$fname = create_name($name);
-		//	print("arr".$fname."= new Object();");
-		//	foreach($post as $key => $value) {
-		//		print("arr".$fname."['".$key."']"." ='". $value."'\n");
-		//	}
-		//	print("</script>");
-
-		print(" <form name=form".$form_name." action=".$path.">");
-
-
-		$this->print_input_vars($post);
-
-		if(! $noselect) {
-			print("<input id=accountsel name=frm_accountselect type=hidden>");
-		}
-		print("</form>");
-
-		?>
-								<td width=10></td>
-								<td align=center valign=bottom><?php 
-								if (!isset($button[2])) $button[2] = NULL;
-								if (!$button[2]) {
-									?> <span title='<?=$help ?>'> <a class=button
-									href="javascript:storevalue(document.form<?=$form_name; ?>,'accountsel','ckbox<?=$uniquename; ?>',ckcount<?=$uniquename; ?>, <?=$noselect ?>, <?=$doconfirm ?>)">
-
-									<?php
-								}
-
-								if (!$sgbl->isBlackBackground()) {
-									print("<img height=15 width=15 src=$image>\n");
-									$colorstring = null;
-								} else {
-									$colorstring = "color=#999999";
-								}
-								?> <?="<br> <font $colorstring class=lightandthin>" . $name . "</font> "  ?>
-
-								<?php if (!$button[2])  ?> </a> </span> <?php
-
-								?></td>
-								<td width=10></td>
-
-								<?php
-
-	}
-
-	function print_list_submit_end() {
-		print("</tr></table>");
-	}
-
-	function get_filter_var()
-	{
-		global $gbl, $sgbl, $login, $ghtml;
-		$post['frm_hpfilter'] = $login->getHPFilter();
-		$string = $this->get_get_from_post(null, $post);
-		return $string;
-	}
-
-	function get_help_url()
-	{
-		global $gbl, $sgbl, $login, $ghtml;
-		$url = $_SERVER["PHP_SELF"];
-		$h = $this->__http_vars;
-		if ($h) {
-			$desc = $ghtml->getActionDescr('', $h, $class, $var, $name);
-			$get = "class=$class&var=$var";
-			$get = base64_encode($get);
-
-			$url = "/htmllib/mibin/help.php?frm_action=show&frm_q=$get";
-			return $url;
-		} else {
-			return null;
+	foreach($inherit_var as $v) {
+		if (isset($this->__http_vars[$v])) {
+			$refreshpost[$v] = $this->__http_vars[$v];
 		}
 	}
+	return $refreshpost;
+}
 
-	function get_session_vars()
-	{
-		global $gbl, $sgbl, $login, $ghtml;
-		$this->__http_vars = $login->c_session->http_vars;
+function print_list_submit($class, $blist, $uniquename)
+{
+	//list($iclass, $mclass, $rclass) = get_composite($class);
+	$rclass = $class;
+	$this->print_list_submit_start();
+
+	foreach((array) $blist as $b) {
+		$this->print_list_submit_middle($b,$uniquename);
+	}
+	$refreshpost = $this->getCurrentInheritVar();
+	$refreshpost['frm_list_refresh'] = 'yes';
+	$url = $this->get_get_from_post(null, $refreshpost);
+
+	$refresh = create_simpleObject(array( 'url' => "display.php?$url", 'purl' => "/display.php?frm_action=refresh&frm_o_cname=ffile", 'target' => ''));
+
+	$this->print_list_submit_middle(array($refresh, 1), $uniquename);
+
+	if (exec_class_method($rclass, "isHardRefresh")) {
+		$hardrefresh = create_simpleObject(array( 'url' => "display.php?$url&frm_hardrefresh=yes", 'purl' => "/display.php?frm_action=hardrefresh&frm_o_cname=ffile", 'target' => ''));
+		$this->print_list_submit_middle(array($hardrefresh, 1), $uniquename);
 	}
 
-	function print_defintion($value)
-	{
-		?>
-								<script> help_data['helparea'] = '<?=$value ?>'; changeContent('help', 'helparea');</script>
-								<?php
+	$this->print_list_submit_end();
+}
+
+function print_list_submit_start()
+{
+?>
+	<table  height=100% cellpadding=0 cellspacing=0 border=0 style="border-collapse: collapse;">
+	<tr align=left>
+<?php
+}
+
+function print_list_submit_middle($button, $uniquename)
+{
+
+
+	global $gbl, $sgbl, $login, $ghtml;
+	$iconpath = get_image_path() . "/button";
+
+	$url = $button[0];
+	$purl = NULL;
+	if ($this->is_special_url($url)) {
+		$purl = $url->purl;
+		$target = $url->target;
+		$url = $url->url;
+		//$url = str_replace("[%s]", $obj->nname, $url);
+	}
+	$ac_descr = $this->getActionDetails($url, $purl, $iconpath, $path, $post, $_t_file, $_t_name, $_t_image, $__t_identity);
+
+
+
+	$descr = $ac_descr;
+	$var = $_t_name;
+	$file = $_t_file;
+
+	$help = $this->get_full_help($descr['help']);
+
+	$name = $descr[2];
+	$form_name =str_replace(" ","_",$file . "_" . $var);
+
+	$form_name = $this->createEncForm_name($form_name);
+
+
+	$image = $_t_image;
+	$this->save_non_existant_image($image);
+
+	$noselect = (isset($button[1]) && $button[1]) ? 1: 0;
+	$doconfirm = (isset($button[3]) && $button[3]) ? 1: 0;
+	$imgbtnsep = $login->getSkinDir() . "/btn_sep.gif" ; 
+
+//	print(" <script> \n ");
+//	$fname = create_name($name);
+//	print("arr".$fname."= new Object();");
+//	foreach($post as $key => $value) {
+//		print("arr".$fname."['".$key."']"." ='". $value."'\n");
+//	}
+//	print("</script>");
+
+	print(" <form name=form".$form_name." action=".$path.">");
+
+
+	$this->print_input_vars($post);
+
+	if(! $noselect) {
+		print("<input id=accountsel name=frm_accountselect type=hidden>");
+	}
+	print("</form>");	
+
+	?>
+	<td width=10></td> 
+	<td align=center valign=bottom>
+
+<?php 
+	if (!isset($button[2])) $button[2] = NULL;
+	if (!$button[2]) {
+	?> 
+	<span title='<?=$help ?>'> <a class=button  href="javascript:storevalue(document.form<?=$form_name; ?>,'accountsel','ckbox<?=$uniquename; ?>',ckcount<?=$uniquename; ?>, <?=$noselect ?>, <?=$doconfirm ?>)" > 
+
+<?php 
 	}
 
-	function get_action_or_display_help($help, $flag)
-	{
-		if ($flag === "display") {
-			//$help = preg_replace("/_\[.*\]_/i", "", $help);
-			//$help = preg_replace("/[(_\{)(\}_)]/i", "", $help);
-			$help = "<font style=font-size:11;font-weight:bold> Current Page: </font>  <br> <br> $help";
-		} else if ($flag === "notice") {
-			$help = "<font style=font-size:11;font-weight:bold>Message: </font>  <br> <br> $help";
-		} else {
-			//$help = preg_replace("/_\{.*\}/i", "", $help);
-			//$help = preg_replace("/[(_\[)(\]_)]/i", "", $help);
-			$help = "<font style=font-size:11;font-weight:bold>Action: </font> <br> <br> $help";
+	if (!$sgbl->isBlackBackground()) {
+		print("<img height=15 width=15 src=$image>\n");
+		$colorstring = null;
+	} else {
+		$colorstring = "color=#999999";
+	}
+	?>
+
+<?="<br> <font $colorstring class=lightandthin>" . $name . "</font> "  ?> 
+
+<?php if (!$button[2])  ?> </a> </span> <?php 
+
+?> 
+
+</td>
+<td width=10></td>
+
+<?php 
+
+}
+
+function print_list_submit_end() {
+print("</tr></table>");
+}
+
+function get_filter_var()
+{
+	global $gbl, $sgbl, $login, $ghtml; 
+	$post['frm_hpfilter'] = $login->getHPFilter();
+	$string = $this->get_get_from_post(null, $post);
+	return $string;
+}
+
+function get_help_url()
+{
+	global $gbl, $sgbl, $login, $ghtml; 
+	$url = $_SERVER["PHP_SELF"];
+	$h = $this->__http_vars;
+	if ($h) {
+		$desc = $ghtml->getActionDescr('', $h, $class, $var, $name);
+		$get = "class=$class&var=$var";
+		$get = base64_encode($get);
+
+		$url = "/htmllib/mibin/help.php?frm_action=show&frm_q=$get";
+		return $url;	
+	} else {
+		return null;
+	}
+}
+
+function get_session_vars()
+{
+	global $gbl, $sgbl, $login, $ghtml; 
+	$this->__http_vars = $login->c_session->http_vars;
+}
+
+function print_defintion($value)
+{
+?> 
+	<script> help_data['helparea'] = '<?=$value ?>'; changeContent('help', 'helparea');</script>
+<?php 
+}
+
+function get_action_or_display_help($help, $flag)
+{
+	if ($flag === "display") {
+		//$help = preg_replace("/_\[.*\]_/i", "", $help);
+		//$help = preg_replace("/[(_\{)(\}_)]/i", "", $help);
+		$help = "<font style=font-size:11;font-weight:bold> Current Page: </font>  <br> <br> $help";
+	} else if ($flag === "notice") {
+		$help = "<font style=font-size:11;font-weight:bold>Message: </font>  <br> <br> $help";
+	} else {
+		//$help = preg_replace("/_\{.*\}/i", "", $help);
+		//$help = preg_replace("/[(_\[)(\]_)]/i", "", $help);
+		$help = "<font style=font-size:11;font-weight:bold>Action: </font> <br> <br> $help";
+	} 
+	return $help;
+}
+
+function print_jscript_source($jsource)
+{
+	print("<script language=Javascript src=$jsource> </script>\n");
+
+}
+function print_css_source($csource)
+{
+	print("<link href='$csource' rel=stylesheet type=text/css>\n");
+}
+
+function get_lpanel_file()
+{
+	global $gbl, $sgbl, $login, $ghtml; 
+	$fpath= get_image_path()."/";
+	$path = getreal($fpath);
+	$val = lscandir($path);
+	return $val;
+}
+
+// Stub function. Should be redefined in the class that inherits this...
+function mymenus($header)
+{
+
+}
+
+function printNavHistMenu()
+{
+	global $gbl, $sgbl, $login, $ghtml; 
+
+	print("<script>");
+	if ($login->getSpecialObject('sp_specialplay')->isOn('ultra_navig')) {
+		foreach((array) $gbl->__navigmenu as $n => $v) {
+			create_navmenu($n, $v[0], $v[1]);
 		}
-		return $help;
 	}
-
-	function print_jscript_source($jsource)
-	{
-		print("<script language=Javascript src=$jsource> </script>\n");
-
-	}
-	function print_css_source($csource)
-	{
-		print("<link href='$csource' rel=stylesheet type=text/css>\n");
-	}
-
-	function get_lpanel_file()
-	{
-		global $gbl, $sgbl, $login, $ghtml;
-		$fpath= get_image_path()."/";
-		$path = getreal($fpath);
-		$val = lscandir($path);
-		return $val;
-	}
-
-	// Stub function. Should be redefined in the class that inherits this...
-	function mymenus($header)
-	{
-
-	}
-
-	function printNavHistMenu()
-	{
-		global $gbl, $sgbl, $login, $ghtml;
-
-		print("<script>");
-		if ($login->getSpecialObject('sp_specialplay')->isOn('ultra_navig')) {
-			foreach((array) $gbl->__navigmenu as $n => $v) {
-				create_navmenu($n, $v[0], $v[1]);
-			}
-		}
-		print("window.histlist = new Menu('histlist',210);");
-		if (isset($gbl->__histlist)) {
-			end($gbl->__histlist);
+	print("window.histlist = new Menu('histlist',210);");
+	if (isset($gbl->__histlist)) {
+		end($gbl->__histlist);
+		$ghtml->print_pmenu('histlist', key($gbl->__histlist), null, null, true);
+		while(($val = prev($gbl->__histlist))) {
 			$ghtml->print_pmenu('histlist', key($gbl->__histlist), null, null, true);
-			while(($val = prev($gbl->__histlist))) {
-				$ghtml->print_pmenu('histlist', key($gbl->__histlist), null, null, true);
-			}
-			reset($gbl->__histlist);
-		} else {
-			$ghtml->print_pmenu('histlist', '__blank|No History');
 		}
-		print("</script>");
+		reset($gbl->__histlist);
+	} else {
+		$ghtml->print_pmenu('histlist', '__blank|No History');
 	}
+	print("</script>");
+}
 
-	function print_refresh_key()
-	{
-		global $gbl, $sgbl, $login, $ghtml;
+function print_refresh_key()
+{
+	global $gbl, $sgbl, $login, $ghtml; 
 
 
-		?>
-								<script>
+	?> 
+	<script>
 	document.onkeydown = function(e) {
 		e= e || window.event;
 		if (e.keyCode == 27) {
@@ -5577,26 +5037,26 @@ print("</td> </tr></table>");
 
 
 	</script>
-	<?php
+<?php 
 
 	if ($sgbl->dbg <= 0) {
 		return;
 	}
 	/*
-	 <script>
-	 document.onkeydown = function(e) {
+	<script>
+	document.onkeydown = function(e) {
 		e= e || window.event;
 		if (e.keyCode == 86 && e.ctrlKey) {
-		top.mainframe.window.location.reload();
+			top.mainframe.window.location.reload();
 		}
 		return true;
-		}
-		</script>
-		*/
+	}
+	</script>
+	*/
 
-	?>
+	?> 
 
-								<script>
+	<script>
 	document.onkeyup = function(e) {
 		e= e || window.event;
 		if (e.keyCode == 86 && e.ctrlKey) {
@@ -5607,75 +5067,74 @@ print("</td> </tr></table>");
 
 
 	</script>
+	<?php 
+}
+
+function print_include_jscript($header = NULL)
+{
+	global $gbl, $sgbl, $login;
+
+	?> 
+	<meta http-equiv="expires" content="Wed, 26 Feb 1997 08:21:57 GMT"> 
+
+	<?php $this->print_refresh_key(); ?> 
+
+
 	<?php
+
+	$this->print_jscript_source("/htmllib/js/lxa.js");
+	$this->print_jscript_source("/htmllib/js/helptext.js");
+	$this->print_jscript_source("/htmllib/js/preop.js");
+
+
+	if (!$login->getSpecialObject('sp_specialplay')->isOn('enable_ajax') &&  ($header !== 'left_panel')) {
+	} else {
+		$this->print_jscript_source("/htmllib/extjs/adapter/yui/yui-utilities.js");
+		$this->print_jscript_source("/htmllib/extjs/adapter/yui/ext-yui-adapter.js");
+		$this->print_jscript_source("/htmllib/extjs/ext-all.js");
+		$this->print_jscript_source("/htmllib/yui-dragdrop/dragdrop.js");
+	}
+	/*
+$this->print_jscript_source("/htmllib/jui/build/yahoo/yahoo-min.js" );
+$this->print_jscript_source("/htmllib/jui/build/event/event-min.js" );
+$this->print_jscript_source("/htmllib/jui/build/connection/connection-min.js");
+$this->print_jscript_source("/htmllib/jui/build/dom/dom-min.js");
+$this->print_jscript_source("/htmllib/jui/build/dragdrop/dragdrop.js" );
+$this->print_jscript_source("/htmllib/jui/build/animation/animation-min.js");
+*/
+	$this->print_jscript_source("/htmllib/js/drag.js");
+
+ 
+	$func = null;
+	if (!$header) {
+		$func = "onLoad='lxLoadBody();'";
 	}
 
-	function print_include_jscript($header = NULL)
-	{
-		global $gbl, $sgbl, $login;
+	if (!$header) {
+		$descr = $this->getActionDescr($_SERVER['PHP_SELF'], $this->__http_vars, $class, $var, $identity);
 
+		$help = $this->get_full_help($descr[2]);
+
+		$help = $this->get_action_or_display_help($help, "display");
+		$this->print_defintion($help);
+	}
+
+	$skin = $login->getSkinDir();
+	$css = "$skin/css.css";
+	if (!lfile_exists(getreal($css))) {
+		$css = "/htmllib/css/skin/base.css";
+	}
+	$this->print_css_source("/htmllib/css/common.css");
+	$this->print_css_source($css);
+	$this->print_css_source("/htmllib/css/ext-all.css");
+
+	$l = @ getdate();
+	$hours = $l['hours'];
+	$minutes = $l['minutes'];
+
+	if ($header === 'left_panel') {
 		?>
-								<meta http-equiv="expires"
-									content="Wed, 26 Feb 1997 08:21:57 GMT">
-
-									<?php $this->print_refresh_key(); ?>
-
-
-									<?php
-
-									$this->print_jscript_source("/htmllib/js/lxa.js");
-									$this->print_jscript_source("/htmllib/js/helptext.js");
-									$this->print_jscript_source("/htmllib/js/preop.js");
-
-
-									if (!$login->getSpecialObject('sp_specialplay')->isOn('enable_ajax') &&  ($header !== 'left_panel')) {
-									} else {
-										$this->print_jscript_source("/htmllib/extjs/adapter/yui/yui-utilities.js");
-										$this->print_jscript_source("/htmllib/extjs/adapter/yui/ext-yui-adapter.js");
-										$this->print_jscript_source("/htmllib/extjs/ext-all.js");
-										$this->print_jscript_source("/htmllib/yui-dragdrop/dragdrop.js");
-									}
-									/*
-									 $this->print_jscript_source("/htmllib/jui/build/yahoo/yahoo-min.js" );
-									 $this->print_jscript_source("/htmllib/jui/build/event/event-min.js" );
-									 $this->print_jscript_source("/htmllib/jui/build/connection/connection-min.js");
-									 $this->print_jscript_source("/htmllib/jui/build/dom/dom-min.js");
-									 $this->print_jscript_source("/htmllib/jui/build/dragdrop/dragdrop.js" );
-									 $this->print_jscript_source("/htmllib/jui/build/animation/animation-min.js");
-									 */
-									$this->print_jscript_source("/htmllib/js/drag.js");
-
-
-									$func = null;
-									if (!$header) {
-										$func = "onLoad='lxLoadBody();'";
-									}
-
-									if (!$header) {
-										$descr = $this->getActionDescr($_SERVER['PHP_SELF'], $this->__http_vars, $class, $var, $identity);
-
-										$help = $this->get_full_help($descr[2]);
-
-										$help = $this->get_action_or_display_help($help, "display");
-										$this->print_defintion($help);
-									}
-
-									$skin = $login->getSkinDir();
-									$css = "$skin/css.css";
-									if (!lfile_exists(getreal($css))) {
-										$css = "/htmllib/css/skin/base.css";
-									}
-									$this->print_css_source("/htmllib/css/common.css");
-									$this->print_css_source($css);
-									$this->print_css_source("/htmllib/css/ext-all.css");
-
-									$l = @ getdate();
-									$hours = $l['hours'];
-									$minutes = $l['minutes'];
-
-									if ($header === 'left_panel') {
-										?>
-								<script language=javascript>
+		<script language=javascript>
 		var gl_helpUrl;
 		gl_tDate = new Date();
 		var clockTimeZoneMinutes = <?=$l['minutes'] ?> - gl_tDate.getMinutes() ;
@@ -5689,14 +5148,14 @@ print("</td> </tr></table>");
 		{
 		}
 
-		</script>
-								</head>
-								<?php
-									}
+		</script> 
+		</head>
+		<?php 
+	}
 
 
-									?>
-								<script> 
+		?> 
+		<script> 
 
 		function jsFindFilterVar()
 		{
@@ -5723,1176 +5182,1145 @@ print("</td> </tr></table>");
 			changeContent('help', 'helparea');
 		}
 		</script>
-		<?php
-		?>
-								<script>
+		<?php 
+	?> 
+<script>
 	var gl_skin_directory = '<?=$login->getSkinDir() ?>';
 	//document.onmouseup = this.hideMenuInFrame; </script>
-								<?php
+<?php 
 
-								if ($header === 'left_panel') {
-									print("<script> lxCallEnd(); </script>");
-								}
+	if ($header === 'left_panel') {
+		print("<script> lxCallEnd(); </script>");
+	}
+}
+
+function print_refresh()
+{
+	print("<script> top.mainframe.window.location.reload(); </script>"); 
+}
+
+function print_redirect_back($message, $variable, $value = null) 
+{
+	global $gbl, $sgbl, $login;
+
+	$vstring = null;
+	if ($value) {
+		$value = htmlspecialchars($value);
+		$vstring = "&frm_m_emessage_data=$value";
+	}
+	$parm = "frm_emessage=$message$vstring";
+	if ($variable) {
+		$parm .= "&frm_ev_list=$variable";
 	}
 
-	function print_refresh()
-	{
-		print("<script> top.mainframe.window.location.reload(); </script>");
+	$last_page = $gbl->getSessionV("lx_http_referer");
+
+	if (!$last_page) {
+		$last_page = "/display.php?frm_action=show";
 	}
 
-	function print_redirect_back($message, $variable, $value = null)
-	{
-		global $gbl, $sgbl, $login;
-
-		$vstring = null;
-		if ($value) {
-			$value = htmlspecialchars($value);
-			$vstring = "&frm_m_emessage_data=$value";
-		}
-		$parm = "frm_emessage=$message$vstring";
-		if ($variable) {
-			$parm .= "&frm_ev_list=$variable";
-		}
-
-		$last_page = $gbl->getSessionV("lx_http_referer");
-
-		if (!$last_page) {
-			$last_page = "/display.php?frm_action=show";
-		}
-
-		$current_url = $this->get_get_from_current_post(null);
-		if ($last_page === $current_url) {
-			log_log("redirect_error", "$last_page is same as the current url...\n");
-			$last_page = "/display.php?frm_action=show";
-		}
-
-		$this->get_post_from_get($last_page, $path, $post);
-
-		$get = $this->get_get_from_post(array("frm_ev_list"), $post);
-
-		$this->print_redirect("$path?$get&$parm");
-
+	$current_url = $this->get_get_from_current_post(null);
+	if ($last_page === $current_url) {
+		log_log("redirect_error", "$last_page is same as the current url...\n");
+		$last_page = "/display.php?frm_action=show";
 	}
 
-	function print_redirect_back_success($message, $variable, $value = null)
-	{
-		global $gbl, $sgbl, $login;
+	$this->get_post_from_get($last_page, $path, $post);
 
-		$vstring = null;
-		if ($value) {
-			$value = htmlspecialchars($value);
-			$vstring = "&frm_m_smessage_data=$value";
-		}
-		$parm = "frm_smessage=$message$vstring";
-		if ($variable) {
-			$parm .= "&frm_ev_list=$variable";
-		}
+	$get = $this->get_get_from_post(array("frm_ev_list"), $post);
+	
+	$this->print_redirect("$path?$get&$parm");
 
-		$last_page = $gbl->getSessionV("lx_http_referer");
+}
 
-		if (!$last_page) {
-			$last_page = "/display.php?frm_action=show";
-		}
+function print_redirect_back_success($message, $variable, $value = null) 
+{
+	global $gbl, $sgbl, $login;
 
-		$this->get_post_from_get($last_page, $path, $post);
-
-		$get = $this->get_get_from_post(array("frm_ev_list"), $post);
-
-		$this->print_redirect("$path?$get&$parm");
+	$vstring = null;
+	if ($value) {
+		$value = htmlspecialchars($value);
+		$vstring = "&frm_m_smessage_data=$value";
+	}
+	$parm = "frm_smessage=$message$vstring";
+	if ($variable) {
+		$parm .= "&frm_ev_list=$variable";
 	}
 
+	$last_page = $gbl->getSessionV("lx_http_referer");
 
-	function print_redirect_to($red)
-	{
-
-		global $gbl, $sgbl, $login, $ghtml;
-
-		if ($gbl->isetSessionV("redirect_to")) {
-			$this->print_redirect($gbl->getSessionV("redirect_to"));
-			$gbl->unsetSessionV("redirect_to");
-			return;
-		}
-
-		$this->print_redirect($red);
+	if (!$last_page) {
+		$last_page = "/display.php?frm_action=show";
 	}
 
+	$this->get_post_from_get($last_page, $path, $post);
 
-	function print_redirect($redirect_url, $windowurl = null)
-	{
-		global $gbl, $sgbl;
+	$get = $this->get_get_from_post(array("frm_ev_list"), $post);
+	
+	$this->print_redirect("$path?$get&$parm");
+}
+
+
+function print_redirect_to($red)
+{
+
+	global $gbl, $sgbl, $login, $ghtml; 
+
+	if ($gbl->isetSessionV("redirect_to")) {
+		$this->print_redirect($gbl->getSessionV("redirect_to"));
+		$gbl->unsetSessionV("redirect_to");
+		return;
+	}
+
+	$this->print_redirect($red);
+}
+
+
+function print_redirect($redirect_url, $windowurl = null)
+{
+	global $gbl, $sgbl;
 
 
 
-		$current_url = $this->get_get_from_current_post(null);
-		//log_log("redirect_error", "CUrrent: $redirect_url");
-		//log_log("redirect_error", "Last Page: $current_url");
+	$current_url = $this->get_get_from_current_post(null);
+	//log_log("redirect_error", "CUrrent: $redirect_url");
+	//log_log("redirect_error", "Last Page: $current_url");
 
-		if (ifSplashScreen() || $windowurl) {
-			dprint("<br> <br> Redirect called with splash <br> ");
-			dprint(" <b> <br> <br>  Click <a href=\"$redirect_url\"> <b>  xhere to go Continue. </a> </b> \n");
+	if (ifSplashScreen() || $windowurl) {
+		dprint("<br> <br> Redirect called with splash <br> ");
+		dprint(" <b> <br> <br>  Click <a href=\"$redirect_url\"> <b>  xhere to go Continue. </a> </b> \n");
 
-			if ($sgbl->dbg < 0 || (isset($gbl->__no_debug_redirect) && $gbl->__no_debug_redirect)) {
-				?>
-								<head>
-								<meta http-equiv="expires"
-									content="Wed, 26 Feb 1997 08:21:57 GMT">
-								<META HTTP-EQUIV="Refresh" CONTENT="0;URL=<?=$redirect_url ?>">
-								<?php if ($windowurl) {
-									?>
-								<script>
+		if ($sgbl->dbg < 0 || (isset($gbl->__no_debug_redirect) && $gbl->__no_debug_redirect)) {
+			?> 
+			<head> 
+			<meta http-equiv="expires" content="Wed, 26 Feb 1997 08:21:57 GMT"> 
+			<META HTTP-EQUIV="Refresh" CONTENT="0;URL=<?=$redirect_url ?>">
+			<?php if ($windowurl) {
+				?> 
+				<script>
 				window.open('<?=$windowurl?>'); 
 				</script>
-								</head>
-								<?php } ?>
-								<?php
-			} else {
-				if ($windowurl) {
-					?>
-								<script>
-				window.open('<?=$windowurl?>'); 
-				</script>
-
-				<?php
-				}
-			}
-
-			exit(0);
-
-
-		}
-
-
-		if (($sgbl->dbg > 0) && !(isset($gbl->__no_debug_redirect) && $gbl->__no_debug_redirect)) {
-			$cont = ob_get_contents();
-			if ($gbl->__fvar_dont_redirect || csa($cont, "Notice") || csa($cont, "Warning") || csa($cont, "Parse error")) {
-
-				print_time('full', "Page Generation Took: ");
-				print(" <b> <br> <br>  Looks Like there are some errors... Or Been asked not to redirect Not redirecting... <br> Click <a href=\"$redirect_url\"> xHere to go there Anyways . </b> \n");
-			} else {
-				print_time('full', "Page Generation Took: ");
-				print(" <b> <br> <br>  Looks Like there are some errors... Or Been asked not to redirect Not redirecting... <br> Click <a href=\"$redirect_url\"> xHere to go there Anyways . </b> \n");
-				//header("Location:$redirect_url");
-			}
+				</head>  
+				<?php } ?> 
+			<?php 
 		} else {
-			header("Location:$redirect_url");
-			?>
-								<head>
-								<meta http-equiv="expires"
-									content="Wed, 26 Feb 1997 08:21:57 GMT">
-								<META HTTP-EQUIV="Refresh" CONTENT="0;URL=<?=$redirect_url ?>">
-								</head>
-								<?php
+			if ($windowurl) {
+				?> 
+				<script>
+				window.open('<?=$windowurl?>'); 
+				</script>
 
+				<?php 
+			}
 		}
-
-
-
 
 		exit(0);
 
+
 	}
 
-	function print_redirect_left_panel($redirect_url)
-	{
-		echo '<script> top.leftframe.location="'.$redirect_url.'"; </script>';
-		exit(1);
-	}
-	function print_redirect_self($redirect_url)
-	{
-		echo '<script> top.location="'.$redirect_url.'"; </script>';
-		exit(1);
-	}
 
-	function print_table_header($heading)
-	{
-		global $gbl, $sgbl, $login;
+	if (($sgbl->dbg > 0) && !(isset($gbl->__no_debug_redirect) && $gbl->__no_debug_redirect)) {
+		$cont = ob_get_contents();
+		if ($gbl->__fvar_dont_redirect || csa($cont, "Notice") || csa($cont, "Warning") || csa($cont, "Parse error")) {
+
+			print_time('full', "Page Generation Took: ");
+			print(" <b> <br> <br>  Looks Like there are some errors... Or Been asked not to redirect Not redirecting... <br> Click <a href=\"$redirect_url\"> xHere to go there Anyways . </b> \n");
+		} else {
+			print_time('full', "Page Generation Took: ");
+			print(" <b> <br> <br>  Looks Like there are some errors... Or Been asked not to redirect Not redirecting... <br> Click <a href=\"$redirect_url\"> xHere to go there Anyways . </b> \n");
+			//header("Location:$redirect_url");
+		}
+	} else {
+		header("Location:$redirect_url");
 		?>
-								<Br>
-								<Br>
-								<table cellpadding="0" cellspacing="0" border="0" width="20%">
-									<tr>
-										<td bgcolor=<?=$login->skin->table_title_color?>><b><?=$heading?></b>
-										</td>
-									</tr>
-									<tr>
-										<td bgcolor="#A5C7E7"></td>
-									</tr>
-								</table>
+		<head>
+		<meta http-equiv="expires" content="Wed, 26 Feb 1997 08:21:57 GMT">
+		<META HTTP-EQUIV="Refresh" CONTENT="0;URL=<?=$redirect_url ?>">
+		</head>
+		<?php
 
-								<?php
 	}
 
-	function get_full_help($help, $name = NULL)
-	{
-		global $gbl, $sgbl, $login, $ghtml;
 
-		$classdesc = NULL;
-		if (!$help) {
-			return null;
+
+
+	exit(0);
+
+}
+
+function print_redirect_left_panel($redirect_url)
+{
+	echo '<script> top.leftframe.location="'.$redirect_url.'"; </script>';
+	exit(1);
+}
+function print_redirect_self($redirect_url)
+{
+	echo '<script> top.location="'.$redirect_url.'"; </script>';
+	exit(1);
+}
+
+function print_table_header($heading)
+{
+	global $gbl, $sgbl, $login;
+	?>	<Br><Br>
+		<table cellpadding="0" cellspacing="0" border="0" width="20%" >
+    	<tr>	
+		<td bgcolor=<?=$login->skin->table_title_color?> ><b><?=$heading?></b>
+		</td>
+		</tr>
+		<tr><td bgcolor="#A5C7E7"></td></tr>
+		</table>
+
+	<?php 
+}
+
+function get_full_help($help, $name = NULL)
+{
+	global $gbl, $sgbl, $login, $ghtml; 
+
+	$classdesc = NULL;
+	if (!$help) {
+		return null;
+	}
+
+
+	if ($name) {
+		$val = " <font color=blue> " . $name . "</font>";
+		if (preg_match("/\[%s\]/", $help)) {
+			$help = str_replace("[%s]", $val, $help);
+		} else {
+			if ($help[strlen($help) - 1] != '.') {
+				$help = "$help for $val.";
+			}
+		}
+		if ($classdesc) {
+			$tmp = array(&$help);
+			$this->fix_variable_overload($tmp, $classdesc[1]);
+
 		}
 
-
-		if ($name) {
-			$val = " <font color=blue> " . $name . "</font>";
-			if (preg_match("/\[%s\]/", $help)) {
-				$help = str_replace("[%s]", $val, $help);
-			} else {
-				if ($help[strlen($help) - 1] != '.') {
-					$help = "$help for $val.";
-				}
-			}
-			if ($classdesc) {
-				$tmp = array(&$help);
-				$this->fix_variable_overload($tmp, $classdesc[1]);
-
-			}
-
-			return $help;
-		}
 		return $help;
 	}
+	return $help;
+}
 
 
-	function printGraphSelect($list)
-	{
-		global $gbl, $sgbl, $login, $ghtml;
+function printGraphSelect($list)
+{
+	global $gbl, $sgbl, $login, $ghtml; 
 
-		if (!$list) {
-			return;
-		}
-
-		$cgi_o_o = $this->frm_o_o;
-
-
-		$oldname = $ghtml->frm_c_graph_time;
-
-
-		$subactionstr = null;
-
-		if ($ghtml->frm_subaction) {
-			$subactionstr = "<input type=hidden name=frm_subaction value={$ghtml->frm_subaction}>";
-		}
-
-		$cnamestr = null;
-		if ($ghtml->frm_o_cname) {
-			$cnamestr = "<input type=hidden name=frm_o_cname value={$ghtml->frm_o_cname}>";
-		}
-		$dttypestr = null;
-		// This needs to be an array.
-		if ($ghtml->frm_dttype) {
-			$dttypestr = "<input type=hidden name=frm_dttype[val] value={$ghtml->frm_dttype['val']}>";
-			$dttypestr = "<input type=hidden name=frm_dttype[var] value={$ghtml->frm_dttype['var']}>";
-		}
-
-		$frm_action = $ghtml->frm_action;
-		$filter = null;
-		$hpfilter = $login->getHPFilter();
-		if ($hpfilter) {
-			$filter['frm_hpfilter'] = $hpfilter;
-		}
-
-		/*
-		 <!-- <a href='javascript:document.topjumpselect.submit()'><img  src=/img/general/button/btn_show.gif></a> --!>
-		 */
-		?>
-								<table width=100%>
-									<tr>
-										<td width=10></td>
-										<td align=left>
-
-
-										<form name=graphselectjump method=<?=$sgbl->method ?>
-											action='display.php'><?php 
-											foreach($cgi_o_o as $k => $v) {
-												?> <input type=hidden name='frm_o_o[<?=$k ?>][class]'
-											value=<?=$v['class']?>> <?php if (isset($v['nname'])) { ?> <input
-											type=hidden name='frm_o_o[<?=$k ?>][nname]'
-											value=<?=$v['nname']?>> <?php 
-											}
-											}
-											?> <input type=hidden name=frm_action value=<?=$frm_action ?>>
-											<?=$subactionstr ?> <?=$cnamestr ?> <?=$dttypestr ?> <?php $this->print_input_vars($filter) ?>
-										Period <select class=textbox
-											onChange='document.graphselectjump.submit()'
-											name='frm_c_graph_time'>
-
-											<?php
-											foreach($list as $k=> $l) {
-												$sssl = null;
-												if($k == $oldname) { $sssl =  " SELECTED "; }
-												print("<option $sssl value='$k' >$l</option>");
-											}
-											?>
-
-										</select></form>
-										</td>
-									</tr>
-								</table>
-
-								<?php
-
+	if (!$list) {
+		return;
 	}
-	function printShowSelectBox($list)
-	{
-		global $gbl, $sgbl, $login, $ghtml;
 
-		if (!$list) {
-			return;
+	$cgi_o_o = $this->frm_o_o;
+
+
+	$oldname = $ghtml->frm_c_graph_time;
+
+
+	$subactionstr = null;
+
+	if ($ghtml->frm_subaction) {
+		$subactionstr = "<input type=hidden name=frm_subaction value={$ghtml->frm_subaction}>";
+	}
+
+	$cnamestr = null;
+	if ($ghtml->frm_o_cname) {
+		$cnamestr = "<input type=hidden name=frm_o_cname value={$ghtml->frm_o_cname}>";
+	}
+	$dttypestr = null;
+	// This needs to be an array.
+	if ($ghtml->frm_dttype) {
+		$dttypestr = "<input type=hidden name=frm_dttype[val] value={$ghtml->frm_dttype['val']}>";
+		$dttypestr = "<input type=hidden name=frm_dttype[var] value={$ghtml->frm_dttype['var']}>";
+	}
+
+	$frm_action = $ghtml->frm_action;
+	$filter = null;
+	$hpfilter = $login->getHPFilter();
+	if ($hpfilter) {
+		$filter['frm_hpfilter'] = $hpfilter;
+	}
+	
+	/*
+	<!-- <a href='javascript:document.topjumpselect.submit()'><img  src=/img/general/button/btn_show.gif></a> --!> 
+	*/
+	?> 
+	<table width=100%> <tr> <td width=10></td>  <td align=left>  
+
+
+	<form name=graphselectjump method=<?=$sgbl->method ?> action='display.php'>
+
+	<?php 
+	foreach($cgi_o_o as $k => $v) {
+		?> 
+		<input  type=hidden name='frm_o_o[<?=$k ?>][class]' value=<?=$v['class']?>>
+		<?php if (isset($v['nname'])) { ?> 
+		<input  type=hidden name='frm_o_o[<?=$k ?>][nname]' value=<?=$v['nname']?>>
+			<?php 
 		}
+	}
+	?> 
 
-		$cgi_o_o = $this->frm_o_o;
+	<input type=hidden name=frm_action value=<?=$frm_action ?>>
+	<?=$subactionstr ?> 
+	<?=$cnamestr ?> 
+	<?=$dttypestr ?> 
+	<?php $this->print_input_vars($filter) ?> 
+	Period <select  class=textbox onChange='document.graphselectjump.submit()' name='frm_c_graph_time'>
 
-		$filteropacitystringspan = null;
-		$filteropacitystringspanend = null;
-		$filteropacitystring = null;
-		if ($sgbl->isBlackBackground()) {
-			$filteropacitystringspanend = "</span>";
-			$filteropacitystringspan = "<span style='background:black' > ";
-			$filteropacitystring =  "style='background:black;color:#999999;FILTER:progid;-moz-opacity:0.5'";
+	<?php 
+	foreach($list as $k=> $l) {
+		$sssl = null;
+		if($k == $oldname) { $sssl =  " SELECTED "; }
+		print("<option $sssl value='$k' >$l</option>");
+	}
+	?> 
+
+	</select>
+
+
+
+	</form>
+	</td> </tr> </table> 
+
+	<?php 
+
+}
+function printShowSelectBox($list)
+{
+	global $gbl, $sgbl, $login, $ghtml; 
+
+	if (!$list) {
+		return;
+	}
+
+	$cgi_o_o = $this->frm_o_o;
+
+	$filteropacitystringspan = null;
+	$filteropacitystringspanend = null;
+	$filteropacitystring = null;
+	if ($sgbl->isBlackBackground()) {
+		$filteropacitystringspanend = "</span>";
+		$filteropacitystringspan = "<span style='background:black' > ";
+		$filteropacitystring =  "style='background:black;color:#999999;FILTER:progid;-moz-opacity:0.5'";
+	}
+
+
+
+	$num = count($cgi_o_o) - 1;
+	while($num >= 0 ) {
+		$class = $cgi_o_o[$num]['class'];
+		$desc = $ghtml->get_class_description($class);
+		if (isset($cgi_o_o[$num]['nname']) && !csa($desc[0], 'P')) {
+			break;
 		}
+		$num--;
+	}
+	if ($num < 0) {
+		return ;
+	}
+
+	$oldname = $cgi_o_o[$num]['nname'];
+
+
+	$subactionstr = null;
+	if ($ghtml->frm_subaction) {
+		$subactionstr = "<input type=hidden name=frm_subaction value={$ghtml->frm_subaction}>\n";
+	}
+
+	if ($ghtml->frm_consumedlogin) {
+		$subactionstr .= "<input type=hidden name=frm_consumedlogin value={$ghtml->frm_consumedlogin}>";
+	}
+
+	$cnamestr = null;
+	if ($ghtml->frm_o_cname) {
+		$cnamestr = "<input type=hidden name=frm_o_cname value={$ghtml->frm_o_cname}>";
+	}
+	$dttypestr = null;
+	// This needs to be an array.
+	if ($ghtml->frm_dttype) {
+		$dttypestr = "<input type=hidden name=frm_dttype[val] value={$ghtml->frm_dttype['val']}>";
+		$dttypestr .= "<input type=hidden name=frm_dttype[var] value={$ghtml->frm_dttype['var']}>";
+	}
+
+	$frm_action = $ghtml->frm_action;
+	$filter = null;
+
+	$hpfilter = $login->getHPFilter();
+	if ($hpfilter) {
+		$filter['frm_hpfilter'] = $hpfilter;
+	}
+	
+	$skindir = $login->getSkinDir();
+	$forecolorstring = null; if ($sgbl->isBlackBackground()) { $forecolorstring = "color=gray" ; }
+
+	$ststring = null; if ($sgbl->isBlackBackground()) { $ststring = "style='background:black;color:gray'"; }
+	if ($sgbl->isBlackBackground()) {
+	} else {
+		$col = "$skindir/expand.gif";
+	}
+	/*
+	<!-- <a href='javascript:document.topjumpselect.submit()'><img  src=/img/general/button/btn_show.gif></a> --!> 
+	*/
+	?> 
+	<table cellspacing=0 cellpadding=0 width=100% > <tr style="background:url('<?=$col?>')"> <td nowrap> <font <?php echo $forecolorstring ?> style='font-weight:bold'> Switch To Another </font> </td>  	
+	</td> <td align=center>  
+
+
+	<form name=topjumpselect method=<?=$sgbl->method ?> action='display.php'>
+
+
+	<?php 
+	foreach($cgi_o_o as $k => $v) {
+		?> 
+		<input  type=hidden name='frm_o_o[<?=$k ?>][class]' value=<?=$v['class']?>>
+		<?php 
+		if ($k != $num && isset($v['nname'])) {
+			?> 
+			<input  type=hidden name='frm_o_o[<?=$k ?>][nname]' value=<?=$v['nname']?>>
+			<?php 
+		}
+	}
+	?> 
+
+	<input type=hidden name=frm_action value=<?=$frm_action ?>>
+	<?=$subactionstr ?> 
+	<?=$cnamestr ?> 
+	<?=$dttypestr ?> 
+	<?php $this->print_input_vars($filter) ?> 
+
+	<?=$filteropacitystringspan ?> 
+	<select <?= $filteropacitystring ?> <?= $ststring ?>  class=textbox onChange='document.topjumpselect.submit()' name='frm_o_o[<?=$num ?>][nname]'>
+
+	<?php 
+	foreach($list as $k=> $l) {
+		$tdisp = $l->getId();
+		if ($sgbl->isDebug()) {
+			$tdisp = $l->getClName();
+		} 
+		?> 
+		<option <?php if($k == $oldname) { echo " SELECTED "; } ?> value='<?=$k ?>'  ><?=$tdisp ?></option>
+		<?php 
+	}
+	?> 
+
+	</select> <?= $filteropacitystringspan ?> 
 
 
 
-		$num = count($cgi_o_o) - 1;
-		while($num >= 0 ) {
-			$class = $cgi_o_o[$num]['class'];
-			$desc = $ghtml->get_class_description($class);
-			if (isset($cgi_o_o[$num]['nname']) && !csa($desc[0], 'P')) {
+	</form>
+	</td> <td width=100%></td> </tr> <tr height=10> <td > </td> <td > </td>  </table> 
+
+	<?php 
+
+}
+
+function getActionDescr($path, $post, &$class, &$var, &$nname)
+{
+
+	global $gbl, $sgbl, $login, $ghtml; 
+
+	$laclass = $suclass = null;
+
+	if (isset($post['frm_o_cname'])) {
+		$laclass = $post['frm_o_cname'];
+	}
+	if (isset($post['frm_o_o']) && $post['frm_o_o']) {
+		$p = $post['frm_o_o'];
+		$suclass = $p[count($p)-1]['class'];
+
+		$p = $post['frm_o_o'];
+		for($i = count($p) - 1 ; $i >=0 ; $i--) {
+			if (isset($p[$i]['nname'])) {
+				$nname = exec_class_method($suclass, 'getClassId', $p[$i]['nname']);
 				break;
 			}
-			$num--;
 		}
-		if ($num < 0) {
-			return ;
-		}
-
-		$oldname = $cgi_o_o[$num]['nname'];
-
-
-		$subactionstr = null;
-		if ($ghtml->frm_subaction) {
-			$subactionstr = "<input type=hidden name=frm_subaction value={$ghtml->frm_subaction}>\n";
-		}
-
-		if ($ghtml->frm_consumedlogin) {
-			$subactionstr .= "<input type=hidden name=frm_consumedlogin value={$ghtml->frm_consumedlogin}>";
-		}
-
-		$cnamestr = null;
-		if ($ghtml->frm_o_cname) {
-			$cnamestr = "<input type=hidden name=frm_o_cname value={$ghtml->frm_o_cname}>";
-		}
-		$dttypestr = null;
-		// This needs to be an array.
-		if ($ghtml->frm_dttype) {
-			$dttypestr = "<input type=hidden name=frm_dttype[val] value={$ghtml->frm_dttype['val']}>";
-			$dttypestr .= "<input type=hidden name=frm_dttype[var] value={$ghtml->frm_dttype['var']}>";
-		}
-
-		$frm_action = $ghtml->frm_action;
-		$filter = null;
-
-		$hpfilter = $login->getHPFilter();
-		if ($hpfilter) {
-			$filter['frm_hpfilter'] = $hpfilter;
-		}
-
-		$skindir = $login->getSkinDir();
-		$forecolorstring = null; if ($sgbl->isBlackBackground()) { $forecolorstring = "color=gray" ; }
-
-		$ststring = null; if ($sgbl->isBlackBackground()) { $ststring = "style='background:black;color:gray'"; }
-		if ($sgbl->isBlackBackground()) {
-		} else {
-			$col = "$skindir/expand.gif";
-		}
-		/*
-		 <!-- <a href='javascript:document.topjumpselect.submit()'><img  src=/img/general/button/btn_show.gif></a> --!>
-		 */
-		?>
-								<table cellspacing=0 cellpadding=0 width=100%>
-									<tr style="background:url('<?=$col?>')">
-										<td nowrap><font <?php echo $forecolorstring ?>
-											style='font-weight: bold'> Switch To Another </font></td>
-										</td>
-										<td align=center>
-
-
-										<form name=topjumpselect method=<?=$sgbl->method ?>
-											action='display.php'><?php 
-											foreach($cgi_o_o as $k => $v) {
-												?> <input type=hidden name='frm_o_o[<?=$k ?>][class]'
-											value=<?=$v['class']?>> <?php 
-											if ($k != $num && isset($v['nname'])) {
-												?> <input type=hidden name='frm_o_o[<?=$k ?>][nname]'
-											value=<?=$v['nname']?>> <?php 
-											}
-											}
-											?> <input type=hidden name=frm_action value=<?=$frm_action ?>>
-											<?=$subactionstr ?> <?=$cnamestr ?> <?=$dttypestr ?> <?php $this->print_input_vars($filter) ?>
-
-											<?=$filteropacitystringspan ?> <select
-											<?= $filteropacitystring ?> <?= $ststring ?> class=textbox
-											onChange='document.topjumpselect.submit()'
-											name='frm_o_o[<?=$num ?>][nname]'>
-
-											<?php
-											foreach($list as $k=> $l) {
-												$tdisp = $l->getId();
-												if ($sgbl->isDebug()) {
-													$tdisp = $l->getClName();
-												}
-												?>
-											<option <?php if($k == $oldname) { echo " SELECTED "; } ?>
-												value='<?=$k ?>'><?=$tdisp ?></option>
-												<?php
-											}
-											?>
-
-										</select> <?= $filteropacitystringspan ?></form>
-										</td>
-										<td width=100%></td>
-									</tr>
-									<tr height=10>
-										<td></td>
-										<td></td>
-								
-								</table>
-
-								<?php
-
+	} else {
+		$nname = $login->nname;
 	}
 
-	function getActionDescr($path, $post, &$class, &$var, &$nname)
-	{
+	//$nname = substr($nname, 0, 19);
+	$name = "<font color=blue> $nname</font>";
+	if (!$laclass && !$suclass) {
+		$laclass = lget_class($login);
+		$suclass = lget_class($login);
+		//dprint("NO class set:::");
+		//dprintr($post);
+		//dprint('<br> ');
+	}
 
-		global $gbl, $sgbl, $login, $ghtml;
+	$var = null;
+	if (isset($post['frm_action'])) {
+		$var = strtolower($post["frm_action"]);
+	}
+		
 
-		$laclass = $suclass = null;
+	if ($var === "delete") {
+		$class = $laclass;
+		return array("", "", "Delete", "", 'desc' => "Delete", 'help' => $login->getKeywordUc('delete'), "{$login->getKeywordUc('delete')} $laclass");
+	}
 
-		if (isset($post['frm_o_cname'])) {
-			$laclass = $post['frm_o_cname'];
-		}
-		if (isset($post['frm_o_o']) && $post['frm_o_o']) {
-			$p = $post['frm_o_o'];
-			$suclass = $p[count($p)-1]['class'];
+	if ($var === "list") {
 
-			$p = $post['frm_o_o'];
-			for($i = count($p) - 1 ; $i >=0 ; $i--) {
-				if (isset($p[$i]['nname'])) {
-					$nname = exec_class_method($suclass, 'getClassId', $p[$i]['nname']);
-					break;
-				}
-			}
-		} else {
-			$nname = $login->nname;
-		}
+		$class = $laclass;
+		$desc = get_classvar_description($class, "__acdesc_list");
 
-		//$nname = substr($nname, 0, 19);
-		$name = "<font color=blue> $nname</font>";
-		if (!$laclass && !$suclass) {
-			$laclass = lget_class($login);
-			$suclass = lget_class($login);
-			//dprint("NO class set:::");
-			//dprintr($post);
-			//dprint('<br> ');
-		}
+		if (!$desc) {
 
-		$var = null;
-		if (isset($post['frm_action'])) {
-			$var = strtolower($post["frm_action"]);
-		}
-
-
-		if ($var === "delete") {
-			$class = $laclass;
-			return array("", "", "Delete", "", 'desc' => "Delete", 'help' => $login->getKeywordUc('delete'), "{$login->getKeywordUc('delete')} $laclass");
-		}
-
-		if ($var === "list") {
-
-			$class = $laclass;
-			$desc = get_classvar_description($class, "__acdesc_list");
-
-			if (!$desc) {
-
-				$desc = get_classvar_description($laclass);
-				$descr = $desc[2];
-				$descri = get_plural($desc[2]);
-				$help = "{$login->getKeywordUc('list')} $descri";
-			} else {
-				$descri = $desc[2];
-				$help = $desc[2];
-			}
-
-
-			if (isset($post['frm_filter']['show'])) {
-				$dvar = 'filter_show_' . $post['frm_filter']['show'];
-				$desc = get_classvar_description($laclass, $dvar);
-				$descri = $desc[2];
-				$var = "list_" . '_filter_show_' . $post['frm_filter']['show'];
-			}
-
-			if (isset($post['frm_filter']['view'])) {
-				$dvar = 'filter_view_' . $post['frm_filter']['view'];
-				$desc = get_classvar_description($laclass, $dvar);
-				$descri = $desc[2];
-				$var = "list_" . '_filter_view_' . $post['frm_filter']['view'];
-			}
-			return array("", "", $descri, 'desc' => $descri, $help, 'help' => $desc['help']);
-		}
-		if ($var === "searchform") {
-			$class = $laclass;
 			$desc = get_classvar_description($laclass);
 			$descr = $desc[2];
 			$descri = get_plural($desc[2]);
-
-			if (isset($post['frm_hpfilter'])) {
-				$dvar = 'filter_show_' . $post['frm_hpfilter']['show'];
-				$desc = get_classvar_description($laclass, $dvar);
-				$descri = $desc[2];
-				$var = "list_" . '_filter_show_' . $post['frm_hpfilter']['show'];
-			}
-
-
-			return array("", "", "$descr Search", 'desc' => "$descr Search", 'help' => "$descr Search", "Search $descr");
+			$help = "{$login->getKeywordUc('list')} $descri";
+		} else {
+			$descri = $desc[2];
+			$help = $desc[2];
 		}
 
-		if ($var === "addform") {
+
+		if (isset($post['frm_filter']['show'])) {
+			$dvar = 'filter_show_' . $post['frm_filter']['show'];
+			$desc = get_classvar_description($laclass, $dvar);
+			$descri = $desc[2];
+			$var = "list_" . '_filter_show_' . $post['frm_filter']['show'];
+		}
+
+		if (isset($post['frm_filter']['view'])) {
+			$dvar = 'filter_view_' . $post['frm_filter']['view'];
+			$desc = get_classvar_description($laclass, $dvar);
+			$descri = $desc[2];
+			$var = "list_" . '_filter_view_' . $post['frm_filter']['view'];
+		}
+		return array("", "", $descri, 'desc' => $descri, $help, 'help' => $desc['help']);
+	}
+	if ($var === "searchform") {
+		$class = $laclass;
+		$desc = get_classvar_description($laclass);
+		$descr = $desc[2];
+		$descri = get_plural($desc[2]);
+
+		if (isset($post['frm_hpfilter'])) {
+			$dvar = 'filter_show_' . $post['frm_hpfilter']['show'];
+			$desc = get_classvar_description($laclass, $dvar);
+			$descri = $desc[2];
+			$var = "list_" . '_filter_show_' . $post['frm_hpfilter']['show'];
+		}
+
+
+		return array("", "", "$descr Search", 'desc' => "$descr Search", 'help' => "$descr Search", "Search $descr");
+	}
+
+	if ($var === "addform") {
+		$class = $laclass;
+
+		if (isset($post['frm_dttype'])) {
+			$subvar = $post['frm_dttype']['var'] ;
+			$sub = $post['frm_dttype']['val'] ;
+		} else {
+			$sub = null;
+		}
+		if ($sub) {
+			$desc = get_classvar_description($laclass, "{$subvar}_v_$sub");
+		} else {
+			$desc = get_classvar_description($laclass);
+		}
+		if ($sub) {
+			$var = $sub . "_" .  $var;
+		} 
+		$descr = $desc[2];
+		return array("", "", "Add $descr", 'desc' => "Add $descr", 'help' => "{$login->getKeywordUc('add')} $descr", "{$login->getKeywordUc('add')} $descr");
+	}
+
+	if ($var === "updateform" || $var === "update") {
+		if (isset($laclass)) {
 			$class = $laclass;
-
-			if (isset($post['frm_dttype'])) {
-				$subvar = $post['frm_dttype']['var'] ;
-				$sub = $post['frm_dttype']['val'] ;
-			} else {
-				$sub = null;
-			}
-			if ($sub) {
-				$desc = get_classvar_description($laclass, "{$subvar}_v_$sub");
-			} else {
-				$desc = get_classvar_description($laclass);
-			}
-			if ($sub) {
-				$var = $sub . "_" .  $var;
-			}
-			$descr = $desc[2];
-			return array("", "", "Add $descr", 'desc' => "Add $descr", 'help' => "{$login->getKeywordUc('add')} $descr", "{$login->getKeywordUc('add')} $descr");
-		}
-
-		if ($var === "updateform" || $var === "update") {
-			if (isset($laclass)) {
-				$class = $laclass;
-			} else {
-				$class = $suclass;
-			}
-			if (isset($post['frm_subaction'])) {
-				$sub = "_" . $post['frm_subaction'];
-			} else {
-				$sub = null;
-			}
-			$var = $var . $sub;
-			$desc = get_classvar_description($class, "__acdesc_update" .$sub);
-			if ($desc) {
-				if (csa($desc[2], "[%s]")) {
-					$desc[2] = str_replace("[%s]", $name, $desc[3]);
-				} else {
-					$desc[2] .= "";
-				}
-				$desc['desc'] = $desc[2];
-				return $desc;
-			} else {
-				$descr = "Update $sub";
-			}
-			return array("", '', $descr, 'desc' => $descr, 'help' => $desc['help']);
-		}
-
-
-
-		if ($var === "show" || $var === 'graph') {
-
-			$realvar = $var;
+		} else {
 			$class = $suclass;
-
-			if (isset($post['frm_subaction'])) {
-				$sub = "_" . $post['frm_subaction'];
+		}
+		if (isset($post['frm_subaction'])) {
+			$sub = "_" . $post['frm_subaction'];
+		} else {
+			$sub = null;
+		}
+		$var = $var . $sub;
+		$desc = get_classvar_description($class, "__acdesc_update" .$sub);
+		if ($desc) {
+			if (csa($desc[2], "[%s]")) {
+				$desc[2] = str_replace("[%s]", $name, $desc[3]);
 			} else {
-				$sub = null;
+				$desc[2] .= "";
 			}
-			$var = $var . $sub;
-			$desc = get_classvar_description($suclass, "__acdesc_$realvar" . $sub);
+			$desc['desc'] = $desc[2];
+			return $desc;
+		} else {
+			$descr = "Update $sub";
+		}
+		return array("", '', $descr, 'desc' => $descr, 'help' => $desc['help']);
+	}
 
-			if (!$desc) {
-				$desc = get_classvar_description($suclass);
 
-				if (csa($desc[0], "N")) {
-					$count = count($post['frm_o_o']) - 1;
-					$var .= "_nn_" . fix_nname_to_be_variable($post['frm_o_o'][$count]['nname']);
-				}
-				$descr = "{$desc[2]} {$login->getKeywordUc('home')} ";
-				$help = "{$login->getKeywordUc('show')} {$desc[2]} details";
-			} else {
-				$descr = $desc[2];
-				$help = $desc[2];
-			}
 
+	if ($var === "show" || $var === 'graph') {
+
+		$realvar = $var;
+		$class = $suclass;
+
+		if (isset($post['frm_subaction'])) {
+			$sub = "_" . $post['frm_subaction'];
+		} else {
+			$sub = null;
+		}
+		$var = $var . $sub;
+		$desc = get_classvar_description($suclass, "__acdesc_$realvar" . $sub);
+
+		if (!$desc) {
 			$desc = get_classvar_description($suclass);
 
 			if (csa($desc[0], "N")) {
 				$count = count($post['frm_o_o']) - 1;
-				//$var .= "_nn_" . fix_nname_to_be_variable($post['frm_o_o'][$count]['nname']);
+				$var .= "_nn_" . fix_nname_to_be_variable($post['frm_o_o'][$count]['nname']);
 			}
-			return array("", '', $descr, 'desc' => $descr, 'help' => $help);
+			$descr = "{$desc[2]} {$login->getKeywordUc('home')} ";
+			$help = "{$login->getKeywordUc('show')} {$desc[2]} details";
+		} else {
+			$descr = $desc[2];
+			$help = $desc[2];
 		}
 
+		$desc = get_classvar_description($suclass);
 
-
-		$descvar = "__ac_desc_" . $class . "_" . $var;
-
-		$dvar = ucfirst($var);
-
-		return array("", '', $dvar, 'desc' => $dvar, 'help' => $dvar);
+		if (csa($desc[0], "N")) {
+			$count = count($post['frm_o_o']) - 1;
+			//$var .= "_nn_" . fix_nname_to_be_variable($post['frm_o_o'][$count]['nname']);
+		}
+		return array("", '', $descr, 'desc' => $descr, 'help' => $help);
 	}
 
 
 
+	$descvar = "__ac_desc_" . $class . "_" . $var;
+
+	$dvar = ucfirst($var);
+
+	return array("", '', $dvar, 'desc' => $dvar, 'help' => $dvar);
+}
 
 
 
-	function getActionDetails($url, $psuedourl, $buttonpath, &$path, &$post, &$class, &$name, &$image, &$identity)
-	{
-
-		global $gbl, $sgbl, $login, $ghtml;
-
-		if (!$psuedourl) {
-			$psuedourl = $url;
-		}
-
-		$this->get_post_from_get($psuedourl, $path, $post);
-
-		$descr  = $this->getActionDescr($path, $post, $class, $name, $identity);
-		$descr['desc'] = $descr[2];
-		$image = $this->get_image($buttonpath, $class, $name, ".gif");
-
-		$this->get_post_from_get($url, $path, $post);
 
 
-		return $descr;
+
+function getActionDetails($url, $psuedourl, $buttonpath, &$path, &$post, &$class, &$name, &$image, &$identity)
+{
+
+	global $gbl, $sgbl, $login, $ghtml; 
+
+	if (!$psuedourl) {
+		$psuedourl = $url;
+	}
+
+	$this->get_post_from_get($psuedourl, $path, $post);
+
+	$descr  = $this->getActionDescr($path, $post, $class, $name, $identity);
+	$descr['desc'] = $descr[2];
+	$image = $this->get_image($buttonpath, $class, $name, ".gif");
+
+	$this->get_post_from_get($url, $path, $post);
+
+
+	return $descr;
+}
+
+
+
+function print_div_for_divbutton($key, $imgflag, $linkflag, $formname, $name, $imagesrc, $descr)
+{	  
+
+	global $gbl, $sgbl, $login;
+
+	$skincolor = $login->getSkinColor();
+	$shevron = "{$login->getSkinDir()}/shevron_line.gif";
+
+	$help = $this->get_full_help($descr[2]);
+	$help = $this->get_action_or_display_help($help, "action");
+
+	$dummyimg = get_image_path() . "/button/untitled.gif";
+
+	$help = $descr['help'];
+
+	$selectcolor = '#edf6fd';
+	$blackbordercolor = 'white';
+	$bgcolorstring = null; $forecolorstring = "color:#002244"; 
+	if ($sgbl->isBlackBackground()) { 
+		$bgcolorstring = "bgcolor=#000"; 
+		$forecolorstring = "color:#999999"; 
+		$selectcolor = '#444444' ; 
+		$skincolor = '#000000'; 
+		$blackbordercolor = '#000000';
+		$imgflag = false;
 	}
 
 
+	if ($linkflag) {
+		$displayvar = "<font style='$forecolorstring' class=icontextlink id=aaid_$formname href=\"javascript:document.form_$formname.submit()\" onmouseover=\" style.textDecoration='underline';\" onmouseout=\"style.textDecoration='none'\"> $descr[2] </font> </span>";
+		$onclickvar = "onClick=\"javascript:document.form_$formname.submit()\"";
+		$alt = $help;
+	} else {
+		$displayvar = "<span title=\"You don't have permission\" class=icontextlink>{$descr[2]} (disabled)</span>";
+		$alt = "You dont have permission";
+		$onclickvar = null;
+	}
 
-	function print_div_for_divbutton($key, $imgflag, $linkflag, $formname, $name, $imagesrc, $descr)
-	{
+	$idvar = null;
+	if ($login->getSpecialObject('sp_specialplay')->isOn('enable_ajax') && csb($key, "__v_dialog")) {
+		$onclickvar = null;
+		$idvar = "id=$key-comment";
+	}
 
-		global $gbl, $sgbl, $login;
-
-		$skincolor = $login->getSkinColor();
-		$shevron = "{$login->getSkinDir()}/shevron_line.gif";
-
-		$help = $this->get_full_help($descr[2]);
-		$help = $this->get_action_or_display_help($help, "action");
-
-		$dummyimg = get_image_path() . "/button/untitled.gif";
-
-		$help = $descr['help'];
-
-		$selectcolor = '#edf6fd';
-		$blackbordercolor = 'white';
-		$bgcolorstring = null; $forecolorstring = "color:#002244";
-		if ($sgbl->isBlackBackground()) {
-			$bgcolorstring = "bgcolor=#000";
-			$forecolorstring = "color:#999999";
-			$selectcolor = '#444444' ;
-			$skincolor = '#000000';
-			$blackbordercolor = '#000000';
-			$imgflag = false;
-		}
-
-
+	if ($imgflag) {
 		if ($linkflag) {
-			$displayvar = "<font style='$forecolorstring' class=icontextlink id=aaid_$formname href=\"javascript:document.form_$formname.submit()\" onmouseover=\" style.textDecoration='underline';\" onmouseout=\"style.textDecoration='none'\"> $descr[2] </font> </span>";
-			$onclickvar = "onClick=\"javascript:document.form_$formname.submit()\"";
-			$alt = $help;
+			$imgvar = "<img width=32 height=32   class=icontextlink onMouseOver=\"getElementById('aaid_$formname').style.textDecoration='underline'; \" onMouseOut=\"getElementById('aaid_$formname').style.textDecoration='none'; \" src=\"$imagesrc\" >";
 		} else {
-			$displayvar = "<span title=\"You don't have permission\" class=icontextlink>{$descr[2]} (disabled)</span>";
-			$alt = "You dont have permission";
-			$onclickvar = null;
+			$imgvar = "<img width=32 height=32 class=icontextlink   src=\"$imagesrc\" >";
 		}
 
-		$idvar = null;
-		if ($login->getSpecialObject('sp_specialplay')->isOn('enable_ajax') && csb($key, "__v_dialog")) {
-			$onclickvar = null;
-			$idvar = "id=$key-comment";
-		}
-
-		if ($imgflag) {
-			if ($linkflag) {
-				$imgvar = "<img width=32 height=32   class=icontextlink onMouseOver=\"getElementById('aaid_$formname').style.textDecoration='underline'; \" onMouseOut=\"getElementById('aaid_$formname').style.textDecoration='none'; \" src=\"$imagesrc\" >";
-			} else {
-				$imgvar = "<img width=32 height=32 class=icontextlink   src=\"$imagesrc\" >";
-			}
-
-		} else {
-			$imgvar = null;
-		}
-
-		?>
-
-								<!--	<span style="background: url(<?=$imagesrc; ?>) no-repeat;" >
--->
-								<table <?=$idvar?> style='border: 1px solid <?= $blackbordercolor ?> ; cursor: pointer' <?=$onclickvar ?>  onmouseover=" getElementById('aaid_<?=$formname?>').style.textDecoration='none' ; this.style.backgroundColor='<?=$selectcolor?>' ; this.style.border='1px solid #<?=$skincolor ?>';" onmouseout="this.style.border='1px solid <?= $blackbordercolor ?>'; this.style.backgroundColor=''; getElementById('aaid_<?=$formname?>').style.textDecoration='none';" cellpadding=3 cellspacing=3 height=80 width=60 valign=top>
-									<tr>
-										<td valign=top align=center><span title='<?=$alt ?>'> <?=$imgvar ?></td>
-									</tr>
-									<tr valign=top height=100%>
-										<td width=60 align=center><span title='<?=$alt ?>'> <?=$displayvar ?></td>
-									</tr>
-								</table>
-								<?php
+	} else {
+		$imgvar = null;
 	}
 
-	function createEncForm_name($name)
-	{
-		global $gbl, $sgbl;
+	?> 
 
-		return $name;
-		if ($sgbl->dbg > 0) {
-			return $name;
-		}
+<!--	<span style="background: url(<?=$imagesrc; ?>) no-repeat;" >
+-->
+<table <?=$idvar?> style='border: 1px solid <?= $blackbordercolor ?> ; cursor: pointer' <?=$onclickvar ?>  onmouseover=" getElementById('aaid_<?=$formname?>').style.textDecoration='none' ; this.style.backgroundColor='<?=$selectcolor?>' ; this.style.border='1px solid #<?=$skincolor ?>';" onmouseout="this.style.border='1px solid <?= $blackbordercolor ?>'; this.style.backgroundColor=''; getElementById('aaid_<?=$formname?>').style.textDecoration='none';" cellpadding=3 cellspacing=3 height=80 width=60 valign=top><tr><td  valign=top align=center><span title='<?=$alt ?>'> <?=$imgvar ?> </td></tr><tr valign=top height=100%><td width=60 align=center> <span title='<?=$alt ?>'> <?=$displayvar ?>
+</td> </tr> </table>
+<?php 
+}	
 
-		$name = str_replace("_", "", $name);
-		$name = str_replace("php", "", $name);
-		$name = str_replace("a", "z", $name);
-		$name = str_replace("e", "r", $name);
-		$name = str_replace("i", "x", $name);
-		$name = str_replace("s", "q", $name);
-		$name = str_replace("o", "p", $name);
-		$name = str_replace("r", "j", $name);
+function createEncForm_name($name)
+{
+	global $gbl, $sgbl;
 
+	return $name;
+	if ($sgbl->dbg > 0) {
 		return $name;
 	}
 
-	function resolve_int_ext(&$url, &$psuedourl, &$target)
-	{
-		if ($this->is_special_url($url)) {
+	$name = str_replace("_", "", $name);
+	$name = str_replace("php", "", $name);
+	$name = str_replace("a", "z", $name);
+	$name = str_replace("e", "r", $name);
+	$name = str_replace("i", "x", $name);
+	$name = str_replace("s", "q", $name);
+	$name = str_replace("o", "p", $name);
+	$name = str_replace("r", "j", $name);
 
-			if (isset($url->custom) && $url->custom) {
-				$complete['url'] = $url->url;
-				$complete['name'] = $url->name;
-				$complete['bname'] = $url->bname;
-				$target = $url->target;
-				$url = $url->url;
-				return $complete;
-			} else {
-				$nurl = $url->url;
-				$psuedourl = $url->purl;
-				$target = $url->target;
-				$psuedourl = $this->getFullUrl($psuedourl);
-				if (isset($url->__internal)) {
-					$nurl = $this->getFullUrl($nurl);
-				}
-				$url = $nurl;
-			}
-		}
-	}
+	return $name;
+}
 
-	function print_toolbar()
-	{
-		$list = get_favorite("ndskshortcut");
-		foreach((array) $list as $l) {
-			if ($l['ttype'] === 'separator') {
-				print("<td nowrap width=20> </td>");
-				continue;
-			}
-			print("<td  valign='middle'  align='left' width=5>");
-			print('<form>');
-			$l['ac_descr']['desc'] = "{$l['fullstr']} {$l['tag']}";
-			$this->print_div_for_divbutton_on_header($l['url'], $l['target'], null, true, true, $l['url'], $l['__t_identity'], $l['_t_image'], $l['ac_descr']);
-			print('</form>');
-			print("</td >");
-		}
+function resolve_int_ext(&$url, &$psuedourl, &$target)
+{
+	if ($this->is_special_url($url)) {
 
-	}
-	function print_div_button_on_header($type, $imgflag, $key, $url, $ddate = null)
-	{
-
-		global $gbl, $sgbl, $login, $ghtml;
-		$obj = $gbl->__c_object;
-		$psuedourl = NULL;
-		$target = NULL;
-
-		$buttonpath = get_image_path() . "/button/";
-
-		$linkflag = true;
-		if (csa($key, "__var_")) {
-			$privar = strfrom($key, "__var_");
-			if (!$obj->checkButton($privar)) {
-				$linkflag = false;
-			}
-		}
-
-		$complete = $this->resolve_int_ext($url, $psuedourl, $target);
-
-		if (!$target) {
-			$target = "mainframe";
-		}
-
-		if ($complete) {
-			$this->get_post_from_get($url, $path, $post);
-			$descr  = $this->getActionDescr($path, $post, $class, $name, $identity);
-			$complete['name'] = str_replace($complete['name'], "<", "&lt;");
-			$complete['name'] = str_replace($complete['name'], ">", "&gt;");
-			$name = $complete['name'];
-			$bname = $complete['bname'];
-			$descr[1] = $complete['name'];
-			$descr[2] = $complete['name'];
-			$file = $class;
-			if (lxfile_exists("img/custom/$bname.gif")) {
-				$image = "/img/custom/$bname.gif";
-			} else {
-				$image = "/img/image/collage/button/custom_button.gif";
-			}
-			$__t_identity = $identity;
-		} else {
-			$url = str_replace("[%s]", $obj->nname, $url);
-
-			$descr = $this->getActionDetails($url, $psuedourl, $buttonpath, $path, $post, $file, $name, $image, $__t_identity);
-		}
-
-
-
-
-
-		//$this->save_non_existant_image($image);
-
-		$str = randomString(8);
-		$form_name = $this->createEncForm_name("{$file}_{$name}_$str");
-		$form_name = fix_nname_to_be_variable($form_name);
-
-		if (csb($url, "http:/")) {
-			$formmethod = "get";
-		} else {
-			$formmethod = $sgbl->method;
-		}
-		// Use get always. Only in forms should post be used.
-		$formmethod = 'get';
-
-
-		?>
-
-								<td valign="middle" align="left" width=5>
-
-								<form><?php 
-								$this->print_input_vars($post);
-								if (csa($url, "javascript")) { $form_name = $url; }
-								$this->print_div_for_divbutton_on_header($url, $target, $key, $imgflag, $linkflag, $form_name, $name, $image, $descr);
-
-								?></form>
-								</td>
-								<?php
-	}
-
-
-	function print_div_for_divbutton_on_header($url, $target, $key, $imgflag, $linkflag, $formname, $name, $imagesrc, $descr)
-	{
-
-		global $gbl, $sgbl, $login;
-
-		$skincolor = $login->getSkinColor();
-		$shevron = "{$login->getSkinDir()}/shevron_line.gif";
-
-		$help = $this->get_full_help($descr[2]);
-		$help = $this->get_action_or_display_help($help, "action");
-
-		$dummyimg = get_image_path() . "/button/untitled.gif";
-
-		$help = $descr['desc'];
-
-		if ($linkflag) {
-			$displayvar = "<font style='color:#002244' class=icontextlink id=aaid_$formname href=\"javascript:document.form_$formname.submit()\" onmouseover=\" style.textDecoration='underline';\" onmouseout=\"style.textDecoration='none'\"> </font> </span>";
-			if (csa($formname, "javascript")) {
-				$onclickvar = "onClick=\"$formname\"";
-			} else {
-				if ($target == 'mainframe') {
-					$onclickvar = "onClick=\"javascript:top.mainframe.window.location='$url'\"";
-				} else {
-					$onclickvar = "onClick=\"javascript:top.window.open('$url')\"";
-				}
-			}
-			$alt = $help;
-		} else {
-			$displayvar = "<span title=\"You don't have permission\" class=icontextlink>{$descr[2]} (disabled)</span>";
-			$alt = "You dont have permission";
-			$onclickvar = null;
-		}
-
-		$idvar = null;
-		if ($imgflag) {
-			if ($linkflag) {
-				$imgvar = "<img width=15 height=15   class=icontextlink onMouseOver=\"getElementById('aaid_$formname').style.textDecoration='underline'; \" onMouseOut=\"getElementById('aaid_$formname').style.textDecoration='none'; \" src=\"$imagesrc\" >";
-			} else {
-				$imgvar = "<img width=15 height=15 class=icontextlink   src=\"$imagesrc\" >";
-			}
-
-		} else {
-			$imgvar = null;
-		}
-
-		?>
-
-								<!--	<span style="background: url(<?=$imagesrc; ?>) no-repeat;" >
--->
-								<span title='<?=$alt ?>'>
-								<table <?=$idvar?> style='border: 1px solid #<?=$skincolor?>; cursor: pointer' <?=$onclickvar ?>  onmouseover=" getElementById('aaid_<?=$formname?>').style.textDecoration='none' ; this.style.backgroundColor='#fff' ; this.style.border='1px solid #<?=$skincolor ?>';" onmouseout="this.style.border='1px solid #<?=$skincolor?>'; this.style.backgroundColor=''; getElementById('aaid_<?=$formname?>').style.textDecoration='none';" cellpadding=3 cellspacing=3 height=10 width=10 valign=top>
-									<tr>
-										<td valign=top align=center><?=$imgvar ?></td>
-									</tr>
-									<tr valign=top height=100%>
-										<td width=10 align=center><span title='<?=$alt ?>'><?=$displayvar ?></td>
-									</tr>
-								</table>
-								<?php
-	}
-
-	function getUrlInfo($url)
-	{
-		$buttonpath = get_image_path() . "/button/";
-		if ($this->is_special_url($url)) {
-			$psuedourl = $url->purl;
+		if (isset($url->custom) && $url->custom) {
+			$complete['url'] = $url->url;
+			$complete['name'] = $url->name;
+			$complete['bname'] = $url->bname;
+			$target = $url->target;
 			$url = $url->url;
+			return $complete;
 		} else {
-			$psuedourl = $url;
+			$nurl = $url->url;
+			$psuedourl = $url->purl;
+			$target = $url->target;
+			$psuedourl = $this->getFullUrl($psuedourl);
+			if (isset($url->__internal)) {
+				$nurl = $this->getFullUrl($nurl);
+			}
+			$url = $nurl;
 		}
+	}
+}
+
+function print_toolbar()
+{
+	$list = get_favorite("ndskshortcut");
+	foreach((array) $list as $l) {
+		if ($l['ttype'] === 'separator') {
+			print("<td nowrap width=20> </td>");
+			continue;
+		}
+		print("<td  valign='middle'  align='left' width=5>");
+		print('<form>'); 
+		$l['ac_descr']['desc'] = "{$l['fullstr']} {$l['tag']}";
+		$this->print_div_for_divbutton_on_header($l['url'], $l['target'], null, true, true, $l['url'], $l['__t_identity'], $l['_t_image'], $l['ac_descr']);
+		print('</form>'); 
+		print("</td >");
+	}
+
+}
+function print_div_button_on_header($type, $imgflag, $key, $url, $ddate = null)
+{
+
+	global $gbl, $sgbl, $login, $ghtml; 
+	$obj = $gbl->__c_object;
+ 	$psuedourl = NULL;
+	$target = NULL;
+
+	$buttonpath = get_image_path() . "/button/";
+
+	$linkflag = true;
+	if (csa($key, "__var_")) {
+		$privar = strfrom($key, "__var_");
+		if (!$obj->checkButton($privar)) {
+			$linkflag = false;
+		}
+	}
+
+	$complete = $this->resolve_int_ext($url, $psuedourl, $target);
+
+	if (!$target) {
+		$target = "mainframe";
+	}
+	
+	if ($complete) {
+		$this->get_post_from_get($url, $path, $post);
+		$descr  = $this->getActionDescr($path, $post, $class, $name, $identity);
+		$complete['name'] = str_replace($complete['name'], "<", "&lt;");
+		$complete['name'] = str_replace($complete['name'], ">", "&gt;");
+		$name = $complete['name'];
+		$bname = $complete['bname'];
+		$descr[1] = $complete['name'];
+		$descr[2] = $complete['name'];
+		$file = $class;
+		if (lxfile_exists("img/custom/$bname.gif")) {
+			$image = "/img/custom/$bname.gif";
+		} else {
+			$image = "/img/image/collage/button/custom_button.gif";
+		}
+		$__t_identity = $identity;
+	} else {
+		$url = str_replace("[%s]", $obj->nname, $url);
+
 		$descr = $this->getActionDetails($url, $psuedourl, $buttonpath, $path, $post, $file, $name, $image, $__t_identity);
-		$ret['description'] = $descr;
-		$ret['image'] = $image;
-		return $ret;
 	}
 
 
-	function show_graph($maxval, $val, $info, $tabwidth=null, $unit = "MB", $type = "normal", $name = null, $varname = null)
-	{
 
-		global $gbl, $sgbl, $login, $ghtml;
 
-		if ($sgbl->isBlackBackground()) {
-			return;
+
+	//$this->save_non_existant_image($image);
+
+	$str = randomString(8);
+	$form_name = $this->createEncForm_name("{$file}_{$name}_$str");
+	$form_name = fix_nname_to_be_variable($form_name);
+
+	if (csb($url, "http:/")) {
+		$formmethod = "get";
+	} else {
+		$formmethod = $sgbl->method;
+	}
+	// Use get always. Only in forms should post be used.
+	$formmethod = 'get';
+
+
+	?> 
+
+		<td  valign="middle"  align="left" width=5>
+
+		<form >
+	<?php 
+	$this->print_input_vars($post);
+	if (csa($url, "javascript")) { $form_name = $url; }
+	$this->print_div_for_divbutton_on_header($url, $target, $key, $imgflag, $linkflag, $form_name, $name, $image, $descr);
+
+	?> 
+		</form>
+		</td> 
+	<?php 
+}
+
+
+function print_div_for_divbutton_on_header($url, $target, $key, $imgflag, $linkflag, $formname, $name, $imagesrc, $descr)
+{	  
+
+	global $gbl, $sgbl, $login;
+
+	$skincolor = $login->getSkinColor();
+	$shevron = "{$login->getSkinDir()}/shevron_line.gif";
+
+	$help = $this->get_full_help($descr[2]);
+	$help = $this->get_action_or_display_help($help, "action");
+
+	$dummyimg = get_image_path() . "/button/untitled.gif";
+
+	$help = $descr['desc'];
+
+	if ($linkflag) {
+		$displayvar = "<font style='color:#002244' class=icontextlink id=aaid_$formname href=\"javascript:document.form_$formname.submit()\" onmouseover=\" style.textDecoration='underline';\" onmouseout=\"style.textDecoration='none'\"> </font> </span>";
+		if (csa($formname, "javascript")) {
+			$onclickvar = "onClick=\"$formname\"";
+		} else {
+			if ($target == 'mainframe') {
+				$onclickvar = "onClick=\"javascript:top.mainframe.window.location='$url'\"";
+			} else {
+				$onclickvar = "onClick=\"javascript:top.window.open('$url')\"";
+			}
+		}
+		$alt = $help;
+	} else {
+		$displayvar = "<span title=\"You don't have permission\" class=icontextlink>{$descr[2]} (disabled)</span>";
+		$alt = "You dont have permission";
+		$onclickvar = null;
+	}
+
+	$idvar = null;
+	if ($imgflag) {
+		if ($linkflag) {
+			$imgvar = "<img width=15 height=15   class=icontextlink onMouseOver=\"getElementById('aaid_$formname').style.textDecoration='underline'; \" onMouseOut=\"getElementById('aaid_$formname').style.textDecoration='none'; \" src=\"$imagesrc\" >";
+		} else {
+			$imgvar = "<img width=15 height=15 class=icontextlink   src=\"$imagesrc\" >";
 		}
 
-		if (!is_unlimited($maxval) && $maxval == 0) {
-			return ;
-		}
-		if($tabwidth > 0 && $tabwidth != null)
+	} else {
+		$imgvar = null;
+	}
+
+	?> 
+
+<!--	<span style="background: url(<?=$imagesrc; ?>) no-repeat;" >
+-->
+<span title='<?=$alt ?>'>
+<table <?=$idvar?> style='border: 1px solid #<?=$skincolor?>; cursor: pointer' <?=$onclickvar ?>  onmouseover=" getElementById('aaid_<?=$formname?>').style.textDecoration='none' ; this.style.backgroundColor='#fff' ; this.style.border='1px solid #<?=$skincolor ?>';" onmouseout="this.style.border='1px solid #<?=$skincolor?>'; this.style.backgroundColor=''; getElementById('aaid_<?=$formname?>').style.textDecoration='none';" cellpadding=3 cellspacing=3 height=10 width=10 valign=top><tr><td valign=top align=center> <?=$imgvar ?> </td></tr><tr valign=top height=100%><td width=10 align=center> <span title='<?=$alt ?>'><?=$displayvar ?> 
+</td> </tr> </table>
+<?php 
+}	
+
+function getUrlInfo($url)
+{
+	$buttonpath = get_image_path() . "/button/";
+	if ($this->is_special_url($url)) {
+		$psuedourl = $url->purl;
+		$url = $url->url;
+	} else {
+		$psuedourl = $url;
+	}
+	$descr = $this->getActionDetails($url, $psuedourl, $buttonpath, $path, $post, $file, $name, $image, $__t_identity);
+	$ret['description'] = $descr;
+	$ret['image'] = $image;
+	return $ret;
+}
+
+
+function show_graph($maxval, $val, $info, $tabwidth=null, $unit = "MB", $type = "normal", $name = null, $varname = null) 
+{
+
+	global $gbl, $sgbl, $login, $ghtml; 
+
+	if ($sgbl->isBlackBackground()) {
+		return;
+	}
+
+	if (!is_unlimited($maxval) && $maxval == 0) {
+		return ;
+	}
+    if($tabwidth > 0 && $tabwidth != null) 
 		$width = $tabwidth;
-		else
-		$width=100;
+    else
+		$width=100; 
 
-		$path = get_general_image_path()."/icon/";
+	$path = get_general_image_path()."/icon/";
+    
+	$gwhite  = $path."g_white.gif";
+    $gorange = $path."g_orange.gif";
+    $gyellow = $path."g_yellow.gif";
+    $ggreen  = $path."g_green.gif";
+    $gred    = $path."g_red.gif";
 
-		$gwhite  = $path."g_white.gif";
-		$gorange = $path."g_orange.gif";
-		$gyellow = $path."g_yellow.gif";
-		$ggreen  = $path."g_green.gif";
-		$gred    = $path."g_red.gif";
-
+	$percentage_val = 0;
+	if (is_unlimited($maxval) || $maxval === 'Na') {
 		$percentage_val = 0;
-		if (is_unlimited($maxval) || $maxval === 'Na') {
-			$percentage_val = 0;
-		} else if ($maxval) {
-			$percentage_val = $val / $maxval;
-		}
-		$usedval = round($percentage_val * 100);
+	} else if ($maxval) {
+		$percentage_val = $val / $maxval;
+	}
+    $usedval = round($percentage_val * 100);
 
-		$realval = $usedval;
+	$realval = $usedval;
 
-		$usedval = min(110, $usedval);
+	$usedval = min(110, $usedval);
 
-		$quotaimg = null;
-		if($usedval > 90) 					     $quotaimg = $gred;
-		if($usedval > 75  && $usedval <= 90)	 $quotaimg = $gorange;
-		if($usedval > 50  && $usedval <= 75 )	 $quotaimg = $gyellow;
-		if($usedval >= 0 && $usedval <= 50) 		 $quotaimg = $ggreen;
+	$quotaimg = null;
+	if($usedval > 90) 					     $quotaimg = $gred;
+    if($usedval > 75  && $usedval <= 90)	 $quotaimg = $gorange;
+    if($usedval > 50  && $usedval <= 75 )	 $quotaimg = $gyellow;
+    if($usedval >= 0 && $usedval <= 50) 		 $quotaimg = $ggreen;
 
 
-		$text = "<span class=last><font size=1 face=arial></font></span>";
-		//  $text=null;
-		$help = null;
-		$alt = null;
-		$maxval = Resource::privdisplay($varname, null, $maxval);
-		$val = Resource::privdisplay($varname, null, $val);
-		if ($type === "small") {
-			$help = "<br> <br> <font color=blue>$name </font> uses $val $unit ($realval%) of $maxval";
-			$alt = lx_strip_tags($help);
-			$help = "<b> Message: </b>  " . $help;
-			$help = "onmouseover=\"changeContent('help',' $help')\" onmouseout=\"changeContent('help','helparea')\"";
+	$text = "<span class=last><font size=1 face=arial></font></span>";
+//  $text=null;
+	$help = null;
+	$alt = null;
+	$maxval = Resource::privdisplay($varname, null, $maxval);
+	$val = Resource::privdisplay($varname, null, $val);
+	if ($type === "small") {
+		$help = "<br> <br> <font color=blue>$name </font> uses $val $unit ($realval%) of $maxval";
+		$alt = lx_strip_tags($help);
+		$help = "<b> Message: </b>  " . $help;
+		$help = "onmouseover=\"changeContent('help',' $help')\" onmouseout=\"changeContent('help','helparea')\"";
+	} else {
+		$text = "<span class=last> <font size=1 face=arial>$realval%</font> </span>";
+	}
+
+	if($info != null) {
+?>
+	<table cellpadding=0 cellspacing=0 width=<?=$width + 50; ?>>
+    <tr>
+	<td class=collist width=50><b> <?=$info; ?> </b> </td>
+	<td>
+<?php } ?>	
+   
+    <table cellpadding=0 cellspacing=0 border=0 width=<?=$width; ?>>
+	<tr><td <?=$help ?>>
+	<div id="quotameter" class="smallroundedmodule lowquota">
+	<div class="first">
+	<span class="first"></span>
+	<span class="last"></span>
+	</div>
+	<div> 
+	<span id="quotausagebar" title='<?=$alt ?>'>
+
+	<span class="first" style="background-image: url('<?=$quotaimg; ?>');  width:<?=$usedval; ?>%;"></span>
+	<?=$text;?> 
+	</span>
+	</div>
+	<div class="last">
+	<span class="first"></span>
+	<span class="last"></span>
+	</div>
+	</div></td>
+	</tr>
+	</table>
+<?php 
+	if($info != null)
+	{
+?> 	</td></tr></table>
+
+
+<?php
+	}
+}
+
+
+
+function form_header($title)
+{
+	global $gbl, $sgbl, $login, $ghtml;
+
+    $imgheadleft  = $login->getSkinDir() . "/top_lt.gif" ;
+    $imgheadright = $login->getSkinDir() . "/top_rt.gif" ;
+    $imgheadbg    = $login->getSkinDir() . "/top_bg.gif" ;
+    $imgtopline   = $login->getSkinDir() . "/top_line.gif" ;
+
+?> 
+
+<table cellpadding=0 cellspacing=0 border=0 width=100%>
+<tr>
+<td width=60% valign=bottom>
+<table cellpadding=0 cellspacing=0 border=0 width=100%>
+<tr><td width=100% height=2 background="<?=$imgtopline; ?>"></td></tr>
+</table>
+</td>
+<td align=right width=1%>
+<table cellpadding=0 cellspacing=0 border=0 width=100% >
+<tr><td><img src="<?=$imgheadleft; ?>"></td><td nowrap width=100% background="<?=$imgheadbg; ?>" ><b><font color="#ffffff"><?=$title; ?></font></b></td><td><img src="<?=$imgheadright; ?>"></td></tr>
+</table>
+</td></tr>
+</table> 
+
+
+<?php 
+}
+
+function form_footer()
+{
+?>
+<table cellpadding=0 cellspacing=0 border=0 width=100%>
+<tr><td height=2 bgcolor="#a5c7e7"></td></tr>
+</table> 
+<?php
+}
+
+
+function getgroupvarselect($_multivarname)
+{
+	global $gbl, $sgbl, $login, $ghtml; 
+	if (isset($gbl->__group_mode) && $gbl->__group_mode) {
+		return "<td><select class=textbox name=$_multivarname> <option value=nochange> Dont Change </option> <option value=change> Change </option> </select>\n <br> </td> ";
+	} else {
+		return null;
+	}
+}
+
+
+function print_fancy_select($class, $src, $dst)
+{
+
+
+	$variablename = "frm_interface_template_c_{$class}_show_list";
+	$ts_name = "ts_$variablename";
+	$ts_name2 = "ts_{$variablename}2";
+	$variable_description = "";
+	$dstname = "destination";
+
+	$form = "fancy_select";
+
+	$stylestring = "style='width: 300;' size=20";
+	$iconpath = get_image_path() . "/button";
+
+	?>
+
+	<table cellpadding=0 cellspacing=0> 
+	<tr > <td ></td> <td>  <?=$variable_description ?>   </td><td > <table width=100% cellspacing=0 cellpadding=0> 
+	<tr  align=center>  <td > <b> Available </b> </td> <td > </td><td > <b> Selected </b> </td> </tr> 
+	<tr height=20 valign=middle  >			
+
+	<form name=<?=$form ?> action=/display.php>
+	<input type=hidden name=<?=trim($variablename) ?> >
+	<input type=hidden name=frm_action value=update>
+	<input type=hidden name=frm_subaction value=update>
+	<?php $this->html_variable_inherit("frm_o_o") ?> 
+
+
+	<td class=col width=100% align=center valign=middle>  <select class=textbox <?=$stylestring ?>  id=<?=$ts_name ?>  multiple  class=textbox name=<?=trim($srcname) ?>  >
+		<?php 
+	foreach($src as $k =>  $s) {
+		if (csb($k, "__title")) {
+			$desc = "----$k-----";
+			$_t_image = null;
+			$key = $k;
 		} else {
-			$text = "<span class=last> <font size=1 face=arial>$realval%</font> </span>";
+			$key = base64_encode($s);
+			$s = "j[class]=$class&$j[nname]=name&$s";
+			$s = $this->getFullUrl($s, null);
+			$ac_descr = $this->getActionDetails($s, null, $iconpath, $path, $post, $_t_file, $_t_name, $_t_image, $__t_identity);
+			$desc = $ac_descr[2];
+			$_t_image = dirname($_t_image) . "/small/" . basename($_t_image);
 		}
+		print("<option value=$key style='valign:middle; padding: 0 0 0 25 ; width:300; height:20; background:url($_t_image) no-repeat;'>$desc </option>");
 
-		if($info != null) {
-			?>
-								<table cellpadding=0 cellspacing=0 width=<?=$width + 50; ?>>
-									<tr>
-										<td class=collist width=50><b> <?=$info; ?> </b></td>
-										<td><?php } ?>
+	  } 
+	?>
+		</select>
 
-										<table cellpadding=0 cellspacing=0 border=0
-											width=<?=$width; ?>>
-											<tr>
-												<td <?=$help ?>>
-												<div id="quotameter" class="smallroundedmodule lowquota">
-												<div class="first"><span class="first"></span> <span
-													class="last"></span></div>
-												<div><span id="quotausagebar" title='<?=$alt ?>'> <span class="first" style="background-image: url('<?=$quotaimg; ?>');  width:<?=$usedval; ?>%;"></span>
-												<?=$text;?> </span></div>
-												<div class="last"><span class="first"></span> <span
-													class="last"></span></div>
-												</div>
-												</td>
-											</tr>
-										</table>
-										<?php
-										if($info != null)
-										{
-											?></td>
-									</tr>
-								</table>
+		</td>
+		<td class=col width=15% align=center> <table align=center> <tr> <td ><INPUT TYPE=button class=submitbutton onClick="multiSelectPopulate('<?=$form ?>', '<?=trim($variablename) ?>',  '<?=$ts_name ?>', '<?=$ts_name2 ?>')" VALUE=">>"> 
 
-
-								<?php
-										}
-	}
-
-
-
-	function form_header($title)
-	{
-		global $gbl, $sgbl, $login, $ghtml;
-
-		$imgheadleft  = $login->getSkinDir() . "/top_lt.gif" ;
-		$imgheadright = $login->getSkinDir() . "/top_rt.gif" ;
-		$imgheadbg    = $login->getSkinDir() . "/top_bg.gif" ;
-		$imgtopline   = $login->getSkinDir() . "/top_line.gif" ;
-
-		?>
-
-								<table cellpadding=0 cellspacing=0 border=0 width=100%>
-									<tr>
-										<td width=60% valign=bottom>
-										<table cellpadding=0 cellspacing=0 border=0 width=100%>
-											<tr>
-												<td width=100% height=2 background="<?=$imgtopline; ?>"></td>
-											</tr>
-										</table>
-										</td>
-										<td align=right width=1%>
-										<table cellpadding=0 cellspacing=0 border=0 width=100%>
-											<tr>
-												<td><img src="<?=$imgheadleft; ?>"></td>
-												<td nowrap width=100% background="<?=$imgheadbg; ?>"><b><font
-													color="#ffffff"><?=$title; ?></font></b></td>
-												<td><img src="<?=$imgheadright; ?>"></td>
-											</tr>
-										</table>
-										</td>
-									</tr>
-								</table>
-
-
-								<?php
-	}
-
-	function form_footer()
-	{
-		?>
-								<table cellpadding=0 cellspacing=0 border=0 width=100%>
-									<tr>
-										<td height=2 bgcolor="#a5c7e7"></td>
-									</tr>
-								</table>
-								<?php
-	}
-
-
-	function getgroupvarselect($_multivarname)
-	{
-		global $gbl, $sgbl, $login, $ghtml;
-		if (isset($gbl->__group_mode) && $gbl->__group_mode) {
-			return "<td><select class=textbox name=$_multivarname> <option value=nochange> Dont Change </option> <option value=change> Change </option> </select>\n <br> </td> ";
-		} else {
-			return null;
-		}
-	}
-
-
-	function print_fancy_select($class, $src, $dst)
-	{
-
-
-		$variablename = "frm_interface_template_c_{$class}_show_list";
-		$ts_name = "ts_$variablename";
-		$ts_name2 = "ts_{$variablename}2";
-		$variable_description = "";
-		$dstname = "destination";
-
-		$form = "fancy_select";
-
-		$stylestring = "style='width: 300;' size=20";
-		$iconpath = get_image_path() . "/button";
-
-		?>
-
-								<table cellpadding=0 cellspacing=0>
-									<tr>
-										<td></td>
-										<td><?=$variable_description ?></td>
-										<td>
-										<table width=100% cellspacing=0 cellpadding=0>
-											<tr align=center>
-												<td><b> Available </b></td>
-												<td></td>
-												<td><b> Selected </b></td>
-											</tr>
-											<tr height=20 valign=middle>
-
-												<form name=<?=$form ?> action=/display.php><input
-													type=hidden name=<?=trim($variablename) ?>> <input
-													type=hidden name=frm_action value=update> <input
-													type=hidden name=frm_subaction value=update> <?php $this->html_variable_inherit("frm_o_o") ?>
-												
-												
-												<td class=col width=100% align=center valign=middle><select
-													class=textbox <?=$stylestring ?> id=<?=$ts_name ?> multiple
-													class=textbox name=<?=trim($srcname) ?>>
-													<?php
-													foreach($src as $k =>  $s) {
-														if (csb($k, "__title")) {
-															$desc = "----$k-----";
-															$_t_image = null;
-															$key = $k;
-														} else {
-															$key = base64_encode($s);
-															$s = "j[class]=$class&$j[nname]=name&$s";
-															$s = $this->getFullUrl($s, null);
-															$ac_descr = $this->getActionDetails($s, null, $iconpath, $path, $post, $_t_file, $_t_name, $_t_image, $__t_identity);
-															$desc = $ac_descr[2];
-															$_t_image = dirname($_t_image) . "/small/" . basename($_t_image);
-														}
-														print("<option value=$key style='valign:middle; padding: 0 0 0 25 ; width:300; height:20; background:url($_t_image) no-repeat;'>$desc </option>");
-
-													}
-													?>
-												</select></td>
-												<td class=col width=15% align=center>
-												<table align=center>
-													<tr>
-														<td><INPUT TYPE=button class=submitbutton
-															onClick="multiSelectPopulate('<?=$form ?>', '<?=trim($variablename) ?>',  '<?=$ts_name ?>', '<?=$ts_name2 ?>')"
-															VALUE=">>"></td>
-													</tr>
-													<tr>
-														<td><INPUT TYPE=button class=submitbutton
-															onClick="multiSelectRemove('<?=$form ?>', '<?=trim($variablename) ?>', '<?=$ts_name2 ?>')"
-															VALUE="<<">
+		</td></tr>
+		<tr> <td >
+		<INPUT TYPE=button class=submitbutton onClick="multiSelectRemove('<?=$form ?>', '<?=trim($variablename) ?>', '<?=$ts_name2 ?>')" VALUE="<<">
 
 		</td></tr></table>
 		
@@ -8080,18 +7508,13 @@ function drawMenu()
 	if (this.open) {
 		visib = 'visibile';
 		disp = 'block';
-		menuclass = "menuHeaderExpanded"
-															;
-		image='<?=$skinget?>/minus.gif'
-															;
+		menuclass = "menuHeaderExpanded";
+		image = '<?=$skinget?>/minus.gif';
 	} else {
-		visib='hidden' ;
-		disp='none'
-															;
-		menuclass="menuHeaderCollapsed"
-															;
-		image='<?=$skinget?>/plus.gif'
-															;
+		visib = 'hidden';
+		disp = 'none';
+		menuclass = "menuHeaderCollapsed";
+		image = '<?=$skinget?>/plus.gif';
 	}
 	
 	document.write("<table  border=\"0\" cellspacing=\"0\"" +
@@ -8110,55 +7533,45 @@ function drawMenu()
 	}
 	document.write("</table></div>");
 }
-function
-															toggle(pobjSrc)
+function toggle(pobjSrc)
 {
-	var strCls=pobjSrc.className; var
-															strId=pobjSrc.id; var
-															objTmp, child;
+	var strCls = pobjSrc.className;
+	var strId = pobjSrc.id;
+	var objTmp, child;
 
-	if (pobjSrc.id !=_currMenu)
-															objTmp=document.getElementById(_currMenu);
-															/*
+	if (pobjSrc.id != _currMenu)
+		objTmp = document.getElementById(_currMenu);
+
+	/*
 	if (objTmp) {
-		objTmp.className="menuHeaderCollapsed"
-															;
+		objTmp.className = "menuHeaderCollapsed";
 
-		child=document.getElementById(_currMenu
-															+ "_child");
-		child.style.visibility="hidden"
-															;
-		child.style.display="none"
-															;
+		child = document.getElementById(_currMenu + "_child");
+		child.style.visibility = "hidden";
+		child.style.display = "none";
 	}
 	*/
 
-	child=document.getElementById(strId
-															+ "_child");
-	ichild=document.getElementById(strId
-															+ "_image");
-	if (child.style.visibility==
-															"hidden")
+	child = document.getElementById(strId + "_child");
+	ichild = document.getElementById(strId + "_image");
+	if (child.style.visibility == "hidden")
 	{
-		pobjSrc.className="menuHeaderExpanded"
-															;
-		child.style.visibility="visible"
-															;
-		child.style.display="block"
-															;
-		ichild.src="<?=$skinget?>/minus.gif"
-															;
+		pobjSrc.className = "menuHeaderExpanded";
+		child.style.visibility = "visible";
+		child.style.display = "block";
+		ichild.src = "<?=$skinget?>/minus.gif";
 	} else {
-		pobjSrc.className="menuHeaderCollapsed"
-															;
-		child.style.visibility="hidden"
-															;
-		child.style.display="none"
-															;
-		ichild.src="<?=$skinget?>/plus.gif"
-															;
+		pobjSrc.className = "menuHeaderCollapsed";
+		child.style.visibility = "hidden";
+		child.style.display = "none";
+		ichild.src = "<?=$skinget?>/plus.gif";
 	}
-	_currMenu=pobjSrc.id;}</script> <script language="javascript">
+	_currMenu = pobjSrc.id;
+}
+
+</script>
+
+<script language="javascript">
     var objTmp;
 <?php
 	
@@ -8288,448 +7701,416 @@ function
     setTheme("XPClassic.css", null, null)
     initialize(<?=($sgbl->__var_lpanelwidth - 20) ?>);    
 
-</script> <?php 
+</script>
 
+
+<?php 
+	
+}
+
+function lpanel_start($help = null)
+{
+	global $gbl, $sgbl, $login;
+	$img_path = $login->getSkinDir();
+	$tbg = $img_path . "/lp_bg.gif";
+    $hpic = $img_path . "/lp_head.gif";
+	$imgleftpoint = "$img_path/left_point.gif";
+	$imgrightpoint = "$img_path/right_point.gif";
+	$navtxt = "Navigation";
+	$histxt = "History";
+	$imgpoint = $imgleftpoint;
+	$width="198";
+	$width="100%";
+	$xpos = 196;
+
+	$l= getdate($gbl->c_session->logintime);
+	$login_time = $l['hours'] . ":" . $l['minutes'] . ":" . $l['seconds'];
+	$skin_name = $login->getSkinDir();
+	if (csa($skin_name, "_")) {
+		$skin_name = substr($skin_name, 0, strrpos($skin_name, "_"));
+	}
+	$skin_name = str_replace("_", " ", $skin_name);
+	$name = substr($login->nname, 0, 12);
+
+	?> 
+	<table> <tr> <td height=215> </td></tr></table>
+
+	<?php 
+		
+	$this->lpanel_help();
+}
+
+function do_full_resource($object, $depth, $alistflag)
+{
+	$treename = fix_nname_to_be_variable($object->nname);
+	$this->do_resource(null, $object, $depth, $alistflag, "getResourceChildList", true, true);
+}
+
+
+function do_resource($tree, $object, $depth, $alistflag, $func, $complex = true, $showurlflag = true)
+{
+	global $gbl, $sgbl, $login, $ghtml; 
+	static $scriptdone;
+
+	if (!$scriptdone && $complex) {
+		print("<link href=/htmllib/js/tree/dtree.css rel=stylesheet type=text/css>\n");
+		$ghtml->print_jscript_source("/htmllib/js/tree/dtree.js");
+		$scriptdone = true;
 	}
 
-	function lpanel_start($help = null)
-	{
-		global $gbl, $sgbl, $login;
-		$img_path = $login->getSkinDir();
-		$tbg = $img_path . "/lp_bg.gif";
-		$hpic = $img_path . "/lp_head.gif";
-		$imgleftpoint = "$img_path/left_point.gif";
-		$imgrightpoint = "$img_path/right_point.gif";
-		$navtxt = "Navigation";
-		$histxt = "History";
-		$imgpoint = $imgleftpoint;
-		$width="198";
-		$width="100%";
-		$xpos = 196;
+	$treename = "_" . fix_nname_to_be_variable($object->nname);
 
-		$l= getdate($gbl->c_session->logintime);
-		$login_time = $l['hours'] . ":" . $l['minutes'] . ":" . $l['seconds'];
-		$skin_name = $login->getSkinDir();
-		if (csa($skin_name, "_")) {
-			$skin_name = substr($skin_name, 0, strrpos($skin_name, "_"));
-		}
-		$skin_name = str_replace("_", " ", $skin_name);
-		$name = substr($login->nname, 0, 12);
+	?> 
 
-		?>
-														<table>
-															<tr>
-																<td height=215></td>
-															</tr>
-														</table>
+	<table width=90% cellpadding=0 cellspacing=0 valign=top >  <tr><td valign=top  align=left>
 
-														<?php
 
-														$this->lpanel_help();
+	<?php 
+
+	if ($complex) {
+		print("<div class='dtree'>");
+		print("<script>");
+		print("$treename = new  dTree('$treename');");
+		print("</script>");
 	}
 
-	function do_full_resource($object, $depth, $alistflag)
-	{
-		$treename = fix_nname_to_be_variable($object->nname);
-		$this->do_resource(null, $object, $depth, $alistflag, "getResourceChildList", true, true);
+	$val = -1;
+
+	if (!$tree) {
+		$tree = $this->print_resource(null, $object, $ghtml->frm_o_o, $object, $depth, $alistflag, $func, false, $showurlflag);
 	}
 
-
-	function do_resource($tree, $object, $depth, $alistflag, $func, $complex = true, $showurlflag = true)
-	{
-		global $gbl, $sgbl, $login, $ghtml;
-		static $scriptdone;
-
-		if (!$scriptdone && $complex) {
-			print("<link href=/htmllib/js/tree/dtree.css rel=stylesheet type=text/css>\n");
-			$ghtml->print_jscript_source("/htmllib/js/tree/dtree.js");
-			$scriptdone = true;
-		}
-
-		$treename = "_" . fix_nname_to_be_variable($object->nname);
-
-		?>
-
-														<table width=90% cellpadding=0 cellspacing=0 valign=top>
-															<tr>
-																<td valign=top align=left><?php 
-
-																if ($complex) {
-																	print("<div class='dtree'>");
-																	print("<script>");
-																	print("$treename = new  dTree('$treename');");
-																	print("</script>");
-																}
-
-																$val = -1;
-
-																if (!$tree) {
-																	$tree = $this->print_resource(null, $object, $ghtml->frm_o_o, $object, $depth, $alistflag, $func, false, $showurlflag);
-																}
-
-																if ($complex) {
-																	print("<script>");
-																	if (isset($gbl->__tmp_checkbox_value)) {
-																		print("var __treecheckboxcount = $gbl->__tmp_checkbox_value;");
-																	}
-																}
-																$total = -1;
-																print_time('tree');
-																$this->print_tree($treename, $tree, $total, $val, $complex);
-																if ($complex) {
-																	print("document.write($treename);");
-																	print("</script>");
-																	print("</div>");
-																}
-																print_time('tree', "Tree", 2);
-
-																?></td>
-															</tr>
-														</table>
-
-														<form name=__treeForm id=__treeForm method=<?="get" ?>
-															action="/display.php"><input type=hidden
-															name=frm_accountselect value=""> <?php 
-
-															$this->print_current_input_vars(array('frm_action', 'frm_subaction'));
-
-															if (cse($ghtml->frm_subaction, "confirm_confirm")) {
-																$this->print_input("hidden", "frm_action", "update");
-																$sub = $this->frm_subaction;
-																$actionimg = "finish.gif";
-															} else {
-																$this->print_input("hidden", "frm_action", "updateform");
-																$sub = $this->frm_subaction . "_confirm";
-																$actionimg = "next.gif";
-															}
-
-
-															$this->print_input("hidden", "frm_subaction", "$sub");
-															if (isset($gbl->__tmp_checkbox_value)) {
-																print("<a href=javascript:treeStoreValue()> <img src=/img/general/button/$actionimg> </a>");
-															}
-
-															print("</form>");
-
-
-	}
-
-	function print_tree($treename, $tree, &$total, $level, $complex = true)
-	{
-
-
-		$tlist = $tree->getList('tree');
-		$open = $tree->open? $tree->open: 'false';
-		$open = 'false';
-		if ($tree->imgstr) {
-			$total++;
-			if ($complex) {
-				print("$treename.add($total, $level, '$tree->imgstr', '$tree->url', '', 'mainframe', '$tree->img', '$tree->img', $open, '$tree->help', '$tree->alt');\n");
-			} else {
-				for ($i = 0; $i < $level; $i++) {
-					dprint("Hello\n");
-					print("&nbsp;");
-					print($imgstr . '<br>');
-				}
-			}
-		}
-		$level = $total;
-		if ($tlist) {
-			foreach($tlist as $t) {
-				$this->print_tree($treename, $t, $total, $level, $complex);
-			}
+	if ($complex) {
+		print("<script>");
+		if (isset($gbl->__tmp_checkbox_value)) {
+			print("var __treecheckboxcount = $gbl->__tmp_checkbox_value;");
 		}
 	}
+	$total = -1;
+	print_time('tree');
+	$this->print_tree($treename, $tree, $total, $val, $complex);
+	if ($complex) {
+		print("document.write($treename);");
+		print("</script>");
+		print("</div>");
+	}
+	print_time('tree', "Tree", 2);
+
+	?> 
 
 
-	function print_resource($tree, $object, $cgi_o_o, $toplevelobject, $depth, $alistflag, $func, $childobjectflag = false, $showurlflag = true)
-	{
+	</td></tr></table>
 
-		global $gbl, $sgbl, $login, $ghtml;
+	<form name=__treeForm id=__treeForm method=<?="get" ?> action="/display.php">
+
+	<input type=hidden name=frm_accountselect value="">
+	<?php 
+
+	$this->print_current_input_vars(array('frm_action', 'frm_subaction'));
+
+	if (cse($ghtml->frm_subaction, "confirm_confirm")) {
+		$this->print_input("hidden", "frm_action", "update");
+		$sub = $this->frm_subaction;
+		$actionimg = "finish.gif";
+	} else {
+		$this->print_input("hidden", "frm_action", "updateform");
+		$sub = $this->frm_subaction . "_confirm";
+		$actionimg = "next.gif";
+	}
+
+	
+	$this->print_input("hidden", "frm_subaction", "$sub");
+	if (isset($gbl->__tmp_checkbox_value)) {
+		print("<a href=javascript:treeStoreValue()> <img src=/img/general/button/$actionimg> </a>");
+	}
+
+	print("</form>");
 
 
-		$bgcolor=null;
-		$path = get_image_path() . "/button/";
-		$bpath = get_image_path() . "/button/";
-		$class = $object->getClass();
+}
 
-		if (!$tree) {
-			$tree = createTreeObject('name', null, null, null, null, null, null);
-			$level = -1;
+function print_tree($treename, $tree, &$total, $level, $complex = true)
+{
+
+
+	$tlist = $tree->getList('tree');
+	$open = $tree->open? $tree->open: 'false';
+	$open = 'false';
+	if ($tree->imgstr) {
+		$total++;
+		if ($complex) {
+			print("$treename.add($total, $level, '$tree->imgstr', '$tree->url', '', 'mainframe', '$tree->img', '$tree->img', $open, '$tree->help', '$tree->alt');\n");
 		} else {
-			$level = 1;
+			for ($i = 0; $i < $level; $i++) {
+				dprint("Hello\n");
+				print("&nbsp;");
+				print($imgstr . '<br>');
+			}
 		}
+	}
+	$level = $total;
+	if ($tlist) {
+		foreach($tlist as $t) {
+			$this->print_tree($treename, $t, $total, $level, $complex);
+		}
+	}
+}
 
-		$cnl = $object->$func();
 
+function print_resource($tree, $object, $cgi_o_o, $toplevelobject, $depth, $alistflag, $func, $childobjectflag = false, $showurlflag = true)
+{
+
+	global $gbl, $sgbl, $login, $ghtml; 
+
+
+	$bgcolor=null;
+	$path = get_image_path() . "/button/";
+	$bpath = get_image_path() . "/button/";
+	$class = $object->getClass();
+
+	if (!$tree) {
+		$tree = createTreeObject('name', null, null, null, null, null, null);
+		$level = -1;
+	} else {
+		$level = 1;
+	}
+
+	$cnl = $object->$func();
+
+	$alist = null;
+
+
+	if ($level != -1) {
+		if ($childobjectflag) {
+			$url = $this->getFullUrl("a=show&o=$class", $cgi_o_o);
+			$num = count($cgi_o_o);
+			$cgi_o_o[$num]['class'] = $class;
+		} else {
+			$urlname = $object->nname;
+			$url = $this->getFullUrl("a=show&l[class]=$class&l[nname]=$urlname", $cgi_o_o);
+			$num = count($cgi_o_o);
+			$cgi_o_o[$num]['class'] = $class;
+			$cgi_o_o[$num]['nname'] = $object->nname;
+		}
+		$open = 'false';
 		$alist = null;
 
-
-		if ($level != -1) {
-			if ($childobjectflag) {
-				$url = $this->getFullUrl("a=show&o=$class", $cgi_o_o);
-				$num = count($cgi_o_o);
-				$cgi_o_o[$num]['class'] = $class;
-			} else {
-				$urlname = $object->nname;
-				$url = $this->getFullUrl("a=show&l[class]=$class&l[nname]=$urlname", $cgi_o_o);
-				$num = count($cgi_o_o);
-				$cgi_o_o[$num]['class'] = $class;
-				$cgi_o_o[$num]['nname'] = $object->nname;
-			}
-			$open = 'false';
-			$alist = null;
-
-		} else {
-			$url = $this->getFullUrl("a=show", $cgi_o_o);
-			$alist = $object->createShowAlist($alist);
-			$open = 'true';
-		}
-
-
-		$list = $object->createShowTypeList();
-		foreach($list as $k => $v) {
-			$type = $object->$k;
-			$vtype = $k;
-		}
-
-		if ($childobjectflag) {
-			$img = $this->get_image($path, $class, "show", ".gif");
-		} else {
-			$img = $this->get_image($path, $class, "{$vtype}_v_$type", ".gif");
-		}
-
-		if (isset($object->status) && $object->status) {
-			if ($object->isOn('status')) {
-				$hstr = "and is Enabled";
-				$status = 'on';
-			} else {
-				$hstr = "and is Disabled";
-				$status = 'off';
-			}
-			$stimg = $this->get_image($path, $class, "status_v_" . $status, ".gif");
-			$imgstr = "<img height=8 width=8 src=$stimg>";
-		} else {
-			$imgstr = null;
-			$hstr = null;
-		}
-		$homeimg = $this->get_image($path, $class, "show", ".gif");
-		if ($childobjectflag) {
-			$name = $ghtml->get_class_description($class);
-			$name = $name[2];
-		} else {
-			$name = $object->getId() ;
-		}
-		$help = "$class <font color=blue> $name </font> is of Type $type $hstr";
-		$alt = lx_strip_tags($help);
-		$inputstr = null;
-
-		if (!$showurlflag) {
-			$url = null;
-		}
-		$imgstr = "$inputstr <img src=$img width=14 height=14>   $imgstr $name";
-		if (isset($object->__v_message)) {
-			$imgstr .= " " . $object->__v_message;
-		}
-		$pttr = createTreeObject($name, $img, $imgstr, $url, $open, $help, $alt);
-		$tree->addToList('tree', $pttr);
-
-		$childdepth = 1;
-		$ppp = $object;
-		//dprintr($depth);
-		if ($object !== $toplevelobject) {
-			while($ppp = $ppp->getParentO())  {
-				if ($ppp === $toplevelobject) {
-					break;
-				}
-				$childdepth++;
-			}
-			if ($depth && ($childdepth >= $depth)) {
-				return;
-			}
-		}
-
-		//print("$treename.add($total, $level, '<img src=$img width=14 height=14> $imgstr $name', '$url', '', 'mainframe', '', '', $open, '$help', '$alt');\n");
-
-		if ($alist && $alistflag) {
-			$open = 'false';
-			$imgstr = "<img src=$homeimg width=14 height=14> <font color=#5958aa> <b> Functions </b></font> ";
-			$ttr = createTreeObject($name, '', $imgstr, $url, $open, $help, $alt);
-			$pttr->addToList('tree', $ttr);
-			//print("$treename.add($total, $level + 1, '<img src=$homeimg width=14 height=14> <font color=#5958aa> <b> Functions </b></font> ', '', '', 'mainframe', '$homeimg', '$homeimg', $open, '$help', '$alt');\n");
-			$this->print_resourcelist($ttr, $alist, null);
-			$open = 'true';
-		}
-
-
-		foreach((array) $cnl as $v) {
-			$name = $object->getChildNameFromDes($v);
-
-			if (cse($v, "_o")) {
-				$c = null;
-				if ($object->isRealChild($name)) {
-					$c = $object->getObject($name);
-				}
-				if ($c) {
-					$this->print_resource($pttr, $c, $cgi_o_o, $toplevelobject, $depth, $alistflag, $func, true, $showurlflag);
-				}
-				continue;
-			}
-
-			$img = $this->get_image($path, $name, "list", ".gif");
-			$url = $this->getFullUrl("a=list&c=$name");
-			$desc = $this->get_class_description($name);
-			$printname = get_plural($desc[2]);
-			$help = "Click to Show $printname";
-			$alt = $help;
-			$npttr = $pttr;
-			if ($object === $toplevelobject) {
-					
-				$open = 'true';
-				$gbl->__navigmenu[$level + 2] = array('show', $object);
-				$gbl->__navig[$level + 2] = $this->get_post_from_get($url, $__tpath, $__tpost);
-				$imgstr = "<img src=$img width=20 height=20>$printname";
-					
-				if (!$showurlflag) {
-					$url = null;
-				}
-				$npttr = createTreeObject($name, $homeimg, $imgstr, $url, $open, $help, $alt);
-				$pttr->addToList('tree', $npttr);
-				//print("$treename.add($total, 0, '<img src=$img width=20 height=20>$printname ', '$url', '', 'mainframe', '$img', '$img', $open, '$help', '$alt');\n");
-
-
-				if ($alistflag) {
-					$open = 'false';
-					$imgstr = 'Functions';
-					$nttr = createTreeObject($name, $homeimg, $imgstr, $url, $open, $help, $alt);
-					$npttr->addToList('tree', $nttr);
-					//print("$treename.add($total, $lv, 'Functions', '$url', '', 'mainframe', '', '', $open, '$help', '$alt');\n");
-					$lalist = exec_class_method($name, 'createListAlist', $object, $name);
-					$this->print_resourcelist($nttr, $lalist, null);
-				}
-
-
-			}
-			$open = 'true';
-
-			$filtername = $object->getFilterVariableForThis($name);
-
-			$pagesize = (int) $login->issetHpFilter($filtername, 'pagesize')? $login->gethpfilter($filtername, 'pagesize'): exec_class_method($class, "perPage");
-
-			if (isset($sgbl->__var_main_resource) && $sgbl->__var_main_resource) {
-				$cl = $object->getList($name);
-				$count = count($cl);
-
-				$halfflag = false;
-					
-			} else {
-				$halfflag = true;
-				$cl = $object->getVirtualList($name, $count);
-			}
-			if ($object->isVirtual($name)) {
-				continue;
-			}
-			if ($cl) {
-				//Setting $prev to -ll; this is done to initialize prev.
-				if ($object === $toplevelobject && $login->getSpecialObject('sp_specialplay')->isOn('lpanel_group_resource') && $alistflag) {
-					$prev = "-ll";
-					foreach($cl as $c) {
-						if ($c->nname[0] != $prev[0]) {
-							$imgstr = "<b>{$c->nname[0]} ....</b> ";
-							$ttr = createTreeObject($name, $homeimg, $imgstr, $url, $open, $help, $alt);
-							$npttr->addToList('tree', $ttr);
-							//print("$treename.add($total, $oldlv, '<b>{$c->nname[0]} ....</b> ', '', '', 'mainframe', '$img', '$img', false, '$help');\n");
-						}
-						$prev = $c->nname;
-						$this->print_resource($ttr, $c, $cgi_o_o, $toplevelobject, $depth, $alistflag, $func, false, $showurlflag);
-					}
-
-				} else {
-					foreach($cl as $c) {
-						$this->print_resource($npttr, $c, $cgi_o_o, $toplevelobject, $depth, $alistflag, $func, false, $showurlflag);
-					}
-				}
-
-				if ($halfflag && $count > $pagesize) {
-					$url = $ghtml->getFullUrl("a=list&c=$name", $cgi_o_o);
-					$ttr = createTreeObject($name, $homeimg, "More (Showing $pagesize of $count)", $url, $open, $help, $alt);
-					$npttr->addToList('tree', $ttr);
-				}
-			}
-		}
-
-		// At the top client Make all the children virtual.. This assures that after viewing resources, the cache doesn't hogg the system.
-		return $tree;
-
+	} else {
+		$url = $this->getFullUrl("a=show", $cgi_o_o);
+		$alist = $object->createShowAlist($alist);
+		$open = 'true';
 	}
 
 
-	function getMenuDescrString($img, $descr, $endimg = null)
-	{
-		$endstr = null;
+	$list = $object->createShowTypeList();
+	foreach($list as $k => $v) {
+		$type = $object->$k;
+		$vtype = $k;
+	}
+
+	if ($childobjectflag) {
+		$img = $this->get_image($path, $class, "show", ".gif");
+	} else {
+		$img = $this->get_image($path, $class, "{$vtype}_v_$type", ".gif");
+	}
+
+	if (isset($object->status) && $object->status) {
+		if ($object->isOn('status')) {
+			$hstr = "and is Enabled";
+			$status = 'on';
+		} else {
+			$hstr = "and is Disabled";
+			$status = 'off';
+		}
+		$stimg = $this->get_image($path, $class, "status_v_" . $status, ".gif");
+		$imgstr = "<img height=8 width=8 src=$stimg>";
+	} else {
 		$imgstr = null;
-		if ($endimg) {
-			$endstr = "<td > <img src=$endimg> </td> <td width=4> &nbsp; </td> ";
-		}
-		if ($img) {
-			$imgstr = "<img width=14 height=14 src=$img> ";
-		}
+		$hstr = null;
+	}
+	$homeimg = $this->get_image($path, $class, "show", ".gif");
+	if ($childobjectflag) {
+		$name = $ghtml->get_class_description($class);
+		$name = $name[2];
+	} else {
+		$name = $object->getId() ;
+	}
+	$help = "$class <font color=blue> $name </font> is of Type $type $hstr";
+	$alt = lx_strip_tags($help);
+	$inputstr = null;
 
-		// hack hack using the hilite class ( the lighter one for images.. and the image class is used for hilite)
-		$string = "<table width=100% cellpadding=0 cellspacing=0 > <tr> <td valign=middle align=center style='padding:0 0 0 0' height=25 nowrap width=30 class=menuhilite> $imgstr </td> <td style='size:7pt' width=100%>&nbsp;&nbsp;<font style='size:7pt'>$descr</font> </td> $endstr </tr></table> ";
-		return $string;
+	if (!$showurlflag) {
+		$url = null;
+	}
+	$imgstr = "$inputstr <img src=$img width=14 height=14>   $imgstr $name";
+	if (isset($object->__v_message)) {
+		$imgstr .= " " . $object->__v_message;
+	}
+	$pttr = createTreeObject($name, $img, $imgstr, $url, $open, $help, $alt);
+	$tree->addToList('tree', $pttr);
+
+	$childdepth = 1;
+	$ppp = $object;
+	//dprintr($depth);
+	if ($object !== $toplevelobject) {
+		while($ppp = $ppp->getParentO())  {
+			if ($ppp === $toplevelobject) {
+				break;
+			}
+			$childdepth++;
+		}
+		if ($depth && ($childdepth >= $depth)) {
+			return;
+		}
 	}
 
-	function print_resourcelist($tree, $alist, $base)
-	{
-		global $gbl, $sgbl, $login, $ghtml;
+	//print("$treename.add($total, $level, '<img src=$img width=14 height=14> $imgstr $name', '$url', '', 'mainframe', '', '', $open, '$help', '$alt');\n");
 
-		$image = null;
+	if ($alist && $alistflag) {
 		$open = 'false';
-		$help = null;
-		$alt = null;
-
-		/*
-		 print("$treename.add($total, $level, 'Main', '', '', 'mainframe', '$image', '$image', $open, '$help', '$alt');\n");
-		 $level = $total;
-		 */
-
-		foreach((array) $alist as $k => $a) {
-			if (is_array($a)) {
-				if ($k === 'home') {
-					continue;
-				}
-
-				if (csb($k, "__title")) {
-					$open = 'false';
-					$a = strtil($a, "(");
-					$a = strtil($a, "[");
-					$ttr = createTreeObject($name, $image, $a, '', $open, $help, $alt);
-					$tree->addToList($ttr);
-					//print("$treename.add($total, 1, '$a', '', '', 'mainframe', '', '', $open, '$help', '$alt');\n");
-					continue;
-				}
-
-				$desc = get_plural($k);
-				$image = "/img/image/" . $login->getSpecialObject('sp_specialplay')->icon_name . "/button/browse.gif";
-				$endimg = "/img/right_point.gif";
-				$desc = "$desc";
-				$open = 'false';
-				$help = $desc;
-				$alt = lx_strip_tags($help);
+		$imgstr = "<img src=$homeimg width=14 height=14> <font color=#5958aa> <b> Functions </b></font> ";
+		$ttr = createTreeObject($name, '', $imgstr, $url, $open, $help, $alt);
+		$pttr->addToList('tree', $ttr);
+		//print("$treename.add($total, $level + 1, '<img src=$homeimg width=14 height=14> <font color=#5958aa> <b> Functions </b></font> ', '', '', 'mainframe', '$homeimg', '$homeimg', $open, '$help', '$alt');\n");
+		$this->print_resourcelist($ttr, $alist, null);
+		$open = 'true';
+	}
 
 
-				$ttr = createTreeObject('name', $image, $desc, null, $open, $help, $alt);
-				$tree->addToList('tree', $ttr);
-				//print("$treename.add($total, $level, '$desc', '', '', 'mainframe', '$image', '$image', $open, '$help', '$alt');\n");
-				foreach ($a as $nk => $nv) {
-					$nv = $this->getFullUrl($nv, $base);
-					$this->print_ressingle($ttr, $nv);
-				}
+	foreach((array) $cnl as $v) {
+		$name = $object->getChildNameFromDes($v);
+
+		if (cse($v, "_o")) {
+			$c = null;
+			if ($object->isRealChild($name)) {
+				$c = $object->getObject($name);
 			}
+			if ($c) {
+				$this->print_resource($pttr, $c, $cgi_o_o, $toplevelobject, $depth, $alistflag, $func, true, $showurlflag);
+			}
+			continue;
 		}
 
-		foreach((array) $alist as $k => $a) {
+		$img = $this->get_image($path, $name, "list", ".gif");
+		$url = $this->getFullUrl("a=list&c=$name");
+		$desc = $this->get_class_description($name);
+		$printname = get_plural($desc[2]);
+		$help = "Click to Show $printname";
+		$alt = $help;
+		$npttr = $pttr;
+		if ($object === $toplevelobject) {
+			
+			$open = 'true';
+			$gbl->__navigmenu[$level + 2] = array('show', $object);
+			$gbl->__navig[$level + 2] = $this->get_post_from_get($url, $__tpath, $__tpost);
+			$imgstr = "<img src=$img width=20 height=20>$printname";
+			
+			if (!$showurlflag) {
+				$url = null;
+			}
+			$npttr = createTreeObject($name, $homeimg, $imgstr, $url, $open, $help, $alt);
+			$pttr->addToList('tree', $npttr);
+			//print("$treename.add($total, 0, '<img src=$img width=20 height=20>$printname ', '$url', '', 'mainframe', '$img', '$img', $open, '$help', '$alt');\n");
+
+
+			if ($alistflag) {
+				$open = 'false';
+				$imgstr = 'Functions';
+				$nttr = createTreeObject($name, $homeimg, $imgstr, $url, $open, $help, $alt);
+				$npttr->addToList('tree', $nttr);
+				//print("$treename.add($total, $lv, 'Functions', '$url', '', 'mainframe', '', '', $open, '$help', '$alt');\n");
+				$lalist = exec_class_method($name, 'createListAlist', $object, $name);
+				$this->print_resourcelist($nttr, $lalist, null);
+			}
+		
+
+		}
+		$open = 'true';
+
+		$filtername = $object->getFilterVariableForThis($name);
+
+		$pagesize = (int) $login->issetHpFilter($filtername, 'pagesize')? $login->gethpfilter($filtername, 'pagesize'): exec_class_method($class, "perPage");
+
+		if (isset($sgbl->__var_main_resource) && $sgbl->__var_main_resource) {
+			$cl = $object->getList($name);
+			$count = count($cl);
+
+			$halfflag = false;
+			
+		} else {
+			$halfflag = true;
+			$cl = $object->getVirtualList($name, $count);
+		}
+		if ($object->isVirtual($name)) {
+			continue;
+		}
+		if ($cl) {
+			//Setting $prev to -ll; this is done to initialize prev. 
+			if ($object === $toplevelobject && $login->getSpecialObject('sp_specialplay')->isOn('lpanel_group_resource') && $alistflag) {
+				$prev = "-ll";
+				foreach($cl as $c) {
+					if ($c->nname[0] != $prev[0]) {
+						$imgstr = "<b>{$c->nname[0]} ....</b> ";
+						$ttr = createTreeObject($name, $homeimg, $imgstr, $url, $open, $help, $alt);
+						$npttr->addToList('tree', $ttr);
+						//print("$treename.add($total, $oldlv, '<b>{$c->nname[0]} ....</b> ', '', '', 'mainframe', '$img', '$img', false, '$help');\n");
+					}
+					$prev = $c->nname;
+					$this->print_resource($ttr, $c, $cgi_o_o, $toplevelobject, $depth, $alistflag, $func, false, $showurlflag);
+				}
+
+			} else {
+				foreach($cl as $c) {
+					$this->print_resource($npttr, $c, $cgi_o_o, $toplevelobject, $depth, $alistflag, $func, false, $showurlflag);
+				}
+			}
+
+			if ($halfflag && $count > $pagesize) {
+				$url = $ghtml->getFullUrl("a=list&c=$name", $cgi_o_o);
+				$ttr = createTreeObject($name, $homeimg, "More (Showing $pagesize of $count)", $url, $open, $help, $alt);
+				$npttr->addToList('tree', $ttr);
+			}
+		}
+	}
+
+	// At the top client Make all the children virtual.. This assures that after viewing resources, the cache doesn't hogg the system.
+	return $tree;
+
+}
+
+
+function getMenuDescrString($img, $descr, $endimg = null)
+{
+	$endstr = null;
+	$imgstr = null;
+	if ($endimg) {
+		$endstr = "<td > <img src=$endimg> </td> <td width=4> &nbsp; </td> ";
+	}
+	if ($img) {
+		$imgstr = "<img width=14 height=14 src=$img> ";
+	}
+
+	// hack hack using the hilite class ( the lighter one for images.. and the image class is used for hilite)
+	$string = "<table width=100% cellpadding=0 cellspacing=0 > <tr> <td valign=middle align=center style='padding:0 0 0 0' height=25 nowrap width=30 class=menuhilite> $imgstr </td> <td style='size:7pt' width=100%>&nbsp;&nbsp;<font style='size:7pt'>$descr</font> </td> $endstr </tr></table> ";
+	return $string;
+}
+
+function print_resourcelist($tree, $alist, $base)
+{
+	global $gbl, $sgbl, $login, $ghtml; 
+
+	$image = null;
+	$open = 'false';
+	$help = null;
+	$alt = null;
+
+	/*
+	print("$treename.add($total, $level, 'Main', '', '', 'mainframe', '$image', '$image', $open, '$help', '$alt');\n");
+	$level = $total;
+	*/
+
+	foreach((array) $alist as $k => $a) {
+		if (is_array($a)) {
 			if ($k === 'home') {
 				continue;
 			}
@@ -8738,233 +8119,269 @@ function
 				$open = 'false';
 				$a = strtil($a, "(");
 				$a = strtil($a, "[");
-				$a = strtil($a, ":");
-				$a = strtil($a, ":");
-				$ttr = createTreeObject('name', $image, $a, null, $open, $help, $alt);
-				$tree->addToList('tree', $ttr);
+				$ttr = createTreeObject($name, $image, $a, '', $open, $help, $alt);
+				$tree->addToList($ttr);
 				//print("$treename.add($total, 1, '$a', '', '', 'mainframe', '', '', $open, '$help', '$alt');\n");
 				continue;
 			}
 
-			if (is_array($a)) {
-			} else {
-				// Hack hack...  NOt showing addforms in the top Menu... Also not showing in the tree view..
-				/*
-				if (csa(strtolower($a), "addform")) {
-				continue;
-				}
-				*/
-				if (!csb($k, "__v_")) {
-					$a = $this->getFullUrl($a, $base);
-					if (isset($ttr)) {
-						$this->print_ressingle($ttr, $a);
-					} else {
-						$this->print_ressingle($tree, $a);
-					}
-				}
+			$desc = get_plural($k);
+			$image = "/img/image/" . $login->getSpecialObject('sp_specialplay')->icon_name . "/button/browse.gif";
+			$endimg = "/img/right_point.gif";
+			$desc = "$desc";
+			$open = 'false';
+			$help = $desc;
+			$alt = lx_strip_tags($help);
+
+
+			$ttr = createTreeObject('name', $image, $desc, null, $open, $help, $alt);
+			$tree->addToList('tree', $ttr);
+			//print("$treename.add($total, $level, '$desc', '', '', 'mainframe', '$image', '$image', $open, '$help', '$alt');\n");
+			foreach ($a as $nk => $nv) {
+				$nv = $this->getFullUrl($nv, $base);
+				$this->print_ressingle($ttr, $nv);
 			}
 		}
-
 	}
 
-
-	function print_ressingle($tree, $url, $psuedourl = NULL, $target = NULL, $nameflag = false)
-	{
-
-
-		$this->resolve_int_ext($url, $psuedourl, $target);
-
-		$img_path = get_image_path();
-		$buttonpath = $img_path . "/button" ;
-		$iconpath = $img_path . "/button" ;
-
-
-		$descr = $this->getActionDetails($url, $psuedourl, $buttonpath, $path, $post, $file, $name, $image, $__t_identity);
-
-
-
-		//$img_b = $image;
-		//$img_s = str_replace(".gif", "_s.gif", $image);
-
-
-
-		$desc = $descr[2];
-		if ($nameflag) {
-			$desc = $descr[2] .  "  ($__t_identity)";
+	foreach((array) $alist as $k => $a) {
+		if ($k === 'home') {
+			continue;
 		}
 
-		$help = $descr[2];
+		if (csb($k, "__title")) {
+			$open = 'false';
+			$a = strtil($a, "(");
+			$a = strtil($a, "[");
+			$a = strtil($a, ":");
+			$a = strtil($a, ":");
+			$ttr = createTreeObject('name', $image, $a, null, $open, $help, $alt);
+			$tree->addToList('tree', $ttr);
+			//print("$treename.add($total, 1, '$a', '', '', 'mainframe', '', '', $open, '$help', '$alt');\n");
+			continue;
+		}
 
-		//$help = $this->get_full_help($descr[3], $login->nname);
-		$alt = lx_strip_tags($help);
-		$help = $this->get_action_or_display_help($help, "action");
-
-		$open = 'false';
-		$name = $file . "_" . $name;
-		/// Hack hack... Just not setting frame for navigation menus. THis is not the way to do it. a flag should be passed... is the correct way...
-		$imgstr = "<img src=$image width=14 height=14>$descr[2]";
-		$ttr = createTreeObject($name, $image, $imgstr, $url, $open, $help, $alt);
-		$tree->addToList('tree', $ttr);
-		//print("$treename.add($total, $level, '<img src=$image width=14 height=14>$descr[2]', '$url', '', 'mainframe', '$image', '$image', $open, '$help', '$alt');\n");
-
+		if (is_array($a)) {
+		} else {
+			// Hack hack...  NOt showing addforms in the top Menu... Also not showing in the tree view..
+			/*
+			if (csa(strtolower($a), "addform")) {
+				continue;
+			}
+		*/
+			if (!csb($k, "__v_")) {
+				$a = $this->getFullUrl($a, $base);
+				if (isset($ttr)) {
+					$this->print_ressingle($ttr, $a);
+				} else {
+					$this->print_ressingle($tree, $a);
+				}
+			}
+		}
 	}
 
+}
 
-	function print_menulist($name, $alist, $base, $type)
-	{
-		global $gbl, $sgbl, $login, $ghtml;
 
-		foreach((array) $alist as $k => $a) {
-			if (is_array($a)) {
+function print_ressingle($tree, $url, $psuedourl = NULL, $target = NULL, $nameflag = false)
+{
+
+
+	$this->resolve_int_ext($url, $psuedourl, $target);
+
+	$img_path = get_image_path();
+	$buttonpath = $img_path . "/button" ;
+	$iconpath = $img_path . "/button" ;
+
+
+	$descr = $this->getActionDetails($url, $psuedourl, $buttonpath, $path, $post, $file, $name, $image, $__t_identity);
+
+
+
+	//$img_b = $image;
+	//$img_s = str_replace(".gif", "_s.gif", $image);
+
+
+
+	$desc = $descr[2];
+	if ($nameflag) {
+		$desc = $descr[2] .  "  ($__t_identity)";
+	}
+
+	$help = $descr[2];
+
+	//$help = $this->get_full_help($descr[3], $login->nname);
+	$alt = lx_strip_tags($help);
+	$help = $this->get_action_or_display_help($help, "action");
+
+	$open = 'false';
+	$name = $file . "_" . $name;
+	/// Hack hack... Just not setting frame for navigation menus. THis is not the way to do it. a flag should be passed... is the correct way...
+	$imgstr = "<img src=$image width=14 height=14>$descr[2]";
+	$ttr = createTreeObject($name, $image, $imgstr, $url, $open, $help, $alt);
+	$tree->addToList('tree', $ttr);
+	//print("$treename.add($total, $level, '<img src=$image width=14 height=14>$descr[2]', '$url', '', 'mainframe', '$image', '$image', $open, '$help', '$alt');\n");
+
+}
+
+
+function print_menulist($name, $alist, $base, $type) 
+{
+	global $gbl, $sgbl, $login, $ghtml; 
+
+	foreach((array) $alist as $k => $a) {
+		if (is_array($a)) {
+			continue;
+			if ($k === 'home') {
 				continue;
-				if ($k === 'home') {
-					continue;
-				}
-				if ($this->is_special_url($a)) {
-					continue;
-				}
-
-
-				if (csb($k, "__title")) {
-					continue;
-				}
-				$desc = get_plural($k);
-				$menuimg = "/img/image/" . $login->getSpecialObject('sp_specialplay')->icon_name . "/button/browse.gif";
-				$endimg = "/img/right_point.gif";
-				$desc = "<font style=font-weight:bold>$desc</font>";
-				$mnu = $this->getMenuDescrString($menuimg, $desc, $endimg);
-
-				print("window.$name$k = new Menu(\"$mnu\", 100);\n");
-				foreach ($a as $nk => $nv) {
-					$nv = $this->getFullUrl($nv, $base);
-					$this->print_pmenu("$name$k", $nv);
-				}
 			}
-		}
-
-		print("window.$name = new Menu('$name',130);\n");
-		if ($type === 'slist') {
-			$aa = $this->getFullUrl('a=show', $base);
-			$this->print_pmenu($name, $aa);
-		}
-		foreach((array) $alist as $k => $a) {
-			if (!strcmp($k, 'home')) {
+			if ($this->is_special_url($a)) {
 				continue;
 			}
 
-			if ($this->is_special_variable($a)) {
-				continue;
-			}
 
 			if (csb($k, "__title")) {
 				continue;
 			}
-			if (is_array($a)) {
-				// Dont print property etc...
-				continue;
-				$aa = $this->getFullUrl($a[0], $base);
-				print("$name.addMenuItem($name$k, frame1+\"$aa\", 'Properties', 'mainframe');\n");
-			} else {
-				// Hack hack...  NOt showing addforms in the top Menu... Also not showing in the tree view..
-				if (csa(strtolower($a), "addform") || (csa(strtolower($a), 'update') && !csa(strtolower($a), 'updateform'))) {
-					continue;
-				}
-				if (!csb($k, "__v_")) {
-					$a = $this->getFullUrl($a, $base);
-					$this->print_pmenu($name, $a);
-				}
+			$desc = get_plural($k);
+			$menuimg = "/img/image/" . $login->getSpecialObject('sp_specialplay')->icon_name . "/button/browse.gif";
+			$endimg = "/img/right_point.gif";
+			$desc = "<font style=font-weight:bold>$desc</font>";
+			$mnu = $this->getMenuDescrString($menuimg, $desc, $endimg);
+
+			print("window.$name$k = new Menu(\"$mnu\", 100);\n");
+			foreach ($a as $nk => $nv) {
+				$nv = $this->getFullUrl($nv, $base);
+				$this->print_pmenu("$name$k", $nv);
 			}
 		}
 	}
 
-	function print_pmenu($menu, $url, $psuedourl = NULL, $target = NULL, $nameflag = false)
-	{
-
-		global $gbl, $sgbl, $login;
-
-		$this->resolve_int_ext($url, $psuedourl, $target);
-
-		$img_path = get_image_path();
-		$buttonpath = $img_path . "/button" ;
-		$iconpath = $img_path . "/button" ;
-
-		if (csb($url, "__blank|")) {
-			$url = substr($url, 8);
-			$image = $buttonpath . "/delete.gif";
-			$string = $this->getMenuDescrString($image, $url);
-			print("$menu.addMenuItem(\"$string\", \"\", \"0\",\"There is No History at this Point.\", \"0\");\n");
-			return;
+	print("window.$name = new Menu('$name',130);\n");
+	if ($type === 'slist') {
+		$aa = $this->getFullUrl('a=show', $base);
+		$this->print_pmenu($name, $aa);
+	}
+	foreach((array) $alist as $k => $a) {
+		if (!strcmp($k, 'home')) {
+			continue;
 		}
 
-
-		$descr = $this->getActionDetails($url, $psuedourl, $buttonpath, $path, $post, $file, $name, $image, $__t_identity);
-
-
-
-		//$img_b = $image;
-		//$img_s = str_replace(".gif", "_s.gif", $image);
-
-
-
-		$desc = $descr[2];
-		if ($nameflag) {
-			$desc = $descr[2] .  "  ($__t_identity)";
+		if ($this->is_special_variable($a)) {
+			continue;
 		}
 
-		$help = $descr[3];
-
-		//$help = $this->get_full_help($descr[3], $login->nname);
-		$help = $this->get_action_or_display_help($help, "action");
-
-		$name = $file . "_" . $name;
-		/// Hack hack... Just not setting frame for navigation menus. THis is not the way to do it. a flag should be passed... is the correct way...
-		$frame = null;
-		$string = $this->getMenuDescrString($image, $desc);
-		if (csb($menu, 'navig') || csb($menu, 'hist')) {
-			print("$menu.addMenuItem(\"$string\", \"window.location='$url';\", \"0\",\"$help\", \"0\");\n");
+		if (csb($k, "__title")) {
+			continue;
+		}
+		if (is_array($a)) {
+			// Dont print property etc...
+			continue;
+			$aa = $this->getFullUrl($a[0], $base);
+			print("$name.addMenuItem($name$k, frame1+\"$aa\", 'Properties', 'mainframe');\n");
 		} else {
-			$frame = "frame1+";
-			print("$menu.addMenuItem(\"$string\", $frame\"'$url';\", \"0\",\"$help\", \"0\");\n");
+			// Hack hack...  NOt showing addforms in the top Menu... Also not showing in the tree view..
+			if (csa(strtolower($a), "addform") || (csa(strtolower($a), 'update') && !csa(strtolower($a), 'updateform'))) {
+				continue;
+			}
+			if (!csb($k, "__v_")) {
+				$a = $this->getFullUrl($a, $base);
+				$this->print_pmenu($name, $a);
+			}
 		}
 	}
+}
 
+function print_pmenu($menu, $url, $psuedourl = NULL, $target = NULL, $nameflag = false)
+{
 
+	global $gbl, $sgbl, $login;
+	
+	$this->resolve_int_ext($url, $psuedourl, $target);
 
+	$img_path = get_image_path();
+	$buttonpath = $img_path . "/button" ;
+	$iconpath = $img_path . "/button" ;
 
-	function print_real_beginning()
-	{
-		global $gbl, $sgbl, $login, $ghtml;
-		$lightskincolor = $login->getSkinColor();
-		$lightskincolor = "818fb0";
-		$func = "onLoad='lxLoadBody();'";
-		$bodycolor = "ffffff";
-		if ($sgbl->isBlackBackground()) {
-			$bodycolor = "000";
-		}
-		if ($login->getSpecialObject('sp_specialplay')->isOn('simple_skin')) {
-			$bodycolor = $lightskincolor;
-		}
-
-		//style=\"background:url(img/skin/kloxo/feather/default/background.jpg)\"
-		print("<body leftmargin=0 rightmargin=0 $func align=center topmargin=0 bottommargin=0  bgcolor=#$bodycolor >");
-
-		if ($login->getSpecialObject('sp_specialplay')->isOn('simple_skin')) {
-			print("<div id=mmm leftmargin=0 rightmargin=0 $func height=100% align=center style='background:#$lightskincolor' >");
-			print("<table cellpadding=0 cellspacing=0 height=10> <tr> <td > </td> </tr> </table> ");
-			print("<div id=mainbodyd style='padding:4 4 4 4;background:#fff;width:861;border:1px solid #000'>");
-			print("<div id=mainbodynext style='background:#fff;border:1px solid #000'>");
-		}
+	if (csb($url, "__blank|")) {
+		$url = substr($url, 8);
+		$image = $buttonpath . "/delete.gif";
+		$string = $this->getMenuDescrString($image, $url);
+		print("$menu.addMenuItem(\"$string\", \"\", \"0\",\"There is No History at this Point.\", \"0\");\n");
 		return;
-		?>
-														<body topmargin=0 leftmargin=0 width=1000>
-														<div id=mainbody><?php 
 	}
 
-	function print_splash_js_function()
-	{
+
+	$descr = $this->getActionDetails($url, $psuedourl, $buttonpath, $path, $post, $file, $name, $image, $__t_identity);
 
 
-		?> <script>
+
+	//$img_b = $image;
+	//$img_s = str_replace(".gif", "_s.gif", $image);
+
+
+
+	$desc = $descr[2];
+	if ($nameflag) {
+		$desc = $descr[2] .  "  ($__t_identity)";
+	}
+
+	$help = $descr[3];
+
+	//$help = $this->get_full_help($descr[3], $login->nname);
+	$help = $this->get_action_or_display_help($help, "action");
+
+	$name = $file . "_" . $name;
+	/// Hack hack... Just not setting frame for navigation menus. THis is not the way to do it. a flag should be passed... is the correct way...
+	$frame = null;
+	$string = $this->getMenuDescrString($image, $desc);
+	if (csb($menu, 'navig') || csb($menu, 'hist')) {
+		print("$menu.addMenuItem(\"$string\", \"window.location='$url';\", \"0\",\"$help\", \"0\");\n");
+	} else {
+		$frame = "frame1+";
+		print("$menu.addMenuItem(\"$string\", $frame\"'$url';\", \"0\",\"$help\", \"0\");\n");
+	}
+}
+
+
+
+
+function print_real_beginning()
+{
+	global $gbl, $sgbl, $login, $ghtml; 
+	$lightskincolor = $login->getSkinColor();
+	$lightskincolor = "818fb0";
+	$func = "onLoad='lxLoadBody();'";
+	$bodycolor = "ffffff";
+	if ($sgbl->isBlackBackground()) {
+		$bodycolor = "000";
+	}
+	if ($login->getSpecialObject('sp_specialplay')->isOn('simple_skin')) {
+		$bodycolor = $lightskincolor;
+	}
+
+	//style=\"background:url(img/skin/kloxo/feather/default/background.jpg)\"
+	print("<body leftmargin=0 rightmargin=0 $func align=center topmargin=0 bottommargin=0  bgcolor=#$bodycolor >");
+
+	if ($login->getSpecialObject('sp_specialplay')->isOn('simple_skin')) {
+		print("<div id=mmm leftmargin=0 rightmargin=0 $func height=100% align=center style='background:#$lightskincolor' >");
+		print("<table cellpadding=0 cellspacing=0 height=10> <tr> <td > </td> </tr> </table> ");
+		print("<div id=mainbodyd style='padding:4 4 4 4;background:#fff;width:861;border:1px solid #000'>");
+		print("<div id=mainbodynext style='background:#fff;border:1px solid #000'>");
+	}
+	return;
+?> 
+<body topmargin=0 leftmargin=0 width=1000> 
+<div id=mainbody>
+<?php 
+}
+
+function print_splash_js_function()
+{
+
+
+	?> 
+	<script>
 
 function coverScreen(flag)
 {
@@ -9050,168 +8467,127 @@ function splashScreen(flag)
 
 }
 
-</script> <?php 
+</script>
 
-	}
+<?php 
 
-	function print_splash()
-	{
+}
 
-		?> <script>
+function print_splash()
+{
+
+	?> 
+	<script>
 	if (top.topframe) {
 		top.topframe.changeLogo(1);
 	}
-	</script> <?php 
+	</script>
+	<?php 
 
+}
+
+// This function is no longer used.
+function print_splash_old()
+{
+
+	global $gbl, $sgbl, $login, $ghtml; 
+	$this->print_splash_js_function();
+
+	$pgm = $sgbl->__var_program_name;
+	$spimg = "/img/$pgm-splash.gif";
+	if ($ghtml->frm_v_first_time) {
+		$coverscreenstring = 'coverScreen(1);';
+	} else {
+		$coverscreenstring = 'coverScreen(0);';
 	}
 
-	// This function is no longer used.
-	function print_splash_old()
-	{
+	?> 
+	<style>
+	.splashscreen {
+		font-style: Helvetica;
+		font-size: 10pt;
+		border-width: 0px;
+		border-color: black;
+	}
 
-		global $gbl, $sgbl, $login, $ghtml;
-		$this->print_splash_js_function();
+	.coverscreen {
+		filter:alpha(opacity=50);                                                                              
+		-moz-opacity:0.5;                                                                                      
+		opacity: 0.5;    
+		position: absolute;
+		background-color: #fff;
+		z-index: 2;
+	}
 
-		$pgm = $sgbl->__var_program_name;
-		$spimg = "/img/$pgm-splash.gif";
-		if ($ghtml->frm_v_first_time) {
-			$coverscreenstring = 'coverScreen(1);';
-		} else {
-			$coverscreenstring = 'coverScreen(0);';
-		}
-
-		?>
-														<style>
-.splashscreen {
-	font-style: Helvetica;
-	font-size: 10pt;
-	border-width: 0px;
-	border-color: black;
-}
-
-.coverscreen {
-	filter: alpha(opacity = 50);
-	-moz-opacity: 0.5;
-	opacity: 0.5;
-	position: absolute;
-	background-color: #fff;
-	z-index: 2;
-}
-</style>
+	</style>
 
 
 
-														<div id="splashscreen" align=left border=1>
-														<table class="splashscreen"
-															style='position: absolute : z-index : 2' border=0
-															cellpadding="2" cellspacing="0" align=center width=100
-															height=32>
-															<tr>
-																<td><b><br>
-																Loading...</b></td>
-															</tr>
+<div id="splashscreen"  align=left border=1>
+<table class="splashscreen" style='position:absolute:z-index:2' border=0 cellpadding="2" cellspacing="0" align=center width=100 height=32>
+ <tr> <td ><b><br>Loading...</b> </td> </tr>
 
-															<tr>
-																<td align="left"><img name=splashimage
-																	src="<?=$spimg ?>" height="20" width="150"></td>
-															</tr>
-														</table>
-														</div>
+<tr> <td align="left"> <img name=splashimage src="<?=$spimg ?>" height="20" width="150" > </td></tr>
+</table></div>
 
-														<div id=coverscreen
-															style='position: absolute : z-index : 2'
-															class=coverscreen>
-														<table>
-															<tr>
-																<td>&nbsp;</td>
-															</tr>
-														</table>
-														</div>
+		<div id=coverscreen style='position:absolute:z-index:2' class=coverscreen > <table> <tr> <td>  &nbsp; </td></tr></table></div>
 
 
 
 
 
-														<script language="JavaScript">
+    <script language="JavaScript">
 
     splashScreen(1);
 	<?=$coverscreenstring; ?> 
 	
 
 	//setTimeout('document.images["splashimage"].src = "<?=$spimg ?>"', 200);
-    </script> <?php 
-	}
+    </script>
+	<?php 
+}
 
 
-	function print_start()
-	{
-		global $gbl, $sgbl, $login;
-		$img_path = $login->getSkinDir();
-		$tbg = $img_path . "/lp_bg.gif";
-		$imgbordermain = $login->getSkinDir() . "/top_line_medium.gif";
+function print_start()
+{
+	global $gbl, $sgbl, $login;
+	$img_path = $login->getSkinDir();
+	$tbg = $img_path . "/lp_bg.gif";
+	$imgbordermain = $login->getSkinDir() . "/top_line_medium.gif";
 
-		$this->print_include_jscript();
-		?>
-
-														<table id=tblmain cellpadding=0 cellspacing=0 border=0
-															width=100% height=100%>
-															<tr>
-																</td>
-																<td width=100% align=center valign=top><?php 
-	}
-
-
-	function print_middle_start($help = NULL)
-	{
-		global $gbl, $sgbl, $login, $ghtml;
-
-		?> <?php
-
-	}
+	$this->print_include_jscript();
+   	?>
+	
+     <table id=tblmain cellpadding=0 cellspacing=0 border=0 width=100% height=100%> 
+	 <tr>
+	</td> <td width=100%  align=center valign=top>
+ <?php 
+}
 
 
-	function print_alternate_main_header()
-	{
-		global $gbl, $sgbl, $login, $ghtml;
-		//if (isset($_COOKIE['program-nf']) && $sgbl->dbg> 0) {
-		if ($sgbl->dbg > 0) {
-			?>
+function print_middle_start($help = NULL)
+{
+	global $gbl, $sgbl, $login, $ghtml; 
+
+	?> 
+
+	<?php 
+
+}
 
 
-																<table bgcolor=cccccc color=ffffff width=100%
-																	cellpadding=0 cellspacing=0 height=1>
-																	<tr>
-																		<td><a
-																			href=javascript:top.mainframe.window.location.reload()>
-																		zRefresh </a></td>
-																		<td width=10>&nbsp;</td>
-																		<td><a href="/display.php?frm_action=show"> Home </a>
-																		</td>
-																		<td><a
-																			href=/display.php?frm_action=list&frm_o_cname=domain>
-																		Domain </a></td>
-																		<td><a
-																			href=/display.php?frm_action=show&frm_o_o[0][class]=pserver&frm_o_o[0][nname]=localhost>
-																		System </a></td>
-																		<td><a
-																			href=/display.php?frm_action=list&frm_o_cname=client>
-																		Client </a></td>
-																		</td>
-																		<td><a
-																			href=/display.php?frm_action=list&frm_o_cname=pserver>
-																		Server </a></td>
-																		<td><a
-																			href=/display.php?frm_action=list&frm_o_cname=ticket>
-																		Tickets </a></td>
-																		<td><a
-																			href=/display.php?frm_action=list&frm_o_cname=ssession>
-																		Session</a></td>
-																		<td><a href=/htmllib/phplib/logout.php> Logout </a></td>
-																		<td width=5%></td>
-																	</tr>
-																</table>
+function print_alternate_main_header()
+{
+	global $gbl, $sgbl, $login, $ghtml; 
+	//if (isset($_COOKIE['program-nf']) && $sgbl->dbg> 0) {
+	if ($sgbl->dbg > 0) {
+	?> 
 
-																<?php 
+
+	<table bgcolor=cccccc color=ffffff width=100% cellpadding=0 cellspacing=0 height=1> <tr>   <td > <a href=javascript:top.mainframe.window.location.reload()> zRefresh </a> </td><td width=10> &nbsp; </td> <td > <a href="/display.php?frm_action=show"> Home </a> </td>  <td > <a href=/display.php?frm_action=list&frm_o_cname=domain> Domain </a> </td> <td > <a href=/display.php?frm_action=show&frm_o_o[0][class]=pserver&frm_o_o[0][nname]=localhost> System </a>  </td>  <td ><a href=/display.php?frm_action=list&frm_o_cname=client> Client </a>  </td> </td>  <td ><a href=/display.php?frm_action=list&frm_o_cname=pserver> Server </a>  </td>    <td ><a href=/display.php?frm_action=list&frm_o_cname=ticket> Tickets </a> </td><td > <a href=/display.php?frm_action=list&frm_o_cname=ssession> Session</a> </td> <td > <a href=/htmllib/phplib/logout.php> Logout </a> </td> <td width=5%> </td>  </tr>  
+	</table> 
+
+	<?php 
 	}
 }
 
@@ -9259,14 +8635,10 @@ function print_about()
 
 
 
-	?>
+	?> 
 
-																<table cellpadding=0 cellspacing=0>
-																	<tr>
-																		<td><img src=/img/aboutus.jpg></td>
-																	</tr>
-																</table>
-																<?php 
+	<table cellpadding=0 cellspacing=0> <tr> <td > <img src=/img/aboutus.jpg> </td></tr></table>
+	<?php 
 }
 
 function print_end()
@@ -9277,38 +8649,30 @@ function print_end()
 
 	$imgbordermain = $login->getSkinDir() . "/top_line.gif";
 
-?></td>
-															</tr>
-														</table>
-														
-														</td>
-													</tr>
-												</table>
-												<?php 
+?> 
+</td> </tr> </table> 
+</td> </tr> </table> 
+<?php 
 	return;
 	
-	?> <!-- 
+	?> 
+	
+<!-- 
     </td><td width=5 class=bordermain>&nbsp;</td>
 	</tr> 
     </table>
 	<table cellspacing=0 cellpadding=0 border=0  width=100% height=5>
 	<tr><td class=bordermain height=100%></font></td></tr>
 	</table> 
---></td>
-												<td width=5 rowspan=2>&nbsp;</td>
-											</tr>
-											<tr>
-												<td background="<?=$tbg; ?>"></td>
-												<td height=20 class=copyright valign=top align=right>© 2007
-												Copyright Lxlabs</td>
-											</tr>
-											<tr>
-												<td colspan=3 background=<?=$imgbordermain ?> height=5></td>
-											</tr>
-										</table>
+-->
+
+    </td><td width=5 rowspan=2>&nbsp;</td> </tr> 
+	<tr><td background="<?=$tbg; ?>"></td> <td height=20 class=copyright valign=top align=right> © 2007 Copyright Lxlabs</td></tr>
+  	<tr><td colspan=3 background=<?=$imgbordermain ?> height=5> </td></tr>
+	</table> 
 
 
-										<?php 
+<?php 
 }
 
 function print_sortby($parent, $class, $unique_name, $sortby, $descr)
@@ -9347,18 +8711,16 @@ function print_sortby($parent, $class, $unique_name, $sortby, $descr)
 		$sortdir = ($sortdir === "desc") ? "asc": "desc";
 	}
 	$formname = 'lpform_' . $unique_name . $sortby;
-	?>
+	?> 
 
-										<form name=<?=$formname; ?> method=<?=$sgbl->method ?>
-											action=<?=$url; ?>><?php $this->print_current_input_vars(array('frm_hpfilter')); ?>
-										<input name=frm_hpfilter[
-										<?=$filtername ?>][sortby] type=hidden value="<?=$sortby; ?>">
-										<input name=frm_hpfilter[
-										<?=$filtername ?>][sortdir] type=hidden
-											value="<?=$sortdir; ?>"></form>
-										<span title='<?=$alt ?>'><a class=tableheadtext
-											href="javascript:document.<?=$formname; ?>.submit()"><?=$desc; ?>
-										</a> </span> <?php 
+	<form name=<?=$formname; ?> method=<?=$sgbl->method ?> action=<?=$url; ?> >
+		<?php $this->print_current_input_vars(array('frm_hpfilter')); ?> 
+	<input name=frm_hpfilter[<?=$filtername ?>][sortby] type=hidden value="<?=$sortby; ?>" >
+	<input name=frm_hpfilter[<?=$filtername ?>][sortdir] type=hidden value="<?=$sortdir; ?>" >
+
+	</form> 
+	<span title='<?=$alt ?>'><a class=tableheadtext href="javascript:document.<?=$formname; ?>.submit()"><?=$desc; ?> </a>  </span>
+	<?php 
 }
 
 
@@ -9387,73 +8749,28 @@ function print_search($parent, $class)
 		$searchimg = null;
 	}
 	?>
-										<table width=90% border=0 cellpadding=0>
-											<tr>
-												<td>
-												<table width=100% cellpadding=0 cellspacing=0 border=0>
-													<tr>
-														<td width=60%></td>
-														<td height=22 width=40% align=right>
-														<table cellpadding=0 cellspacing=0 border=0 width=200>
-															<tr>
-																<td width=10 height=22></td>
-																<td height=22>
-																<form name=lpform_search method=<?=$sgbl->method ?>
-																	action=<?=$url ?>
-																	onsubmit="return checksearch(this,1);"><?php $this->print_current_input_var_unset_filter($filtername, array('sortby', 'sortdir', 'pagenum')) ?>
-																<?php $this->print_current_input_vars(array("frm_hpfilter")) ?>
+		<table width=90% border=0 cellpadding=0> <tr> <td >
+		<table width=100% cellpadding=0 cellspacing=0 border=0>
+       	<tr><td width=60%>
+		</td><td height=22 width=40% align=right>
+		<table cellpadding=0 cellspacing=0 border=0 width=200><tr><td width=10 height=22></td><td height=22>
+		<form name=lpform_search method=<?=$sgbl->method ?>  action=<?=$url ?> onsubmit="return checksearch(this,1);">
 
-																<input <?=$blackstyle?> type="text"
-																	name='frm_hpfilter[<?=$filtername ?>][searchstring]'
-																	value="<?=$value ?>" class=searchbox size="18">
-																
-																</td>
-																<td width=10 height=22></td>
-																</form>
-																<td height=22 width=20><a
-																	href='javascript:document.lpform_search.submit()'><img
-																	border=0 alt="Search" title="Search" name=search
-																	src=<?=$searchimg?> height=15 width=15
-																	onMouseOver="changeContent('help','search');"
-																	onMouseOut="changeContent('help','helparea');"></a>
-																</form>
-																</td>
-																<td width=10 height=22></td>
-																<td height=22 width=70>
-																<form name=lpform_showall method=<?=$sgbl->method ?>
-																	action=<?=$url ?>><?php $this->print_current_input_vars(array("frm_hpfilter")) ?>
-																<input type=hidden name=frm_clear_filter value=true>
+		<?php $this->print_current_input_var_unset_filter($filtername, array('sortby', 'sortdir', 'pagenum')) ?>
+		<?php $this->print_current_input_vars(array("frm_hpfilter")) ?> 
 
-																<table cellpadding=0 cellspacing=0 border=0 width=100%
-																	height=22>
-																	<tr>
-																		<td height=22 width=31% align=center nowrap><a
-																			href="javascript:document.lpform_showall.submit();"><img
-																			alt="Show All" title="Show all" name=showall
-																			src="<?=$showallimg?>"
-																			onMouseOver="changeContent('help','showall');"
-																			onMouseOut="changeContent('help','helparea');"></a></td>
-																		<td width=69% height=22 nowrap><a
-																			href="javascript:document.lpform_showall.submit();"
-																			onMouseOver="changeContent('help','showall');"
-																			onMouseOut="changeContent('help','helparea');"><font
-																			class=small>Show All</font></a></td>
-																	</tr>
-																</table>
-																
-																</td>
-																</form>
-															</tr>
-														</table>
-														</td>
-													</tr>
-												</table>
+		<input <?=$blackstyle?> type="text" name='frm_hpfilter[<?=$filtername ?>][searchstring]' value="<?=$value ?>" class=searchbox size="18"></td><td width=10 height=22></td></form><td height=22 width=20><a href='javascript:document.lpform_search.submit()'><img border=0 alt="Search" title="Search"  name=search src=<?=$searchimg?> height=15 width=15  onMouseOver="changeContent('help','search');"  onMouseOut="changeContent('help','helparea');"></a></form></td> <td width=10 height=22> </td><td height=22 width=70>
+	<form name=lpform_showall method=<?=$sgbl->method ?>  action=<?=$url ?>>
 
-												</td>
-											</tr>
-										</table>
+		<?php $this->print_current_input_vars(array("frm_hpfilter")) ?> 
+		<input type=hidden name=frm_clear_filter value=true>
+		
+		<table cellpadding=0 cellspacing=0 border=0 width=100% height=22><tr><td height=22 width=31% align=center nowrap><a href="javascript:document.lpform_showall.submit();"><img alt="Show All" title="Show all" name=showall src="<?=$showallimg?>"  onMouseOver="changeContent('help','showall');"  onMouseOut="changeContent('help','helparea');"  ></a></td><td width=69% height=22 nowrap><a href="javascript:document.lpform_showall.submit();" onMouseOver="changeContent('help','showall');"  onMouseOut="changeContent('help','helparea');"><font class=small>Show All</font></a></td></tr></table></td></form></tr></table></td>
+</tr></table>
 
-										<?php
+  </td> </tr> </table> 
+
+		<?php
 }
 
 
@@ -9484,59 +8801,18 @@ document.write('<layer id="divStayTopLeft" style="position:relative; z-index:5">
 </script>
 */
 	?>
-										<table cellpadding="0" width=100% cellspacing="0" border="0"
-											align=center>
+<table cellpadding="0" width=100% cellspacing="0" border="0" align=center>
 
-											<tr>
-												<td align=center><br>
-												<table cellpadding=0 cellspacing=0 border=0 align=center>
-													<tr align=center>
-														<td><img id=helppic name=namepic
-															src="<?=$helpimg; ?>/help_head.gif"
-															style="cursor: pointer"
-															onclick="javascript:window.open('<?=$this->get_help_url() ?>')"></td>
-													</tr>
-												</table>
-												</td>
-												</td>
-											</tr>
-
-											<tr align=center>
-												<td align=center>
-												<table cellpadding=0 cellspacing=0 border=0 align=center>
-													<tr>
-														<td><img src="<?=$helpimg; ?>/help_edge.gif"></td>
-														<td background="<?=$helpimg; ?>/help_bg.gif" width=170>
-														<table cellpadding=0 cellspacing=0 border=0>
-															<tr>
-																<td width=10></td>
-																<td>
-																<div id=help class=helparea><script> document.write(help_data['helparea']) </script></div>
-																</td>
-															</tr>
-														</table>
-														</td>
-														<td><img src="<?=$helpimg; ?>/help_edge.gif"></td>
-													</tr>
-												</table>
-												</td>
-											</tr>
+		<tr>  <td align=center> <br>  <table cellpadding=0 cellspacing=0 border=0 align=center> <tr align=center><td> <img id=helppic name=namepic  src="<?=$helpimg; ?>/help_head.gif" style="cursor:pointer" onclick="javascript:window.open('<?=$this->get_help_url() ?>')"></td></tr></table></td></td></tr> 
+		
+		<tr align=center><td align=center> <table cellpadding=0 cellspacing=0 border=0 align=center> <tr><td><img src="<?=$helpimg; ?>/help_edge.gif" ></td> <td background="<?=$helpimg; ?>/help_bg.gif" width=170> <table cellpadding=0 cellspacing=0 border=0> <tr><td width=10 ></td><td> <div id=help class=helparea><script> document.write(help_data['helparea']) </script></div> </td></tr></table> </td> <td><img src="<?=$helpimg; ?>/help_edge.gif" ></td> </tr> </table> </td></tr>
 
 
 
-											<?php if (if_demo()) { ?>
-											<tr>
-												<td align=center>
-												<table>
-													<tr align=center>
-														<td align=center nowrap><a href=/live target=_blank
-															class=tableheadtext>Click Here for Live Support.</a></td>
-													</tr>
-												</table>
-												</td>
-											</tr>
-										</table>
-										<?php } 
+        <?php if (if_demo()) { ?> 
+		<tr> <td align=center><table > <tr align=center><td align=center nowrap><a href=/live target=_blank class=tableheadtext>Click Here for Live Support.</a></td></tr> </table> </td></tr>
+		</table> 
+		<?php } 
 
 		
 		return;

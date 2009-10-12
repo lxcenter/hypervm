@@ -1,4 +1,4 @@
-<?php
+<?php 
 
 $conf['path']['apache_path'] = '/etc/httpd/conf/';
 $conf['path']['named_chroot'] = "";

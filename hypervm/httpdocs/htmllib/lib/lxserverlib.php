@@ -1,29 +1,8 @@
-<?PHP
-//
-//    HyperVM, Server Virtualization GUI for OpenVZ and Xen
-//
-//    Copyright (C) 2000-2009     LxLabs
-//    Copyright (C) 2009          LxCenter
-//
-//    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Affero General Public License as
-//    published by the Free Software Foundation, either version 3 of the
-//    License, or (at your option) any later version.
-//
-//    This program is distributed in the hope that it will be useful,
-//    but WITHOUT ANY WARRANTY; without even the implied warranty of
-//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Affero General Public License for more details.
-//
-//    You should have received a copy of the GNU Affero General Public License
-//    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-?>
-
-<?php
+<?php 
 
 function lxserver_main()
 {
-	global $gbl, $sgbl, $login, $ghtml;
+	global $gbl, $sgbl, $login, $ghtml; 
 	global $argv, $argc;
 	// Set time limit to indefinite execution
 
@@ -67,7 +46,7 @@ function lxserver_main()
 
 function do_server_stuff()
 {
-	global $gbl, $sgbl, $login, $ghtml;
+	global $gbl, $sgbl, $login, $ghtml; 
 	//dprint("in Do server stuff\n");
 
 	if (if_demo()) {
@@ -79,7 +58,7 @@ function do_server_stuff()
 		if ($sgbl->is_this_master()) {
 			$schour = null;
 			$schour = $login->getObject('general')->generalmisc_b->scavengehour;
-			$scminute = $login->getObject('general')->generalmisc_b->scavengeminute;
+			$scminute = $login->getObject('general')->generalmisc_b->scavengeminute; 
 			//dprint("Cron exec $schour, $scminute\n");
 			if ($schour) {
 				cron_exec($schour, $scminute, "exec_scavenge");
@@ -110,7 +89,7 @@ function cron_exec($hour, $minute, $func)
 			$localvar[$func] = false;
 		}
 		return ;
-
+		
 	}
 
 	if ($now > $time && $now < $time + 2* 60) {
@@ -134,7 +113,7 @@ function timed_exec($time, $func)
 
 function exec_scavenge()
 {
-	global $gbl, $sgbl, $login, $ghtml;
+	global $gbl, $sgbl, $login, $ghtml; 
 	dprint("Executing collect quota\n");
 	$olddir = getcwd();
 	lchdir("__path_program_htmlbase");
@@ -144,7 +123,7 @@ function exec_scavenge()
 
 function checkRestart()
 {
-
+	
 	if (if_demo()) {
 		return;
 	}
@@ -188,7 +167,7 @@ function exec_openvz_tc()
 
 function special_bind_restart($cmd)
 {
-	global $gbl, $sgbl, $login, $ghtml;
+	global $gbl, $sgbl, $login, $ghtml; 
 	if (WindowsOs()) {
 		return;
 	}
@@ -206,7 +185,7 @@ function special_bind_restart($cmd)
 
 function reload_lxserver_password()
 {
-	global $gbl, $sgbl, $login, $ghtml;
+	global $gbl, $sgbl, $login, $ghtml; 
 
 	static $time;
 

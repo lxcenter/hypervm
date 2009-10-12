@@ -1,25 +1,4 @@
-<?PHP
-//
-//    HyperVM, Server Virtualization GUI for OpenVZ and Xen
-//
-//    Copyright (C) 2000-2009     LxLabs
-//    Copyright (C) 2009          LxCenter
-//
-//    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Affero General Public License as
-//    published by the Free Software Foundation, either version 3 of the
-//    License, or (at your option) any later version.
-//
-//    This program is distributed in the hope that it will be useful,
-//    but WITHOUT ANY WARRANTY; without even the implied warranty of
-//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Affero General Public License for more details.
-//
-//    You should have received a copy of the GNU Affero General Public License
-//    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-?>
-
-<?php
+<?php 
 
 
 php_main() ;
@@ -88,7 +67,7 @@ function SetColor($ps, $id, $hue, $sat, $light)
 	$list1->PutObject( $id["Hst2"], $desc4);
 	$desc3->putList( $id["Adjs"], $list1);
 	$desc2->putObject( $id["T   "], $id["HStr"], $desc3);
-	try {
+	try { 
 		$ps->ExecuteAction($id["setd"], $desc2, 3);
 	} catch (exception $e) {
 		$id3 = $ps->charIDToTypeID( "Mk  " );
@@ -122,7 +101,7 @@ function SetColor($ps, $id, $hue, $sat, $light)
 			$ps->executeAction($id3, $desc2, $dialogmod_no);
 		}
 
-
+		
 		SetColor($ps, $id, $hue, $sat, $light);
 	}
 
@@ -132,16 +111,16 @@ function SetColor($ps, $id, $hue, $sat, $light)
 function saveAsGif($ps, $file)
 {
 	/*
-	 $gifSaveOptions = new COM("Photoshop.GIFSaveOptions");
-	 //$gifSaveOptions->colors = 256;
-	 $gifSaveOptions->preserveExactColors = 1;
-	 $gifSaveOptions->transparency = 1;
-	 $gifSaveOptions->interlaced = 0;
+	$gifSaveOptions = new COM("Photoshop.GIFSaveOptions");
+	//$gifSaveOptions->colors = 256;
+	$gifSaveOptions->preserveExactColors = 1;
+	$gifSaveOptions->transparency = 1;
+	$gifSaveOptions->interlaced = 0;
 
-	 //Save the file and close it
-	 //$ps->activeDocument->flatten();
-	 $ps->activeDocument->saveAs($file, $gifSaveOptions, true);
-	 */
+         //Save the file and close it
+	//$ps->activeDocument->flatten();
+	$ps->activeDocument->saveAs($file, $gifSaveOptions, true);
+	*/
 
 	SaveGif($ps, $file);
 
@@ -245,7 +224,7 @@ function closeFile($ps)
 
 	$ps->executeAction($id14, $desc5);
 }
-//$ps->Quit();
-//$ps->Release();
+	//$ps->Quit();
+	//$ps->Release();
 
 

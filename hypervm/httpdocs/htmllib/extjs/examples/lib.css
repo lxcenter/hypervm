@@ -5,17 +5,16 @@
  * 
  * http://www.extjs.com/license
  */
+
 #lib-bar {
-	position: absolute;
-	top: 0;
-	right: 0;
-	z-index: 100;
+    position:absolute;
+    top:0;
+    right:0;
+    z-index:100;
 }
-
 #lib-bar-inner {
-	padding: 4px;
+    padding:4px;
 }
-
 #lib-bar * {
-	font-size: 11px;
+    font-size:11px;
 }

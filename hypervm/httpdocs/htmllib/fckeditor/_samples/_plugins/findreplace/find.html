@@ -22,10 +22,10 @@
  * This is the sample "Find" plugin window.
 -->
 <html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<meta content="noindex, nofollow" name="robots">
-<script type="text/javascript">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<meta content="noindex, nofollow" name="robots">
+		<script type="text/javascript">
 
 var oEditor = window.parent.InnerDialogLoaded() ;
 
@@ -138,30 +138,35 @@ function FindGecko()
 
 }
 		</script>
-</head>
-<body onload="OnLoad()" scroll="no" style="OVERFLOW: hidden">
-<div align="center">This is my Plugin!</div>
-<table cellSpacing="3" cellPadding="2" width="100%" border="0">
-	<tr>
-		<td nowrap><label for="txtFind" fckLang="DlgMyReplaceFindLbl">Find
-		what:</label>&nbsp;</td>
-		<td width="100%"><input id="txtFind" onkeyup="btnStat(this.form)"
-			style="WIDTH: 100%" tabIndex="1" type="text"></td>
-		<td><input id="btnFind"
-			style="WIDTH: 100%; PADDING-RIGHT: 5px; PADDING-LEFT: 5px" disabled
-			onclick="Ok();" type="button" value="Find" fckLang="DlgMyFindFindBtn">
-		</td>
-	</tr>
-	<tr>
-		<td valign="bottom" colSpan="3">&nbsp;<input id="chkCase"
-			tabIndex="3" type="checkbox"><label for="chkCase"
-			fckLang="DlgMyReplaceCaseChk">Match case</label> <br>
-		<div id="divWord" style="DISPLAY: none">&nbsp;<input
-			id="chkWord" tabIndex="4" type="checkbox"><label
-			for="chkWord" fckLang="DlgMyReplaceWordChk">Match whole word</label>
+	</head>
+	<body onload="OnLoad()" scroll="no" style="OVERFLOW: hidden">
+		<div align="center">
+			This is my Plugin!
 		</div>
-		</td>
-	</tr>
-</table>
-</body>
+		<table cellSpacing="3" cellPadding="2" width="100%" border="0">
+			<tr>
+				<td nowrap>
+					<label for="txtFind" fckLang="DlgMyReplaceFindLbl">Find what:</label>&nbsp;
+				</td>
+				<td width="100%">
+					<input id="txtFind" onkeyup="btnStat(this.form)" style="WIDTH: 100%" tabIndex="1" type="text">
+				</td>
+				<td>
+					<input id="btnFind" style="WIDTH: 100%; PADDING-RIGHT: 5px; PADDING-LEFT: 5px" disabled
+						onclick="Ok();" type="button" value="Find" fckLang="DlgMyFindFindBtn">
+				</td>
+			</tr>
+			<tr>
+				<td valign="bottom" colSpan="3">
+					&nbsp;<input id="chkCase" tabIndex="3" type="checkbox"><label for="chkCase" fckLang="DlgMyReplaceCaseChk">Match
+						case</label>
+					<br>
+					<div id="divWord" style="DISPLAY: none">
+						&nbsp;<input id="chkWord" tabIndex="4" type="checkbox"><label for="chkWord" fckLang="DlgMyReplaceWordChk">Match
+							whole word</label>
+					</div>
+				</td>
+			</tr>
+		</table>
+	</body>
 </html>

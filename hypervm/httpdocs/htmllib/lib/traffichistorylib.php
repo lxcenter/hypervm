@@ -1,147 +1,126 @@
-<?PHP
-//
-//    HyperVM, Server Virtualization GUI for OpenVZ and Xen
-//
-//    Copyright (C) 2000-2009     LxLabs
-//    Copyright (C) 2009          LxCenter
-//
-//    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Affero General Public License as
-//    published by the Free Software Foundation, either version 3 of the
-//    License, or (at your option) any later version.
-//
-//    This program is distributed in the hope that it will be useful,
-//    but WITHOUT ANY WARRANTY; without even the implied warranty of
-//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Affero General Public License for more details.
-//
-//    You should have received a copy of the GNU Affero General Public License
-//    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-?>
-
-<?php
+<?php 
 
 class TrafficHistory extends lxclass {
 
-	static $__desc =  Array("", "",  "traffic_history");
-	static $__desc_nname =  Array("", "",  "device_name");
-	static $__desc_parent_name =  Array("", "",  "device_name");
-	static $__desc_month    =   Array("", "",  "month");
-	static $__desc_traffic_usage     =  Array("", "",  "total_traffic_(MB)");
-	static $__acdesc_list     =  Array("", "",  "traffic_history");
+static $__desc =  Array("", "",  "traffic_history");
+static $__desc_nname =  Array("", "",  "device_name");
+static $__desc_parent_name =  Array("", "",  "device_name");
+static $__desc_month    =   Array("", "",  "month");
+static $__desc_traffic_usage     =  Array("", "",  "total_traffic_(MB)");
+static $__acdesc_list     =  Array("", "",  "traffic_history");
 
-	//Objects
+//Objects
 
-	//Lists
+//Lists
 
-	function write() {}
-	function get() {}
+function write() {}
+function get() {}
 
 
-	function isSelect()
-	{
-		return false;
+function isSelect()
+{
+	return false;
+}
+static function createListAlist($parent, $class)
+{
+	$alist[] = "a=list&c=$class";
+	return $alist;
+}
+
+function getTrafficRealObject()
+{
+	return strtil($this->get__table(), "traffic");
+}
+
+function getAllTrafficMonthly() 
+{
+
+	global $gbl, $sgbl, $login, $ghtml; 
+
+	$robjname = $this->getTrafficRealObject();
+	$login->loadAllObjects($robjname);
+
+	$domlist = $login->getList($robjname);
+
+	foreach($objlist as $obj) {
+		$trafficlist[$obj->nname] = self::getTrafficMonthly($obj);
 	}
-	static function createListAlist($parent, $class)
-	{
-		$alist[] = "a=list&c=$class";
-		return $alist;
+	
+	return $trafficlist;
+}	
+
+static function defaultSortdir() { return 'desc'; }
+
+static function getTrafficMonthly($object, $trafficname, $extra_var)  
+{
+	
+	$tobjectlist  = $object->getList($trafficname);
+
+	if (!$tobjectlist) {
+		return null;
+	}
+	$list1 = get_namelist_from_objectlist($tobjectlist);
+	$list = lx_array_keys($list1);
+	list(, $start, ) = explode( ':', $list[0]); 
+	$count = count($list);
+	list( , , $end ) = explode(':', $list[$count-1]);
+	$smonth = @ strftime("%m", $start);
+	$emonth = @ strftime("%m", $end);
+	$name = $object->nname;
+  
+
+	$thmonth = @ date("n");
+	$year = @ date("Y");
+	$count = 0;
+	for($i = $thmonth ; $i != ($thmonth + 1);) {
+		$count++;
+		if ($count > 14) { break; }
+
+		$totallist[] = self::getMonthTotal($tobjectlist, $i, $year, $extra_var); 
+		if ($i == 1) {
+			$i = 13;
+			$year = $year - 1;
+		}
+		$i--;
+
 	}
 
-	function getTrafficRealObject()
-	{
-		return strtil($this->get__table(), "traffic");
+	return $totallist;
+}
+
+static function getMonthTotal($list, $month, $year, $extra_var) 
+{
+
+	$tot = 0;
+	foreach((array) $extra_var as $v) {
+		$res[$v] = 0;
 	}
-
-	function getAllTrafficMonthly()
-	{
-
-		global $gbl, $sgbl, $login, $ghtml;
-
-		$robjname = $this->getTrafficRealObject();
-		$login->loadAllObjects($robjname);
-
-		$domlist = $login->getList($robjname);
-
-		foreach($objlist as $obj) {
-			$trafficlist[$obj->nname] = self::getTrafficMonthly($obj);
+	$nname = '1110';
+	foreach((array) $list as $t ) {
+		list($domname, $oldtime, $newtime) = explode( ":", $t->nname);
+		$cmonth = @ strftime("%m" , $oldtime);
+		//dprint(strftime("%c" , "$oldtime"). ": "); dprint($t->traffic_usage); dprint("$cmonth <br> \n");
+		//		dprint("$cmonth $month $t->traffic_usage <br>");
+		$yy = @ date("Y", $oldtime);
+		if ($yy != $year) {
+			continue;
 		}
 
-		return $trafficlist;
-	}
-
-	static function defaultSortdir() { return 'desc'; }
-
-	static function getTrafficMonthly($object, $trafficname, $extra_var)
-	{
-
-		$tobjectlist  = $object->getList($trafficname);
-
-		if (!$tobjectlist) {
-			return null;
-		}
-		$list1 = get_namelist_from_objectlist($tobjectlist);
-		$list = lx_array_keys($list1);
-		list(, $start, ) = explode( ':', $list[0]);
-		$count = count($list);
-		list( , , $end ) = explode(':', $list[$count-1]);
-		$smonth = @ strftime("%m", $start);
-		$emonth = @ strftime("%m", $end);
-		$name = $object->nname;
-
-
-		$thmonth = @ date("n");
-		$year = @ date("Y");
-		$count = 0;
-		for($i = $thmonth ; $i != ($thmonth + 1);) {
-			$count++;
-			if ($count > 14) { break; }
-
-			$totallist[] = self::getMonthTotal($tobjectlist, $i, $year, $extra_var);
-			if ($i == 1) {
-				$i = 13;
-				$year = $year - 1;
+		if($cmonth == $month) {
+			$tot +=  $t->traffic_usage;
+			foreach((array) $extra_var as $v) {
+				$res[$v] += $t->$v;
 			}
-			$i--;
-
+			$nname = $oldtime;
 		}
-
-		return $totallist;
 	}
+	$montht = intToMonth($month);
+	$res['nname'] = "$year.$month";
+	$res['month'] = "$montht $year";
+	$res['traffic_usage'] = $tot;
 
-	static function getMonthTotal($list, $month, $year, $extra_var)
-	{
-
-		$tot = 0;
-		foreach((array) $extra_var as $v) {
-			$res[$v] = 0;
-		}
-		$nname = '1110';
-		foreach((array) $list as $t ) {
-			list($domname, $oldtime, $newtime) = explode( ":", $t->nname);
-			$cmonth = @ strftime("%m" , $oldtime);
-			//dprint(strftime("%c" , "$oldtime"). ": "); dprint($t->traffic_usage); dprint("$cmonth <br> \n");
-			//		dprint("$cmonth $month $t->traffic_usage <br>");
-			$yy = @ date("Y", $oldtime);
-			if ($yy != $year) {
-				continue;
-			}
-
-			if($cmonth == $month) {
-				$tot +=  $t->traffic_usage;
-				foreach((array) $extra_var as $v) {
-					$res[$v] += $t->$v;
-				}
-				$nname = $oldtime;
-			}
-		}
-		$montht = intToMonth($month);
-		$res['nname'] = "$year.$month";
-		$res['month'] = "$montht $year";
-		$res['traffic_usage'] = $tot;
-
-		return $res;
-
-	}
+	return $res;
+	 
+}
 
 }

@@ -3,33 +3,29 @@
 |---------------------------------------------------|
 | Copyright (c) 2002-2003 Geir Landrö               |
 |--------------------------------------------------*/
+
 .dtree {
 	font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
 	font-size: 11px;
 	color: #333;
 	white-space: nowrap;
 }
-
 .dtree img {
 	border: 0px;
 	vertical-align: middle;
 }
-
 .dtree a {
 	color: #333;
 	text-decoration: none;
 }
-
-.dtree a.node,.dtree a.nodeSel {
+.dtree a.node, .dtree a.nodeSel {
 	white-space: nowrap;
 	padding: 1px 2px 1px 2px;
 }
-
-.dtree a.node:hover,.dtree a.nodeSel:hover {
+.dtree a.node:hover, .dtree a.nodeSel:hover {
 	color: #333;
 	text-decoration: underline;
 }
-
 .dtree .clip {
 	overflow: hidden;
 }

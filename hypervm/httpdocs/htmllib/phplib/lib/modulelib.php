@@ -1,68 +1,47 @@
-<?PHP
-//
-//    HyperVM, Server Virtualization GUI for OpenVZ and Xen
-//
-//    Copyright (C) 2000-2009     LxLabs
-//    Copyright (C) 2009          LxCenter
-//
-//    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Affero General Public License as
-//    published by the Free Software Foundation, either version 3 of the
-//    License, or (at your option) any later version.
-//
-//    This program is distributed in the hope that it will be useful,
-//    but WITHOUT ANY WARRANTY; without even the implied warranty of
-//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Affero General Public License for more details.
-//
-//    You should have received a copy of the GNU Affero General Public License
-//    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-?>
-
-<?php
+<?php 
 
 class Module extends Lxdb {
 
-	static $__desc = array("S", "",  "module");
-	static $__desc_nname	 = array("", "",  "module_name", URL_SHOW);
-	static $__desc_info	 = array("", "",  "module_information");
+static $__desc = array("S", "",  "module");
+static $__desc_nname	 = array("", "",  "module_name", URL_SHOW); 
+static $__desc_info	 = array("", "",  "module_information");
 
-	static $__acdesc_update_update = array("", "",  "details");
+static $__acdesc_update_update = array("", "",  "details");
 
 
 
-	static function initThisListRule($parent, $class)
-	{
-		return "__v_table";
-	}
+static function initThisListRule($parent, $class)
+{
+	return "__v_table";
+}
 
-	function createShowUpdateform()
-	{
-		$uform['update'] = null;
-		return $uform;
-	}
+function createShowUpdateform()
+{
+	$uform['update'] = null;
+	return $uform;
+}
 
-	function updateform($subaction, $param)
-	{
-		$vlist['nname'] = array('M', null);
-		$vlist['info'] = array('M', null);
-		return $vlist;
-	}
+function updateform($subaction, $param)
+{
+	$vlist['nname'] = array('M', null);
+	$vlist['info'] = array('M', null);
+	return $vlist;
+}
 
-	static function createListAlist($parent, $class)
-	{
-		$alist[] = "a=list&c=$class";
-		$alist[] = 'a=update&sa=collectmodinfo';
-		return $alist;
-	}
+static function createListAlist($parent, $class)
+{
+	$alist[] = "a=list&c=$class";
+	$alist[] = 'a=update&sa=collectmodinfo';
+	return $alist;
+}
 
-	static function getModuleList()
-	{
+static function getModuleList()
+{
 
-		return null;
-		//$gbl->__module_list;
+	return null;
+	//$gbl->__module_list;
 
-	}
+}
 
 
 }

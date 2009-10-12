@@ -1,29 +1,8 @@
-<?PHP
-//
-//    HyperVM, Server Virtualization GUI for OpenVZ and Xen
-//
-//    Copyright (C) 2000-2009     LxLabs
-//    Copyright (C) 2009          LxCenter
-//
-//    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Affero General Public License as
-//    published by the Free Software Foundation, either version 3 of the
-//    License, or (at your option) any later version.
-//
-//    This program is distributed in the hope that it will be useful,
-//    but WITHOUT ANY WARRANTY; without even the implied warranty of
-//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Affero General Public License for more details.
-//
-//    You should have received a copy of the GNU Affero General Public License
-//    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-?>
-
-<?php
+<?php 
 
 function webcommandline_main()
 {
-	global $gbl, $sgbl, $login, $ghtml;
+	global $gbl, $sgbl, $login, $ghtml; 
 	global $argv;
 
 
@@ -217,7 +196,7 @@ function check_priv($parent, $class, $pvar, $v)
 			$pvar->$pk = $pv;
 			continue;
 		}
-
+				
 		if (cse($pk, "_num") || cse($pk, "_usage")) {
 			$tmp = $pv;
 
@@ -297,7 +276,7 @@ function get_v_descr($stuff, $v = null)
 
 function createPrincipleObject()
 {
-	global $gbl, $sgbl, $login, $ghtml;
+	global $gbl, $sgbl, $login, $ghtml; 
 
 	$object = $login;
 	$parent = $login;
@@ -375,21 +354,21 @@ function createPrincipleObject()
 	}
 
 	/*
-	 if ($ghtml->frm_o_cname) {
+	if ($ghtml->frm_o_cname) {
 		$action = $ghtml->frm_action;
 		$navig[$n]['frm_action'] = $action;
 		if ($ghtml->frm_dttype) {
-		$navig[$n]['frm_dttype'] = $ghtml->frm_dttype;
+			$navig[$n]['frm_dttype'] = $ghtml->frm_dttype;
 		}
 		$navig[$n]['frm_o_cname'] = $ghtml->frm_o_cname;
 		$navigmenu[$n] = array($action, $ghtml->frm_o_cname);
 		if ($ghtml->frm_o_o) {
-		foreach($p as $k => $v) {
-		$navig[$n]['frm_o_o'][$k] = $p[$k];
+			foreach($p as $k => $v) {
+				$navig[$n]['frm_o_o'][$k] = $p[$k];
+			}
 		}
-		}
-		}
-		*/
+	}
+*/
 
 	$gbl->__navigmenu = $navigmenu;
 	$gbl->__navig = $navig;
@@ -402,7 +381,7 @@ function createPrincipleObject()
 
 function do_desc_update($object, $subaction, $param)
 {
-	global $gbl, $sgbl, $login, $ghtml;
+	global $gbl, $sgbl, $login, $ghtml; 
 	$class = lget_class($object);
 
 
@@ -418,7 +397,7 @@ function do_desc_update($object, $subaction, $param)
 
 
 
-
+	
 	//Calling the generic update first... If any class wide security checks to be made (as in the case of templates, u can do it there...
 	$param = $object->update($subaction, $param);
 	if (method_exists($object, $update_func)) {
@@ -438,7 +417,7 @@ function do_desc_update($object, $subaction, $param)
 
 
 	$nparam[$class]['nname'] = $object->nname;
-	// This code is very much suspect. Looks like I copied this from the addform and dumped it here. Should tkae a more detailed look in this. The issue is, the nnamevar is not needed, since this is inside a fully formed object, and nname need not be constructed.
+	// This code is very much suspect. Looks like I copied this from the addform and dumped it here. Should tkae a more detailed look in this. The issue is, the nnamevar is not needed, since this is inside a fully formed object, and nname need not be constructed. 
 	foreach($param as $k => $v) {
 		$object->resolve_class_heirarchy($class, $k, $dclass, $dk);
 
@@ -463,7 +442,7 @@ function do_desc_update($object, $subaction, $param)
 		}
 		if ($k === 'priv') {
 			$pvar = $object->priv;
-			$oldpvar = clone $pvar;
+			$oldpvar = clone $pvar; 
 			check_priv($qparent, $class, $pvar, $v);
 			$object->distributeChildQuota($oldpvar);
 			continue;
@@ -493,7 +472,7 @@ function do_desc_update($object, $subaction, $param)
 		$object->getParentO()->setUpdateSubaction('update_a_child');
 	}
 
-
+	
 
 	return $param;
 }
@@ -501,10 +480,10 @@ function do_desc_update($object, $subaction, $param)
 
 function do_desc_add($object, $class, $param)
 {
-	global $gbl, $sgbl, $login, $ghtml;
+	global $gbl, $sgbl, $login, $ghtml; 
 
 
-
+	
 
 	$quotaclass = exec_class_method($class, "getquotaclass", $class);
 	$numvar = "{$quotaclass}_num";
@@ -521,24 +500,24 @@ function do_desc_add($object, $class, $param)
 
 
 	/*
-	 $list = $qobject->getQuotaVariableList();
-	 foreach((array) $list as $l => $v) {
+	$list = $qobject->getQuotaVariableList();
+	foreach((array) $list as $l => $v) {
 		if (csb($l, "{$class}_m_")) {
-		$license = strtil(strfrom($l, "_n_"), "_num");
-		$licvar = strtil(strfrom($l, "_m_"), "_n_");
-		if (isset($param[$licvar]) && $param[$licvar] === $license) {
-		if (isQuotaGreaterThanOrEq($qobject->used->$l, $qobject->priv->$l)) {
-		throw new lxException("Quota Exceeded for $class $licvar.$license", 'nname', $numvar);
+			$license = strtil(strfrom($l, "_n_"), "_num");
+			$licvar = strtil(strfrom($l, "_m_"), "_n_");
+			if (isset($param[$licvar]) && $param[$licvar] === $license) {
+				if (isQuotaGreaterThanOrEq($qobject->used->$l, $qobject->priv->$l)) {
+					throw new lxException("Quota Exceeded for $class $licvar.$license", 'nname', $numvar);
+				}
+			}
 		}
-		}
-		}
-		}
-		*/
+	}
+*/
 
 
 
 
-
+	
 	// Setting it here itself so that the add can override if necessary. This is done in tickets, where the parent is always the admin.
 	$param['parent_clname'] = $object->getClName();
 
@@ -599,7 +578,7 @@ function do_desc_add($object, $class, $param)
 			check_listpriv($object, $class, $olist[$k], $v);
 			continue;
 		}
-
+		
 		if (csa($k, "_b")) {
 			$olist[$k] = new $k($object->__masterserver, null, $nparam[$class]['nname']);
 		} else {
@@ -677,7 +656,7 @@ function do_desc_add($object, $class, $param)
 
 	$olist[$class]->__parent_o = $rparent;
 
-
+	
 
 	$olist[$class]->postAdd();
 
