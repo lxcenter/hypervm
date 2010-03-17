@@ -55,8 +55,10 @@ function __construct()
 	$this->__var_language['jp'] = 'Japanese';
 	$this->__var_language['kr'] = 'Korean';
 	$this->__var_language['ru'] = 'Russian';
-        $this->__var_language['se'] = 'Swedish';
-
+    $this->__var_language['se'] = 'Swedish';
+    $this->__var_language['ro'] = 'Romanian';
+    $this->__var_language['br'] = 'Brazilian Portuguese';
+	
 }
 
 
