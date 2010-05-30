@@ -309,7 +309,7 @@ function getOneIP()
 function isSync()
 {
 	global $gbl, $sgbl, $login, $ghtml;
-	// Don't do anything if it is syncadd or if it is restore... When restoring, installsoft is handled by the     |database, and then the web backup.
+	// Don't do anything if it is syncadd or if it is restore... When restoring, installapp is handled by the     |database, and then the web backup.
 
 
 	if (isset($gbl->__restore_flag) && $gbl->__restore_flag) {
