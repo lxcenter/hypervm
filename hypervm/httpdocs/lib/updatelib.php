@@ -332,7 +332,9 @@ function updateApplicableToSlaveToo()
 {
 	global $gbl, $sgbl, $login, $ghtml, $osversion; 
 	print("Download 3rdparty\n");
-	download_thirdparty(2009);
+    // Fixes #303 and #304
+	download_thirdparty();
+
 	print("Installing binaries\n");
 	lxfile_cp("__path_program_root/cexe/lxxen", "/usr/bin");
 	lxfile_cp("__path_program_root/cexe/lxopenvz", "/usr/bin");
