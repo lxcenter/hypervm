@@ -4195,19 +4195,6 @@ function get_last_month_and_year()
 }
 
 
-function fix_arch()
-{
-	// Do it only for xen.
-
-	if (!lxfile_exists("/proc/xen")) {
-		return;
-	}
-
-	if (!lxfile_real("/etc/rpm/platform")) {
-		//lfile_put_contents("/etc/rpm/platform", "i686-redhat-linux"); 
-	}
-}
-
 function add_to_log($file)
 {
 	$string = time();
