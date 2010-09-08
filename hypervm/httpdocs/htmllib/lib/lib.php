@@ -99,6 +99,9 @@ function download_thirdparty()
     // Fixes #303 and #304
     $string = file_get_contents("http://download.lxcenter.org/download/thirdparty/$prgm-version.list");
     if ($string != "") {
+        $string = trim($string);
+        $string = str_replace("\n", "", $string);
+        $string = str_replace("\r", "", $string);
         core_installWithVersion("/usr/local/lxlabs/$prgm/", "$prgm-thirdparty", $string);
     }
 }
