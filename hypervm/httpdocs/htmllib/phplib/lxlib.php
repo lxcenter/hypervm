@@ -9,7 +9,10 @@ if (windowsOs()) {
 }
 
 // Don't remove this. This is used for slave upgrade.
-function remotetestfunc() { }
+function remotetestfunc()
+{
+}
+
 define('S_IFDIR', 00040000);
 define('S_ISUID', 00004000);
 define('S_ISGID', 00002000);
@@ -17,8 +20,6 @@ define('S_ISGID', 00002000);
 // This is the only function that exectues during the initialization... The rest of the whle library exists as functions that can be called... Nothing gets executed on their own... Execept this.. So it makes this sort of special... very special..
 
 init_global();
-
-
 
 function init_global()
 {
@@ -39,88 +40,91 @@ function init_global()
 // ### LxCenter
 //
 
-	//production version... No chance of setting debug outside of program...
-	//$sgbl->dbg = -1;
-
+// Check for Development/Debug version
+// If file not exists, Production mode (-1)
+// If file exists it can have the following numbers to enable
+// 1  = Debug mode 1
+// 2  = Debug mode 2
+// 3  = Debug mode 3
+// 4  = Debug mode 4
+// 5  = Debug mode 5
+// -1 = Turn Off and go to production mode
 
 	check_for_debug("/commands.php");
 
-	$v = explode(".", PHP_VERSION);
+// Disabled by LxCenter, we are not at PHP version with number 1 at postition N ( x.N.x )
+//  $v = explode(".", PHP_VERSION);
+//  if ($v[1] == "1" && $sgbl->isDebug()) {
+//      date_default_timezone_set("UTC");
+//  }
 
-	if ($v[1] == "1" && $sgbl->isDebug()) {
-		date_default_timezone_set("UTC");
-	}
-
-
-	$sgbl->method = ($sgbl->dbg >= 1)? "get": "post";
-	//$sgbl->method = 'post';
+	$sgbl->method = ($sgbl->dbg >= 1) ? "get" : "post";
 }
 
 function debug_for_backend()
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	check_for_debug("/commands.php");
-	if ($sgbl->isDebug()) { return; }
+	if ($sgbl->isDebug()) {
+		return;
+	}
 	check_for_debug("/backend.php");
 }
 
 function check_for_debug($file)
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	if (file_exists(getreal($file))) {
 		$sgbl->dbg = file_get_contents(getreal($file));
-		if ($sgbl->dbg != "1" && $sgbl->dbg != "2" && $sgbl->dbg != "3" && $sgbl->dbg != 4 && $sgbl->dbg != 5) {
+		if ($sgbl->dbg != "1" && $sgbl->dbg != "2" && $sgbl->dbg != "3" && $sgbl->dbg != "4" && $sgbl->dbg != "5") {
 			$sgbl->dbg = -1;
 		}
-
 	} else {
 		$sgbl->dbg = -1;
 	}
 	if ($sgbl->dbg > 0) {
 		ini_set("error_reporting", E_ALL & ~E_STRICT);
 		ini_set("display_errors", "On");
+		ini_set("log_errors", "On");
 	} else {
 		ini_set("error_reporting", E_ERROR);
-		ini_set("display_errors", "On");
+		ini_set("display_errors", "Off");
+		ini_set("log_errors", "On");
 	}
 }
-
 
 function isUpdating()
 {
 	return lx_core_lock_check_only("update.php");
 }
 
-class lxException extends Exception {
-public $syncserver;
-public $class;
-public $variable;
-public $error;
-public $message;
-function getClass()
+class lxException extends Exception
 {
-	return lget_class($this);
+	public $syncserver;
+	public $class;
+	public $variable;
+	public $error;
+	public $message;
+
+	function getClass()
+	{
+		return lget_class($this);
+	}
+
+	function __construct($message, $variable = 'nname', $value = null)
+	{
+		$this->message = $message;
+		$this->variable = $variable;
+		$this->value = $value;
+		$this->__full_message = "$message: $variable: $value";
+		//log_log("exception", "$message: $variable: $value");
+	}
+
+	function getlMessage()
+	{
+		return "$this->message: $this->variable: $this->value";
+	}
 }
-
-function __construct($message, $variable = 'nname', $value = null)
-{
-	$this->message = $message;
-	$this->variable = $variable;
-	$this->value = $value;
-	$this->__full_message = "$message: $variable: $value";
-	//log_log("exception", "$message: $variable: $value");
-}
-
-function getlMessage()
-{
-	return "$this->message: $this->variable: $this->value";
-}
-
-}
-
-
-
-
 
 function getAllOperatingSystemDetails()
 {
@@ -143,7 +147,7 @@ function findOperatingSystem($type = null)
 		}
 
 		$list = $obj->execQuery("select Caption from Win32_OperatingSystem");
-		foreach($list as $l) {
+		foreach ($list as $l) {
 			$ret['version'] = $l->Caption;
 			$ret['pointversion'] = $l->Caption;
 		}
@@ -152,7 +156,7 @@ function findOperatingSystem($type = null)
 	if (file_exists("/etc/fedora-release")) {
 		$ret['os'] = 'fedora';
 		$ret['version'] = file_get_contents("/etc/fedora-release");
-		$ret['pointversion'] = find_os_pointversion(); 
+		$ret['pointversion'] = find_os_pointversion();
 	} else if (file_exists("/etc/redhat-release")) {
 		$ret['os'] = 'rhel';
 		$ret['version'] = file_get_contents("/etc/redhat-release");
@@ -164,13 +168,11 @@ function findOperatingSystem($type = null)
 		$ret['xenlocation'] = vg_complete();
 	}
 
-
 	if ($type) {
 		return $ret[$type];
 	}
 	return $ret;
 }
-
 
 function find_os_pointversion()
 {
@@ -178,9 +180,9 @@ function find_os_pointversion()
 		$release = trim(file_get_contents("/etc/fedora-release"));
 		$osv = explode(" ", $release);
 		if (strtolower($osv[1]) === 'core') {
-			$osversion = "fedora-" . $osv[3]; 
+			$osversion = "fedora-" . $osv[3];
 		} else {
-			$osversion = "fedora-" . $osv[2]; 
+			$osversion = "fedora-" . $osv[2];
 		}
 		return $osversion;
 	}
@@ -188,30 +190,26 @@ function find_os_pointversion()
 	if (file_exists("/etc/redhat-release")) {
 		$release = trim(file_get_contents("/etc/redhat-release"));
 		$osv = explode(" ", $release);
-		if(isset($osv[6])) {
+		if (isset($osv[6])) {
 			$osversion = "rhel-" . $osv[6];
-		} else{
+		} else {
 			$oss = explode(".", $osv[2]);
 			$osversion = "centos-" . $oss[0];
 		}
 		return $osversion;
 	}
 }
-	
 
-
-
-function lscandir_without_dot($arg, $dotflag = false) 
+function lscandir_without_dot($arg, $dotflag = false)
 {
-
 	$list = lscandir($arg);
 
 	if (!$list) {
 		return $list;
 	}
 
-	foreach($list as $k => $v) {
-		if ($v === ".." || $v === "." || $v === 'CVS') {
+	foreach ($list as $k => $v) {
+		if ($v === ".." || $v === "." || $v === '.svn') {
 			unset($list[$k]);
 		}
 		if ($dotflag && csb($v, '.')) {
@@ -221,17 +219,16 @@ function lscandir_without_dot($arg, $dotflag = false)
 	return $list;
 }
 
-function lscandir_without_dot_or_underscore($arg, $dotflag = false) 
+function lscandir_without_dot_or_underscore($arg, $dotflag = false)
 {
-
 	$list = lscandir($arg);
 
 	if (!$list) {
 		return $list;
 	}
 
-	foreach($list as $k => $v) {
-		if ($v === ".." || $v === "." || $v === 'CVS') {
+	foreach ($list as $k => $v) {
+		if ($v === ".." || $v === "." || $v === '.svn') {
 			unset($list[$k]);
 		}
 		if ($dotflag && csb($v, '.')) {
@@ -243,7 +240,6 @@ function lscandir_without_dot_or_underscore($arg, $dotflag = false)
 	}
 	return $list;
 }
-
 
 function lscandir($arg)
 {
@@ -257,10 +253,9 @@ function lunlink($arg)
 
 function ltouch($arg)
 {
-
 	return lx_redefine_func("touch", $arg);
 }
- 
+
 function lchdir($arg)
 {
 	return lx_redefine_func("chdir", $arg);
@@ -268,15 +263,14 @@ function lchdir($arg)
 
 function takeToStartOfLine($fp)
 {
+	while (fgetc($fp) == "\n" && ftell($fp) != 1 && ftell($fp) != 0) {
+		fseek($fp, -2, SEEK_CUR);
+	}
 
-	 while(fgetc($fp) == "\n" && ftell($fp) != 1 && ftell($fp) != 0) {
-		 fseek($fp, -2, SEEK_CUR);
-	 }
-
-	 while(($c = fgetc($fp)) != "\n" && ftell($fp) != 1 && ftell($fp) != 0) {
-		 fseek($fp, -2, SEEK_CUR);
-	 }
- }
+	while (($c = fgetc($fp)) != "\n" && ftell($fp) != 1 && ftell($fp) != 0) {
+		fseek($fp, -2, SEEK_CUR);
+	}
+}
 
 function tail_func($file, $lines)
 {
@@ -290,13 +284,12 @@ function tail_func($file, $lines)
 
 	fseek($fp, 0, SEEK_END);
 
-
 	// Go back onece and read the line.
 	takeToStartOfLine($fp);
 	$arr[] = fgets($fp);
 
 	$n = 0;
-	while($n < $lines && ftell($fp) !== 1) {
+	while ($n < $lines && ftell($fp) !== 1) {
 		$n++;
 		//dprint($n . "\n");
 		// You have to go back twice.
@@ -310,13 +303,13 @@ function tail_func($file, $lines)
 		$arr[] = fgets($fp);
 	}
 	return implode("", array_reverse($arr));
-
 }
-
 
 function lfile_get_json_unserialize($file)
 {
-	if (!lxfile_exists($file)) { return null; }
+	if (!lxfile_exists($file)) {
+		return null;
+	}
 	return json_decode(lfile_get_contents($file), true);
 }
 
@@ -327,10 +320,11 @@ function lfile_put_json_serialize($file, $var)
 
 function lfile_get_unserialize($file)
 {
-	if (!lxfile_exists($file)) { return null; }
+	if (!lxfile_exists($file)) {
+		return null;
+	}
 	return unserialize(lfile_get_contents($file));
 }
-
 
 function lfile_put_serialize($file, $var)
 {
@@ -355,7 +349,6 @@ function lfopen($arg1, $arg2)
 function lfilesize($arg)
 {
 	return lx_redefine_func("filesize", $arg);
-
 }
 
 function ltempnam($arg1, $arg2)
@@ -365,7 +358,6 @@ function ltempnam($arg1, $arg2)
 
 function lfile_write_content($file, $data, $user)
 {
-
 	if (csa($user, ":")) {
 		$realuser = strtil($user, ":");
 	} else {
@@ -377,8 +369,6 @@ function lfile_write_content($file, $data, $user)
 	}
 	lfile_put_contents($file, $data);
 	lxfile_unix_chown($file, $user);
-
-
 }
 
 function check_file_if_owned_by_and_throw($filename, $username)
@@ -391,9 +381,11 @@ function check_file_if_owned_by_and_throw($filename, $username)
 function lis_hardlink($file)
 {
 	$file = expand_real_root($file);
-	if (is_dir($file)) { return false; }
+	if (is_dir($file)) {
+		return false;
+	}
 	$stat = stat($file);
-	if ($stat['nlink'] >= 2) { 
+	if ($stat['nlink'] >= 2) {
 		return true;
 	}
 	return false;
@@ -409,7 +401,6 @@ function is_soft_or_hardlink($file)
 		return true;
 	}
 	return false;
-
 }
 
 function new_process_mv_rec($user, $src, $dst)
@@ -436,35 +427,39 @@ function new_process_cp_rec($user, $src, $dst)
 
 function new_process_cmd($user, $dir, $cmd)
 {
+	global $sgbl;
 
-	$tmpfile = ltempnam("/tmp", "cmd_exec");
-	lxfile_unix_chown($tmpfile, $user);
-
-	$v = pcntl_fork();
-	if ($v === 0) {
-		$uid = os_get_uid_from_user($user);
-		$gid = os_get_gid_from_user($user);
-		dprint("Execing as: $uid: $gid\n");
-		if ($user !== 'root') {
-			posix_setgid($gid);
-			posix_setegid($gid);
-			posix_setuid($uid);
-		}
-		if ($dir) { chdir($dir); }
-		$list = posix_getgroups();
-		dprintr($list);
-		system("$cmd > $tmpfile 2>&1");
-		exit;
+	if (csa($user, ':')) {
+		list($user, $group) = explode(':', $user);
 	} else {
-		pcntl_waitpid($v, $status);
-		$cont = lfile_get_contents($tmpfile);
-		//lxfile_rm($tmpfile);
-		log_log("user_cmd", "($dir) $user $cmd $cont");
+		$group = $user;
 	}
-	return $status;
 
+	if ($user === 'root') {
+		$user = '__system__';
+	}
+
+	if ($dir) {
+		$olddir = getcwd();
+		chdir($dir);
+	}
+	if ($user !== '__system__') {
+		$uid = is_numeric($user) ? (int) $user : os_get_uid_from_user($user);
+		$gid = is_numeric($group) ? (int) $group : os_get_gid_from_user($user);
+		exec("{$sgbl->__path_php_path} {$sgbl->__path_program_root}/bin/phpexec.php $uid $gid $cmd 2>&1", $output, $retval);
+	} else {
+		exec("$cmd 2>&1", $output, $retval);
+	}
+
+	if ($dir) {
+		chdir($olddir);
+	}
+
+	$output = implode("\n", $output);
+	log_log('user_cmd', "($dir) $user $cmd $output");
+
+	return $retval;
 }
-
 
 function lfile_put_contents($file, $data, $flag = null)
 {
@@ -481,22 +476,47 @@ function lfile_put_contents($file, $data, $flag = null)
 
 	lxfile_mkdir(dirname($file));
 
-	return file_put_contents($file, $data, $flag);
+	if(file_exists($file)){
+		if(is_readable($file)){
+			if(is_writable($file)){
+				return file_put_contents($file, $data, $flag);
+			}
+			else{
+				$error_msg = 'Could not write the file \''.$file.'\' with permissions: '.substr(sprintf('%o', fileperms($file)), -4);
+				dprint($error_msg);
+				log_log('filesys', $error_msg);
+				return false;
+			}
+		}
+		else{
+			$error_msg = 'Could not read the file \''.$file.'\' with permissions: '.substr(sprintf('%o', fileperms($file)), -4);
+			dprint($error_msg);
+			log_log('filesys', $error_msg);
+			return false;
+		}
+	}
+	else{
+        if(file_put_contents($file, $data, $flag) === false){
+            $error_msg = 'File \''.$file.'\' could not be created.';
+            dprint($error_msg);
+            log_log('filesys', $error_msg);
+            return false;
+        }
+        return true;
+ 	}
 }
 
-/** 
-* @return void 
-* @param unknown  
-* @param unknown  
-* @desc Redefining php functions ... sort of.. Stupid php doesn't allow that. So we do the next best thing.. We add an 'l' to all system functions and then use these functions instead of the php ones... In a way, is a better idea too, since, there might always be some cases where we might want to override this crap. :-)
-*/ 
- 
-
-
+/**
+ * @return void
+ * @param unknown
+ * @param unknown
+ * @desc Redefining php functions ... sort of.. Stupid php doesn't allow that. So we do the next best thing.. We add an 'l' to all system functions and then use these functions instead of the php ones... In a way, is a better idea too, since, there might always be some cases where we might want to override this crap. :-)
+ */
 function lmkdir($dir)
 {
 	return lx_redefine_func("mkdir", $dir);
 }
+
 function lis_executable($file)
 {
 	return lx_redefine_func("is_executable", $file);
@@ -522,27 +542,36 @@ function lis_dir($file)
 	return lx_redefine_func("is_dir", $file);
 }
 
-
 function cp_if_not_exists($src, $dst)
 {
-	if (lxfile_exists($dst)) { return; }
-	if (!lxfile_exists($src)) {return ; }
+	if (lxfile_exists($dst)) {
+		return;
+	}
+	if (!lxfile_exists($src)) {
+		return;
+	}
 	lxfile_cp($src, $dst);
 }
 
-
 function cp_rec_if_not_exists($src, $dst)
 {
-	if (lxfile_exists($dst)) { return; }
-	if (!lxfile_exists($src)) {return ; }
+	if (lxfile_exists($dst)) {
+		return;
+	}
+	if (!lxfile_exists($src)) {
+		return;
+	}
 	lxfile_cp_rec($src, $dst);
 }
 
-
 function mv_rec_if_not_exists($src, $dst)
 {
-	if (lxfile_exists($dst)) { return; }
-	if (!lxfile_exists($src)) {return ; }
+	if (lxfile_exists($dst)) {
+		return;
+	}
+	if (!lxfile_exists($src)) {
+		return;
+	}
 	lxfile_mv_rec($src, $dst);
 }
 
@@ -551,11 +580,9 @@ function llstat($file)
 	return lx_redefine_func("lstat", $file);
 }
 
-
-
 function lx_merge_good($arg)
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 
 	$start = 0;
 	$transforming_func = null;
@@ -566,14 +593,14 @@ function lx_merge_good($arg)
 
 	$list = $arglist;
 
-	foreach($list as &$l) {
+	foreach ($list as &$l) {
 		if (!$l) {
 			$l = array();
 		}
 	}
 
 	$ret = array();
-	foreach($list as $nl) {
+	foreach ($list as $nl) {
 		//dprintr($nl);
 		if (is_array($nl)) {
 			$ret = array_merge($ret, $nl);
@@ -583,18 +610,16 @@ function lx_merge_good($arg)
 	}
 	return $ret;
 }
-
 
 function lx_array_merge($list)
 {
-
-	foreach($list as &$l) {
+	foreach ($list as &$l) {
 		if (!$l) {
 			$l = array();
 		}
 	}
 	$ret = array();
-	foreach($list as $nl) {
+	foreach ($list as $nl) {
 		//dprintr($nl);
 		if (is_array($nl)) {
 			$ret = array_merge($ret, $nl);
@@ -605,27 +630,27 @@ function lx_array_merge($list)
 	return $ret;
 }
 
-function log_switch($mess, $id = 1) 
+function log_switch($mess, $id = 1)
 {
 	log_log('switch', $mess, $id);
 }
 
-function log_error($mess, $id = 1) 
+function log_error($mess, $id = 1)
 {
 	log_log('error', $mess, $id);
 }
 
-function log_bdatabase($mess, $id = 1) 
+function log_bdatabase($mess, $id = 1)
 {
 	log_log('bdatabase', $mess, $id);
 }
 
-function log_restore($mess, $id = 1) 
+function log_restore($mess, $id = 1)
 {
 	log_log('restore', $mess, $id);
 }
 
-function log_database($mess, $id = 1) 
+function log_database($mess, $id = 1)
 {
 	log_log('database', $mess, $id);
 }
@@ -644,7 +669,7 @@ function myPcntl_wait()
 
 function myPcntl_fork()
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	if (!WindowsOs()) {
 		$pid = pcntl_fork();
 	} else {
@@ -652,7 +677,6 @@ function myPcntl_fork()
 		$pid = 0;
 	}
 	return $pid;
-
 }
 
 function log_log($file, $mess, $id = null)
@@ -662,34 +686,48 @@ function log_log($file, $mess, $id = null)
 	}
 	$mess = trim($mess);
 	$rf = "__path_program_root/log/$file";
-	if (WindowsOs()) {
-		$endstr = "\r\n";
-	} else {
-		$endstr = "\n";
-	}
-	lfile_put_contents($rf,  @ date("H:i M/d/Y") . ": $mess$endstr", FILE_APPEND);
+
+	lfile_put_contents($rf, @ date("H:i M/d/Y") . ": $mess" . PHP_EOL, FILE_APPEND);
 }
 
 function log_ajax($mess, $id = 1)
 {
 	log_log('ajax', $mess, $id);
-
 }
+
 function log_redirect($mess, $id = 1)
 {
 	log_log('redirect_error', $mess, $id);
-
 }
+
 function log_message($mess, $id = 1)
 {
 	log_log('message', $mess, $id);
-
 }
+
+function log_security($mess, $id = 1)
+{
+    // get IP
+	if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+	    $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+	}
+    else {
+        $ip = $_SERVER['REMOTE_ADDR'];
+    }
+
+	$user_agent = $_SERVER["HTTP_USER_AGENT"];
+	
+	if (empty($_SERVER["HTTP_USER_AGENT"])) {
+		$user_agent = "Not a browser";
+	}
+
+	log_log('security', $mess . " IP: $ip; User agent: $user_agent", $id);
+}
+
 function log_filesys_err($mess, $id = 1)
 {
 	log_log('filesyserr', $mess, $id);
 }
-
 
 function log_filesys($mess, $id = 1)
 {
@@ -699,7 +737,6 @@ function log_filesys($mess, $id = 1)
 	} else {
 		log_log('filesys', $mess, $id);
 	}
-
 }
 
 function log_shell($mess, $id = 1)
@@ -710,25 +747,21 @@ function log_shell($mess, $id = 1)
 function log_shell_error($mess, $id = 1)
 {
 	log_log('shell_error', $mess, $id);
-
 }
-
 
 function lfile_trim($arg)
 {
 	$list = lfile($arg);
-	foreach($list as &$s) {
+	foreach ($list as &$s) {
 		$s = trim($s);
 	}
 	return $list;
 }
 
-
 function lcopy($src, $dst)
 {
 	return lx_redefine_func("copy", $src, $dst);
 }
-
 
 function lreadfile($file)
 {
@@ -745,22 +778,20 @@ function lfile_exists($file)
 	return lx_redefine_func("file_exists", $file);
 }
 
-
 function lsqlite_open($file)
 {
 	return lx_redefine_func("sqlite_open", $file);
 }
 
-/** 
-* @return void 
-* @param unknown  
-* @param unknown  
-* @desc This function is the core of the the path abstraction. It converts the paths of the form '__path.../dir' to '$sgbl->__path.../dir'. This is used in all the redefined functions to convert their arguments.
-*/ 
- 
+/**
+ * @return void
+ * @param unknown
+ * @param unknown
+ * @desc This function is the core of the the path abstraction. It converts the paths of the form '__path.../dir' to '$sgbl->__path.../dir'. This is used in all the redefined functions to convert their arguments.
+ */
 function expand_real_root($root)
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	if (char_search_beg($root, "__path")) {
 		if (char_search_a($root, "/")) {
 			$var = substr($root, 0, strpos($root, "/"));
@@ -773,23 +804,22 @@ function expand_real_root($root)
 	return $root;
 }
 
-/** 
-* @return void 
-* @param unknown  
-* @param unknown  
-* @desc the function that does the redefining of fundamental file access functions. Note the double use of 'eval'. hey hey, nothing is impossible in php. Never ever repeat the code; Make it unreadable instead. :-)
-*/ 
- 
-
+/**
+ * @return void
+ * @param unknown
+ * @param unknown
+ * @desc the function that does the redefining of fundamental file access functions. Note the double use of 'eval'. hey hey, nothing is impossible in php. Never ever repeat the code; Make it unreadable instead. :-)
+ */
 function kill_and_save_pid($name)
 {
 	kill_pid($name);
 	usleep(100);
 	save_pid($name);
 }
+
 function save_pid($name)
 {
-	lfile_put_contents("__path_program_root/pid/$name.pid", os_getpid()); 
+	lfile_put_contents("__path_program_root/pid/$name.pid", os_getpid());
 }
 
 function kill_pid($name)
@@ -798,17 +828,15 @@ function kill_pid($name)
 	os_killpid($pid);
 }
 
-
 /************************************
  * HOW-TO GENERATE KEYPAIRS
  * //Passphrase is helloworld
  * $ openssl req -x509 -newkey rsa:1024 -keyout mykey.key -out mycert.crt
  */
 
-
 function licenseDecrypt($license_content)
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 
 	$fp = lfopen("__path_program_root/file/lprogram.crt", "r");
 	$public_key = fread($fp, 8192);
@@ -816,13 +844,12 @@ function licenseDecrypt($license_content)
 
 	openssl_get_publickey($public_key);
 
-
 	$list = explode("\n", $license_content);
 
 	// decrypt
 	print_time('decrypt');
 	$fullstring = null;
-	foreach($list as $l) {
+	foreach ($list as $l) {
 		$l = trim($l);
 		if (!$l) {
 			continue;
@@ -838,8 +865,7 @@ function licenseDecrypt($license_content)
 
 function lx_redefine_func($func)
 {
-
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 
 	$start = 1;
 	$transforming_func = "expand_real_root";
@@ -849,17 +875,16 @@ function lx_redefine_func($func)
 	return call_user_func_array($func, $arglist);
 }
 
-
-function licenseEncrypt($string) 
+function licenseEncrypt($string)
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	$file = "$sgbl->__path_program_root/file/license_privatekey.key";
 	// encrypt
 	$pass = "helloworld";
 	$result = openssl_get_privatekey(array("file://" . $file, $pass));
 	$ar = str_split($string, 100);
 	$fullstring = null;
-	foreach($ar as $s) {
+	foreach ($ar as $s) {
 		openssl_private_encrypt($s, $encrypted_string, $result);
 		$fullstring .= base64_encode($encrypted_string) . "\n";
 	}
@@ -870,29 +895,28 @@ function licenseEncrypt($string)
 
 function remove_unnecessary_stat(&$stat)
 {
-	foreach($stat as $k => $v) {
+	foreach ($stat as $k => $v) {
 		if (is_numeric($k)) {
 			unset($stat[$k]);
 		}
 	}
 }
 
-
 function getShellCommand($cmd, $arglist)
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	$args = null;
 	$q = $sgbl->__var_quote_char;
 	$cmd = expand_real_root($cmd);
 	$cmd = str_replace(";", "", $cmd);
 	$cmd = "{$q}$cmd{$q}";
 
-	foreach($arglist as $a) {
+	foreach ($arglist as $a) {
 		if ($a === "") {
 			continue;
 		}
 		if (is_array($a)) {
-			foreach($a as $aa) {
+			foreach ($a as $aa) {
 				$aa = str_replace(";", "", $aa);
 				$args .= " $q" . expand_real_root($aa) . "$q";
 			}
@@ -905,32 +929,31 @@ function getShellCommand($cmd, $arglist)
 	return $cmd;
 }
 
-
-class Remote {
+class Remote
+{
 	/*
-public $ddata;
-public $message;
-public $exception;
-*/
-
+ public $ddata;
+ public $message;
+ public $exception;
+ */
 }
-
 
 function dprintoa($var, $type = 0)
 {
-	global $sgbl, $login, $ghtml; 
+	global $sgbl, $login, $ghtml;
 	if ($type > $sgbl->dbg) {
 		return;
 	}
 	if (!is_array($var)) {
 		return;
 	}
-	foreach($var as $k => $v) {
+	foreach ($var as $k => $v) {
 		dprint("$k =>");
 		dprinto($var, $type);
 		dprint("\n");
 	}
 }
+
 function dprinto($var, $type = 0)
 {
 	global $sgbl;
@@ -946,8 +969,8 @@ function dprinto($var, $type = 0)
 	$newob = clone($var);
 	$newob->__parent_o = null;
 	dprintr($newob);
-
 }
+
 function dprintr($var, $type = 0)
 {
 	global $sgbl;
@@ -955,7 +978,6 @@ function dprintr($var, $type = 0)
 	if ($type > $sgbl->dbg) {
 		return;
 	}
-
 
 	if (is_object($var) && method_exists($var, "clearChildrenAndParent")) {
 		$newvar = myclone($var);
@@ -966,7 +988,7 @@ function dprintr($var, $type = 0)
 		$class = $newvar->get__table();
 		if (csb($class, "sp_")) {
 			$bclass = strfrom($class, "sp_") . "_b";
-			$newvar->$bclass->__parent_o = 'unset for printing'; 
+			$newvar->$bclass->__parent_o = 'unset for printing';
 		}
 	} else {
 		$newvar = $var;
@@ -983,7 +1005,7 @@ function dprintr($var, $type = 0)
 
 function dprint($var, $type = 0)
 {
-	global $sgbl ;
+	global $sgbl;
 	if ($type <= $sgbl->dbg) {
 		if (is_string($var)) {
 			if ($sgbl->isBlackBackground()) {
@@ -1005,18 +1027,15 @@ function dprint_r($var, $type = 0)
 	}
 }
 
-
-
 function lx_local_socket_read($socket)
 {
-	return  @ socket_read($socket, 2048);
-	//$res=socket_recv($MsgSock,$buffer,1024,0);            
+	return @ socket_read($socket, 2048);
+	//$res=socket_recv($MsgSock,$buffer,1024,0);
 }
 
-function csa($haystack, $needle, $insensitive = 0) 
+function csa($haystack, $needle, $insensitive = 0)
 {
 	return char_search_a($haystack, $needle, $insensitive);
-
 }
 
 function char_search_a($haystack, $needle, $insensitive = 1)
@@ -1032,13 +1051,11 @@ function char_search_a($haystack, $needle, $insensitive = 1)
 		log_log("error", $v);
 	}
 	if ($insensitive) {
-		return (false !== stristr($haystack, $needle)) ? true : false;    
-	} else {                                                              
-		return (false !== strpos($haystack, $needle))  ? true : false;    
-	}                                                                     
-
+		return (false !== stristr($haystack, $needle)) ? true : false;
+	} else {
+		return (false !== strpos($haystack, $needle)) ? true : false;
+	}
 }
-
 
 function strtil($string, $needle)
 {
@@ -1058,8 +1075,6 @@ function strtilfirst($string, $needle)
 	}
 }
 
-
-
 function strfrom($string, $needle)
 {
 	if (!csa($string, $needle)) {
@@ -1070,33 +1085,33 @@ function strfrom($string, $needle)
 
 function array_push_unique($array, $value)
 {
-	if(!$array)
+	if (!$array) {
 		$array = array();
-	foreach($array as $var) {
-		if ($var === $value)
-			return $array;
 	}
-	$array[] =  $value ;
+	foreach ($array as $var) {
+		if ($var === $value) {
+			return $array;
+		}
+	}
+	$array[] = $value;
 	return $array;
 }
 
 function array_remove($array, $element)
 {
 	$ret = null;
-	foreach($array as $value) {
-		if ($value !== $element)
-			$ret[]  = $value;
+	foreach ($array as $value) {
+		if ($value !== $element) {
+			$ret[] = $value;
+		}
 	}
 	return $ret;
 }
 
-
-
 function csb($haystack, $needle, $insensitive = 1)
-{
+{ # Char Search Begin
 	return char_search_beg($haystack, $needle, $insensitive);
 }
-
 
 function char_search_beg($haystack, $needle)
 {
@@ -1110,7 +1125,7 @@ function char_search_beg($haystack, $needle)
 }
 
 function cse($haystack, $needle, $insensitive = 1)
-{
+{ # Char Search End
 	return char_search_end($haystack, $needle, $insensitive);
 }
 
@@ -1139,15 +1154,13 @@ function array_search_bool($needle, $haystack)
 	return false;
 }
 
-
 function isLicensed($var)
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 
 	if ($var == 'lic_client') {
 		return true;
 	}
-
 
 	$lic = $login->getObject('license')->licensecom_b;
 	if (!isset($lic->$var)) {
@@ -1166,7 +1179,6 @@ function get_composite($class)
 {
 	return array(null, null, $class);
 
-
 	$list = explode("__", $class);
 
 	if (count($list) === 2) {
@@ -1176,16 +1188,15 @@ function get_composite($class)
 	return array($list[0], $list[1], $list[2]);
 }
 
-// Set unlicensed to Unlimited usage
 function setLicenseTodefault()
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	$license = $login->getObject('license');
 	$license->parent_clname = $login->getClName();
 	$lic = $license->licensecom_b;
-	$def = array("maindomain_num" => "Unlimited", "vps_num" => "Unlimited", "pserver_num" => "Unlimited", "client_num" => "Unlimited");
+	$def = array("maindomain_num" => "40", "vps_num" => 5, "pserver_num" => 10, "client_num" => "Unlimited");
 	$list = get_license_resource();
-	foreach($list as $l) {
+	foreach ($list as $l) {
 		$licv = "lic_$l";
 		$lic->$licv = $def[$l];
 	}
@@ -1195,14 +1206,13 @@ function setLicenseTodefault()
 
 function decodeAndStoreLicense($ip, $license_content)
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 
 	$license = $login->getObject('license');
 	$license->parent_clname = $login->getClName();
 	$lic = $license->licensecom_b;
 	$get = licenseDecrypt($license_content);
 	$license->text_license_content = $license_content;
-
 
 	if (!$get) {
 		throw new lxException("could_not_decrypt_license");
@@ -1211,18 +1221,14 @@ function decodeAndStoreLicense($ip, $license_content)
 	$ghtml->get_post_from_get($get, $path, $post);
 
 	if (!isset($post['maindomain_num'])) {
-		if (isset($post['domain_num'])) {
 		$post['maindomain_num'] = $post['domain_num'];
-			} else {
-		$post['maindomain_num'] = $post['domain_num'];
-		}
 	}
 
 	if ($sgbl->isDebug()) {
 		$post['maindomain_num'] = '1000';
 	}
 
-	foreach($post as $k => $v) {
+	foreach ($post as $k => $v) {
 		$var = "lic_" . $k;
 		$lic->$var = $v;
 	}
@@ -1231,7 +1237,7 @@ function decodeAndStoreLicense($ip, $license_content)
 
 	$prilist = $login->getQuotaVariableList();
 
-	foreach($prilist as $k => $v) {
+	foreach ($prilist as $k => $v) {
 		if (cse($k, "_flag")) {
 			$login->priv->$k = 'On';
 		} else if (cse($k, "_usage")) {
@@ -1241,13 +1247,11 @@ function decodeAndStoreLicense($ip, $license_content)
 		}
 	}
 
-
-
 	$login->priv->client_num = $post['client_num'];
 
 	if (isset($post['maindomain_num'])) {
 		$login->priv->maindomain_num = $post['maindomain_num'];
-	} 
+	}
 
 	if (isset($post['vps_num'])) {
 		$login->priv->vps_num = $post['vps_num'];
@@ -1263,7 +1267,7 @@ function decodeAndStoreLicense($ip, $license_content)
 
 function remove_dot_dot($list)
 {
-	foreach($list as $k => $v) {
+	foreach ($list as $k => $v) {
 		if ($v === "." || $v === "..") {
 			unset($list[$k]);
 		}
@@ -1273,13 +1277,12 @@ function remove_dot_dot($list)
 
 function lx_tmp_file($file)
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	$file = expand_real_root($file);
 	$n = preg_replace("+/+i", "_", $file);
 	return tempnam("$sgbl->__path_tmp/", "lxtmp_$n");
 	//return "/tmp/" . $n;
 }
-
 
 function lx_array_keys($list)
 {
@@ -1291,35 +1294,28 @@ function lx_array_keys($list)
 
 function array_filter_key($full, $need)
 {
-
 	if (!$need) {
 		return $full;
 	}
 
-	foreach($full as $key => $value) {
+	foreach ($full as $key => $value) {
 		if (array_search_bool($key, $need)) {
 			$ret[$key] = $value;
 		}
 	}
 	return $ret;
-
 }
-
-
 
 function gethtmllibversion()
 {
-
 }
-
 
 function isOn($var)
 {
-	return (($var === 'on') || ($var === 'On')) ? true :  false ;
-
+	return (($var === 'on') || ($var === 'On')) ? true : false;
 }
 
-// FUnction that is called to test whther the remote server is working fine or not. Used while adding.
+// Function that is called to test whther the remote server is working fine or not. Used while adding.
 function test_remote_func()
 {
 	return true;
@@ -1327,20 +1323,17 @@ function test_remote_func()
 
 function log_clicks($mess, $id = 1)
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	if (!if_demo()) {
 		return;
 	}
 	$ip = $gbl->c_session->ip_address;
 	$mess = trim($mess);
 	$file = "__path_program_root/log/clicks";
-	lfile_put_contents($file, "$id: $ip: " . @date("H:i:s M/d/Y") . ": $mess\n",FILE_APPEND );
+	lfile_put_contents($file, "$id: $ip: " . @date("H:i:s M/d/Y") . ": $mess\n", FILE_APPEND);
 }
 
-
-
-
-// Version Comparison Returns 1 if version1 is greater, and -1 if version2 is greater.
+# Version Comparison Returns 1 if version1 is greater, and -1 if version2 is greater.
 function version_cmp($version1, $version2)
 {
 	$l1 = explode(".", $version1);
@@ -1361,13 +1354,16 @@ function version_cmp($version1, $version2)
 
 function app_version_cmp($version1, $version2)
 {
-
 	$l1 = explode(".", $version1);
 	$l2 = explode(".", $version2);
 
 	for ($i = 0; $i < 4; $i++) {
-		if (!isset($l2[$i])) { $l2[$i] = 0; }
-		if (!isset($l1[$i])) { $l1[$i] = 0; }
+		if (!isset($l2[$i])) {
+			$l2[$i] = 0;
+		}
+		if (!isset($l1[$i])) {
+			$l1[$i] = 0;
+		}
 	}
 
 	//dprintr($l1);
@@ -1391,44 +1387,41 @@ function fput_content_with_lock($file, $string)
 	lfile_put_contents($file, $string);
 }
 
-
 function filter_object_list($list, $rule)
 {
-
 	$nlist = null;
-	foreach((array) $list as $o){
+	foreach ((array) $list as $o) {
 		if ($o->eeval($rule)) {
 			$nlist[$o->nname] = $o;
 		}
 	}
 	return $nlist;
-
 }
 
-function is_assoc_array($var) 
-{                                    
-	if (!is_array($var)) {                                          
-		return false;                                               
-	}                                                               
-	return array_keys($var) !== range(0,sizeof($var)-1);              
-}                                                                  
-
+function is_assoc_array($var)
+{
+	if (!is_array($var)) {
+		return false;
+	}
+	return array_keys($var) !== range(0, sizeof($var) - 1);
+}
 
 function get_namelist_from_objectlist($ol, $key = null, $val = null)
 {
-
 	if (!$ol) {
 		return;
 	}
+
 	$name = array();
 	if (!$key) {
 		$key = "nname";
 	}
 
-	if($val === null){ 
+	if ($val === null) {
 		$val = $key;
 	}
-	foreach($ol as $o) {
+
+	foreach ($ol as $o) {
 		if (!is_object($o)) {
 			debugBacktrace();
 		}
@@ -1439,48 +1432,41 @@ function get_namelist_from_objectlist($ol, $key = null, $val = null)
 
 function convert_to_associate($ar)
 {
-	foreach($ar as $k => $v) {
-		$ret[$v] = $v;
-	}
+	foreach ($ar as $k => $v)  $ret[$v] = $v;
 	return $ret;
 }
 
 function get_namelist_from_arraylist($ol, $key = null, $val = null)
 {
-
 	$name = array();
 	if (!$key) {
 		$key = "nname";
 	}
 
-	if($val === null){ 
+	if ($val === null) {
 		$val = $key;
 	}
-	foreach((array) $ol as $o) {
-		$name[$o[$key]] = $o[$val];
-	}
+
+	foreach ((array) $ol as $o) $name[$o[$key]] = $o[$val];
+
 	return $name;
 }
-
-
 
 function isQuotaGreaterThanOrEq($used, $priv)
 {
 	if (is_unlimited($priv)) {
 		return false;
 	}
-
 	if (is_unlimited($used)) {
 		return true;
 	}
-
-	if(isOn($priv)) {
+	if (isOn($priv)) {
 		return false;
 	}
 	if (isOn($used)) {
 		return true;
 	}
-	return ($used >= $priv) ? true: false;
+	return ($used >= $priv) ? true : false;
 }
 
 function isQuotaGreaterThan($used, $priv)
@@ -1488,39 +1474,36 @@ function isQuotaGreaterThan($used, $priv)
 	if (is_unlimited($priv)) {
 		return false;
 	}
-
 	if (is_unlimited($used)) {
 		return true;
 	}
-
-	if(isOn($priv)) {
+	if (isOn($priv)) {
 		return false;
 	}
 	if (isOn($used)) {
 		return true;
 	}
-	return ($used > $priv) ? true: false;
+	return ($used > $priv) ? true : false;
 }
 
 function is_unlimited($val)
 {
-	if (strtolower($val) === "unlimited" || strtolower($val) === 'na') {
+	if (strtolower($val) === 'unlimited' || strtolower($val) === 'na') {
 		return true;
 	}
 	return false;
 }
 
-
 function if_demo_throw()
 {
-	if (if_demo()) { throw new lxException ("demo", ''); }
+	if (if_demo()) {
+		throw new lxException ("demo", '');
+	}
 }
 
 function if_demo()
 {
 	global $gbl, $sgbl, $g_demo;
-
-
 	return $g_demo;
 }
 
@@ -1528,10 +1511,12 @@ function lx_phpdebug()
 {
 	global $gbl, $sgbl;
 
-	if ($sgbl->dbg <= 0)
+	if ($sgbl->dbg <= 0) {
 		return;
-	if (!lfile_exists("/tmp/.php_debug"))
+	}
+	if (!lfile_exists("/tmp/.php_debug")) {
 		return;
+	}
 
 	$fp = lfopen("/tmp/.php_debug", "r");
 	$s = fgets($fp, 1024);
@@ -1545,21 +1530,17 @@ function lx_phpdebug()
 	$ghtml->print_input("hidden", "debug_port", $out['debug_port']);
 	$ghtml->print_input("hidden", "debug_text_mode", "1");
 	$ghtml->print_input("hidden", "debug_no_cache", "1095197145");
-
 }
 
 function create_simpleObject($arglist)
 {
 	$obj = new Remote();
 
-	foreach($arglist as $k => $v) {
+	foreach ($arglist as $k => $v) {
 		$obj->$k = $v;
 	}
 	return $obj;
 }
-
-
-
 
 function lx_sync()
 {
@@ -1567,21 +1548,18 @@ function lx_sync()
 	$login->was();
 }
 
-
-
 function get_current_file()
 {
 	$n = basename(dirname($_SERVER['PHP_SELF']));
 	return $n;
 }
 
-
 function array_flatten($a, $pref = null)
 {
 	$ret = array();
 	foreach ($a as $i => $j) {
 		if (is_array($j)) {
-			$ret= array_merge($ret, array_flatten($j, "$pref$i"));
+			$ret = array_merge($ret, array_flatten($j, "$pref$i"));
 		} else {
 			$ret["$pref$i"] = $j;
 		}
@@ -1595,17 +1573,15 @@ function get_general_image_path($v = null)
 	return add_http_host("/img/general/$v");
 }
 
-/** 
-* @return void 
-* @param 
-* @param 
-* @desc  part of the getting-image-through-http (to enable caching) madness.
-*/ 
- 
+/**
+ * @return void
+ * @param
+ * @param
+ * @desc  part of the getting-image-through-http (to enable caching) madness.
+ */
 function add_http_host($elem)
 {
-
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	return $elem;
 
 	$host = $_SERVER['SERVER_NAME'];
@@ -1614,7 +1590,6 @@ function add_http_host($elem)
 	//$host = "https://" . $host . ":" .  "$port";
 	return $host . $elem;
 }
-
 
 function get_image_path($path = null)
 {
@@ -1625,27 +1600,21 @@ function get_image_path($path = null)
 	//Return path of the encrypted images in the deployment version.
 
 	return "/img/image/{$login->getSpecialObject('sp_specialplay')->icon_name}/$path";
-
 }
-
 
 function randomString($length)
 {
-	$randstr='';
-	$chars = array ('a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z');
-	for ($rand = 0; $rand <= $length; $rand++)
-	{
-		$random = rand(0, count($chars) -1);
+	$randstr = '';
+	$chars = array('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z');
+	for ($rand = 0; $rand <= $length; $rand++) {
+		$random = rand(0, count($chars) - 1);
 		$randstr .= $chars[$random];
 	}
 	return $randstr;
 }
 
-
-
 function DBG_GetBacktrace($traceArr)
 {
-
 	if ($sgbl->dbg < 0) {
 		return;
 	}
@@ -1655,94 +1624,96 @@ function DBG_GetBacktrace($traceArr)
 
 	$s = '<pre align=left>';
 	array_shift($traceArr);
-	$tabs = sizeof($traceArr)-1;
-	foreach($traceArr as $arr)
-	{
-		for ($i=0; $i < $tabs; $i++)
+	$tabs = sizeof($traceArr) - 1;
+	foreach ($traceArr as $arr) {
+		for ($i = 0; $i < $tabs; $i++) {
 			$s .= ' &nbsp; ';
+		}
 
 		$tabs -= 1;
 		$s .= '<font face="Courier New,Courier">';
-		if (isset($arr['class'])) $s .= $arr['class'].'.';
+		if (isset($arr['class'])) {
+			$s .= $arr['class'] . '.';
+		}
 		$args = array();
-		foreach((array) $arr['args'] as $v) {
-			if (is_null($v)) $args[] = 'null';
-			else if (is_array($v)) $args[] = 'Array['.sizeof($v).']';
-			else if (is_object($v)) $args[] = 'Object:'.get_class($v);
-			else if (is_bool($v)) $args[] = $v ? 'true' : 'false';
-			else {
-				$v = (string) @$v;
-				$str = htmlspecialchars(substr($v,0,$MAXSTRLEN));
-				if (strlen($v) > $MAXSTRLEN) $str .= '...';
-				$args[] = "\"".$str."\"";
+		foreach ((array) $arr['args'] as $v) {
+			if (is_null($v)) {
+				$args[] = 'null';
+			} else {
+				if (is_array($v)) {
+					$args[] = 'Array[' . sizeof($v) . ']';
+				} else {
+					if (is_object($v)) {
+						$args[] = 'Object:' . get_class($v);
+					} else {
+						if (is_bool($v)) {
+							$args[] = $v ? 'true' : 'false';
+						} else {
+							$v = (string) @$v;
+							$str = htmlspecialchars(substr($v, 0, $MAXSTRLEN));
+							if (strlen($v) > $MAXSTRLEN) $str .= '...';
+							$args[] = "\"" . $str . "\"";
+						}
+					}
+				}
 			}
 		}
-		$s .= $arr['function'].'('.implode(',
-		',$args).')</font>';
-		$Line = (isset($arr['line'])? $arr['line'] :
-		"unknown");
-		$File = (isset($arr['file'])? $arr['file'] :
-		"unknown");
+		$s .= $arr['function'] . '(' . implode(',
+        ', $args) . ')</font>';
+		$Line = (isset($arr['line']) ? $arr['line'] : "unknown");
+		$File = (isset($arr['file']) ? $arr['file'] : "unknown");
 		$s .= sprintf("<font color=#808080 size=-1> # line
-		%4d, file: <a href=\"file:/%s\">%s</a></font>",
-		$Line, $File, $File);
+        %4d, file: <a href=\"file:/%s\">%s</a></font>", $Line, $File, $File);
 		$s .= "\n";
 	}
 	$s .= '</pre>';
 	return $s;
 }
 
-
 function getInfo($b)
 {
-
 	if (is_object($b) && is_subclass_of($b, 'lxclass')) {
-		return  $b->get__table() . ':'. $b->nname;
+		return $b->get__table() . ':' . $b->nname;
 	} else {
 		return $b;
 	}
-
 }
 
 function backtrace_once()
 {
-
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	if ($sgbl->dbg < 2) {
 		return;
 	}
 
-
 	$v = debug_backtrace();
 	$count = 0;
 	$string = null;
-	foreach($v as $q) {
+	foreach ($v as $q) {
 		$count++;
 		if ($count === 1) {
 			continue;
 		}
 
-		if ($count > 2) {
-			break;
-		}
+		if ($count > 2) break;
 		if ($count === 2 && (basename($q['file']) === 'sqlite.php')) {
 			return null;
 			continue;
 		}
-		$string .= $q['file'] . ":" . $q['line'] . ": " . 	$q['function'] . '(';
-		if(isset($q['args'])) {
-			foreach($q['args'] as $a) {
+		$string .= $q['file'] . ":" . $q['line'] . ": " . $q['function'] . '(';
+		if (isset($q['args'])) {
+			foreach ($q['args'] as $a) {
 				if (is_array($a)) {
-					foreach($a as $b) {
+					foreach ($a as $b) {
 						if (is_array($b)) {
 							foreach ($b as $c) {
-								$string .= ', ' .  getInfo($c);
+								$string .= ', ' . getInfo($c);
 							}
 						} else {
 							$string .= ', ' . getInfo($b);
 						}
 					}
-				} else  {
+				} else {
 					$string .= $a;
 				}
 			}
@@ -1752,32 +1723,31 @@ function backtrace_once()
 
 	return $string;
 }
+
 function debugBacktrace($flag = false)
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	$string = null;
 
 	if ($sgbl->dbg < 2) {
 		return;
 	}
-
-
 	$v = debug_backtrace();
-	foreach($v as $q) {
-		$string .= $q['file'] . ":" . $q['line'] . ": " . 	$q['function'] . '(';
-		if(isset($q['args'])) {
-			foreach($q['args'] as $a) {
+	foreach ($v as $q) {
+		$string .= $q['file'] . ":" . $q['line'] . ": " . $q['function'] . '(';
+		if (isset($q['args'])) {
+			foreach ($q['args'] as $a) {
 				if (is_array($a)) {
-					foreach($a as $b) {
+					foreach ($a as $b) {
 						if (is_array($b)) {
 							foreach ($b as $c) {
-								$string .= ', ' .  getInfo($c);
+								$string .= ', ' . getInfo($c);
 							}
 						} else {
 							$string .= ', ' . getInfo($b);
 						}
 					}
-				} else  {
+				} else {
 					if (is_string($a)) {
 						$string .= $a;
 					}
@@ -1799,15 +1769,16 @@ function lx_strip_tags($str)
 
 	$nstr = preg_replace("/\s+/", " ", $nstr);
 	return $nstr;
-
 }
 
-class Language_Mes {
+class Language_Mes
+{
+
 }
 
 function get_language()
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	if (is_object($login) && isset($login->getSpecialObject('sp_specialplay')->language)) {
 		$lan = $login->getSpecialObject('sp_specialplay')->language;
 	} else {
@@ -1819,59 +1790,57 @@ function get_language()
 function get_charset()
 {
 	$lang = get_language();
-	$charset = @ lfile_get_contents("lang/$lan/charset");
+	$charset = @ lfile_get_contents("lang/$lang/charset");
 	$charset = trim($charset);
 	return $charset;
 }
 
 function print_meta_lan()
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	$lan = get_language();
 	$charset = @ lfile_get_contents("lang/$lan/charset");
 	$charset = trim($charset);
 	print("<head>");
 	if ($charset) {
 		print("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=$charset\"  />");
+	} else {
+		print("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"  />");
 	}
 }
 
 function init_language()
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	global $g_language_mes, $g_language_desc;
 
-	$lan = get_language();
+	$language = get_language();
 
-	if ($lan === 'en') {
-		include_once "htmllib/lib/messagelib.php";
-		include_once "htmllib/lib/helplib.php";
-		include_once "htmllib/lib/helpvarlib.php";
-		include_once "lib/messagelib.php";
-		include_once "htmllib/lib/langfunctionlib.php";
-		include_once "htmllib/lib/langkeywordlib.php";
-	} else {
-
-		if (lxfile_exists("lang/$lan/messagelib.php")) {
-			include_once "lang/$lan/messagelib.php";
+		if (lxfile_exists("lang/$language/messagelib.php")) {
+			include_once("lang/$language/messagelib.php");
 		} else {
-			include_once "htmllib/lib/messagelib.php";
+			include_once("lang/en/messagelib.php");
 		}
 
-		if (lxfile_exists("lang/$lan/langfunctionlib.php")) {
-			include_once "lang/$lan/langfunctionlib.php";
+		if (lxfile_exists("lang/$language/langfunctionlib.php")) {
+			include_once("lang/$language/langfunctionlib.php");
 		} else {
-			include_once "htmllib/lib/langfunctionlib.php";
+			include_once("lang/en/langfunctionlib.php");
 		}
 
-		if (lxfile_exists("lang/$lan/langkeywordlib.php")) {
-			include_once "lang/$lan/langkeywordlib.php";
+		if (lxfile_exists("lang/$language/langkeywordlib.php")) {
+			include_once("lang/$language/langkeywordlib.php");
 		} else {
-			include_once "htmllib/lib/langkeywordlib.php";
+			include_once("lang/en/langkeywordlib.php");
 		}
-	}
 
-	include_once "htmllib/lib/commonmessagelib.php";
+		if (lxfile_exists("lang/$language/desclib.php")) {
+			include_once("lang/$language/desclib.php");
+		} else {
+			include_once("lang/en/desclib.php");
+		}
+
+	include_once("htmllib/lib/commonmessagelib.php");
 
 	$g_language_mes = new Language_Mes();
 	$g_language_mes->__information = $__information;
@@ -1881,22 +1850,14 @@ function init_language()
 	$g_language_mes->__helpvar = $__helpvar;
 	$g_language_mes->__commonhelp = $g_commonhelp;
 
-	if ($lan === 'en')  {
-		//return;
-	}
-	include_once "lang/$lan/desclib.php";
 	$g_language_desc = new Remote();
 	$g_language_desc->__description = $__description;
-	//$g_language_desc->__acdescription = $__acdescription;
-
 
 }
 
-
 function lx_error_handler($errno, $errstr, $file, $line)
 {
-
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	global $last_error;
 
 	$last_error = $errstr;
@@ -1904,44 +1865,32 @@ function lx_error_handler($errno, $errstr, $file, $line)
 	if ($sgbl->dbg < 0) {
 		return;
 	}
+
 	if (error_reporting() === 0) {
 		return;
 	}
 
-	//debugBacktrace();
-
-
 	static $error = "";
-	//$pos = "$errstr in $file on line $line ";
-	if (windowsOs()) {
-		$file = str_replace('\\', "/", $file);
-		preg_match("/(.):(.*)/i",  $file, $matches);
-		$file = "/dev/fs/" . strtoupper($matches[1]) . "/$matches[2]";
-	}
 	$pos = "$file:$line: $errstr";
-
 	$error .= $pos . "\n";
-
-	//debugBacktrace();
-
 	lfile_put_contents($sgbl->__var_error_file, $error);
-	dprint(" <font color=red> <b> Notice : $errstr in  $file at $line </b> </font> <br> \n", 1);
 
-	
+	dprint("\n### PHP Error detected\n");
+	dprint("### Notice: $errstr\n");
+        dprint("### File:$file\n");
+        dprint("### Line number: $line\n");
+	dprint("### End PHP Error information\n\n");
 }
 
-/** 
-* @return void 
-* @param 
-* @param 
-* @desc Truly random and insane way to encrypt the image/form names so that hackers won't easily understand teh program structure, (which is clearly visible in these names...)
-*/ 
- 
-
+/**
+ * @return void
+ * @param
+ * @param
+ * @desc Truly random and insane way to encrypt the image/form names so that hackers won't easily understand teh program structure, (which is clearly visible in these names...)
+ */
 function createEncName($name)
 {
-	global $gbl ;
-
+	global $gbl;
 
 	return $name;
 
@@ -1964,20 +1913,17 @@ function createEncName($name)
 
 function check_password($unenc, $enc)
 {
-
-
 	//Old Stuff Not reached
 	if (crypt($unenc, $enc) === $enc) {
 		return true;
 	}
 
 	return false;
-
 }
 
 function lx_exception_handler($e)
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 
 	print("Notice : The resource you have requested doesn't exist. The server returned the error message: <br> ");
 
@@ -1989,24 +1935,19 @@ function lx_exception_handler($e)
 	}
 	$tr = $e->getTrace();
 	$trace = "";
-	foreach($tr as $a) {
-		$trace .= $a["file"] . ":" . $a["line"] . ":" ; 
+	foreach ($tr as $a) {
+		$trace .= $a["file"] . ":" . $a["line"] . ":";
 		if (isset($a["class"])) {
 			$trace .= $a["class"] . ":";
 		}
-		$trace .= $a["function"] . "("  ;
-		if (isset($a["args"])) {
-			//$trace .= implode(",", $a['args']);
-		}
+		$trace .= $a["function"] . "(";
 		$trace .= ")\n";
 	}
 	lfile_put_contents($sgbl->__var_error_file, $trace);
 }
 
-
 function check_raw_password($class, $client, $pass)
 {
-
 	//return true;
 
 	if (!$class || !$client || !$pass) {
@@ -2021,26 +1962,22 @@ function check_raw_password($class, $client, $pass)
 		return true;
 	}
 	return false;
-
 	//$rawdb->close();
-
 }
 
-/** 
-* @return void 
-* @param 
-* @param 
-* @desc  Checks if the client is disabled and exits immedeiately showing a message.
-*/ 
- 
+/**
+ * @return void
+ * @param
+ * @param
+ * @desc  Checks if the client is disabled and exits immedeiately showing a message.
+ */
 function check_if_disabled_and_exit()
 {
-	global $gbl, $sgbl, $login, $ghtml; 
-
+	global $gbl, $sgbl, $login, $ghtml;
 
 	$contact = "administrator";
 
-	if(!$login->isOn('cpstatus')) {
+	if (!$login->isOn('cpstatus')) {
 		Utmp::updateUtmp($gbl->c_session->nname, $login, 'disabled');
 		$ghtml->print_css_source("/htmllib/css/common.css");
 
@@ -2057,18 +1994,18 @@ function check_if_disabled_and_exit()
 		$gbl->c_session->was();
 		exit(0);
 	}
-
 }
 
 function delete_expired_ssessions()
 {
-
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 
 	$s_l = $login->getList("ssessionlist");
-	
-	foreach($s_l as $s) {
-		if (!is_object($s)) { continue; }
+
+	foreach ($s_l as $s) {
+		if (!is_object($s)) {
+			continue;
+		}
 		$timeout = $s->last_access + $login->getSpecialObject('sp_specialplay')->ssession_timeout;
 		dprint($s->nname);
 		if ($timeout < time()) {
@@ -2097,22 +2034,21 @@ function createTreeObject($name, $img, $imgstr, $url, $open, $help, $alt)
 	$tobj->alt = $alt;
 	return $tobj;
 }
- 
 
-/** 
-* @return void 
-* @param 
-* @param 
-* @desc A generic function, that can be used by all programs. Does all the basic login stuff. 
-*/ 
- 
-
-
+/**
+ * @return void
+ * @param
+ * @param
+ * @desc A generic function, that can be used by all programs. Does all the basic login stuff.
+ */
 function initProgramlib($ctype = null)
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 
-	if ($sgbl->is_this_slave()) { print("Slave Server\n"); exit; }
+	if ($sgbl->is_this_slave()) {
+		print("This is a Slave Server. Operate it at the Master server.\n");
+		exit;
+	}
 	static $var = 0;
 	$var++;
 
@@ -2124,7 +2060,7 @@ function initProgramlib($ctype = null)
 
 	//setcookie("XDEBUG_SESSION", "sess");
 
-	if ($var >= 2 ) {
+	if ($var >= 2) {
 		dprint("initProgramlib called twice \n <br> ");
 	}
 
@@ -2144,8 +2080,6 @@ function initProgramlib($ctype = null)
 		$login->get();
 		return;
 	}
-
-
 
 	$sessobj = null;
 	if ($ghtml->frm_consumedlogin === 'true') {
@@ -2184,7 +2118,7 @@ function initProgramlib($ctype = null)
 			$ssl_param = $ssl['ssl_param'];
 			$encrypted_string = base64_decode($ssl['encrypted_string']);
 			if (!$string || !checkPublicKey($string, $encrypted_string)) {
-				print("Ssl Failed <br> \n");
+				print("SSL Connection Failed <br> \n");
 				exit;
 			}
 			$class = 'client';
@@ -2201,30 +2135,27 @@ function initProgramlib($ctype = null)
 	//print_time('login_get', "Login Get");
 	//dprintr($login);
 
-
-	$gbl->client = $login->nname;
-	$gbl->client_ttype = $login->cttype;
-
+   //avoid some php warnings
+   if (isset($login)) {
+      $gbl->client = $login->nname;
+      $gbl->client_ttype = $login->cttype;
+   }
 
 	//dprintr($login->hpfilter);
 
-
-
 	// This means the session object got created fresh.
 	if (!$sessobj || $sessobj->dbaction === 'add') {
-		dprint("no session <br> $session_id ");
+		dprint("no session id");
 		clear_all_cookie();
 		$ghtml->print_redirect_self("/login/");
 	}
 
-
 	$gbl->c_session = $sessobj;
-
 
 	if ($login->getClName() !== $sessobj->parent_clname) {
 		dprint_r($login->ssession_l);
 		dprint(" <br> $session_id <br> <br> <br> ");
-		print("session error client Login Again");
+		print("Session error! Login again.");
 		clear_all_cookie();
 		$ghtml->print_redirect_self("/login/?frm_emessage=sessionname_not_client");
 	}
@@ -2233,7 +2164,7 @@ function initProgramlib($ctype = null)
 
 	if (!$gen->isOn('disableipcheck') && $_SERVER['REMOTE_ADDR'] != $sessobj->ip_address) {
 		$hostname = gethostbyaddr($_SERVER['REMOTE_ADDR']);
-		log_message("An attempt to hack from $hostname (". $_SERVER['REMOTE_ADDR'] . ") with sess $sessobj->nname, session ip: $sessobj->ip_address");
+		log_message("An attempt to hack from $hostname (" . $_SERVER['REMOTE_ADDR'] . ") with sess $sessobj->nname, session ip: $sessobj->ip_address");
 
 		if ($gen->isOn('disableipcheck')) {
 		} else {
@@ -2253,7 +2184,7 @@ function initProgramlib($ctype = null)
 		$login->setUpdateSubaction();
 	}
 
-	$timeout  =  $sessobj->last_access + $login->getSpecialObject('sp_specialplay')->ssession_timeout;
+	$timeout = $sessobj->last_access + $login->getSpecialObject('sp_specialplay')->ssession_timeout;
 	$sessobj->timeout = $timeout;
 	//$timeout  =  $sessobj->last_access + 4;
 	$sessobj->last_access = time();
@@ -2264,7 +2195,6 @@ function initProgramlib($ctype = null)
 		$aux->get();
 		$login->__auxiliary_object = $aux;
 	}
-
 
 	if (time() > $timeout) {
 		$sessobj->delete();
@@ -2282,15 +2212,15 @@ function initProgramlib($ctype = null)
 
 function clear_all_cookie()
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	$progname = $sgbl->__var_program_name;
 
 	$search = $progname;
 	if ($ghtml->frm_consumedlogin === 'true') {
 		$search .= "-consumed";
-	} 
+	}
 
-	foreach($_COOKIE as $k => $v) {
+	foreach ($_COOKIE as $k => $v) {
 		if (csb($k, $search)) {
 			setcookie($k, "", time() - 360000000);
 		}
@@ -2310,17 +2240,16 @@ function checkPublicKey($string, $encrypted_string)
 	return false;
 }
 
-
 function initSession($object, $ssl_param, $consuming_parent)
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	$progname = $sgbl->__var_program_name;
 
 	$session = randomString(50);
 
 	//clear_all_cookie();
 	// Making cookie persistent, otherwise IE will not pass it to new windows. Needed in the file selector. Set the expiration to 10 years in the future. Needed for brain damaged ie, which cannot recognize server time.
-	$cookietime = time() + 24 * 60 * 60 * 365 * 80 ;
+	$cookietime = time() + 24 * 60 * 60 * 365 * 80;
 	//$cookietime = 0;
 	header('P3P: CP="CAO PSA OUR"');
 
@@ -2329,7 +2258,7 @@ function initSession($object, $ssl_param, $consuming_parent)
 	if ($consuming_parent) {
 		$ckstart .= "-consumed";
 	}
-		
+
 	if ($object->isAuxiliary()) {
 		$name = $object->__auxiliary_object->nname;
 		$class = $object->__auxiliary_object->getClass();
@@ -2340,15 +2269,15 @@ function initSession($object, $ssl_param, $consuming_parent)
 
 	setcookie("$ckstart-clientname", $name, $cookietime, '/');
 	setcookie("$ckstart-classname", $class, $cookietime, '/');
-	setcookie("$ckstart-session-id", $session, $cookietime, '/');	
+	setcookie("$ckstart-session-id", $session, $cookietime, '/');
 
 	dprint("Set cookies\n");
 
 	$hostname = $_SERVER['REMOTE_ADDR'];
 
-	$sessobj = new Ssession(null, null, $session); 
+	$sessobj = new Ssession(null, null, $session);
 	$sessa['nname'] = $session;
-	$sessa['ip_address'] =$_SERVER['REMOTE_ADDR'];
+	$sessa['ip_address'] = $_SERVER['REMOTE_ADDR'];
 	$sessa['cttype'] = $object->getLoginType();
 	$sessa['hostname'] = $hostname;
 	$sessa['tsessionid'] = randomString(30);
@@ -2360,9 +2289,6 @@ function initSession($object, $ssl_param, $consuming_parent)
 	$sessa['consuming_parent'] = $consuming_parent;
 	$sessa['auxiliary_id'] = $object->getAuxiliaryId();
 	$sessa['ssl_param'] = $ssl_param;
-
-
-
 
 	if (intval($object->getSpecialObject('sp_specialplay')->ssession_timeout) <= 100) {
 		$timeout = 100;
@@ -2376,15 +2302,16 @@ function initSession($object, $ssl_param, $consuming_parent)
 	return $sessobj;
 }
 
-
 function do_login($classname, $cgi_clientname, $ssl_param = null)
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	$url = "/display.php?frm_action=show";
 
 	$progname = $sgbl->__var_program_name;
 
-	if (!$classname) $classname = 'client';
+	if (!$classname) {
+		$classname = 'client';
+	}
 
 	$sessobj = initSession($login, $ssl_param, null);
 
@@ -2401,10 +2328,9 @@ function do_login($classname, $cgi_clientname, $ssl_param = null)
 	delete_expired_ssessions();
 }
 
-
 function ifSplashScreen()
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	if (array_search_bool(strtolower($ghtml->frm_action), array('show', 'updateform', 'addform', 'continue'))) {
 		return true;
 	}
@@ -2413,7 +2339,7 @@ function ifSplashScreen()
 
 function isModifyAction()
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	if (array_search_bool(strtolower($ghtml->frm_action), array('show', 'updateform', 'addform', 'continue', 'list')) || array_search_bool($ghtml->frm_subaction, array("download"))) {
 		return false;
 	}
@@ -2427,9 +2353,7 @@ function lget_class($object)
 
 function exit_programlib()
 {
-
-	global $gbl, $sgbl, $login, $ghtml; 
-
+	global $gbl, $sgbl, $login, $ghtml;
 
 	$refer = $gbl->getSessionV("lx_http_referer");
 	$current_query_string = $ghtml->get_get_from_post(array('frm_ev_list'), $ghtml->__http_vars);
@@ -2445,12 +2369,8 @@ function exit_programlib()
 	}
 
 	$gbl->setHistory();
-
 	$gbl->c_session->was();
-
-
 }
-
 
 function getAllclients($cttype = null)
 {
@@ -2459,49 +2379,26 @@ function getAllclients($cttype = null)
 	$list = $db->getTable(array('nname', 'cttype'));
 
 	return $list;
-
 }
+
 function delete_login()
 {
-	global $gbl, $sgbl, $login, $ghtml; 
-
+	global $gbl, $sgbl, $login, $ghtml;
 	$class = lget_class($login);
-
 }
 
-
-/** 
-* @return void 
-* @param 
-* @param 
-* @desc  Saves teh whole login info. Login is 'Was'ed; (Write and synced). Any exception is caught and the script is returned to the previous web page, with the error message string returned by the exception. Works EXceptionally well.. :-)
-*/ 
-
+/**
+ * @return void
+ * @param
+ * @param
+ * @desc  Saves teh whole login info. Login is 'Was'ed; (Write and synced). Any exception is caught and the script is returned to the previous web page, with the error message string returned by the exception. Works EXceptionally well.. :-)
+ */
 function save_login()
 {
-	global $gbl, $sgbl, $login, $ghtml; 
-	// NO saved..
+	// Function removed by Ligesh earlier. (was saving login info)
+	// Deleted the code after the first return.
 	return;
-
-	// Never ever save login... That was a very wrong idea actually, since the database will cache things better. And always a stateless system is more efficient, and easier to code.
-	return;
-
-	if ($login->__view === "guest") {
-		return;
-	}
-
-
- 	if($login->__force != "normal") {
-		return;
-	}
-
-	$class = lget_class($login);
-
-
-	//lfile_put_contents("__path_program_etc/$class:$login->nname", serialize($login));
-
 }
-
 
 function isLocalhost($var)
 {
@@ -2513,7 +2410,7 @@ function isLocalhost($var)
 
 function get_savedlogin($classname, $clientname)
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 
 	$path = "$sgbl->__path_program_etc/$classname:$clientname";
 
@@ -2528,7 +2425,6 @@ function get_savedlogin($classname, $clientname)
 		return 1;
 	}
 	return 0;
-
 }
 
 function get_login($classname, $clientname)
@@ -2555,36 +2451,35 @@ function get_login($classname, $clientname)
 	return $ret;
 }
 
-
-function create_name($word) 
+function create_name($word)
 {
 	$word = str_replace("_", $word);
 	return $word;
 }
 
-
-
-/** 
-* @return void 
-* @param 
-* @param 
-* @desc  Remove unsavoury characters from a string so that it can be used as a variable.
-*/ 
- 
+/**
+ * @return void
+ * @param
+ * @param
+ * @desc  Remove unsavoury characters from a string so that it can be used as a variable.
+ */
 function fix_nname_to_be_variable($var)
 {
-	if (!$var) { return; }
+	if (!$var) {
+		return;
+	}
 	if (is_numeric($var[0])) {
 		$var[0] = 'd';
 	}
 	$var = strtolower($var);
 	return preg_replace("/[-\W ]/i", "_", $var);
-
 }
 
 function fix_nname_to_be_variable_without_lowercase($var)
 {
-	if (!$var) { return; }
+	if (!$var) {
+		return;
+	}
 	if (is_numeric($var[0])) {
 		$var[0] = 'd';
 	}
@@ -2594,7 +2489,7 @@ function fix_nname_to_be_variable_without_lowercase($var)
 function get_description($stuff)
 {
 	if (is_object($stuff)) {
-		$class= lget_class($stuff);
+		$class = lget_class($stuff);
 	} else {
 		$class = $stuff;
 	}
@@ -2605,11 +2500,10 @@ function get_description($stuff)
 
 function get_classvar_description($class, $var = null)
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 
 	global $g_language_desc;
 	global $g_language_mes;
-
 
 	//$var = fix_nname_to_be_variable($var);
 	if (csb($var, "__")) {
@@ -2626,17 +2520,12 @@ function get_classvar_description($class, $var = null)
 	$rvar = strfrom($rvar, "__acdesc_");
 
 	$class = strtolower($class);
-
 	$ret = get_real_class_variable($class, $dvar);
-
-
 
 	if (!$ret) {
 		return null;
 	}
-
 	$ret['help'] = $ret[2];
-
 	if (cse($dvar, "_o") || cse($dvar, "_l")) {
 		return $ret;
 	}
@@ -2645,10 +2534,10 @@ function get_classvar_description($class, $var = null)
 	}
 
 	/*
-	if ($login->getSpecialObject('sp_specialplay')->isCoreLanguage()) {
-		return $ret;
-	}
-*/
+	 if ($login->getSpecialObject('sp_specialplay')->isCoreLanguage()) {
+		 return $ret;
+	 }
+ */
 
 	$k = trim($ret[2], "_\n ");
 	if (isset($g_language_desc->__description[$k])) {
@@ -2661,23 +2550,16 @@ function get_classvar_description($class, $var = null)
 			$ret['help'] = $ret[2];
 		}
 	}
-
 	return $ret;
-
-	
-	
-
 }
 
 function get_var_help($var)
 {
 	global $g_language_mes, $g_language_desc;
 	$cvar = strtolower($var);
-
 	if (isset($g_language_mes->__help[$cvar])) {
 		return $g_language_mes->__help[$cvar];
 	}
-
 	return $var;
 }
 
@@ -2695,9 +2577,8 @@ function get_real_class_variable($class, $var)
 
 	$variable = "$rclass::\$" . $var;
 	return eval(" if (isset($variable)) { return $variable ; }  ");
-
-
 }
+
 function get_class_variable($class, $var)
 {
 	//list($iclass, $mclass, $rclass) = get_composite($class);
@@ -2706,20 +2587,17 @@ function get_class_variable($class, $var)
 	$var = fix_nname_to_be_variable($var);
 	$class = ucfirst($class);
 	/*
-	if (csa($class, '-')) {
-		debugBacktrace();
-		exit;
-	}
-*/
+	 if (csa($class, '-')) {
+		 debugBacktrace();
+		 exit;
+	 }
+ */
 
 	$variable = "$class::\$" . $var;
 	return eval(" if (isset($variable)) { return $variable ; }  ");
-
-
 }
 
-
-function set_class_variable($class, $var, $val) 
+function set_class_variable($class, $var, $val)
 {
 	$var = fix_nname_to_be_variable($var);
 	$class = ucfirst($class);
@@ -2727,32 +2605,28 @@ function set_class_variable($class, $var, $val)
 	return eval(" $variable = \$val ; ");
 }
 
-
 function createZeroString($n)
 {
 	$string = "";
-	for($i = 0; $i < $n ; $i++) {
+	for ($i = 0; $i < $n; $i++) {
 		$string .= "0";
 	}
 	return $string;
 }
 
-
-/** 
-* @return void 
-* @param 
-* @param 
-* @desc  Execs a method inside a class. Passes all the variables to it. See the use of 2 evals.. Check documentation for lx_redefine_func;
-*/ 
- 
+/**
+ * @return void
+ * @param
+ * @param
+ * @desc  Execs a method inside a class. Passes all the variables to it. See the use of 2 evals.. Check documentation for lx_redefine_func;
+ */
 function exec_class_method($class, $func)
 {
-
 	global $gbl, $sgbl, $login, $ghtml;
 
 	//list($iclass, $mclass, $rclass) = get_composite($class);
 	$rclass = $class;
-	
+
 	$class = strtolower($class);
 
 	//Arg getting string is a function that needs $start to be set.
@@ -2760,16 +2634,18 @@ function exec_class_method($class, $func)
 
 	eval($sgbl->arg_getting_string);
 
+	// workaround for the following php bug:
+	//   http://bugs.php.net/bug.php?id=47948
+	//   http://bugs.php.net/bug.php?id=51329
+	class_exists($class);
+	// ---
 	return call_user_func_array(array($class, $func), $arglist);
 }
-
-
 
 function lxgettimewithoutyear($time)
 {
 	$curd = @ getdate(time());
 	$date = @ getdate($time);
-
 
 	//$month = ($date['month'] === $curd['month'])? "this Month": $date['month'];
 	$month = substr($date['month'], 0, 3);
@@ -2778,14 +2654,12 @@ function lxgettimewithoutyear($time)
 		$sess = "pm";
 		//$hour = $date['hours'] - 12;
 		$hour = $date['hours'];
-	}
-	else  {
+	} else {
 		$sess = "am";
 		$hour = $date['hours'];
 	}
 
-
- 	$minutes = $date['minutes'];
+	$minutes = $date['minutes'];
 
 	if ($minutes < 10) {
 		$minutes = "0" . $minutes;
@@ -2801,8 +2675,7 @@ function lxgettime($time)
 	$curd = @ getdate(time());
 	$date = @ getdate($time);
 
-
-	$year = ($date['year'] === $curd['year'])? "": $date['year'];
+	$year = ($date['year'] === $curd['year']) ? "" : $date['year'];
 	//$month = ($date['month'] === $curd['month'])? "this Month": $date['month'];
 	$month = substr($date['month'], 0, 3);
 
@@ -2810,24 +2683,21 @@ function lxgettime($time)
 		$sess = "pm";
 		//$hour = $date['hours'] - 12;
 		$hour = $date['hours'];
-	}
-	else  {
+	} else {
 		$sess = "am";
 		$hour = $date['hours'];
 	}
 
-
- 	$minutes = $date['minutes'];
+	$minutes = $date['minutes'];
 
 	if ($minutes < 10) {
 		$minutes = "0" . $minutes;
 	}
 
-	$string = $hour . ":" . $minutes . " " . $date['mday'] . " " . $month. " " . $year;
+	$string = $hour . ":" . $minutes . " " . $date['mday'] . " " . $month . " " . $year;
 
 	return $string;
 }
-
 
 function if_search_continue($obj)
 {
@@ -2838,8 +2708,6 @@ function if_search_continue($obj)
 		return 0;
 	}
 }
-
-
 
 function add_select_one($list)
 {
@@ -2866,29 +2734,26 @@ function fix_disabled($value, $disabled_val)
 
 function array_remove_assoc(&$array, $element)
 {
-	foreach($array as $key => $value) {
+	foreach ($array as $key => $value) {
 		if ($value === $element)
 			unset($array[$key]);
 	}
 }
 
 function array_remove_object($objectlist, $variable, $value)
-{   
-	
-	foreach($objectlist as $object) {
-		if ($object->$variable != $value ) {
-			$ret[$object->nname] =  $object;
+{
+	foreach ($objectlist as $object) {
+		if ($object->$variable != $value) {
+			$ret[$object->nname] = $object;
 		}
 	}
 	return $ret;
 }
 
-
-
 function add_superadmin($pass)
 {
-	global $gbl, $sgbl, $login, $ghtml; 
-		
+	global $gbl, $sgbl, $login, $ghtml;
+
 	$client = new SuperClient(null, null, 'superadmin');
 	$client->initThisDef();
 
@@ -2897,8 +2762,8 @@ function add_superadmin($pass)
 		$res['password'] = crypt($pass);
 		$res['cttype'] = 'superadmin';
 		$res['cpstatus'] = 'on';
-		if(if_demo()){
-			$res['email'] = "admin@lxcenter.org";
+		if (if_demo()) {
+			$res['email'] = "admin@example.org";
 		}
 		$client->create($res);
 		$client->write();
@@ -2907,8 +2772,8 @@ function add_superadmin($pass)
 
 function add_slave($pass)
 {
-	global $gbl, $sgbl, $login, $ghtml; 
-		
+	global $gbl, $sgbl, $login, $ghtml;
+
 	$client = new Slave(null, null, 'slave');
 	$client->initThisDef();
 
@@ -2916,8 +2781,8 @@ function add_slave($pass)
 	if (!$ddb->existInTable("nname", 'slave')) {
 		$res['password'] = $pass;
 		$res['cttype'] = 'slave';
-		if(if_demo()){
-			$res['email'] = "admin@lxcenter.org";
+		if (if_demo()) {
+			$res['email'] = "admin@example.org";
 		}
 		$client->create($res);
 		$client->write();
@@ -2926,26 +2791,23 @@ function add_slave($pass)
 
 function init_supernode($pass)
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 
 	sql_main();
 	add_superadmin($pass);
 }
 
-
 function init_slave($pass)
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	$rm = new Remote();
 	$rm->password = crypt($pass);
 	lfile_put_contents('__path_slave_db', serialize($rm));
 }
 
-
-
 function lx_socket_read($socket)
 {
-	//$res=socket_recv($MsgSock,$buffer,1024,0);            
+	//$res=socket_recv($MsgSock,$buffer,1024,0);
 }
 
 function pad_to_length($var, $len)
@@ -2968,11 +2830,9 @@ function remote_http_exec($server, $port, $rmt)
 	return $res->ddata;
 }
 
-
-
 function send_to_some_http_server($raddress, $socket_type, $port, $var)
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 
 	print_time('server');
 
@@ -2988,22 +2848,18 @@ function send_to_some_http_server($raddress, $socket_type, $port, $var)
 	return $totalout;
 }
 
-
-
 function check_remote_pass($user, $pass)
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	return check_password($pass, $login->password);
 }
-
 
 function lfile($arg)
 {
 	return lx_redefine_func("file", $arg);
 }
 
-
-function getNthToken($string,  $num, $delim = ':')
+function getNthToken($string, $num, $delim = ':')
 {
 	if (csa($string, $delim)) {
 		$_tlist = explode($delim, $string);
@@ -3012,23 +2868,19 @@ function getNthToken($string,  $num, $delim = ':')
 	return $string;
 }
 
-
-
-
-/** 
-* @return void 
-* @param unknown  
-* @param unknown  
-* @desc Recurses a dir tree and execs the '$func' on all the files AND the directories.
-*/ 
- 
-
+/**
+ * @return void
+ * @param unknown
+ * @param unknown
+ * @desc Recurses a dir tree and execs the '$func' on all the files AND the directories.
+ */
 function recurse_dir($dir, $func, $arglist = null)
 {
-
 	$list = lscandir($dir);
-	if (!$list) return;
-	foreach($list as $file) {
+	if (!$list) {
+		return;
+	}
+	foreach ($list as $file) {
 		if ($file === "." || $file === "..") {
 			continue;
 		}
@@ -3038,7 +2890,7 @@ function recurse_dir($dir, $func, $arglist = null)
 		}
 		/// After a successfuul recursion, you have to call the $func on the directory itself. So $func is called whether $path is both directory OR a file.
 		$narglist[] = $path;
-		foreach((array) $arglist as $a) {
+		foreach ((array) $arglist as $a) {
 			$narglist[] = $a;
 		}
 		call_user_func_array($func, $narglist);
@@ -3047,10 +2899,11 @@ function recurse_dir($dir, $func, $arglist = null)
 
 function do_recurse_dir($dir, $func)
 {
-
 	$list = lscandir($dir);
-	if (!$list) return;
-	foreach($list as $file) {
+	if (!$list) {
+		return;
+	}
+	foreach ($list as $file) {
 		if ($file === "." || $file === "..") {
 			continue;
 		}
@@ -3065,7 +2918,7 @@ function do_recurse_dir($dir, $func)
 function getFromAny($list, $class, $name)
 {
 	$v = null;
-	foreach($list as $ob) {
+	foreach ($list as $ob) {
 		if (!$ob) {
 			continue;
 		}
@@ -3076,32 +2929,27 @@ function getFromAny($list, $class, $name)
 		}
 	}
 	return $v;
-
 }
-
 
 function arrayGetFirstObject($list)
 {
-	foreach($list as $k => $v) {
-		break;
-	}
+	foreach ($list as $k => $v) break;
 	return $list[$k];
 }
 
 function array_get_object($objectlist, $variable, $value)
 {
-	foreach($objectlist as $object) {
-		if ($object->$variable === $value ) {
+	foreach ($objectlist as $object)
+		if ($object->$variable === $value) {
 			return $object;
 		}
-	}
 
 	return NULL;
 }
 
 function getBasicServiceList()
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	$serv[] = $sgbl->__var_programname_web;
 	$descr[$sgbl->__var_programname_web] = "Web Server";
 	$serv[] = $sgbl->__var_programname_dns;
@@ -3109,7 +2957,6 @@ function getBasicServiceList()
 	$serv[] = "lxmail";
 	$descr['lxmail'] = "Mail Server";
 	return array($serv, $descr);
-
 }
 
 function getDbvariable($listvar, $mainvar)
@@ -3128,25 +2975,26 @@ function getDbvariable($listvar, $mainvar)
 	}
 }
 
-
 function check_file_if_owned_by($file, $user)
 {
-	if (!lxfile_exists($file)) { return true; }
+	if (!lxfile_exists($file)) {
+		return true;
+	}
 
 	if (csa($user, ":")) {
 		$ruser = strtil($user, ":");
 	} else {
 		$ruser = $user;
 	}
-	$stat = lxfile_stat($path, false);
+	$stat = lxfile_stat($file, false);
 	$uid = $stat['uid'];
 	$name = os_get_user_from_uid($uid);
-	if ($name === $ruser) { return true; }
+	if ($name === $ruser) {
+		return true;
+	}
 	log_log("file_check", "$file not owned by $ruser");
 	return false;
-
 }
-
 
 function critical_change_db_pass()
 {
@@ -3158,9 +3006,10 @@ function critical_change_db_pass()
 		}
 	}
 }
+
 function change_db_pass()
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	$pass = randomString(10);
 	$newp = client::createDbPass($pass);
 	$oldpass = lfile_get_contents("__path_admin_pass");
@@ -3183,12 +3032,11 @@ function change_db_pass()
 	}
 }
 
-
 function create_database()
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	$flist = parse_sql_data();
-	foreach($flist as $k => $v) {
+	foreach ($flist as $k => $v) {
 		create_table_with_drop($k, $v);
 	}
 }
@@ -3210,7 +3058,6 @@ function parse_sql_data()
 	$majmin = $sgbl->__ver_major_minor;
 	$trel = $sgbl->__ver_release;
 
-
 	$rpath = "sql/full.lxsql";
 	$pathc = "htmllib/sql/common.lxsql";
 	include $rpath;
@@ -3219,11 +3066,9 @@ function parse_sql_data()
 	$string = $gl_sql_string_common . "\n" . $gl_sql_string;
 	$string = explode("\n", $string);
 
-	foreach($string as $__k => $res){
-
-
+	foreach ($string as $__k => $res) {
 		$res = trim($res);
-		if (!$res) 
+		if (!$res)
 			continue;
 
 		if (char_search_beg($res, "//")) {
@@ -3238,7 +3083,7 @@ function parse_sql_data()
 			$name = strfrom($name, "#");
 			$nvl = null;
 			$nnvl = null;
-			foreach($vl as $k => $qv) {
+			foreach ($vl as $k => $qv) {
 				if (csb($qv, "#")) {
 					$_t = strfrom($qv, "#");
 					$nvl = lx_array_merge(array($nvl, $_quota_var[$_t]));
@@ -3247,7 +3092,7 @@ function parse_sql_data()
 				}
 			}
 
-			foreach($nvl as $qv) {
+			foreach ($nvl as $qv) {
 				$nnvl[] = "priv_q_" . $qv;
 				$nnvl[] = "used_q_" . $qv;
 			}
@@ -3255,7 +3100,7 @@ function parse_sql_data()
 			$_quota_var[$name] = $nvl;
 			$g_qvar[$name] = $nnvl;
 			$list = get_class_for_table($name);
-			foreach((array) $list as $l) {
+			foreach ((array) $list as $l) {
 				$_quota_var[$l] = $nvl;
 				$g_qvar[$l] = $nnvl;
 			}
@@ -3263,14 +3108,11 @@ function parse_sql_data()
 			continue;
 		}
 
-
-			
-
 		if (csb($res, "%")) {
 			$vl = explode(" ", $res);
-			$name = array_shift($vl); 
+			$name = array_shift($vl);
 			$nnnnvl = null;
-			foreach($vl as $q) {
+			foreach ($vl as $q) {
 				if (csb($q, "%")) {
 					$nnnnvl = lx_array_merge(array($nnnnvl, $g_var[$q]));
 				} else {
@@ -3281,11 +3123,9 @@ function parse_sql_data()
 			continue;
 		}
 
-
-
 		$list = explode(" ", $res);
 		$nlist = null;
-		foreach($list as $k => $l) {
+		foreach ($list as $k => $l) {
 			if (csb($l, "%")) {
 				$nlist = array_merge($nlist, $g_var[$l]);
 			} else {
@@ -3296,7 +3136,7 @@ function parse_sql_data()
 		//dprintr($list);
 		$list = $nlist;
 		$nlist = null;
-		foreach	($list as $l) {
+		foreach ($list as $l) {
 			if ($l === '__q_var') {
 				if (isset($g_qvar[$list[0]])) {
 					$nlist = lx_array_merge(array($nlist, $g_qvar[$list[0]]));
@@ -3312,7 +3152,6 @@ function parse_sql_data()
 
 		$name = array_shift($list);
 
-
 		$fields = lx_array_merge(array(get_default_fields(), $list));
 		if (array_search_bool("syncserver", $fields)) {
 			$fields[] = 'oldsyncserver';
@@ -3324,10 +3163,10 @@ function parse_sql_data()
 		$_return_value[$name] = $fields;
 	}
 
-	foreach($_quota_var as &$__tq) {
+	foreach ($_quota_var as &$__tq) {
 		$__tq = array_flip($__tq);
 	}
-	foreach($_field_var as &$__tq) {
+	foreach ($_field_var as &$__tq) {
 		$__tq = array_flip($__tq);
 	}
 	$var['quotavar'] = $_quota_var;
@@ -3339,11 +3178,11 @@ function parse_sql_data()
 
 function mssql_do_create_table($__db, $tbl_name, $fields)
 {
-	foreach($fields as $f) {
+	foreach ($fields as $f)
 		if ($f === 'nname') {
 			$f .= ' Primary Key';
 		}
-	}
+
 	$fields = implode(', ', $fields);
 	$query = "create table $tbl_name ($fields)";
 	print("Creating table $tbl_name....\n");
@@ -3352,12 +3191,13 @@ function mssql_do_create_table($__db, $tbl_name, $fields)
 		print("error \n\n\n\n");
 		exit;
 	}
-	$query = "create index parent_clname_$tbl_name on $tbl_name (parent_clname)"; $__db->rawQuery($query);
+	$query = "create index parent_clname_$tbl_name on $tbl_name (parent_clname)";
+	$__db->rawQuery($query);
 }
 
 function create_table_with_drop($tbl_name, $list)
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	$__db = new Sqlite(null, 'sqlite');
 	$__db->rawQuery("drop table $tbl_name");
 	create_table($__db, $tbl_name, $list);
@@ -3365,7 +3205,7 @@ function create_table_with_drop($tbl_name, $list)
 
 function create_table($__db, $tbl_name, $list)
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+	global $gbl, $sgbl, $login, $ghtml;
 	$__db = new Sqlite(null, 'sqlite');
 
 	// For mssql you can talk of primary key initially itself nad not wait till the end of the fields.
@@ -3375,7 +3215,7 @@ function create_table($__db, $tbl_name, $list)
 		$primary_key = "PRIMARY KEY";
 	}
 
-	foreach($list as &$__tl) {
+	foreach ($list as &$__tl) {
 		if (csb($__tl, "nname")) {
 			$__tl = "$__tl varchar(255) $primary_key";
 		} else if (csb($__tl, "ser_")) {
@@ -3401,7 +3241,6 @@ function create_table($__db, $tbl_name, $list)
 	}
 }
 
-
 function sqlite_do_create_table($__db, $tbl_name, $fields)
 {
 	$fields = implode(', ', $fields);
@@ -3410,9 +3249,10 @@ function sqlite_do_create_table($__db, $tbl_name, $fields)
 	print("Creating table $tbl_name....\n");
 	$ret = $__db->rawQuery($query);
 	//if (!$ret) {
-		//print("\nerror: " . sqlite_error_string(sqlite_last_error()) . "\n\n");
+	//print("\nerror: " . sqlite_error_string(sqlite_last_error()) . "\n\n");
 	//}
-	$query = "insert into $tbl_name (nname) values ('__dummy__dummy__')"; $__db->rawQuery($query);
+	$query = "insert into $tbl_name (nname) values ('__dummy__dummy__')";
+	$__db->rawQuery($query);
 	//$query = "create index parent_clname_$tbl_name on $tbl_name (parent_clname (255));"; $__db->rawQuery($query);
 }
 
@@ -3425,7 +3265,8 @@ function mysql_do_create_table($__db, $tbl_name, $fields)
 	if (!$ret) {
 		//print("\nerror: " . mysql_error() . "\n\n");
 	}
-	$query = "create index parent_clname_$tbl_name on $tbl_name (parent_clname (255));"; $__db->rawQuery($query);
+	$query = "create index parent_clname_$tbl_name on $tbl_name (parent_clname (255));";
+	$__db->rawQuery($query);
 }
 
 // string_main();
@@ -3446,7 +3287,6 @@ function getQuotaListForClass($stuff, $res = null)
 	return $ob->getQuotaVariableList();
 }
 
-
 function lx_xdebug_break()
 {
 	if (function_exists('xdebug_break')) {
@@ -3461,16 +3301,15 @@ function remove_extra_slash($file)
 
 function if_demo_throw_exception($where = null)
 {
-	global $gbl, $sgbl, $login, $ghtml;  
+	global $gbl, $sgbl, $login, $ghtml;
 
 	if ($sgbl->dbg < 0) {
 		$where = null;
 	}
 
 	if (if_demo()) {
-		throw new lxException("$where not_allowed_in_demo");
+		throw new lxException("$where not_allowed_in_demo_version");
 	}
-
 }
 
 function get_package_version($name)
@@ -3485,21 +3324,18 @@ function getClassFromName($cgi_clientname)
 
 	if (csa($cgi_clientname, "@")) {
 		$classname = "mailaccount";
-	} else if (csa($cgi_clientname, ".vps")) {
+	} elseif (csa($cgi_clientname, ".vps")) {
 		$classname = "vps";
-	} else if (csa($cgi_clientname, ".vm")) {
+	} elseif (csa($cgi_clientname, ".vm")) {
 		$classname = "vps";
-	} else if (csa($cgi_clientname, ".aux")) {
+	} elseif (csa($cgi_clientname, ".aux")) {
 		$classname = "auxiliary";
-	} 
-
-	/*
-	Domain user doesn't exist anymore....
-	else if (csa($cgi_clientname, ".")) {
-		$classname = "domain";
 	}
-*/
-
+	/*
+	 Domain user doesn't exist anymore....
+	 else if (csa($cgi_clientname, ".")) {
+		 $classname = "domain";
+	 }
+ */
 	return $classname;
-
 }
