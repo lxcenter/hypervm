@@ -4420,3 +4420,14 @@ include_once "htmllib/lib/lxguardincludelib.php";
 	lxguard_main();
 }
 
+function getHIBversion()
+{
+   $string = file_get_contents("http://download.lxcenter.org/download/version/hib");
+    if ($string != "") {
+        $string = trim($string);
+        $string = str_replace("\n", "", $string);
+        $ver = str_replace("\r", "", $string);
+		return $ver;
+    }
+	return false;
+}

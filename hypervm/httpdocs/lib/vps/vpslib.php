@@ -1027,7 +1027,7 @@ function getBestLocation()
 	if ($this->isXen()) {
 		if (!$xenlvm) {
 			if (db_get_value('client', 'admin', 'ddate') > 1203102323) {
-				throw new lxException ("new_xen_install_needs_lvm_check_lxlabs_website_for_more", '');
+				throw new lxException ("XEN needs a empty LVM partition.", '');
 			}
 		}
 	}
@@ -1248,13 +1248,6 @@ function postadd_xen()
 	$this->iid = $this->nname;
 	$this->generateMacAddr();
 	return;
-	if (!$this->isWindows()) {
-		if (!lxfile_exists("/home/hypervm/xen/template/{$this->ostemplate}.tar.gz")) {
-			log_log("ostemplate_exists", "/home/hypervm/xen/template/{$this->ostemplate}.tar.gz doesn't exist");
-			throw new lxexception('no_os_template', '', $this->ostemplate);
-		}
-	}
-
 }
 
 function postadd_openvz()
@@ -1289,10 +1282,6 @@ function postadd_openvz()
 
 	$this->iid = $this->vpsid;
 	return;
-	if (!lxfile_exists("/vz/template/cache/{$this->ostemplate}.tar.gz")) {
-		log_log("ostemplate_exists", "/vz/template/cache/{$this->ostemplate}.tar.gz doesn't exist");
-		throw new lxexception('no_os_template', '', $this->ostemplate);
-	}
 }
 
 
@@ -2208,8 +2197,8 @@ function extraBackup() {return true;}
 function updateInstallKloxo($param)
 {
 	global $gbl, $sgbl, $login, $ghtml; 
-
-	$param['ostemplate'] = 'centos-5-i386-hostinabox576';
+	$ver = getHIBversion();
+	$param['ostemplate'] = 'centos-5-i386-hostinabox' . $ver;
 	return $param;
 }
 

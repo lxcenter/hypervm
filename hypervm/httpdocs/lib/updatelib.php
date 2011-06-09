@@ -148,14 +148,11 @@ function fix_ipaddress_column_type()
 
 function get_kloxo_ostemplate()
 {
-	//
-	// This must be changed!
-	//
-   //##########  
-	$ver = "576";
-	//##########
-	//
-	//
+	$ver = getHIBversion();
+	if (!$ver) {
+		return;
+	}
+
 	if (is_openvz()) {
 	if (lxfile_exists("/vz/template/cache")) {
 		if (!lxfile_real("/vz/template/cache/centos-5-i386-hostinabox$ver.tar.gz")) {
