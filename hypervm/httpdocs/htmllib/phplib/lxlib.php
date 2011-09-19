@@ -476,9 +476,9 @@ function lfile_put_contents($file, $data, $flag = null)
 
 	lxfile_mkdir(dirname($file));
 
-	if(file_exists($file)){
-		if(is_readable($file)){
-			if(is_writable($file)){
+	if (file_exists($file)){
+		if (is_readable($file)){
+			if (is_writable($file)){
 				return file_put_contents($file, $data, $flag);
 			}
 			else{
@@ -496,22 +496,22 @@ function lfile_put_contents($file, $data, $flag = null)
 		}
 	}
 	else{
-        if(file_put_contents($file, $data, $flag) === false){
-            $error_msg = 'File \''.$file.'\' could not be created.';
-            dprint($error_msg);
-            log_log('filesys', $error_msg);
-            return false;
-        }
-        return true;
- 	}
+		if (file_put_contents($file, $data, $flag) === false){
+			$error_msg = 'File \''.$file.'\' could not be created.';
+			dprint($error_msg);
+			log_log('filesys', $error_msg);
+			return false;
+		}
+		return true;
+	}
 }
 
 /**
- * @return void
- * @param unknown
- * @param unknown
- * @desc Redefining php functions ... sort of.. Stupid php doesn't allow that. So we do the next best thing.. We add an 'l' to all system functions and then use these functions instead of the php ones... In a way, is a better idea too, since, there might always be some cases where we might want to override this crap. :-)
- */
+* @return void
+* @param unknown
+* @param unknown
+* @desc Redefining php functions ... sort of.. Stupid php doesn't allow that. So we do the next best thing.. We add an 'l' to all system functions and then use these functions instead of the php ones... In a way, is a better idea too, since, there might always be some cases where we might want to override this crap. :-)
+*/
 function lmkdir($dir)
 {
 	return lx_redefine_func("mkdir", $dir);
@@ -707,13 +707,13 @@ function log_message($mess, $id = 1)
 
 function log_security($mess, $id = 1)
 {
-    // get IP
+	// get IP
 	if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-	    $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+		$ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
 	}
-    else {
-        $ip = $_SERVER['REMOTE_ADDR'];
-    }
+	else {
+		$ip = $_SERVER['REMOTE_ADDR'];
+	}
 
 	$user_agent = $_SERVER["HTTP_USER_AGENT"];
 	
@@ -784,11 +784,11 @@ function lsqlite_open($file)
 }
 
 /**
- * @return void
- * @param unknown
- * @param unknown
- * @desc This function is the core of the the path abstraction. It converts the paths of the form '__path.../dir' to '$sgbl->__path.../dir'. This is used in all the redefined functions to convert their arguments.
- */
+* @return void
+* @param unknown
+* @param unknown
+* @desc This function is the core of the the path abstraction. It converts the paths of the form '__path.../dir' to '$sgbl->__path.../dir'. This is used in all the redefined functions to convert their arguments.
+*/
 function expand_real_root($root)
 {
 	global $gbl, $sgbl, $login, $ghtml;
@@ -805,11 +805,11 @@ function expand_real_root($root)
 }
 
 /**
- * @return void
- * @param unknown
- * @param unknown
- * @desc the function that does the redefining of fundamental file access functions. Note the double use of 'eval'. hey hey, nothing is impossible in php. Never ever repeat the code; Make it unreadable instead. :-)
- */
+* @return void
+* @param unknown
+* @param unknown
+* @desc the function that does the redefining of fundamental file access functions. Note the double use of 'eval'. hey hey, nothing is impossible in php. Never ever repeat the code; Make it unreadable instead. :-)
+*/
 function kill_and_save_pid($name)
 {
 	kill_pid($name);
@@ -829,10 +829,10 @@ function kill_pid($name)
 }
 
 /************************************
- * HOW-TO GENERATE KEYPAIRS
- * //Passphrase is helloworld
- * $ openssl req -x509 -newkey rsa:1024 -keyout mykey.key -out mycert.crt
- */
+* HOW-TO GENERATE KEYPAIRS
+* //Passphrase is helloworld
+* $ openssl req -x509 -newkey rsa:1024 -keyout mykey.key -out mycert.crt
+*/
 
 function licenseDecrypt($license_content)
 {
@@ -932,10 +932,10 @@ function getShellCommand($cmd, $arglist)
 class Remote
 {
 	/*
- public $ddata;
- public $message;
- public $exception;
- */
+public $ddata;
+public $message;
+public $exception;
+*/
 }
 
 function dprintoa($var, $type = 0)
@@ -1109,7 +1109,7 @@ function array_remove($array, $element)
 }
 
 function csb($haystack, $needle, $insensitive = 1)
-{ # Char Search Begin
+{ /* Char Search Begin */
 	return char_search_beg($haystack, $needle, $insensitive);
 }
 
@@ -1125,7 +1125,7 @@ function char_search_beg($haystack, $needle)
 }
 
 function cse($haystack, $needle, $insensitive = 1)
-{ # Char Search End
+{ /* Char Search End */
 	return char_search_end($haystack, $needle, $insensitive);
 }
 
@@ -1188,13 +1188,14 @@ function get_composite($class)
 	return array($list[0], $list[1], $list[2]);
 }
 
+// Set unlicensed to Unlimited usage
 function setLicenseTodefault()
 {
 	global $gbl, $sgbl, $login, $ghtml;
 	$license = $login->getObject('license');
 	$license->parent_clname = $login->getClName();
 	$lic = $license->licensecom_b;
-	$def = array("maindomain_num" => "40", "vps_num" => 5, "pserver_num" => 10, "client_num" => "Unlimited");
+	$def = array("maindomain_num" => "Unlimited", "vps_num" => "Unlimited", "pserver_num" => "Unlimited", "client_num" => "Unlimited");
 	$list = get_license_resource();
 	foreach ($list as $l) {
 		$licv = "lic_$l";
@@ -1333,7 +1334,7 @@ function log_clicks($mess, $id = 1)
 	lfile_put_contents($file, "$id: $ip: " . @date("H:i:s M/d/Y") . ": $mess\n", FILE_APPEND);
 }
 
-# Version Comparison Returns 1 if version1 is greater, and -1 if version2 is greater.
+// Version Comparison Returns 1 if version1 is greater, and -1 if version2 is greater.
 function version_cmp($version1, $version2)
 {
 	$l1 = explode(".", $version1);
@@ -1574,11 +1575,11 @@ function get_general_image_path($v = null)
 }
 
 /**
- * @return void
- * @param
- * @param
- * @desc  part of the getting-image-through-http (to enable caching) madness.
- */
+* @return void
+* @param
+* @param
+* @desc  part of the getting-image-through-http (to enable caching) madness.
+*/
 function add_http_host($elem)
 {
 	global $gbl, $sgbl, $login, $ghtml;
@@ -1659,11 +1660,11 @@ function DBG_GetBacktrace($traceArr)
 			}
 		}
 		$s .= $arr['function'] . '(' . implode(',
-        ', $args) . ')</font>';
+		', $args) . ')</font>';
 		$Line = (isset($arr['line']) ? $arr['line'] : "unknown");
 		$File = (isset($arr['file']) ? $arr['file'] : "unknown");
 		$s .= sprintf("<font color=#808080 size=-1> # line
-        %4d, file: <a href=\"file:/%s\">%s</a></font>", $Line, $File, $File);
+		%4d, file: <a href=\"file:/%s\">%s</a></font>", $Line, $File, $File);
 		$s .= "\n";
 	}
 	$s .= '</pre>';
@@ -1877,17 +1878,17 @@ function lx_error_handler($errno, $errstr, $file, $line)
 
 	dprint("\n### PHP Error detected\n");
 	dprint("### Notice: $errstr\n");
-        dprint("### File:$file\n");
-        dprint("### Line number: $line\n");
+		dprint("### File:$file\n");
+		dprint("### Line number: $line\n");
 	dprint("### End PHP Error information\n\n");
 }
 
 /**
- * @return void
- * @param
- * @param
- * @desc Truly random and insane way to encrypt the image/form names so that hackers won't easily understand teh program structure, (which is clearly visible in these names...)
- */
+* @return void
+* @param
+* @param
+* @desc Truly random and insane way to encrypt the image/form names so that hackers won't easily understand teh program structure, (which is clearly visible in these names...)
+*/
 function createEncName($name)
 {
 	global $gbl;
@@ -1966,11 +1967,11 @@ function check_raw_password($class, $client, $pass)
 }
 
 /**
- * @return void
- * @param
- * @param
- * @desc  Checks if the client is disabled and exits immedeiately showing a message.
- */
+* @return void
+* @param
+* @param
+* @desc  Checks if the client is disabled and exits immedeiately showing a message.
+*/
 function check_if_disabled_and_exit()
 {
 	global $gbl, $sgbl, $login, $ghtml;
@@ -2036,11 +2037,11 @@ function createTreeObject($name, $img, $imgstr, $url, $open, $help, $alt)
 }
 
 /**
- * @return void
- * @param
- * @param
- * @desc A generic function, that can be used by all programs. Does all the basic login stuff.
- */
+* @return void
+* @param
+* @param
+* @desc A generic function, that can be used by all programs. Does all the basic login stuff.
+*/
 function initProgramlib($ctype = null)
 {
 	global $gbl, $sgbl, $login, $ghtml;
@@ -2135,11 +2136,11 @@ function initProgramlib($ctype = null)
 	//print_time('login_get', "Login Get");
 	//dprintr($login);
 
-   //avoid some php warnings
-   if (isset($login)) {
-      $gbl->client = $login->nname;
-      $gbl->client_ttype = $login->cttype;
-   }
+//avoid some php warnings
+if (isset($login)) {
+	$gbl->client = $login->nname;
+	$gbl->client_ttype = $login->cttype;
+}
 
 	//dprintr($login->hpfilter);
 
@@ -2388,11 +2389,11 @@ function delete_login()
 }
 
 /**
- * @return void
- * @param
- * @param
- * @desc  Saves teh whole login info. Login is 'Was'ed; (Write and synced). Any exception is caught and the script is returned to the previous web page, with the error message string returned by the exception. Works EXceptionally well.. :-)
- */
+* @return void
+* @param
+* @param
+* @desc  Saves teh whole login info. Login is 'Was'ed; (Write and synced). Any exception is caught and the script is returned to the previous web page, with the error message string returned by the exception. Works EXceptionally well.. :-)
+*/
 function save_login()
 {
 	// Function removed by Ligesh earlier. (was saving login info)
@@ -2458,11 +2459,11 @@ function create_name($word)
 }
 
 /**
- * @return void
- * @param
- * @param
- * @desc  Remove unsavoury characters from a string so that it can be used as a variable.
- */
+* @return void
+* @param
+* @param
+* @desc  Remove unsavoury characters from a string so that it can be used as a variable.
+*/
 function fix_nname_to_be_variable($var)
 {
 	if (!$var) {
@@ -2534,10 +2535,10 @@ function get_classvar_description($class, $var = null)
 	}
 
 	/*
-	 if ($login->getSpecialObject('sp_specialplay')->isCoreLanguage()) {
-		 return $ret;
-	 }
- */
+	if ($login->getSpecialObject('sp_specialplay')->isCoreLanguage()) {
+		return $ret;
+	}
+*/
 
 	$k = trim($ret[2], "_\n ");
 	if (isset($g_language_desc->__description[$k])) {
@@ -2587,11 +2588,11 @@ function get_class_variable($class, $var)
 	$var = fix_nname_to_be_variable($var);
 	$class = ucfirst($class);
 	/*
-	 if (csa($class, '-')) {
-		 debugBacktrace();
-		 exit;
-	 }
- */
+	if (csa($class, '-')) {
+		debugBacktrace();
+		exit;
+	}
+*/
 
 	$variable = "$class::\$" . $var;
 	return eval(" if (isset($variable)) { return $variable ; }  ");
@@ -2615,11 +2616,11 @@ function createZeroString($n)
 }
 
 /**
- * @return void
- * @param
- * @param
- * @desc  Execs a method inside a class. Passes all the variables to it. See the use of 2 evals.. Check documentation for lx_redefine_func;
- */
+* @return void
+* @param
+* @param
+* @desc  Execs a method inside a class. Passes all the variables to it. See the use of 2 evals.. Check documentation for lx_redefine_func;
+*/
 function exec_class_method($class, $func)
 {
 	global $gbl, $sgbl, $login, $ghtml;
@@ -2869,11 +2870,11 @@ function getNthToken($string, $num, $delim = ':')
 }
 
 /**
- * @return void
- * @param unknown
- * @param unknown
- * @desc Recurses a dir tree and execs the '$func' on all the files AND the directories.
- */
+* @return void
+* @param unknown
+* @param unknown
+* @desc Recurses a dir tree and execs the '$func' on all the files AND the directories.
+*/
 function recurse_dir($dir, $func, $arglist = null)
 {
 	$list = lscandir($dir);
@@ -3332,10 +3333,10 @@ function getClassFromName($cgi_clientname)
 		$classname = "auxiliary";
 	}
 	/*
-	 Domain user doesn't exist anymore....
-	 else if (csa($cgi_clientname, ".")) {
-		 $classname = "domain";
-	 }
- */
+	Domain user doesn't exist anymore....
+	else if (csa($cgi_clientname, ".")) {
+		$classname = "domain";
+	}
+*/
 	return $classname;
 }
