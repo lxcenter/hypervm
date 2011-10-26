@@ -3995,6 +3995,8 @@ function checkClusterDiskQuota()
 
 function find_closest_mirror()
 {
+
+    //TODO: Function is not called.. remove?
 	$v = curl_general_get("lxlabs.com/mirrorlist/");
 	$v = trim($v);
 	$vv = explode("\n", $v);

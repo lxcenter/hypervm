@@ -32,12 +32,6 @@ function syncAddFile($domainname)
 			$dnsdata .= "{$domainname}. NS  $dns->param.  \n";
 		}
 	}
-	/*
-	// Ugly hack to fix it for testing...
-	if (!$nameserver) {
-		$nameserver = 'ns.lxlabs.com';
-	}
-*/
 
 	$ddate = date("Ymd");
 

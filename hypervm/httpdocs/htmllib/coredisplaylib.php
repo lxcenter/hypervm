@@ -623,9 +623,9 @@ function check_for_license()
 		}
 		if ($l > $lic->$licv) {
 			if ($login->isAdmin()) {
-				$mess = $ghtml->show_error_message("The system is not at present working because there is not enough license for $res. Please go to [b]  admin home -> advanced -> license update [/b]  and click on [b] get license from lxlabs [/b]. You will have to first create a valid license at client.lxlabs.com.");
+		//		$mess = $ghtml->show_error_message("The system is not at present working because there is not enough license for $res. Please go to [b]  admin home -> advanced -> license update [/b]  and click on [b] get license from lxcenter [/b]. You will have to first create a valid license at client.lxlabs.com.");
 			} else {
-				$mess = $ghtml->show_error_message("The system is not at present working because there is not enough license for $res. Please contact your administrator.");
+		//		$mess = $ghtml->show_error_message("The system is not at present working because there is not enough license for $res. Please contact your administrator.");
 			}
 //
 //			exit;

@@ -545,13 +545,13 @@ function createPublicPrivate()
 {
 	global $gbl, $sgbl, $login, $ghtml; 
 
-	$data["commonName"]  = "lxlabs.com";
+	$data["commonName"]  = "lxcenter.org";
 	$data["countryName"] =  "IN";
 	$data["stateOrProvinceName"] = "in";
 	$data["localityName"]  = "in";
 	$data["organizationName"]  = "lx";
 	$data["organizationalUnitName"]  = "soft";
-	$data["emailAddress"]  = "admin@lxlabs.com";
+	$data["emailAddress"]  = "contact@lxcenter.org";
 	
 	foreach($data as $key => $value) {
 		$ltemp[$key]  = $value;

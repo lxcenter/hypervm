@@ -58,12 +58,6 @@ function syncAddFile($domainname)
 			$arecord[$dns->hostname] = $dns->param;
 		}
 	}
-	/*
-	// Ugly hack to fix it for testing...
-	if (!$nameserver) {
-		$nameserver = 'ns.lxlabs.com';
-	}
-*/
 
 	if ($this->main->soanameserver) {
 		$nameserver = $this->main->soanameserver;

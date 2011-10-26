@@ -19,7 +19,7 @@ function download_file($url, $localfile = null)
 chdir("..");
 unlink("hypervm-current.zip");
 print("Downloading.... \n");
-download_file("http://download.lxlabs.com/download/hypervm/production/hypervm/hypervm-current.zip");
+download_file("http://download.lxcenter.org/download/hypervm/production/hypervm/hypervm-current.zip");
 print("download done...\n");
 if (WindowsOs()) {
 	system("c:/Progra~1/7-zip/7z.exe x -y hypervm-current.zip");

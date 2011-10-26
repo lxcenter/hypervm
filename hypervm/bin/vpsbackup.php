@@ -38,8 +38,8 @@ function main()
 	$opt = parse_opt($argv);
 
 	if (!isset($opt['newarg'])) {
-		$mess = "\n\nThe architecture of centalized backup has been completely rewritten, and now we have per slave backup-server; you will need to supply --newarg=true for this to work. ";
-		$mess .= "Please see http://lxlabs.com/software/hypervm/backup/ for more info.";
+		$mess = "\n\nThe architecture of centralized backup has been completely rewritten, and now we have per slave backup-server; you will need to supply --newarg=true for this to work. ";
+		$mess .= "More info at http://wiki.lxcenter.org/.";
 		print($mess);
 		log_log("centralbackup_flag", $mess);
 		send_mail_to_admin("Central Backup Failed", $mess);

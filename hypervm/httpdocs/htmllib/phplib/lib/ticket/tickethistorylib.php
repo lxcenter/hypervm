@@ -115,25 +115,7 @@ static function escalateSend($parent, $param, $fullmess)
 
 	$from = "helpdesk";
 
-	if ($sgbl->__var_program_name === 'lxlabsclient') {
-		$ip = "lxlabs.com";
-
-		if ($parent->isOn('escalate')) {
-			$extra .= "X-escalate: Escalated\n";
-		}
-
-		/*
-		if ($parent->used->vps_num > 100) {
-			$subject = "P:100: $subject";
-		} else if ($parent->used->vps_num > 50) {
-			$subject = "P:50: $subject";
-		} else {
-			$subject = "P:10: $subject";
-		}
-	*/
-	} else {
-		$ip = getFQDNforServer('localhost');
-	}
+	$ip = getFQDNforServer('localhost');
 
 	$pass = $parent->realpass;
 	$ticktid = $parent->nname;
@@ -178,21 +160,7 @@ static function getObjectsTosend($parent, $param, $action)
 		$extra .= "X-escalate: Escalated\n";
 	}
 
-	if ($sgbl->isLxlabsClient()) {
-		$ip = "lxlabs.com";
-
-
-		if ($obj->isClient() && !$obj->isAdmin()) {
-			$obj->findTotalBalance(null);
-			$sq = new Sqlite(null, "ticket");
-			$tlist = $sq->getRowsWhere("made_by = 'client-$obj->nname' AND category LIKE '%TechnicalSupport%'");
-			$nticket = count($tlist);
-			$to = $obj->find_actual_billing("2009.05");
-			$extra .= "X-lxheader: $to->total P: $obj->total_paid B: $obj->total_balance T: $nticket\n";
-		}
-	} else {
-		$ip = getFQDNforServer('localhost');
-	}
+	$ip = getFQDNforServer('localhost');
 
 	$pass = $parent->realpass;
 	$ticktid = $parent->nname;

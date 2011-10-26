@@ -41,7 +41,7 @@ $out = lxshell_output("/usr/local/lxlabs/ext/php/bin/php_cgi", "-v");
 $lightout = lxshell_output("/usr/local/lxlabs/ext/lxlighttpd/sbin/kloxo.httpd", "-v");
 
 $php_st = null;
-if (csa($lightout, "1.4.") && csa($out, "cgi-fcgi") && $sgbl->isKloxo() && trim(`hostname`) !== 'support.lxlabs.com' && $ret === 15) {
+if (csa($lightout, "1.4.") && csa($out, "cgi-fcgi") && $sgbl->isKloxo() && $ret === 15) {
 	$php_st .= "fastcgi.server  = (\".php\" => \n";
 	$php_st .= "		(( \"socket\" => \"/usr/local/lxlabs/$sgbl->__var_program_name/etc/php_socket.socket\",\n";
 	$php_st .= "		   \"bin-path\" => \"/usr/local/lxlabs/ext/php/bin/php_cgi\",\n";

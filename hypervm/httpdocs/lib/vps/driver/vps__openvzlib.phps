@@ -907,6 +907,7 @@ function installkloxo()
 
 function oldinstallkloxo()
 {
+    //TODO: Remove?
 	$ret = lxshell_return("vzctl", "exec2", $this->main->vpsid, "ping -n -c 1 -w 5 lxlabs.com");
 
 	if ($ret) {
