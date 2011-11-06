@@ -695,6 +695,21 @@ function setDiskUsage()
 }
 
 
+// Added by Semir @ 2011 march 14
+
+function setSwapUsage()
+{
+        if (is_unlimited($this->main->priv->swap_usage)) {   
+                $memory = 2048;   
+        } else {
+                $memory = $this->main->priv->swap_usage;
+        }
+	$memory= ($memory/4)*1024 *1024;
+
+	lxshell_return("vzctl", "set", $this->main->vpsid, "--save", "--swappages", $memory);
+
+}
+
 function setProcessUsage()
 {
 	if (is_unlimited($this->main->priv->process_usage)) {
@@ -1078,6 +1093,7 @@ function setEveryThing()
 	$this->setCpuUsage();
 	$this->setMemoryUsage();
 	$this->setProcessUsage();
+	$this->setSwapUsage();
 	$this->setIptables();
 	#lxshell_return("vzctl", "set", $this->main->vpsid, "--capability", "SYS_TIME:on", "--save");
 	$this->changeConf("OSTEMPLATE", $this->main->ostemplate);

@@ -24,7 +24,7 @@ static $__desc_guarmem_usage	 = array("q", "",  "guar:guaranteed_memory_(MB)(ope
 static $__desc_realmem_usage	 = array("q", "",  "memory:memory_usage(MB)(xen_only)");
 static $__desc_traffic_usage	 = array("q", "",  "traffic:traffic_(MB/month)");
 static $__desc_iptables_flag =  array("q", "",  "enable_iptables_(only_for_openvz)");
-static $__desc_swap_usage	 = array("q", "",  "swap:swap_(MB)(xen_only)");
+static $__desc_swap_usage	 = array("q", "",  "swap:swap_(MB)");
 
 
 static $__desc_logo_manage_flag =  array("q", "",  "can_change_logo");
