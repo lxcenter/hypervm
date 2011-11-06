@@ -2,7 +2,7 @@
 #    HyperVM, Server Virtualization GUI for OpenVZ and Xen
 #
 #    Copyright (C) 2000-2009	LxLabs
-#    Copyright (C) 2009-2010	LxCenter
+#    Copyright (C) 2009-2011	LxCenter
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -19,7 +19,7 @@
 #
 #
 #
-# This file creates hypervm-[version].zip for distribution from SVN.
+# This file creates hypervm-[version].zip for distribution.
 # 
 #
 # - read version
@@ -30,7 +30,7 @@ echo "################################"
 echo "### Start packaging"
 echo "### read version..."
 # Read version
-# Please note, this must be a running machine with SVN version!
+# Please note, this must be a running (HyperVM installed)  machine (Development/Test/Release server)
 if ! [ -f /script/version ] ; then
         echo "## Packaging failed. No /script/version found."
 	echo "## Are you sure you are running a development version?"
@@ -56,6 +56,7 @@ echo "### Create zip package..."
 # Package part
 zip -r9 hypervm-$version.zip ./bin ./cexe ./file ./httpdocs ./pscript ./sbin ./RELEASEINFO -x \
 "*/CVS/*" \
+"*/.git/* \
 "*/.svn/*"
 #
 echo "### Finished"
