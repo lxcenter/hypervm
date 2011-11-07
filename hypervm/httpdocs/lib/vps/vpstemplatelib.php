@@ -24,7 +24,7 @@ static $__desc_dnstemplate = array("s", "",  "dns_template");
 
 static $__desc_process_usage	 = array("qh", "",  "number_of_processes");
 static $__desc_guarmem_usage	 = array("qh", "",  "Guaranteed_Memory_(MB)");
-static $__desc_swap_usage	 = array("qh", "",  "swap:swap_(MB)(xen_only)");
+static $__desc_swap_usage	 = array("qh", "",  "swap:swap_(MB)");
 static $__desc_disk_usage	 = array("qh", "",  "disk_quota_(MB)");
 static $__desc_memory_usage	 = array("qh", "",  "burst_mem:burstable_memory_(MB)(openvz_only)");
 static $__desc_realmem_usage	 = array("q", "",  "realmem:real_memory_usage_(MB)(xen_only)");

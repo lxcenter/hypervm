@@ -2,8 +2,8 @@
 
 class kloxo extends lxclass {
 
-static $__desc = array("", "", "kloxo Lxadmin");
-static $__acdesc_show = array("", "", "kloxo Lxadmin");
+static $__desc = array("", "", "kloxo_tab");
+static $__acdesc_show = array("", "", "kloxo_tab");
 static $__acdesc_update_all_resource = array("", "", "all_resource");
 static $__acdesc_update_list_client = array("", "", "list_client");
 static $__acdesc_update_show_server = array("", "", "show_server");
