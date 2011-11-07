@@ -649,7 +649,7 @@ function setGuarMemoryUsage()
 	lxshell_return("vzctl", "set", $this->main->vpsid, "--save", "--vmguarpages", "{$memory}M:2147483647");
 	lxshell_return("vzctl", "set", $this->main->vpsid, "--save", "--oomguarpages", "{$memory}M:2147483647");
 	lxshell_return("vzctl", "set", $this->main->vpsid, "--save", "--shmpages", "{$memory}M:{$memory}M");
-	lxshell_return("vzctl", "set", $this->main->vpsid, "--physpages", "0:2147483647", "--save");
+	lxshell_return("vzctl", "set", $this->main->vpsid, "--save", "--physpages", "0:2147483647");
 	$tcp = round(($memory * 1024)/5, 0);
 	$process = $this->main->priv->process_usage;
 	if (is_unlimited($process) || $process > 5555) {
@@ -704,9 +704,10 @@ function setSwapUsage()
         } else {
                 $memory = $this->main->priv->swap_usage;
         }
-	$memory= ($memory/4)*1024 *1024;
 
-	lxshell_return("vzctl", "set", $this->main->vpsid, "--save", "--swappages 0:", $memory, "M");
+    $memory = "0:" . $memory . "M";
+
+    lxshell_return("vzctl", "set", $this->main->vpsid, "--save", "--swappages", $memory);
 
 }
 
@@ -748,6 +749,7 @@ function setProcessUsage()
 	lxshell_return("vzctl", "set", $this->main->vpsid, "--save", "--lockedpages", $process);
 
 	$this->setGuarMemoryUsage();
+
 }
 
 function limitMaxMemory($value)
@@ -1095,7 +1097,6 @@ function setEveryThing()
 	$this->setProcessUsage();
 	$this->setSwapUsage();
 	$this->setIptables();
-	#lxshell_return("vzctl", "set", $this->main->vpsid, "--capability", "SYS_TIME:on", "--save");
 	$this->changeConf("OSTEMPLATE", $this->main->ostemplate);
 	$this->setRestUsage();
 
@@ -1344,6 +1345,10 @@ function dbactionUpdate($subaction)
 		case "change_guarmem_usage":
 			$this->setGuarMemoryUsage();
 			break;
+
+        case "change_swap_usage":
+              $this->setSwapUsage();
+            break;
 
 		case "change_process_usage":
 			$this->setProcessUsage();
