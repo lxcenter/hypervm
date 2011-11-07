@@ -706,7 +706,7 @@ function setSwapUsage()
         }
 	$memory= ($memory/4)*1024 *1024;
 
-	lxshell_return("vzctl", "set", $this->main->vpsid, "--save", "--swappages", $memory);
+	lxshell_return("vzctl", "set", $this->main->vpsid, "--save", "--swappages 0:", $memory, "M");
 
 }
 
