@@ -56,7 +56,7 @@ echo "### Create zip package..."
 # Package part
 zip -r9 hypervm-$version.zip ./bin ./cexe ./file ./httpdocs ./pscript ./sbin ./RELEASEINFO -x \
 "*/CVS/*" \
-"*/.git/* \
+"*/.git/*" \
 "*/.svn/*"
 #
 echo "### Finished"
