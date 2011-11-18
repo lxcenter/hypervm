@@ -43,18 +43,13 @@ rm -f hypervm-$version.zip
 #
 echo "### Compile c files..."
 # Compile C files
-# Part 1
-cd sbin/console
+cd src
 make ; make install
-cd ../../
-# Part 2
-cd bin/common
-make ; make install
-cd ../../
+cd ../
 #
 echo "### Create zip package..."
 # Package part
-zip -r9 hypervm-$version.zip ./bin ./cexe ./file ./httpdocs ./pscript ./sbin ./RELEASEINFO -x \
+zip -r9 hypervm-$version.zip ./src ./bin ./cexe ./file ./httpdocs ./pscript ./sbin ./RELEASEINFO -x \
 "*/CVS/*" \
 "*/.git/*" \
 "*/.svn/*"

@@ -1,4 +1,3 @@
-#!/bin/sh
 #    HyperVM, Server Virtualization GUI for OpenVZ and Xen
 #
 #    Copyright (C) 2000-2009	LxLabs
@@ -17,17 +16,32 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-# This file creates binaries.
-# 
 #
-######
-echo "################################"
-echo "### Start compiling"
-# Compile C files
-# Part 1
-cd src/
-make ; make install
-cd ../
-echo "### Finished"
-echo "################################"
-#
+
+LIBS=-lssl
+CC=gcc
+CFLAGS=-o
+
+all:
+	${CC} ${CFLAGS} lxxen lxxen.c
+	${CC} ${CFLAGS} lxopenvz lxopenvz.c
+	${CC} ${CFLAGS} findfreeloop losetup.c
+	${CC} ${CFLAGS} lxrestart lxrestart.c
+	${CC} ${CFLAGS} hypervm.exe program-backend.c ${LIBS}
+
+install: 
+	cp lxxen ../sbin/lxxen
+	mv lxxen ../cexe/lxxen
+	cp lxopenvz ../sbin/lxopenvz
+	mv lxopenvz ../cexe/lxopenvz
+	cp lxrestart ../sbin/lxrestart
+	mv lxrestart ../cexe/lxrestart
+	mv findfreeloop ../sbin/findfreeloop
+	cp hypervm.exe ../sbin/hypervm.exe.core
+	mv hypervm.exe ../sbin/hypervm.exe
+
+.PHONY: clean
+
+clean:
+
+
