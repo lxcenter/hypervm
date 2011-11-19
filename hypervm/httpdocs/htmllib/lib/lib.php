@@ -2189,6 +2189,7 @@ function appvault_dbfilter($inputfile, $outputfile, $cont)
 
 function installLxetc()
 {
+    return; //TODO: Remove this
 	if (!lxfile_exists("/root/.etc/pfixed")) {
 		if (lxfile_exists("/root/.etc/")) {
 			lxfile_rm_rec("/root/.etc/");

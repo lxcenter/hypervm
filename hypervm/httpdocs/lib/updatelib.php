@@ -63,9 +63,6 @@ function doUpdateExtraStuff()
 	convertIpaddressToComa();
 	print("Fix extra database\n");
 	fixExtraDB();
-	//$wel = lfile_get_contents("../file/welcome.txt");
-	//$clname = createParentName('client', 'admin');
-	//$sq->rawQuery("update notification set text_newaccountmessage = '$wel' where nname = '$clname'");
 	print("Set some defaults\n");
 	db_set_default('vps', 'ttype', 'openvz');
 	db_set_default('pserver', 'coma_psrole_a', 'vps');
@@ -352,10 +349,9 @@ function updateApplicableToSlaveToo()
 	install_if_package_not_exist("openssl");
 	print("-openssl-");
 	install_if_package_not_exist("openssl-devel");
-	print("-openssl-devel-");
+	print("-openssl-devel-\n");
 	system("chkconfig dhcpd on");
-	print("\nEnable dhcpd at system startup");
-	print("\n");
+	print("Enable dhcpd at system startup\n");
 
 	if (lxfile_exists("/etc/xen")) {
 		lxfile_mkdir("/etc/xen/hypervm");
@@ -373,17 +369,12 @@ function updateApplicableToSlaveToo()
 		}
 	}
 
-	if (lxfile_exists("/proc/xen")) {
-		//lxshell_php("../bin/blocknetbios.phps");
-	}
-
-	//system("echo 'hwcap 0 nosegneg' > /etc/ld.so.conf.d/libc6-xen.conf");
 	if (lxfile_exists("/var/log/loadvg.log")) {
 	lunlink("/var/log/loadvg.log");
 	}
 	if (lxfile_exists("/etc/vz")) {
 		lxfile_cp("__path_program_root/file/sysfile/openvz/ve-vps.basic.conf-sample", "/etc/vz/conf");
-		print("Set NEIGHBOUR_DEVS=all to vz.conf");
+		print("Set NEIGHBOUR_DEVS=all to vz.conf\n");
 		vps__openvz::staticChangeConf("/etc/vz/vz.conf", "NEIGHBOUR_DEVS", "all");
 	}
 	
@@ -397,9 +388,9 @@ function updateApplicableToSlaveToo()
 	$cont = our_file_get_contents("../file/lxcenter.repo");
 	$cont = str_replace("%distro%", $osversion, $cont);
 	our_file_put_contents("/etc/yum.repos.d/lxcenter.repo", $cont);	
-	print("Fix RHN");
+	print("Fix RHN\n");
 	fix_rhn_sources_file();
-	print("Fix ipconntrack");
+	print("Fix ipconntrack\n");
 	fix_ipconntrack();
 	if (lxfile_exists("/home/hypervm/xen/template")) {
 			print("Check Xen windows-lxblank.img template\n");
@@ -407,7 +398,7 @@ function updateApplicableToSlaveToo()
 	}
 	print("Fix memory graph\n");
    memoryGraphFix();
-	print("Fix permission of closeallinput");
+	print("Fix permission of closeallinput\n");
 	lxfile_unix_chmod("../cexe/closeallinput", "0755");
 	print("Fix LxEtc\n");
 	installLxetc();
@@ -421,7 +412,7 @@ function updateApplicableToSlaveToo()
 	print("Create script dir\n");
 	copy_script();
 	if (!lxfile_exists("/usr/local/lxlabs/kloxo/")) {
-	print("Remove kloxo things as it should not be here\n");
+	print("Remove /usr/local/lxlabs/kloxo/ as it should not be here!\n");
 	system("rmdir /usr/local/lxlabs/kloxo/httpdocs/ >/dev/null 2>&1");
 	system("rmdir /usr/local/lxlabs/kloxo/ >/dev/null 2>&1");
 }

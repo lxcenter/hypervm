@@ -27,7 +27,6 @@ function update_main()
 
 	if ($upversion) {
 		do_upgrade($upversion);
-		//fix_database($upversion);
 		print("Upgrade Done.. Executing Cleanup....\n");
 		flush();
 		} else {
@@ -106,7 +105,7 @@ function findNextVersion($lastversion = null)
 		return 0;
 	}
 
-	print("Upgrading from $thisversion to $upgrade\n");
+	print("Updating from $thisversion to $upgrade\n");
 	return $upgrade;
 
 }
@@ -114,8 +113,8 @@ function findNextVersion($lastversion = null)
 function do_upgrade($upversion)
 {
 	global $gbl, $sgbl, $login, $ghtml; 
-	if (file_exists("CVS")) {
-		print("CVS exists... Development system.. Not upgrading --> exit!...\n");
+	if (file_exists(".git")) {
+		print("Development system.. Not upgrading --> exit!...\n");
 		exit;
 	}
 	$maj = $sgbl->__ver_major;
@@ -143,6 +142,8 @@ function do_upgrade($upversion)
 
 function fixZshEtc()
 {
+    return; // TODO: Remove /root/.etc/
+
 	global $global_dontlogshell;
 	$global_dontlogshell = true;
 

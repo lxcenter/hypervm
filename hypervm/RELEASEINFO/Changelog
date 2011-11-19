@@ -26,8 +26,8 @@ dterweij	- general - Add RELEASEINFO Dir to /usr/local/lxlabs/hypervm/ with info
 dterweij	- general - Cleanup of sourcedirs (removed frontpage data files, not used files, 					etc)
 dterweij	- default skin - fixed a lot missing images at development version.
 dterweij	- default skin - changed image path from kloxo to hypervm (css, image paths)
-•ToDo #304: Fix thirdparty hardcoded version numbers
-
+ToDo #304: Fix thirdparty hardcoded version numbers
+dterweij    - Moved all C sources to one place and Fixed Compile warnings.
 
 
 ################
