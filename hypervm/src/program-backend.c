@@ -1,22 +1,22 @@
-//    HyperVM, Server Virtualization GUI for OpenVZ and Xen
-//
-//    Copyright (C) 2000-2009	LxLabs
-//    Copyright (C) 2009-2011	LxCenter
-//
-//    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Affero General Public License as
-//    published by the Free Software Foundation, either version 3 of the
-//    License, or (at your option) any later version.
-//
-//    This program is distributed in the hope that it will be useful,
-//    but WITHOUT ANY WARRANTY; without even the implied warranty of
-//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Affero General Public License for more details.
-//
-//    You should have received a copy of the GNU Affero General Public License
-//    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
-//
+/*
+    HyperVM, Server Virtualization GUI for OpenVZ and Xen
+
+    Copyright (C) 2000-2009	LxLabs
+    Copyright (C) 2009-2011	LxCenter
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
 
 /*
  * ++
@@ -99,40 +99,7 @@
  *
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <errno.h>
-#include <wait.h>
-#include <netdb.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <dirent.h>
-#include <openssl/crypto.h>
-#include <openssl/ssl.h>
-#include <openssl/err.h>
-
-#define RSA_SERVER_CERT     "/usr/local/lxlabs/kloxo/file/backend.crt"
-#define RSA_SERVER_KEY          "/usr/local/lxlabs/kloxo/file/backend.key"
-
-#define RSA_SERVER_CA_CERT "server_ca.crt"
-#define RSA_SERVER_CA_PATH   "sys$common:[syshlp.examples.ssl]"
-
-#define MASTER 0
-#define SLAVE 1
-#define ON 1
-#define OFF 0
-
-#define MAX(x,y) if ((x) > (y)) return x; else return y;
-
-#define RETURN_NULL(x) if ((x)==NULL) exit(1)
-#define RETURN_ERR(err,s) if ((err)==-1) { perror(s); exit(1); }
-#define RETURN_SSL(err) if ((err)==-1) { ERR_print_errors_fp(stderr); exit(1); }
-
-int global_type;
+#include "program-backend.h"
 
 int run_php_prog_ssl(SSL *ssl, int sock)
 {
@@ -172,11 +139,7 @@ int run_php_prog_ssl(SSL *ssl, int sock)
 
 	printf("Input %d %s\n", strlen(data), data);
 	bzero(buf, sizeof(buf));
-	//printf ("Received %d chars:'%s'\n", err, buf);
-
-
-
-
+	/* printf ("Received %d chars:'%s'\n", err, buf); */
 
 	strcpy(tmpname, "/tmp/lxlabs_backendXXXXXX");
 	mkstemp(tmpname);
@@ -202,7 +165,7 @@ int run_php_prog_ssl(SSL *ssl, int sock)
 				p = ssl_or_tcp_write(ssl, sock, buf, n);
 			} else {
 				printf("Got %d\n\n", totaln);
-				// Dummy Read... A Must
+				/* Dummy Read... A Must */
 				while (1) {
 					bzero(tmpname, sizeof(tmpname));
 					p = ssl_or_tcp_read(ssl, sock, tmpname, sizeof(tmpname));
@@ -241,22 +204,8 @@ int ssl_or_tcp_read(SSL *ssl, int sock, char * buf, int n)
 
 SSL_CTX * ssl_init()
 {
-	int     err;
 	int     verify_client = OFF; /* To verify a client certificate, set ON */
-
-	size_t client_len;
-	char    *str;
-	char     buf[4096];
-
-	SSL_CTX         *ctx;
-	SSL            *ssl;
-	SSL_METHOD      *meth;
-
-
-
-
-
-	X509            *client_cert = NULL;
+	SSL_CTX * ctx;
 
 	/*----------------------------------------------------------------*/
 	/* Load encryption & hashing algorithms for the SSL program */
@@ -266,17 +215,13 @@ SSL_CTX * ssl_init()
 	SSL_load_error_strings();
 
 	/* Create a SSL_METHOD structure (choose a SSL/TLS protocol version) */
-	meth = SSLv2_method();
-
 	/* Create a SSL_CTX structure */
-	ctx = SSL_CTX_new(meth);
+
+	ctx = SSL_CTX_new((SSL_METHOD *) SSLv23_client_method());
 
 	if (!ctx) {
-
 		ERR_print_errors_fp(stderr);
-
 		exit(1);
-
 	}
 
 	/* Load the server certificate into the SSL_CTX structure */
@@ -320,21 +265,15 @@ SSL_CTX * ssl_init()
 	}
 
 	return ctx;
-
-
 }
-
 
 char tcp_create_socket(short int s_port)
 {
-	/* ----------------------------------------------- */
 	/* Set up a TCP socket */
 
 	int     err;
 	int     listen_sock;
-	int     sock;
 	struct sockaddr_in sa_serv;
-	struct sockaddr_in sa_cli;
 
 	listen_sock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
 
@@ -349,32 +288,14 @@ char tcp_create_socket(short int s_port)
 	return listen_sock;
 }
 
-
 char * ssl_sock_read(int sock, SSL_CTX *ctx)
 {
-
 	int     err;
 	int     verify_client = OFF; /* To verify a client certificate, set ON */
-
-	int pid;
-	struct sockaddr_in sa_serv;
-	struct sockaddr_in sa_cli;
-	size_t client_len;
 	char    *str;
-	char     buf[4096];
-
 	SSL            *ssl;
-	SSL_METHOD      *meth;
-
 	X509            *client_cert = NULL;
 
-
-
-
-
-
-
-	/* ----------------------------------------------- */
 	/* TCP connection is ready. */
 	/* A SSL structure is created */
 	ssl = SSL_new(ctx);
@@ -390,20 +311,20 @@ char * ssl_sock_read(int sock, SSL_CTX *ctx)
 	RETURN_SSL(err);
 
 	/* Informational output (optional) */
-	//printf("SSL connection using %s\n", SSL_get_cipher (ssl));
+	/* printf("SSL connection using %s\n", SSL_get_cipher (ssl)); */
 
 	if (verify_client == ON) {
 		/* Get the client's certificate (optional) */
 		client_cert = SSL_get_peer_certificate(ssl);
 		if (client_cert != NULL) {
-			//printf ("Client certificate:\n");
+			/* printf ("Client certificate:\n"); */
 			str = X509_NAME_oneline(X509_get_subject_name(client_cert), 0, 0);
 			RETURN_NULL(str);
-			//printf ("\t subject: %s\n", str);
+			/* printf ("\t subject: %s\n", str); */
 			free (str);
 			str = X509_NAME_oneline(X509_get_issuer_name(client_cert), 0, 0);
 			RETURN_NULL(str);
-			//printf ("\t issuer: %s\n", str);
+			/* printf ("\t issuer: %s\n", str); */
 			free (str);
 			X509_free(client_cert);
 		} else
@@ -424,12 +345,11 @@ char * ssl_sock_read(int sock, SSL_CTX *ctx)
 	err = close(sock);
 	RETURN_ERR(err, "close");
 	/* Free the SSL structure */
-	//SSL_free(ssl);
+	/* SSL_free(ssl); */
 	/* Free the SSL_CTX structure */
-	//SSL_CTX_free(ctx);
-	exit(0);
+	/* SSL_CTX_free(ctx); */
+	exit(EXIT_SUCCESS);
 }
-
 
 int tcp_sock_read(int sock)
 {
@@ -439,21 +359,19 @@ int tcp_sock_read(int sock)
 	exit(0);
 }
 
-
 int accept_and(int listen_sock)
 {
-
 	int sock;
 	struct sockaddr_in sa_cli;
 	size_t client_len;
 	client_len = sizeof(sa_cli);
 	/* Socket for a TCP/IP connection is created */
 	sock = accept(listen_sock, (struct sockaddr*)&sa_cli, &client_len);
-	//printf ("Connection from %lx, port %x\n", sa_cli.sin_addr.s_addr, sa_cli.sin_port);
+	/* printf ("Connection from %lx, port %x\n", sa_cli.sin_addr.s_addr, sa_cli.sin_port); */
 	return sock;
 }
 
-ssl_or_tcp_fork(int listen_socket, SSL_CTX *ctx)
+void ssl_or_tcp_fork(int listen_socket, SSL_CTX *ctx)
 {
 	int pid;
 	int sock;
@@ -474,16 +392,16 @@ ssl_or_tcp_fork(int listen_socket, SSL_CTX *ctx)
 
 int close_and_system(char *cmd)
 {
-	int i, pid;
-	pid = fork();
-	if (pid == 0) {
+	int i;
+
+	if (fork() == 0) {
 		for(i = 3; i< 1024; i++) {
 			close(i);
 		}
 		system(cmd);
 		exit(9);
 	} else {
-		return;
+		return 0;
 	}
 }
 
@@ -491,12 +409,9 @@ int process_timed(int counter)
 {
 	struct dirent **namelist;
 	char cmd[BUFSIZ];
-	struct tm tms;
-	time_t tim;
-	int n;
-	int i;
-	char *position, *neededstring;
 
+	int n;
+	char *position, *neededstring;
 
 	n = scandir("../etc/.restart/", &namelist, 0, alphasort);
 	if (n < 0)
@@ -532,13 +447,13 @@ int process_timed(int counter)
 	}
 
 	if (global_type == SLAVE) {
-		return;
+		return 0;
 	}
 
-	// Only for master
-	
+	/* Only for master */
 	exec_scavenge();
 
+	return 0;
 }
 
 
@@ -563,7 +478,6 @@ int exec_scavenge()
 		}
 	}
 
-
 	time(&tim);
 	localtime_r(&tim, &tms);
 	printf("Now Value: %d %d\n", tms.tm_hour, tms.tm_min);
@@ -580,11 +494,12 @@ int exec_scavenge()
 		printf("Execing scavenge...\n");
 		close_and_system("/usr/local/lxlabs/ext/php/php ../bin/scavenge.php >/dev/null 2>&1 &");
 	}
+
+	return 0;
 }
 
 int process_timed_in_child()
 {
-	int pid;
 	static int counter;
 	process_timed(counter);
 	if (counter == 999999) counter = 0;
@@ -592,12 +507,8 @@ int process_timed_in_child()
 	return 0;
 }
 
-
 int main(int argc, char **argv)
 {
-	int err;
-	int pid;
-	int sock;
 	fd_set socklist; 
 	int status;
 	int ssl_sock, tcp_sock, max_sock;
@@ -610,7 +521,6 @@ int main(int argc, char **argv)
 		printf("Usage: %s master/slave\n", argv[0]);
 		exit(0);
 	}
-
 
 	if (!strcmp(argv[1], "master")) {
 		global_type = MASTER;
@@ -659,15 +569,13 @@ int main(int argc, char **argv)
 		process_timed_in_child();
 		if (select_ret > 0) {
 			if (FD_ISSET(tcp_sock, &socklist)) {
-				//printf("TCP connection %d\n", select_ret);
+				/* printf("TCP connection %d\n", select_ret); */
 				ssl_or_tcp_fork(tcp_sock, NULL);
 			}
 			if (FD_ISSET(ssl_sock, &socklist)) {
-				//printf("SSl connection %d\n", select_ret);
+				/* printf("SSl connection %d\n", select_ret); */
 				ssl_or_tcp_fork(ssl_sock, ctx);
 			}
 		}
 	}
-
 }
-

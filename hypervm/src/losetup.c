@@ -1,36 +1,24 @@
-//    HyperVM, Server Virtualization GUI for OpenVZ and Xen
-//
-//    Copyright (C) 2000-2009	LxLabs
-//    Copyright (C) 2009-2011	LxCenter
-//
-//    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Affero General Public License as
-//    published by the Free Software Foundation, either version 3 of the
-//    License, or (at your option) any later version.
-//
-//    This program is distributed in the hope that it will be useful,
-//    but WITHOUT ANY WARRANTY; without even the implied warranty of
-//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Affero General Public License for more details.
-//
-//    You should have received a copy of the GNU Affero General Public License
-//    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
-//
+/*
+    HyperVM, Server Virtualization GUI for OpenVZ and Xen
 
-#include <stdio.h>
-#include <string.h>
-#include <ctype.h>
-#include <fcntl.h>
-#include <errno.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <sys/ioctl.h>
-#include <sys/stat.h>
-#include <sys/mman.h>
-#define dev_t int
-#include <linux/loop.h>
+    Copyright (C) 2000-2009	LxLabs
+    Copyright (C) 2009-2011	LxCenter
 
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+#include "losetup.h"
 
 int find_unused_loop_device(char **ret)
 {
@@ -40,10 +28,12 @@ int find_unused_loop_device(char **ret)
 
 	char dev[20];
 	char *loop_formats[] = { "/dev/loop%d", "/dev/loop/%d" };
-	int i, j, fd, somedev = 0, someloop = 0, loop_known = 0;
+	int i, j, fd, somedev = 0, someloop = 0; /* loop_known = 0 unused */
 	struct stat statbuf;
 	struct loop_info loopinfo;
-	FILE *procdev;
+
+	/* FILE *procdev; Unused var? Seems to be only dev? */
+
 	for (j = 0; j < 2; j++) {
 		for(i = 0; i < 256; i++) {
 			sprintf(dev, loop_formats[j], i);
@@ -55,7 +45,6 @@ int find_unused_loop_device(char **ret)
 					if(ioctl (fd, LOOP_GET_STATUS, &loopinfo) == 0) {
 						someloop++;             /* in use */
 					} else if (errno == ENXIO) {
-						//perror("");
 						close (fd);
 						*ret = strdup(dev);
 						return 1;
@@ -70,20 +59,23 @@ int find_unused_loop_device(char **ret)
 			return 0;
 		}
 	}
-}
 
+	return 0;
+}
 
 int main()
 {
 	int status;
 	char *device;
+
 	status = find_unused_loop_device(&device);
 	printf("%s\n", device);
 
 	if (status) {
-		exit(0);
+		exit(EXIT_SUCCESS);
 	} else {
 		exit(10);
 	}
-}
 
+	return EXIT_SUCCESS;
+}
