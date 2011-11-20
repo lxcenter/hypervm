@@ -44,7 +44,7 @@ rm -f hypervm-$version.zip
 echo "### Compile c files..."
 # Compile C files
 cd src
-make ; make install
+make all ; make install
 cd ../
 #
 echo "### Create zip package..."
