@@ -1,43 +1,38 @@
-//    HyperVM, Server Virtualization GUI for OpenVZ and Xen
-//
-//    Copyright (C) 2000-2009	LxLabs
-//    Copyright (C) 2009-2011	LxCenter
-//
-//    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU Affero General Public License as
-//    published by the Free Software Foundation, either version 3 of the
-//    License, or (at your option) any later version.
-//
-//    This program is distributed in the hope that it will be useful,
-//    but WITHOUT ANY WARRANTY; without even the implied warranty of
-//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU Affero General Public License for more details.
-//
-//    You should have received a copy of the GNU Affero General Public License
-//    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
-//
+/*
+    HyperVM, Server Virtualization GUI for OpenVZ and Xen
 
-#include <stdio.h>
-#include <sys/types.h>
-#include <unistd.h>
-#include <pwd.h>
-#include <string.h>
+    Copyright (C) 2000-2009	LxLabs
+    Copyright (C) 2009-2011	LxCenter
 
-char *get_vm_name()
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+#include "lxlogin.h"
+
+char *get_vm_name(void)
 {
-	int uid;
+	uid_t uid;
 	char *s, *name;
 
 	struct passwd * pwd;
 
-	
 	uid = getuid();
 
 	pwd = getpwuid(uid);
 
 	if (!pwd) {
-		printf("Could Not find the User\n");
+		fprintf(stderr, "Could Not find the User\n");
 		_exit(8);
 	}
 
@@ -45,7 +40,7 @@ char *get_vm_name()
 	name = strstr(s, " for ");
 
 	if (!name) {
-		printf("Could Not find the virtual Machine Name\n");
+		fprintf(stderr, "Could Not find the virtual Machine Name\n");
 		_exit(9);
 	}
 
