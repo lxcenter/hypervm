@@ -1,5 +1,5 @@
 /*
-	HyperVM, Server Virtualization GUI for OpenVZ and Xen
+    HyperVM, Server Virtualization GUI for OpenVZ and Xen
 
     Copyright (C) 2000-2009	LxLabs
     Copyright (C) 2009-2011	LxCenter
@@ -16,20 +16,23 @@
 
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 */
 
-#include "lxlogin.h"
+#define _POSIX_SOURCE
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <stdlib.h>
+#include <pwd.h>
 
-int main()
-{
-	/* [TODO] Reserve memory with malloc here */
-	char *s;
-	s = get_vm_name(); /* This should return NULL if invalid */
+#define OPENVZ_BINARY "vzctl"
+#define XEN_BINARY    "xm"
 
-	putenv("PATH=/sbin:/usr/sbin:/bin:/usr/bin:/usr/local/bin");
-	printf("Logging into Xen Virtual machine %s, Press Ctrl-] to Quit. Press a couple of Enters to start.\n", s);
-	execlp(XEN_BINARY, XEN_BINARY, "console", s, NULL);
+/* Avoid Debian warnings "implicit-function-declaration" */
+int setegid(gid_t);
+int seteuid(uid_t);
+int putenv(char *);
 
-	return EXIT_SUCCESS;
-}
+char *get_vm_name();

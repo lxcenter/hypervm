@@ -17,31 +17,44 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 #
-
-LIBS=-lssl
+PREFIX=lx
+LIBS=-I/usr/include -lssl
 CC=gcc
-CFLAGS=-o
+DEBUG = -g
+CFLAGS = -Wall -ansi -pedantic -Wextra -Werror  $(DEBUG)
+LFLAGS = -Wall -c $(DEBUG)
 
-all:
-	${CC} ${CFLAGS} lxxen lxxen.c
-	${CC} ${CFLAGS} lxopenvz lxopenvz.c
-	${CC} ${CFLAGS} findfreeloop losetup.c
-	${CC} ${CFLAGS} lxrestart lxrestart.c
-	${CC} ${CFLAGS} hypervm.exe program-backend.c ${LIBS}
+xen:
+	${CC} ${CFLAGS} ${PREFIX}login.c ${PREFIX}xen.c -o ${PREFIX}xen
+	
+openvz:
+	${CC} ${CFLAGS} ${PREFIX}login.c ${PREFIX}openvz.c -o ${PREFIX}openvz
+	
+freeloop:
+	${CC} ${CFLAGS} losetup.c -o findfreeloop 
+	
+restart:
+	${CC} ${CFLAGS} ${PREFIX}restart.c -o ${PREFIX}restart 
+
+backend:
+	${CC} ${CFLAGS} -o hypervm.exe program-backend.c ${LIBS}
+
+all: xen openvz freeloop restart backend
 
 install: 
-	cp lxxen ../sbin/lxxen
-	mv lxxen ../cexe/lxxen
-	cp lxopenvz ../sbin/lxopenvz
-	mv lxopenvz ../cexe/lxopenvz
-	cp lxrestart ../sbin/lxrestart
-	mv lxrestart ../cexe/lxrestart
+	cp ${PREFIX}xen ../sbin/lxxen
+	mv ${PREFIX}xen ../cexe/lxxen
+	
+	cp ${PREFIX}openvz ../sbin/lxopenvz
+	mv ${PREFIX}openvz ../cexe/lxopenvz
+	
+	cp ${PREFIX}restart ../sbin/lxrestart
+	mv ${PREFIX}restart ../cexe/lxrestart
+	
 	mv findfreeloop ../sbin/findfreeloop
+	
 	cp hypervm.exe ../sbin/hypervm.exe.core
 	mv hypervm.exe ../sbin/hypervm.exe
 
-.PHONY: clean
-
 clean:
-
-
+	\rm -rf *.o *~ ${PREFIX}xen ${PREFIX}openvz ${PREFIX}restart findfreeloop hypervm.exe
