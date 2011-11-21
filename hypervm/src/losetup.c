@@ -27,7 +27,7 @@ int find_unused_loop_device(char **ret)
 	   So, we just try /dev/loop[0-7]. */
 
 	char dev[20];
-	char *loop_formats[] = { "/dev/loop%d", "/dev/loop/%d" };
+	const char *loop_formats[] = { "/dev/loop%d", "/dev/loop/%d" };
 	int i, j, fd, somedev = 0, someloop = 0; /* loop_known = 0 unused */
 	struct stat statbuf;
 	struct loop_info loopinfo;

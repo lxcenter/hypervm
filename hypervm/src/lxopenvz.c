@@ -24,7 +24,7 @@ int main()
 {
 	char *s;
 	s = get_vm_name();
-	putenv("PATH=/sbin:/usr/sbin:/bin:/usr/bin:/usr/local/bin");
+	putenv(SEARCH_PATHS);
 	execlp(OPENVZ_BINARY, OPENVZ_BINARY, "enter", s, NULL);
 
 	return EXIT_SUCCESS;

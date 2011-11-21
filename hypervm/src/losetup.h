@@ -21,6 +21,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <ctype.h>
 #include <fcntl.h>
 #include <errno.h>
@@ -29,7 +30,10 @@
 #include <sys/ioctl.h>
 #include <sys/stat.h>
 #include <sys/mman.h>
-#define dev_t int
+
+/* Avoid error "specifier-qualifier-list" on 2.6.18 kernels (Centos) */
+#define __u64 int
+
 #include <linux/loop.h>
 
 /* Avoid Debian warnings "implicit-function-declaration" */
@@ -39,3 +43,5 @@ int   execvp(const char *file, char *const argv[]);
 uid_t getuid(void);
 gid_t getgid(void);
 int   setenv(const char *, const char *, int);
+
+int find_unused_loop_device(char **ret);

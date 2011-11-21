@@ -27,7 +27,7 @@ int main()
 	char *s;
 	s = get_vm_name(); /* This should return NULL if invalid */
 
-	putenv("PATH=/sbin:/usr/sbin:/bin:/usr/bin:/usr/local/bin");
+	putenv(SEARCH_PATHS);
 	printf("Logging into Xen Virtual machine %s, Press Ctrl-] to Quit. Press a couple of Enters to start.\n", s);
 	execlp(XEN_BINARY, XEN_BINARY, "console", s, NULL);
 

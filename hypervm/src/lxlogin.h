@@ -29,10 +29,14 @@
 
 #define OPENVZ_BINARY "vzctl"
 #define XEN_BINARY    "xm"
+#define SEARCH_PATHS  "PATH=/sbin:/usr/sbin:/bin:/usr/bin:/usr/local/bin"
 
 /* Avoid Debian warnings "implicit-function-declaration" */
 int setegid(gid_t);
 int seteuid(uid_t);
-int putenv(char *);
+int putenv(const char *);
 
-char *get_vm_name();
+#ifndef _GET_VM_NAME_
+	#define _GET_VM_NAME_
+	char *get_vm_name();
+#endif

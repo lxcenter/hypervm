@@ -55,7 +55,7 @@ int main(int argc, char **argv)
 		   for debugging purposes
 		 */
 		if (debug) {
-			printf("%s: Not allowed to execute\n", pwd->pw_name);
+			fprintf(stderr, "%s: Not allowed to execute\n", pwd->pw_name);
 		}
 		exit(0);
 	}
@@ -71,7 +71,5 @@ int main(int argc, char **argv)
 	seteuid(0);
 	
 	snprintf(buf, BUFSIZ - 1, "/etc/init.d/%s backendrestart", argv[1]);
-	system(buf);
-
-	return EXIT_SUCCESS;
+	return system(buf);
 }
