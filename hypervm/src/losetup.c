@@ -18,6 +18,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+
 #include "losetup.h"
 
 int find_unused_loop_device(char **ret)

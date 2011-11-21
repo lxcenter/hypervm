@@ -26,11 +26,7 @@ echo "### Start compiling"
 # Compile C files
 # Part 1
 cd src/
-<<<<<<< HEAD
-make all ; make install
-=======
 make all; make install
->>>>>>> 1cefcee0957fc438c1b17ffd8cc42a3d9b0250f7
 cd ../
 echo "### Finished"
 echo "################################"

@@ -18,7 +18,6 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 /*
 	HyperVM wrapper. Allows the php script - which runs as HyperVM user to execute
 	programs that need root privileges.
