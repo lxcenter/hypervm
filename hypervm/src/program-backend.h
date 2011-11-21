@@ -25,6 +25,7 @@
 #include <wait.h>
 #include <netdb.h>
 #include <unistd.h>
+#include <sys/select.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -55,10 +56,12 @@ char    * ssl_sock_read(int sock, SSL_CTX *ctx);
 int     tcp_sock_read(int sock);
 int     accept_and(int listen_sock);
 void    ssl_or_tcp_fork(int listen_socket, SSL_CTX *ctx);
-int     close_and_system(char *cmd);
+int     close_and_system(const char *cmd);
 int     process_timed(int counter);
 int     exec_scavenge();
 int     process_timed_in_child();
+
+#define SCAVENGE_TIME_FILE "../etc/conf/scavenge_time.conf"
 
 #define RSA_SERVER_CERT     "/usr/local/lxlabs/kloxo/file/backend.crt"
 #define RSA_SERVER_KEY          "/usr/local/lxlabs/kloxo/file/backend.key"

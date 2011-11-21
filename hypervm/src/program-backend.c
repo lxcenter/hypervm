@@ -111,10 +111,13 @@ int run_php_prog_ssl(SSL *ssl, int sock)
 	int n, p, totaln;
 	int pipefd[2];
 	FILE *fp;
+	int status;
+	char *data;
+	char *data1;
 
-
-	char *data = NULL;
-	char *data1 = NULL;
+	data = NULL;
+	data1 = NULL;
+	totaln = 0;
 	bzero(buf, sizeof(buf));
 	while (1) {
 		err = ssl_or_tcp_read(ssl, sock, buf, sizeof(buf) - 1);
@@ -147,7 +150,13 @@ int run_php_prog_ssl(SSL *ssl, int sock)
 	fwrite(data, strlen(data), 1, fp);
 	fclose(fp);
 	snprintf(ftempname, sizeof(ftempname), "--temp-input-file=%s", tmpname);
-	pipe(pipefd);
+
+	status = pipe(pipefd);
+
+	if (status == -1 ) {
+		fprintf(stderr, "Could not create the pipe\n");
+	}
+
 	pid = fork();
 	if (pid == 0) {
 		dup2(pipefd[1], 1);
@@ -158,6 +167,7 @@ int run_php_prog_ssl(SSL *ssl, int sock)
 	} else {
 		close(pipefd[1]);
 		printf("Pipe %d\n", pipefd[0]);
+
 		while (1) {
 			n = read(pipefd[0], buf, sizeof(buf));
 			totaln += n;
@@ -390,7 +400,7 @@ void ssl_or_tcp_fork(int listen_socket, SSL_CTX *ctx)
 	close(sock);
 }
 
-int close_and_system(char *cmd)
+int close_and_system(const char *cmd)
 {
 	int i;
 
@@ -398,8 +408,7 @@ int close_and_system(char *cmd)
 		for(i = 3; i< 1024; i++) {
 			close(i);
 		}
-		system(cmd);
-		exit(9);
+		exit(system(cmd));
 	} else {
 		return 0;
 	}
@@ -470,11 +479,12 @@ int exec_scavenge()
 	hour = 3;
 	min = 35;
 
-	if (!access("../etc/conf/scavenge_time.conf", R_OK)) {
-		fp = fopen("../etc/conf/scavenge_time.conf", "r");
+	if (!access(SCAVENGE_TIME_FILE, R_OK)) {
+		fp = fopen(SCAVENGE_TIME_FILE, "r");
 		if (fp) {
-			fscanf(fp, "%d %d", &hour, &min);
-			fclose(fp);
+			if (fscanf(fp, "%d %d", &hour, &min) == EOF) {
+				fclose(fp);
+			}
 		}
 	}
 
@@ -531,12 +541,21 @@ int main(int argc, char **argv)
 	uid = getuid();
 
 	if (uid != 0) {
-		printf("Not root user\n");
+		fprintf(stderr, "Not root user\n");
 		exit(6);
 	}
 
-	system("/usr/local/lxlabs/ext/php/php ../bin/sisinfoc.php");
-	system("/usr/local/lxlabs/ext/php/php ../bin/execatstart.php");
+	if(system("/usr/local/lxlabs/ext/php/php ../bin/sisinfoc.php") != EXIT_SUCCESS)
+	{
+		fprintf(stderr, "Could not execute sisinfoc.php\n");
+		exit(EXIT_FAILURE);
+	}
+
+	if(system("/usr/local/lxlabs/ext/php/php ../bin/execatstart.php") != EXIT_SUCCESS)
+	{
+		fprintf(stderr, "Could not execute sisinfoc.php\n");
+		exit(EXIT_FAILURE);
+	}
 
 	ctx = ssl_init();
 

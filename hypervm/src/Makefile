@@ -21,7 +21,12 @@ PREFIX=lx
 LIBS=-I/usr/include -lssl
 CC=gcc
 DEBUG = -g
-CFLAGS = -Wall -ansi -pedantic -Wextra -Werror  $(DEBUG)
+CFLAGS = -Wall -O2 -std=c99 -ansi -pedantic -Wextra -Werror -Wunused \
+-Wimplicit -Wshadow -Wformat=2 -Wmissing-declarations   \
+-Wno-missing-prototypes -Wwrite-strings                 \
+-Wbad-function-cast -Wnested-externs -Wcomment -Winline \
+-Wchar-subscripts -Wcast-align -Wno-format-nonliteral   \
+-Wsequence-point -Wdeclaration-after-statement $(DEBUG)
 LFLAGS = -Wall -c $(DEBUG)
 
 xen:
