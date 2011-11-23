@@ -2866,7 +2866,10 @@ function copy_script()
 // dterweij
 function copy_image()
 {
-	global $gbl, $sgbl, $login, $ghtml; 
+// TODO Remove this
+    return ;
+
+	global $gbl, $sgbl, $login, $ghtml;
 	$prgm = $sgbl->__var_program_name;
 
 	lxfile_cp_content("tmpimg/", "img/image/collage/button/");
@@ -2994,17 +2997,7 @@ function if_not_admin_complain_and_exit()
 function initProgram($ctype = NULL)
 {
 	global $gbl, $sgbl, $login, $ghtml;
-
-   // print(ini_get("error_log"));
-   // print(ini_set("error_log", getreal("Erros")));
-
-	// Hack arond the iis setcookie bug
-	if (WindowsOs() && $sgbl->isKloxo()) {
-		//setcookie("kloxo-classname", "client", time() + 379999999);
-		//setcookie("kloxo-clientname", "admin", time() + 379999999);
-	}
-	initProgramlib($ctype);
-
+    initProgramlib($ctype);
 }
 
 
@@ -3749,6 +3742,7 @@ function get_class_for_table($table)
 
 function is_centosfive()
 {
+    //TODO Fix this like Kloxo lib
 	$cont = lfile_get_contents("/etc/redhat-release");
 	if (csa($cont, " 5 ") || csa($cont, " 5.")) {
 		return true;
