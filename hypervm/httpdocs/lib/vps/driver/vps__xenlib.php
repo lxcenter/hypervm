@@ -1712,39 +1712,10 @@ function setInternalParam($mountpoint)
 		//lxfile_cp("/usr/share/zoneinfo/{$this->main->timezone}", "$mountpoint/etc/localtime");
 	}
 
-	if (csb($this->main->ostemplate, "centos")) {
-		//addLineIfNotExistInside("$mountpoint/etc/rc.local", 
-		//addLineIfNotExistInside("$mountpoint/etc/rc.local", "depmod", "#added by hyperVM since the kernel can change without notice");
-	} else {
-	}
-
-	$content = "#added by hyperVM to kill the runaway nash\n";
-	$content .= "pkill -f nash\n";
-	lfile_put_contents("$mountpoint/etc/init.d/killnash", $content);
-	lxfile_unix_chmod("$mountpoint/etc/init.d/killnash", "0755");
-
-	/*
-	if (lxfile_exists("$mountpoint/etc/rc0.d")) {
-		foreach(range(2, 6) as $ii) {
-			lxshell_return("ln", "-sf", "../init.d/killnash", "$mountpoint/etc/init.d/rc$ii.d/S99killnash");
-		}
-	} else {
-	}
-*/
-
-	foreach(range(2, 6) as $ii) {
-		lxshell_return("ln", "-sf", "../init.d/killnash", "$mountpoint/etc/rc$ii.d/S99killnash");
-	}
-
-	if (lxfile_exists("$mountpoint/etc/runlevels/default")) {
-		lxshell_return("ln", "-sf", "../../init.d/killnash", "$mountpoint/etc/runlevels/default/killnash");
-	}
-
 	lunlink("$mountpoint/etc/sysconfig/network-scripts/ifcfg-venet0");
 	lunlink("$mountpoint/etc/sysconfig/network-scripts/ifcfg-venet0:0");
 
 	$this->main->doKloxoInit($mountpoint);
-
 }
 
 function getScriptS($name)
