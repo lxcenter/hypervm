@@ -1652,22 +1652,13 @@ function setInternalParam($mountpoint)
                 $gw = os_get_network_gateway();
         }
 
-<<<<<<< HEAD
         $gwn = strtil($gw, '.') . '.0';
-=======
-        $gwn = strtil($gw, ".") . ".0";
->>>>>>> 05e46d6ac4912d091d65d872af143798c1669c1e
 
         $hostname = $this->main->hostname;
         if (!$hostname) { $hostname = os_get_hostname(); }
 
-<<<<<<< HEAD
 	if ($result['STARTUP_SCRIPT'] != 'systemd'){
             $name = createTempDir("$mountpoint/tmp", 'xen-scripts');
-=======
-	if ($result['STARTUP_SCRIPT'] != "systemd"){
-            $name = createTempDir("$mountpoint/tmp", "xen-scripts");
->>>>>>> 05e46d6ac4912d091d65d872af143798c1669c1e
 	    lxfile_cp_rec("__path_program_root/bin/xen-dists/scripts/functions", $name);
             lxfile_cp_rec("__path_program_root/bin/xen-dists/scripts/$ipadd", $name);
 	    lxfile_cp_rec("__path_program_root/bin/xen-dists/scripts/$sethostname", $name);
@@ -1679,18 +1670,14 @@ function setInternalParam($mountpoint)
 	    $delipstring = "IPDELALL=yes chroot $mountpoint bash /$basepath/tmpfile.sh";
 
             log_shell($delipstring);
-            log_shell(system($delipstring,$ret1) . ":return $ret1");
+            log_shell(system($delipstring,$ret1).":return $ret1");
 
 	    putenv("VE_STATE=stopped");
 	    lfile_put_contents("$name/tmpfile.sh", "source /$basepath/functions\n source /$basepath/$ipadd\n");
 	    $string = "IPDELALL=yes MAIN_NETMASK=$main_netmask MAIN_IP_ADDRESS=$main_ip IP_ADDR=\"$iplist\" NETWORK_GATEWAY=$gw NETWORK_GATEWAY_NET=$gwn chroot $mountpoint bash /$basepath/tmpfile.sh";
 
 	    log_shell($string);
-<<<<<<< HEAD
 	    log_shell(system($string, $ret1) . ":return $ret1");
-=======
-	    log_shell(system($string,$ret1).":return $ret1");
->>>>>>> 05e46d6ac4912d091d65d872af143798c1669c1e
 
 	    lfile_put_contents("$name/tmpfile.sh", "source /$basepath/functions\n source /$basepath/$sethostname\n");
 	    $string = "HOSTNM=$hostname chroot $mountpoint bash /$basepath/tmpfile.sh";
@@ -1707,7 +1694,6 @@ function setInternalParam($mountpoint)
 		
 		lxfile_rm_rec($name);
 	}
-<<<<<<< HEAD
 	else if ($result['STARTUP_SCRIPT'] == 'systemd'){
 		$script_dir = createTempDir("$mountpoint", "hypervm-runonce");
 		lxfile_cp_rec("__path_program_root/bin/xen-dists/scripts/functions", $script_dir);
@@ -1743,41 +1729,6 @@ function setInternalParam($mountpoint)
 		system("chmod 755 $script_dir/hypervm-runonce.sh");
 	}
 
-=======
-	else if ($result['STARTUP_SCRIPT'] == "systemd"){
-			$script_dir = createTempDir("$mountpoint", "hypervm-runonce");
-            lxfile_cp_rec("__path_program_root/bin/xen-dists/scripts/functions", $script_dir);
-            lxfile_cp_rec("__path_program_root/bin/xen-dists/scripts/$ipadd", $script_dir);
-            lxfile_cp_rec("__path_program_root/bin/xen-dists/scripts/$sethostname", $script_dir);
-            lxfile_cp_rec("__path_program_root/bin/xen-dists/scripts/$setuserpass", $script_dir);
-            lxfile_cp_rec("__path_program_root/bin/xen-dists/scripts/$ipdel", $script_dir);
-            $basepath = strfrom($script_dir, $mountpoint);
-			$startupdir = "lib/systemd/system";
-			$startupscript = "fedora-startup.service";
-			$ro_a = "#!/bin/bash\n";
-			$ro_b = "source $basepath/functions\n";
-			$ro_c = "(";
-			$ro_d = "IPDELALL=yes source $basepath/$ipdel";
-			$ro_e = " & IPDELALL=yes VE_STATE=stopped MAIN_NETMASK=$main_netmask MAIN_IP_ADDRESS=$main_ip IP_ADDR=\"$iplist\" NETWORK_GATEWAY=$gw NETWORK_GATEWAY_NET=$gwn source $basepath/$ipadd";
-			$ro_f = " & HOSTNM=$hostname source $basepath/$sethostname";
-			$ro_g = ")\n";
-			if (($this->main->subaction === 'rebuild') || ($this->main->dbaction === 'add') || ($this->main->isOn('__var_rootpassword_changed') && $this->main->rootpassword)) {
-                $rootpass = "root:{$this->main->rootpassword}";
-				$ro_g = " & USERPW=$rootpass source $basepath/$setuserpass)\n";
-            }
-			$ro_h = "service fedora-startup disable\nrm -f /$startupdir/$startupscript\nrm -rf $basepath";
-            lfile_put_contents("$script_dir/hypervm-runonce.sh", $ro_a.$ro_b.$ro_c.$ro_d.$ro_e.$ro_f.$ro_g.$ro_h);
-
-			lxfile_cp_rec("__path_program_root/bin/xen-dists/scripts/$startupscript", "$mountpoint/$startupdir");
-			lfile_put_contents("$mountpoint/$startupdir/$startupscript", 
-				lfile_get_contents("$mountpoint/$startupdir/$startupscript").
-				"ExecStart=$basepath/hypervm-runonce.sh\n");
-			system("ln -s /lib/systemd/system/fedora-startup.service $mountpoint/etc/systemd/system/multi-user.target.wants/fedora-startup.service");
-			system("chmod 755 $script_dir/hypervm-runonce.sh");
-	}
-
-
->>>>>>> 05e46d6ac4912d091d65d872af143798c1669c1e
 	if ($this->main->nameserver) {
 		$nlist = explode(" ", $this->main->nameserver);
 		$nstring = null;
