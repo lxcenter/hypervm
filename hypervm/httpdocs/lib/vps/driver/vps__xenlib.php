@@ -780,7 +780,7 @@ function createConfig()
 	$string .= "root = '/dev/sda1 ro'\n";
 	
 	//Add pygrub configuration if template name contains pygrub
-	$pygrub_r = explode('-', $this->main->ostemplate);
+	$pygrub_r = explode('-', $this->main->ostemplate); //$pygrub_r is an array which is used to get the output from the explode function.
 	if (stripos($pygrub_r[3], 'pygrub') !== FALSE) {
 		$string .= "kernel = '';\nroot = '';\nbootloader = '/usr/bin/pygrub'\n";
 	}
