@@ -1646,88 +1646,53 @@ function setInternalParam($mountpoint)
 	$setuserpass = $result['SET_USERPASS'];
 	$ipdel = $result['DEL_IP'];
 
-        if ($this->main->networkgateway) {
-                $gw = $this->main->networkgateway;
-        } else {
-                $gw = os_get_network_gateway();
-        }
+	$name = createTempDir("$mountpoint/tmp", "xen-scripts");
+	lxfile_cp_rec("__path_program_root/bin/xen-dists/scripts/functions", $name);
+	lxfile_cp_rec("__path_program_root/bin/xen-dists/scripts/$ipadd", $name);
+	lxfile_cp_rec("__path_program_root/bin/xen-dists/scripts/$sethostname", $name);
+	lxfile_cp_rec("__path_program_root/bin/xen-dists/scripts/$setuserpass", $name);
+	lxfile_cp_rec("__path_program_root/bin/xen-dists/scripts/$ipdel", $name);
 
-        $gwn = strtil($gw, '.') . '.0';
 
-        $hostname = $this->main->hostname;
-        if (!$hostname) { $hostname = os_get_hostname(); }
+	$basepath = strfrom($name, $mountpoint);
+	lfile_put_contents("$name/tmpfile.sh", "source /$basepath/functions\nsource /$basepath/$ipdel\n");
+	$delipstring = "IPDELALL=yes chroot $mountpoint bash /$basepath/tmpfile.sh";
 
-	if ($result['STARTUP_SCRIPT'] != 'systemd'){
-            $name = createTempDir("$mountpoint/tmp", 'xen-scripts');
-	    lxfile_cp_rec("__path_program_root/bin/xen-dists/scripts/functions", $name);
-            lxfile_cp_rec("__path_program_root/bin/xen-dists/scripts/$ipadd", $name);
-	    lxfile_cp_rec("__path_program_root/bin/xen-dists/scripts/$sethostname", $name);
-            lxfile_cp_rec("__path_program_root/bin/xen-dists/scripts/$setuserpass", $name);
-            lxfile_cp_rec("__path_program_root/bin/xen-dists/scripts/$ipdel", $name);
+	if ($this->main->networkgateway) {
+		$gw = $this->main->networkgateway;
+	} else {
+		$gw = os_get_network_gateway();
+	}
 
-	    $basepath = strfrom($name, $mountpoint);
-	    lfile_put_contents("$name/tmpfile.sh", "source /$basepath/functions\nsource /$basepath/$ipdel\n");
-	    $delipstring = "IPDELALL=yes chroot $mountpoint bash /$basepath/tmpfile.sh";
+	log_shell($delipstring);
+	system($delipstring);
 
-            log_shell($delipstring);
-            log_shell(system($delipstring,$ret1) . ":return $ret1");
+	$gwn = strtil($gw, ".") . ".0";
+	putenv("VE_STATE=stopped");
+	lfile_put_contents("$name/tmpfile.sh", "source /$basepath/functions\n source /$basepath/$ipadd\n");
+	$string = "IPDELALL=yes MAIN_NETMASK=$main_netmask MAIN_IP_ADDRESS=$main_ip IP_ADDR=\"$iplist\" NETWORK_GATEWAY=$gw NETWORK_GATEWAY_NET=$gwn chroot $mountpoint bash /$basepath/tmpfile.sh";
 
-	    putenv("VE_STATE=stopped");
-	    lfile_put_contents("$name/tmpfile.sh", "source /$basepath/functions\n source /$basepath/$ipadd\n");
-	    $string = "IPDELALL=yes MAIN_NETMASK=$main_netmask MAIN_IP_ADDRESS=$main_ip IP_ADDR=\"$iplist\" NETWORK_GATEWAY=$gw NETWORK_GATEWAY_NET=$gwn chroot $mountpoint bash /$basepath/tmpfile.sh";
+	log_shell($string);
+	system($string); 
 
-	    log_shell($string);
-	    log_shell(system($string, $ret1) . ":return $ret1");
+	$hostname = $this->main->hostname;
+	if (!$hostname) { $hostname = os_get_hostname(); }
 
-	    lfile_put_contents("$name/tmpfile.sh", "source /$basepath/functions\n source /$basepath/$sethostname\n");
-	    $string = "HOSTNM=$hostname chroot $mountpoint bash /$basepath/tmpfile.sh";
-	    log_shell($string);
-	    log_shell(system($string,$ret1).":return $ret1");
+	lfile_put_contents("$name/tmpfile.sh", "source /$basepath/functions\n source /$basepath/$sethostname\n");
+	$string = "HOSTNM=$hostname chroot $mountpoint bash /$basepath/tmpfile.sh";
+	log_shell($string);
+	system($string);
 
-	    if (($this->main->subaction === 'rebuild') || ($this->main->dbaction === 'add') || ($this->main->isOn('__var_rootpassword_changed') && $this->main->rootpassword)) {
+	if (($this->main->subaction === 'rebuild') || ($this->main->dbaction === 'add') || ($this->main->isOn('__var_rootpassword_changed') && $this->main->rootpassword)) {
 		$rootpass = "root:{$this->main->rootpassword}";
 		lfile_put_contents("$name/tmpfile.sh", "source /$basepath/functions\n source /$basepath/$setuserpass\n");
 		$string = "USERPW=$rootpass chroot $mountpoint bash /$basepath/tmpfile.sh";
 		log_shell($string);
-		log_shell(system($string));
-	    }
-		
-		lxfile_rm_rec($name);
+		system($string);
 	}
-	else if ($result['STARTUP_SCRIPT'] == 'systemd'){
-		$script_dir = createTempDir("$mountpoint", "hypervm-runonce");
-		lxfile_cp_rec("__path_program_root/bin/xen-dists/scripts/functions", $script_dir);
-		lxfile_cp_rec("__path_program_root/bin/xen-dists/scripts/$ipadd", $script_dir);
-		lxfile_cp_rec("__path_program_root/bin/xen-dists/scripts/$sethostname", $script_dir);
-        lxfile_cp_rec("__path_program_root/bin/xen-dists/scripts/$setuserpass", $script_dir);
-		lxfile_cp_rec("__path_program_root/bin/xen-dists/scripts/$ipdel", $script_dir);
-		$basepath = strfrom($script_dir, $mountpoint);
-		$startupdir = 'lib/systemd/system';
-		$startupscript = 'fedora-startup.service';
 
-		$setrootpass = '';
-		if (($this->main->subaction === 'rebuild') || ($this->main->dbaction === 'add') || ($this->main->isOn('__var_rootpassword_changed') && $this->main->rootpassword)) {
-			$rootpass = "root:{$this->main->rootpassword}";
-			$setrootpass = " & USERPW=$rootpass source $basepath/$setuserpass";
-		}
 
-		$run_once_script = "#!/bin/bash\n" .
-			"source $basepath/functions\n" .
-			'(' .
-			"IPDELALL=yes source $basepath/$ipdel" .
-			" & IPDELALL=yes VE_STATE=stopped MAIN_NETMASK=$main_netmask MAIN_IP_ADDRESS=$main_ip IP_ADDR=\"$iplist\" NETWORK_GATEWAY=$gw NETWORK_GATEWAY_NET=$gwn source $basepath/$ipadd" .
-			" & HOSTNM=$hostname source $basepath/$sethostname" .
-			"$setrootpass)\n" .
-			"service fedora-startup disable\nrm -f /$startupdir/$startupscript\nrm -rf $basepath";
-		lfile_put_contents("$script_dir/hypervm-runonce.sh", $run_once_script);
-
-		lxfile_cp_rec("__path_program_root/bin/xen-dists/scripts/$startupscript", "$mountpoint/$startupdir");
-		lfile_put_contents("$mountpoint/$startupdir/$startupscript", 
-			lfile_get_contents("$mountpoint/$startupdir/$startupscript") .
-			"ExecStart=$basepath/hypervm-runonce.sh\n");
-		system("ln -s /lib/systemd/system/fedora-startup.service $mountpoint/etc/systemd/system/multi-user.target.wants/fedora-startup.service");
-		system("chmod 755 $script_dir/hypervm-runonce.sh");
-	}
+	lxfile_rm_rec($name);
 
 	if ($this->main->nameserver) {
 		$nlist = explode(" ", $this->main->nameserver);
