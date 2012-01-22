@@ -1670,7 +1670,7 @@ function setInternalParam($mountpoint)
 	    $delipstring = "IPDELALL=yes chroot $mountpoint bash /$basepath/tmpfile.sh";
 
             log_shell($delipstring);
-            log_shell(system($delipstring,$ret1).":return $ret1");
+            log_shell(system($delipstring,$ret1) . ":return $ret1");
 
 	    putenv("VE_STATE=stopped");
 	    lfile_put_contents("$name/tmpfile.sh", "source /$basepath/functions\n source /$basepath/$ipadd\n");
