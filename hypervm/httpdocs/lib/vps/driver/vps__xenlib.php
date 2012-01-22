@@ -781,8 +781,9 @@ function createConfig()
 	
 	//Add pygrub configuration if template name contains pygrub
 	$pygrub_r = explode('-', $this->main->ostemplate);
-	if (stripos($pygrub_r[3], 'pygrub') !== FALSE)
+	if (stripos($pygrub_r[3], 'pygrub') !== FALSE) {
 		$string .= "kernel = '';\nroot = '';\nbootloader = '/usr/bin/pygrub'\n";
+	}
 
 	if ($this->main->text_xen_config) {
 		$string .= "{$this->main->text_xen_config}\n";
