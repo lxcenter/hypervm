@@ -778,6 +778,12 @@ function createConfig()
 	$string .= "serial     = 'pty'\n";
 	$string .= "disk       = ['$loc:{$this->main->maindisk},sda1,w', '$loc:{$this->main->swapdisk},sda2,w']\n";
 	$string .= "root = '/dev/sda1 ro'\n";
+	
+	//Add pygrub configuration if template name contains pygrub
+	$pygrub_record = explode('-', $this->main->ostemplate);
+	if (stripos($pygrub_record[3], 'pygrub') !== FALSE) {
+		$string .= "kernel = '';\nroot = '';\nbootloader = '/usr/bin/pygrub'\n";
+	}
 
 	if ($this->main->text_xen_config) {
 		$string .= "{$this->main->text_xen_config}\n";
