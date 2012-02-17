@@ -59,6 +59,17 @@ class vps__xen extends Lxdriverclass {
 		}
 	}
 
+	/**
+	* Finds the xen traffic on all the interfaces.
+	* 
+	* It recollect the total, incoming and outgoing traffic from
+	* all the xen interfaces.
+	*
+	* @author Anonymous <anonymous@lxcenter.org>
+	* @author Ángel Guzmán Maeso <angel.guzman@lxcenter.org>
+	*
+	* @return void
+	*/
 	public static function find_traffic()
 	{
 		global $gbl, $sgbl, $login, $ghtml; 
@@ -70,8 +81,13 @@ class vps__xen extends Lxdriverclass {
 			$interfaces_list = lfile_trim('__path_program_etc/xeninterface.list');
 		
 			if (!lxfile_exists('__path_program_etc/newxeninterfacebw.data')) {
-				foreach($interfaces_list as $interface) {
-					$total[$interface] = self::get_bytes_for_interface($interface);
+				
+				$total = NULL;
+				
+				if (!empty($interfaces_list)) {
+					foreach($interfaces_list as $interface) {
+						$total[$interface] = self::get_bytes_for_interface($interface);
+					}
 				}
 				
 				// Print debugging info recollected
@@ -85,27 +101,29 @@ class vps__xen extends Lxdriverclass {
 		
 			$total = NULL;
 		
-			foreach($interfaces_list as $interface) {
-				$total[$interface] = self::get_bytes_for_interface($interface);
-		
-				if (isset($data[$interface])) {
-					if ($total[$interface]['total'] < $data[$interface]['total']) {
+			if (!empty($interfaces_list)) {
+				foreach($interfaces_list as $interface) {
+					$total[$interface] = self::get_bytes_for_interface($interface);
+			
+					if (isset($data[$interface])) {
+						if ($total[$interface]['total'] < $data[$interface]['total']) {
+							$total_traffic          = $total[$interface]['total'];
+							$total_traffic_incoming = $total[$interface]['incoming'];
+							$total_traffic_outgoing = $total[$interface]['outgoing'];
+						} else {
+							$total_traffic          = $total[$interface]['total'] - $data[$interface]['total'];
+							$total_traffic_incoming = $total[$interface]['incoming'] - $data[$interface]['incoming'];
+							$total_traffic_outgoing = $total[$interface]['outgoing'] - $data[$interface]['outgoing'];
+						}
+					} else {
 						$total_traffic          = $total[$interface]['total'];
 						$total_traffic_incoming = $total[$interface]['incoming'];
 						$total_traffic_outgoing = $total[$interface]['outgoing'];
-					} else {
-						$total_traffic          = $total[$interface]['total'] - $data[$interface]['total'];
-						$total_traffic_incoming = $total[$interface]['incoming'] - $data[$interface]['incoming'];
-						$total_traffic_outgoing = $total[$interface]['outgoing'] - $data[$interface]['outgoing'];
 					}
-				} else {
-					$total_traffic          = $total[$interface]['total'];
-					$total_traffic_incoming = $total[$interface]['incoming'];
-					$total_traffic_outgoing = $total[$interface]['outgoing'];
+			
+					execRrdTraffic('xen-' . $interface, $total_traffic, '-' . $total_traffic_incoming, $total_traffic_outgoing);
+					$stringa[] = time() . ' ' . date('d-M-Y:H:i') . ' ' . $interface . ' ' . $total_traffic . ' ' . $total_traffic_incoming . ' ' . $total_traffic_outgoing;
 				}
-		
-				execRrdTraffic('xen-' . $interface, $total_traffic, '-' . $total_traffic_incoming, $total_traffic_outgoing);
-				$stringa[] = time() . ' ' . date('d-M-Y:H:i') . ' ' . $interface . ' ' . $total_traffic . ' ' . $total_traffic_incoming . ' ' . $total_traffic_outgoing;
 			}
 		
 			dprintr($total);
