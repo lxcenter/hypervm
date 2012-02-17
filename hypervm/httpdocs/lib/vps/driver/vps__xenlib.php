@@ -43,7 +43,7 @@ class vps__xen extends Lxdriverclass {
 	public static function find_cpuusage()
 	{
 		$xen_list_output = lxshell_output('xm', 'list');
-		$xen_list_lines = explode("\n", $xen_list_output);
+		$xen_list_lines = explode(PHP_EOL, $xen_list_output);
 	
 		if(!empty($xen_list_lines)) {
 			foreach($xen_list_lines as $line) {
@@ -64,20 +64,20 @@ class vps__xen extends Lxdriverclass {
 		global $gbl, $sgbl, $login, $ghtml; 
 	
 		// Only apply if xeninterface.list file exist
-		if (lxfile_exists("__path_program_etc/xeninterface.list")) {
+		if (lxfile_exists('__path_program_etc/xeninterface.list')) {
 
-			$list = lfile_trim("__path_program_etc/xeninterface.list");
+			$list = lfile_trim('__path_program_etc/xeninterface.list');
 		
-			if (!lxfile_exists("__path_program_etc/newxeninterfacebw.data")) {
+			if (!lxfile_exists('__path_program_etc/newxeninterfacebw.data')) {
 				foreach($list as $k) {
 					$total[$k] = self::get_bytes_for_interface($k);
 				}
 				dprintr($total);
-				lfile_put_contents("__path_program_etc/newxeninterfacebw.data", serialize($total));
+				lfile_put_contents('__path_program_etc/newxeninterfacebw.data', serialize($total));
 				return;
 			}
 		
-			$data = unserialize(lfile_get_contents("__path_program_etc/newxeninterfacebw.data"));
+			$data = unserialize(lfile_get_contents('__path_program_etc/newxeninterfacebw.data'));
 		
 			$total = null;
 		
@@ -101,14 +101,14 @@ class vps__xen extends Lxdriverclass {
 					$vout = $total[$k]['outgoing'];
 				}
 		
-				execRrdTraffic("xen-$k", $v, "-$vinc", $vout);
-				$stringa[] = time() . " " . date("d-M-Y:H:i") . " $k $v $vinc $vout";
+				execRrdTraffic('xen-' . $k, $v, '-' . $vinc, $vout);
+				$stringa[] = time() . ' ' . date('d-M-Y:H:i') . ' ' . $k . ' ' . $v . ' ' . $vinc . ' ' . $vout;
 			}
 		
 			dprintr($total);
-			$string = implode("\n", $stringa);
-			lfile_put_contents("/var/log/lxinterfacetraffic.log", "$string\n", FILE_APPEND);
-			lfile_put_contents("__path_program_etc/newxeninterfacebw.data", serialize($total));
+			$string = implode(PHP_EOL, $stringa);
+			lfile_put_contents('/var/log/lxinterfacetraffic.log', $string . PHP_EOL, FILE_APPEND);
+			lfile_put_contents('__path_program_etc/newxeninterfacebw.data', serialize($total));
 		}
 	}
 
