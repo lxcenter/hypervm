@@ -1,20 +1,32 @@
 <?php 
-
 class vps__xen extends Lxdriverclass {
 
+	/**
+	 * Finds the cpu usage on every xen machine.
+	 * 
+	 * It check the list returned by "xm list" command.
+	 * 
+	 * @author Anonymous <anonymous@lxcenter.org>
+	 * @author Ángel Guzmán Maeso <angel.guzman@lxcenter.org>
+	 * 
+	 * @return void
+	 */
 	public static function find_cpuusage()
 	{
-		$out = lxshell_output("xm", "list");
-		$list = explode("\n", $out);
+		$xen_list_output = lxshell_output('xm', 'list');
+		$xen_list_lines = explode("\n", $xen_list_output);
 	
-		foreach($list as $l) {
-			$l = trimSpaces($l);
-			$val = explode(" ", $l);
-	
-			if (!cse($val[0], ".vm")) {
-				continue;
+		if(!empty($xen_list_lines)) {
+			foreach($xen_list_lines as $line) {
+				$line = trimSpaces($line);
+				$value = explode(' ', $line);
+		
+				if (!cse($value[0], '.vm')) {
+					continue;
+				}
+				
+				execRrdSingle('cpu', 'DERIVE', $value[0], $value[5]);
 			}
-			execRrdSingle("cpu", "DERIVE", $val[0], $val[5]);
 		}
 	}
 
