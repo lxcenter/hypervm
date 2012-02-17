@@ -1,4 +1,33 @@
 <?php 
+/**
+*    HyperVM, Server Virtualization GUI for OpenVZ and Xen
+*
+*    Copyright (C) 2000-2009	LxLabs
+*    Copyright (C) 2009-2011	LxCenter
+*
+*    This program is free software: you can redistribute it and/or modify
+*    it under the terms of the GNU Affero General Public License as
+*    published by the Free Software Foundation, either version 3 of the
+*    License, or (at your option) any later version.
+*
+*    This program is distributed in the hope that it will be useful,
+*    but WITHOUT ANY WARRANTY; without even the implied warranty of
+*    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+*    GNU Affero General Public License for more details.
+*
+*    You should have received a copy of the GNU Affero General Public License
+*    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+* 
+* vps__xen class file.
+* 
+* It handles the driver for Xen VPS.
+* 
+* @copyright 2012, (c) LxCenter.
+* @license AGPLv3 http://www.gnu.org/licenses/agpl-3.0.en.html
+* @author Anonymous <anonymous@lxcenter.org>
+* @author Ángel Guzmán Maeso <angel.guzman@lxcenter.org>
+* @version 1.0
+*/
 class vps__xen extends Lxdriverclass {
 
 	/**
