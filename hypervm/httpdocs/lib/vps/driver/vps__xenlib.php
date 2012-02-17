@@ -63,52 +63,53 @@ class vps__xen extends Lxdriverclass {
 	{
 		global $gbl, $sgbl, $login, $ghtml; 
 	
-		if (!lxfile_exists("__path_program_etc/xeninterface.list")) {
-			return;
-		}
-		$list = lfile_trim("__path_program_etc/xeninterface.list");
-	
-		if (!lxfile_exists("__path_program_etc/newxeninterfacebw.data")) {
+		// Only apply if xeninterface.list file exist
+		if (lxfile_exists("__path_program_etc/xeninterface.list")) {
+
+			$list = lfile_trim("__path_program_etc/xeninterface.list");
+		
+			if (!lxfile_exists("__path_program_etc/newxeninterfacebw.data")) {
+				foreach($list as $k) {
+					$total[$k] = self::get_bytes_for_interface($k);
+				}
+				dprintr($total);
+				lfile_put_contents("__path_program_etc/newxeninterfacebw.data", serialize($total));
+				return;
+			}
+		
+			$data = unserialize(lfile_get_contents("__path_program_etc/newxeninterfacebw.data"));
+		
+			$total = null;
+		
+		
 			foreach($list as $k) {
 				$total[$k] = self::get_bytes_for_interface($k);
-			}
-			dprintr($total);
-			lfile_put_contents("__path_program_etc/newxeninterfacebw.data", serialize($total));
-			return;
-		}
-	
-		$data = unserialize(lfile_get_contents("__path_program_etc/newxeninterfacebw.data"));
-	
-		$total = null;
-	
-	
-		foreach($list as $k) {
-			$total[$k] = self::get_bytes_for_interface($k);
-	
-			if (isset($data[$k])) {
-				if ($total[$k]['total'] < $data[$k]['total']) {
+		
+				if (isset($data[$k])) {
+					if ($total[$k]['total'] < $data[$k]['total']) {
+						$v = $total[$k]['total'];
+						$vinc = $total[$k]['incoming'];
+						$vout = $total[$k]['outgoing'];
+					} else {
+						$v =   $total[$k]['total'] - $data[$k]['total'];
+						$vinc = $total[$k]['incoming'] - $data[$k]['incoming'];
+						$vout = $total[$k]['outgoing'] - $data[$k]['outgoing'];
+					}
+				} else {
 					$v = $total[$k]['total'];
 					$vinc = $total[$k]['incoming'];
 					$vout = $total[$k]['outgoing'];
-				} else {
-					$v =   $total[$k]['total'] - $data[$k]['total'];
-					$vinc = $total[$k]['incoming'] - $data[$k]['incoming'];
-					$vout = $total[$k]['outgoing'] - $data[$k]['outgoing'];
 				}
-			} else {
-				$v = $total[$k]['total'];
-				$vinc = $total[$k]['incoming'];
-				$vout = $total[$k]['outgoing'];
+		
+				execRrdTraffic("xen-$k", $v, "-$vinc", $vout);
+				$stringa[] = time() . " " . date("d-M-Y:H:i") . " $k $v $vinc $vout";
 			}
-	
-			execRrdTraffic("xen-$k", $v, "-$vinc", $vout);
-			$stringa[] = time() . " " . date("d-M-Y:H:i") . " $k $v $vinc $vout";
+		
+			dprintr($total);
+			$string = implode("\n", $stringa);
+			lfile_put_contents("/var/log/lxinterfacetraffic.log", "$string\n", FILE_APPEND);
+			lfile_put_contents("__path_program_etc/newxeninterfacebw.data", serialize($total));
 		}
-	
-		dprintr($total);
-		$string = implode("\n", $stringa);
-		lfile_put_contents("/var/log/lxinterfacetraffic.log", "$string\n", FILE_APPEND);
-		lfile_put_contents("__path_program_etc/newxeninterfacebw.data", serialize($total));
 	}
 
 	public static function get_bytes_for_interface($l)
