@@ -2,7 +2,7 @@
 
 class vps__xen extends Lxdriverclass {
 
-	static function find_cpuusage()
+	public static function find_cpuusage()
 	{
 		$out = lxshell_output("xm", "list");
 		$list = explode("\n", $out);
@@ -18,7 +18,7 @@ class vps__xen extends Lxdriverclass {
 		}
 	}
 
-	static function find_traffic()
+	public static function find_traffic()
 	{
 		global $gbl, $sgbl, $login, $ghtml; 
 	
@@ -70,7 +70,7 @@ class vps__xen extends Lxdriverclass {
 		lfile_put_contents("__path_program_etc/newxeninterfacebw.data", serialize($total));
 	}
 
-	static function get_bytes_for_interface($l)
+	public static function get_bytes_for_interface($l)
 	{
 		static $net;
 	
@@ -95,12 +95,12 @@ class vps__xen extends Lxdriverclass {
 		return 0;
 	}
 
-	static function execCommand($vpsid, $command)
+	public static function execCommand($vpsid, $command)
 	{
 		global $global_shell_error, $global_shell_ret;
 	}
 
-	static function getOsTemplatelist($type = 'add')
+	public static function getOsTemplatelist($type = 'add')
 	{
 		$list = lscandir_without_dot("__path_program_home/xen/template/");
 	
@@ -131,14 +131,14 @@ class vps__xen extends Lxdriverclass {
 	
 	}
 
-	static function checkIfXenOK()
+	public static function checkIfXenOK()
 	{
 		if (!lxfile_exists("/proc/xen")) {
 			throw new lxException("no_kernel_support_for_xen._boot_into_the_right_kernel");
 		}
 	}
 
-	static function getStatus($vmname, $rootdir)
+	public static function getStatus($vmname, $rootdir)
 	{
 		self::checkIfXenOK();
 	
@@ -171,7 +171,7 @@ class vps__xen extends Lxdriverclass {
 	
 	}
 
-	static function getDiskUsage($disk, $winflag, $root)
+	public static function getDiskUsage($disk, $winflag, $root)
 	{
 		global $global_dontlogshell;
 		$global_dontlogshell = true;
@@ -184,7 +184,7 @@ class vps__xen extends Lxdriverclass {
 		return $cont;
 	}
 
-	function initXenVars()
+	public function initXenVars()
 	{
 		if ($this->isLvm()) {
 			$vgname = $this->main->corerootdir;
@@ -200,7 +200,7 @@ class vps__xen extends Lxdriverclass {
 		$this->main->configrootdir = "__path_home_dir/xen/{$this->main->nname}/";
 	}
 
-	function doSyncToSystemPre()
+	public function doSyncToSystemPre()
 	{
 	
 		if ($this->main->checkIfOffensive()) {
@@ -210,14 +210,14 @@ class vps__xen extends Lxdriverclass {
 		$this->initXenVars();
 	}
 
-	function dosyncToSystemPost()
+	public function dosyncToSystemPost()
 	{
 		if ($this->main->dbaction === 'update' && $this->main->__var_custom_exec) {
 			lxshell_direct($this->main->__var_custom_exec);
 		}
 	}
 
-	function dbactionAdd()
+	public function dbactionAdd()
 	{
 		global $gbl, $sgbl, $login, $ghtml; 
 	
@@ -300,7 +300,7 @@ class vps__xen extends Lxdriverclass {
 	
 	}
 
-	function doRealCreate()
+	public function doRealCreate()
 	{
 	
 		global $gbl, $sgbl, $login, $ghtml; 
@@ -382,21 +382,21 @@ class vps__xen extends Lxdriverclass {
 		$this->postCreate();
 	}
 
-	function postCreate()
+	public function postCreate()
 	{
 		if ($this->main->__var_custom_exec) {
 			lxshell_direct($this->main->__var_custom_exec);
 		}
 	}
 
-	function runParted()
+	public function runParted()
 	{
 		lxshell_return("parted", "-s", $this->main->maindisk, "--", "unit", "s", "rm", "1");
 		lxshell_return("parted", "-s", $this->main->maindisk, "--", "unit", "s", "mkpart", "primary", "ntfs", "63", "-1");
 		lxshell_return("parted", "-s", $this->main->maindisk, "set", "1", "boot", "on");
 	}
 
-	function expandPartitionToImage()
+	public function expandPartitionToImage()
 	{
 		/*
 		$out = lxshell_output("parted", $this->main->maindisk, "unit", "s", "print", "free");
@@ -418,7 +418,7 @@ class vps__xen extends Lxdriverclass {
 		$this->kpart_remove();
 	}
 
-	function kpart_remove()
+	public function kpart_remove()
 	{
 		$disk = $this->main->maindisk;
 		$root = $this->main->corerootdir;
@@ -428,7 +428,7 @@ class vps__xen extends Lxdriverclass {
 		lxshell_return("kpartx", "-d", $path);
 	}
 
-	function copyKernelModules()
+	public function copyKernelModules()
 	{
 		$mountpoint = $this->mount_this_guy();
 		$kernev = trim(`uname -r`);
@@ -451,7 +451,7 @@ class vps__xen extends Lxdriverclass {
 		}
 	}
 
-	function createDisk($size = 0)
+	public function createDisk($size = 0)
 	{
 		if (is_unlimited($this->main->priv->disk_usage)) {
 			$diskusage = 3 * 1024;
@@ -489,7 +489,7 @@ class vps__xen extends Lxdriverclass {
 		}
 	}
 
-	static function createVpsObject($servername, $input)
+	public static function createVpsObject($servername, $input)
 	{
 		$name = "{$input['name']}.vm";
 		$vpsobject = new Vps(null, $servername, $name);
@@ -549,7 +549,7 @@ class vps__xen extends Lxdriverclass {
 	
 	}
 
-	static function importIpaddress($vpsobject, $val)
+	public static function importIpaddress($vpsobject, $val)
 	{
 		$list = explode(" ", $val);
 		foreach($list as $l) {
@@ -558,7 +558,7 @@ class vps__xen extends Lxdriverclass {
 		}
 	}
 
-	function getRealMemory()
+	public function getRealMemory()
 	{
 		if (is_unlimited($this->main->priv->realmem_usage)) {
 			$memory = 512;
@@ -568,7 +568,7 @@ class vps__xen extends Lxdriverclass {
 		return $memory;
 	}
 
-	function getVifString()
+	public function getVifString()
 	{
 		if (!is_unlimited($this->main->priv->uplink_usage) && ($this->main->priv->uplink_usage > 0)) {
 			$ratestring = "rate = {$this->main->priv->uplink_usage}KB/s,";
@@ -599,7 +599,7 @@ class vps__xen extends Lxdriverclass {
 		return $string;
 	}
 
-	function addVcpu()
+	public function addVcpu()
 	{
 		if (is_unlimited($this->main->priv->ncpu_usage)) {
 			$cpunum = os_getCpuNum();
@@ -613,7 +613,7 @@ class vps__xen extends Lxdriverclass {
 		return null;
 	}
 
-	function createWindowsConfig()
+	public function createWindowsConfig()
 	{
 		$memory = $this->getRealMemory();
 		if (trim(lxshell_output("uname", "-r")) === "2.6.16.33-xen0") {
@@ -693,7 +693,7 @@ class vps__xen extends Lxdriverclass {
 		lfile_put_contents("{$this->main->configrootdir}/{$this->main->nname}.cfg", $string);
 	}
 
-	function createConfig()
+	public function createConfig()
 	{
 		global $gbl, $sgbl, $login, $ghtml; 
 	
@@ -776,7 +776,7 @@ class vps__xen extends Lxdriverclass {
 	
 	}
 
-	function getValueFromFile($file)
+	public function getValueFromFile($file)
 	{
 		$vfile = "{$this->main->configrootdir}/$file";
 		if (!lxfile_exists($vfile)) {
@@ -788,7 +788,7 @@ class vps__xen extends Lxdriverclass {
 		return $v;
 	}
 
-	function resizeRootImage()
+	public function resizeRootImage()
 	{
 	
 		$v = $this->getValueFromFile("disk.value");
@@ -821,22 +821,22 @@ class vps__xen extends Lxdriverclass {
 	
 	}
 
-	function getPartition()
+	public function getPartition()
 	{
 		return get_partition($this->main->maindisk, $this->main->corerootdir);
 	}
 	
-	function get_free_loop()
+	public function get_free_loop()
 	{
 		return get_free_loop();
 	}
 
-	function isLvm()
+	public function isLvm()
 	{
 		return csb($this->main->corerootdir, "lvm:");
 	}
 
-	function createSwap()
+	public function createSwap()
 	{
 		global $gbl, $sgbl, $login, $ghtml; 
 		global $global_shell_error, $global_shell_ret;
@@ -863,7 +863,7 @@ class vps__xen extends Lxdriverclass {
 		lxshell_return("mkswap", $this->main->swapdisk);
 	}
 
-	function setvif()
+	public function setvif()
 	{
 		$filelist = lfile_trim("__path_program_etc/xeninterface.list");
 		$list = $this->main->getViflist();
@@ -874,7 +874,7 @@ class vps__xen extends Lxdriverclass {
 		lfile_put_contents("__path_program_etc/xeninterface.list", implode("\n", $filelist));
 	}
 
-	function deletevif()
+	public function deletevif()
 	{
 		$filelist = lfile_trim("__path_program_etc/xeninterface.list");
 		$list = $this->main->getViflist();
@@ -887,7 +887,7 @@ class vps__xen extends Lxdriverclass {
 		}
 	}
 
-	function dbactionDelete()
+	public function dbactionDelete()
 	{
 		global $gbl, $sgbl, $login, $ghtml; 
 		$this->deletevif();
@@ -913,7 +913,7 @@ class vps__xen extends Lxdriverclass {
 		lunlink("/etc/xen/auto/{$this->main->nname}.cfg");
 	}
 
-	function toggleStatus()
+	public function toggleStatus()
 	{
 		global $global_shell_out, $global_shell_error, $global_shell_ret;
 	
@@ -932,12 +932,12 @@ class vps__xen extends Lxdriverclass {
 			log_message($ret);
 	}
 
-	function setRootPassword()
+	public function setRootPassword()
 	{
 	
 	}
 
-	function mount_this_guy()
+	public function mount_this_guy()
 	{
 		$this->stop();
 	
@@ -969,7 +969,7 @@ class vps__xen extends Lxdriverclass {
 		return $mountpoint;
 	}
 
-	function takeSnapshot()
+	public function takeSnapshot()
 	{
 		lxshell_return("modprobe", "dm-snapshot");
 		$tmp = "{$this->main->configrootdir}/snapshot_mount";
@@ -1013,7 +1013,7 @@ class vps__xen extends Lxdriverclass {
 		return $tmp;
 	}
 
-	function changeLocation()
+	public function changeLocation()
 	{
 		if ($this->main->newlocation === $this->main->corerootdir) {
 			throw new lxException("old_new_location_same");
@@ -1065,7 +1065,7 @@ class vps__xen extends Lxdriverclass {
 	
 	}
 
-	function saveXen()
+	public function saveXen()
 	{
 		if (self::getStatus($this->main->nname, '/home/xen') !== 'on') {
 			return null;
@@ -1075,7 +1075,7 @@ class vps__xen extends Lxdriverclass {
 		return $tmp;
 	}
 
-	function restoreXen($file)
+	public function restoreXen($file)
 	{
 		if (!$file) {
 			return;
@@ -1083,7 +1083,7 @@ class vps__xen extends Lxdriverclass {
 		lxshell_return("xm", "restore", $file);
 	}
 
-	function do_backup()
+	public function do_backup()
 	{
 		global $gbl, $sgbl, $login, $ghtml; 
 	
@@ -1147,7 +1147,7 @@ class vps__xen extends Lxdriverclass {
 		return array($mountpoint, $list);
 	}
 
-	function do_backup_cleanup($bc)
+	public function do_backup_cleanup($bc)
 	{
 		// I had commented out the starting of the vps after backup. I don't know why. Why is this not done.. The vps should be started after the backup is done.
 		$mountpoint = "{$this->main->configrootdir}/mnt";
@@ -1168,7 +1168,7 @@ class vps__xen extends Lxdriverclass {
 		}
 	}
 
-	function do_restore($docd)
+	public function do_restore($docd)
 	{
 		global $gbl, $sgbl, $login, $ghtml;
 	
@@ -1245,7 +1245,7 @@ class vps__xen extends Lxdriverclass {
 	*/
 	}
 
-	function setCpuUsage()
+	public function setCpuUsage()
 	{
 		if (is_unlimited($this->main->priv->cpu_usage)) {
 			$cpu = "100" * os_getCpuNum();;
@@ -1255,7 +1255,7 @@ class vps__xen extends Lxdriverclass {
 		lxshell_return("xm", "sched-credit", "-d", $this->main->nname, "-c", $cpu);
 	}
 
-	function setMemoryUsage()
+	public function setMemoryUsage()
 	{
 		if (is_unlimited($this->main->priv->realmem_usage)) {
 			$memory = 512;
@@ -1268,7 +1268,7 @@ class vps__xen extends Lxdriverclass {
 		lfile_put_contents("{$this->main->configrootdir}/memory.value", $memory);
 	}
 
-	function setSwapUsage()
+	public function setSwapUsage()
 	{
 	
 		if ($this->main->isWindows()) {
@@ -1284,7 +1284,7 @@ class vps__xen extends Lxdriverclass {
 		lfile_put_contents("{$this->main->configrootdir}/swap.value", $memory);
 	}
 
-	function setDiskUsage()
+	public function setDiskUsage()
 	{
 		if (is_unlimited($this->main->priv->disk_usage)) {
 			$diskusage = 3 * 1024;
@@ -1295,7 +1295,7 @@ class vps__xen extends Lxdriverclass {
 		lfile_put_contents("{$this->main->configrootdir}/disk.value", $diskusage);
 	}
 
-	function reboot()
+	public function reboot()
 	{
 		global $global_shell_out, $global_shell_error, $global_shell_ret;
 		$this->stop();
@@ -1306,7 +1306,7 @@ class vps__xen extends Lxdriverclass {
 		}
 	}
 
-	function rebuild()
+	public function rebuild()
 	{
 		if (!$this->main->isOn('rebuild_confirm_f')) {
 			throw new lxException("need_confirm_rebuild", 'rebuild_confirm_f');
@@ -1370,12 +1370,12 @@ class vps__xen extends Lxdriverclass {
 		$this->start();
 	}
 
-	function installkloxo()
+	public function installkloxo()
 	{
 		$this->rebuild();
 	}
 
-	function recoverVps()
+	public function recoverVps()
 	{
 		if (!$this->main->isOn('recover_confirm_f')) {
 			throw new lxException("need_confirm_recover", 'recover_confirm_f');
@@ -1386,12 +1386,12 @@ class vps__xen extends Lxdriverclass {
 		$this->start();
 	}
 
-	function setInformation()
+	public function setInformation()
 	{
 		//lxshell_return("vzctl", "set", $this->main->vpsid, "--hostname", $this->main->hostname);
 	}
 
-	function createTemplate()
+	public function createTemplate()
 	{
 		$stem = explode("-", $this->main->ostemplate);
 		if ($this->main->isWindows()) {
@@ -1428,7 +1428,7 @@ class vps__xen extends Lxdriverclass {
 	
 	}
 
-	function hardstop()
+	public function hardstop()
 	{
 		if (self::getStatus($this->main->nname, '/home/xen') !== 'on') {
 			//$this->mount_this_guy();
@@ -1455,7 +1455,7 @@ class vps__xen extends Lxdriverclass {
 		sleep(10);
 	}
 
-	function stop()
+	public function stop()
 	{
 		if (self::getStatus($this->main->nname, '/home/xen') !== 'on') {
 			//$this->mount_this_guy();
@@ -1480,7 +1480,7 @@ class vps__xen extends Lxdriverclass {
 		$this->mount_this_guy();
 	}
 
-	function isMounted()
+	public function isMounted()
 	{
 		$mountpoint = "{$this->main->configrootdir}/mnt";
 		$mountpoint = expand_real_root($mountpoint);
@@ -1492,7 +1492,7 @@ class vps__xen extends Lxdriverclass {
 		return false;
 	}
 
-	function umountThis()
+	public function umountThis()
 	{
 		$mountpoint = "{$this->main->configrootdir}/mnt";
 		lxshell_return("sync");
@@ -1514,7 +1514,7 @@ class vps__xen extends Lxdriverclass {
 		}
 	}
 
-	function checkForSnapshot()
+	public function checkForSnapshot()
 	{
 		if ($this->isLvm()) {
 			if (lxfile_exists($this->getSnapshotName())) {
@@ -1526,14 +1526,14 @@ class vps__xen extends Lxdriverclass {
 		return false;
 	}
 
-	function getSnapshotName()
+	public function getSnapshotName()
 	{
 		$vgname = fix_vgname($this->main->corerootdir);
 		$snap = "/dev/$vgname/{$this->main->nname}_snapshot";
 		return $snap;
 	}
 
-	function start() 
+	public function start() 
 	{
 	
 		if (self::getStatus($this->main->nname, '/home/xen') === 'on') {
@@ -1559,7 +1559,7 @@ class vps__xen extends Lxdriverclass {
 		return lxshell_return("xm", "create", "{$this->main->configrootdir}/{$this->main->nname}.cfg"); 
 	}
 
-	function setInternalParam($mountpoint)
+	public function setInternalParam($mountpoint)
 	{
 		$name = $this->main->ostemplate;
 	
@@ -1717,7 +1717,7 @@ class vps__xen extends Lxdriverclass {
 		$this->main->doKloxoInit($mountpoint);
 	}
 
-	function getScriptS($name)
+	public function getScriptS($name)
 	{
 		$v = $name;
 		while (true) {
@@ -1753,13 +1753,13 @@ class vps__xen extends Lxdriverclass {
 		return $result;
 	}
 
-	function changeUserPassword()
+	public function changeUserPassword()
 	{
 		$pass = $this->main->password;
 		lxshell_return("usermod", "-p", $pass, $this->main->username);
 	}
 
-	function dbactionUpdate($subaction)
+	public function dbactionUpdate($subaction)
 	{
 	
 		global $gbl, $sgbl, $login, $ghtml; 
@@ -1892,7 +1892,7 @@ class vps__xen extends Lxdriverclass {
 		}
 	}
 
-	function setDhCP()
+	public function setDhCP()
 	{
 		if (!$this->main->isWindows()) {
 			return;
@@ -1903,11 +1903,11 @@ class vps__xen extends Lxdriverclass {
 		dhcp__dhcpd::createDhcpConfFile($res);
 	}
 
-	function setProcessUsage()
+	public function setProcessUsage()
 	{
 	}
 
-	static function getCompleteStatus($list)
+	public static function getCompleteStatus($list)
 	{
 		foreach($list as $l) {
 			$r['status'] = self::getStatus($l['nname'], '/home/xen');
