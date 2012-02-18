@@ -26,7 +26,7 @@
 * @license AGPLv3 http://www.gnu.org/licenses/agpl-3.0.en.html
 * @author Anonymous <anonymous@lxcenter.org>
 * @author Ángel Guzmán Maeso <angel.guzman@lxcenter.org>
-* @version 1.0
+* @version v1.0 20120218 build
 */
 class vps__xen extends Lxdriverclass {
 
