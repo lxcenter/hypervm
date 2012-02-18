@@ -159,7 +159,7 @@ class vps__xen extends Lxdriverclass {
 			$vif_interface = 'vif' . $interface . ':';
 			$network = trimSpaces($network);
 			
-			if (!csb($network, $vif_interface)) { // Char search begin
+			if (!char_search_beg($network, $vif_interface)) {
 				continue;
 			}
 			
@@ -206,17 +206,17 @@ class vps__xen extends Lxdriverclass {
 		foreach($template_list as $template) {
 			switch($type) {
 				case 'add':
-					if (!char_search_end($template, '.tar.gz') && !char_search_end($template, '.img')) { // Char Search End
+					if (!char_search_end($template, '.tar.gz') && !char_search_end($template, '.img')) {
 						continue;
 					}
 				break;
 				case 'img':
-					if (!char_search_end($template, '.img')) { // Char Search End
+					if (!char_search_end($template, '.img')) {
 						continue;
 					}
 				break;
 				case 'tar.gz':
-					if (!char_search_end($template, '.tar.gz')) { // Char Search End
+					if (!char_search_end($template, '.tar.gz')) {
 						continue;
 					}
 				break;
@@ -505,7 +505,7 @@ class vps__xen extends Lxdriverclass {
 		$out = lxshell_output("parted", $this->main->maindisk, "unit", "s", "print", "free");
 		$list = explode("\n", $out);
 		foreach($list as $l) {
-			if (csb($l, "Disk")) {
+			if (char_search_beg($l, "Disk")) {
 				$s = explode(":", $l);
 				$s = trim($s[1]);
 				$s = strtil($s, "s");
@@ -546,7 +546,7 @@ class vps__xen extends Lxdriverclass {
 				lxfile_cp_rec("/lib/modules/$kernev", "$mountpoint/lib/modules/$nkernev");
 			}
 		}
-		if (csb($this->main->ostemplate, "centos-")) {
+		if (char_search_beg($this->main->ostemplate, "centos-")) {
 			if (lxfile_exists("$mountpoint/lib/tls")) {
 				lxfile_rm_rec("$mountpoint/lib/tls.disabled");
 				lxfile_mv_rec("$mountpoint/lib/tls", "$mountpoint/lib/tls.disabled");
@@ -692,7 +692,7 @@ class vps__xen extends Lxdriverclass {
 		}
 	
 		$mac = $this->main->macaddress;
-		if (!csb($mac, "aa:00")) { $mac = "aa:00:$mac"; }
+		if (!char_search_beg($mac, "aa:00")) { $mac = "aa:00:$mac"; }
 		if (strlen($mac) === 14) { $mac = "$mac:01"; }
 		$bridgestring = null;
 		if ($this->main->networkbridge && $this->main->networkbridge !== '--automatic--') {
@@ -731,7 +731,7 @@ class vps__xen extends Lxdriverclass {
 		}
 	
 		$mac = $this->main->macaddress;
-		if (!csb($mac, "aa:00")) { $mac = "aa:00:$mac"; }
+		if (!char_search_beg($mac, "aa:00")) { $mac = "aa:00:$mac"; }
 		$count = count($this->main->vmipaddress_a);
 		// Big bug workaround. the first vif seems to be ignored. Need to be fixed later.
 		$vifnamestring = "vifname=vif{$this->main->vifname},";
@@ -936,7 +936,7 @@ class vps__xen extends Lxdriverclass {
 
 	public function isLvm()
 	{
-		return csb($this->main->corerootdir, "lvm:");
+		return char_search_beg($this->main->corerootdir, "lvm:");
 	}
 
 	public function createSwap()
@@ -1138,7 +1138,7 @@ class vps__xen extends Lxdriverclass {
 		$this->createSwap();
 		//$this->mount_this_guy();
 	
-		if (csb($this->__oldlocation, "lvm:")) {
+		if (char_search_beg($this->__oldlocation, "lvm:")) {
 			$vgname = fix_vgname($this->__oldlocation);
 			$oldimage = "/dev/$vgname/{$this->main->maindiskname}";
 		} else {
@@ -1154,7 +1154,7 @@ class vps__xen extends Lxdriverclass {
 		// Don't do this at all. The saved space is not going to be very important for the short period.
 		//lunlink("$this->__oldlocation/{$this->main->nname}/root.img");
 		/*
-		if (csb($this->__oldlocation, "lvm:")) {
+		if (char_search_beg($this->__oldlocation, "lvm:")) {
 			$vg = fix_vgname($this->__oldlocation);
 			lvm_remove("/dev/$vg/{$this->main->swapdiskname}");
 		} else {
@@ -1844,7 +1844,7 @@ class vps__xen extends Lxdriverclass {
 		$list = lfile_trim($file);
 	
 		foreach($list as $l) {
-			if (csb($l, "#")) {
+			if (char_search_beg($l, "#")) {
 				continue;
 			}
 	
