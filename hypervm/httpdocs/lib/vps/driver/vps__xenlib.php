@@ -199,6 +199,19 @@ class vps__xen extends Lxdriverclass {
 		global $global_shell_error, $global_shell_ret;
 	}
 
+	/**
+	 * Get the list of operating system templates.
+	 * 
+	 * Search on xen/template/ folder each type of
+	 * template, uncompress if necessary the template and
+	 * calculate the size of each template on a list.
+	 * 
+	 * @author Anonymous <anonymous@lxcenter.org>
+	 * @author Ángel Guzmán Maeso <angel.guzman@lxcenter.org>
+	 * 
+	 * @param string $type the template list to fetch. Available add|img|tar.gz by default add
+	 * @return array[string] size of each template indexed by template name
+	 */
 	public static function getOsTemplatelist($type = 'add')
 	{
 		$template_list = lscandir_without_dot('__path_program_home/xen/template/');
