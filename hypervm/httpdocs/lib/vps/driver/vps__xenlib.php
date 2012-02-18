@@ -204,28 +204,33 @@ class vps__xen extends Lxdriverclass {
 		$template_list = lscandir_without_dot('__path_program_home/xen/template/');
 	
 		foreach($template_list as $template) {
+			// Get the template size analizing the type
 			switch($type) {
 				case 'add':
 					if (!char_search_end($template, '.tar.gz') && !char_search_end($template, '.img')) {
-						continue;
+						continue; // Skip the template if not contains .tar.gz and .img
+					}
+					
+					if (char_search_end($template, '.tar.gz')) {
+						$size = lxfile_get_uncompressed_size('__path_program_home/xen/template/' . $template);
+					} else {
+						$size = lxfile_size('__path_program_home/xen/template/' . $template);
 					}
 				break;
 				case 'img':
 					if (!char_search_end($template, '.img')) {
-						continue;
+						continue; // Skip the template if not contains .img
 					}
+					
+					$size = lxfile_size('__path_program_home/xen/template/' . $template);
 				break;
 				case 'tar.gz':
 					if (!char_search_end($template, '.tar.gz')) {
-						continue;
+						continue; // Skip the template if not contains .tar.gz
 					}
+					
+					$size = lxfile_get_uncompressed_size('__path_program_home/xen/template/' . $template);
 				break;
-			}
-	
-			if (char_search_end($template, '.tar.gz')) {
-				$size = lxfile_get_uncompressed_size('__path_program_home/xen/template/' . $template);
-			} else {
-				$size = lxfile_size('__path_program_home/xen/template/' . $template);
 			}
 	
 			$newlist[strtil($template, '.tar.gz')] = strtil($template, '.tar.gz') . ' (' . round($size / (1024 * 1024), 2) . 'MB)';
