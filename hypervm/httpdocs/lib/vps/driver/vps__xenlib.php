@@ -300,13 +300,14 @@ class vps__xen extends Lxdriverclass {
 		*/
 		
 		// List info about the virtual machine
-		exec('xm list ' . $virtual_machine_name, $output, $ret);
+		exec('xm list ' . $virtual_machine_name, $output, $status);
 	
-		if (!$ret) {
+		if (!empty($status)) {
 			return 'on';
 		}
-	
-		return 'off';
+		else {
+			return 'off';
+		}
 	}
 
 	public static function getDiskUsage($disk, $winflag, $root)
