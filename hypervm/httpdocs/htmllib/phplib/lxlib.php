@@ -1113,7 +1113,7 @@ function csb($haystack, $needle, $insensitive = 1)
 	return char_search_beg($haystack, $needle, $insensitive);
 }
 
-function char_search_beg($haystack, $needle)
+function char_search_beg($haystack, $needle, $insensitive = 1)
 {
 	if (is_array($haystack)) {
 		//debugBacktrace();
