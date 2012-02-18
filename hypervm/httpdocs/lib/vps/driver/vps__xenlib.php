@@ -138,22 +138,27 @@ class vps__xen extends Lxdriverclass {
 		static $net;
 	
 		if (!$net) {
-			$net = lfile_get_contents("/proc/net/dev");
-			$net = explode("\n", $net);
+			$net = lfile_get_contents('/proc/net/dev');
+			$net = explode(PHP_EOL, $net);
 		}
 	
 		foreach($net as $n) {
+			$vif_interface = 'vif' . $interface . ':';
 			$n = trimSpaces($n);
-			if (!csb($n, "vif$interface:")) {
+			if (!csb($n, $vif_interface)) {
 				continue;
 			}
 	
-			$n = strfrom($n, "vif$interface:");
+			$n = strfrom($n, $vif_interface);
 			$n = trimSpaces($n);
-			$b = explode(" ", $n);
+			$b = explode(' ', $n);
 			$total = $b[0] + $b[8];
 			// It seems for xen it is the reverse. The input for the vif is the output for the virtual machine.
-			return array('total' => $total, 'incoming' => $b[8], 'outgoing' => $b[0]);
+			return array(
+						 'total'    => $total, 
+						 'incoming' => $b[8], 
+						 'outgoing' => $b[0]
+						);
 		}
 		return 0;
 	}
