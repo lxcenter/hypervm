@@ -204,18 +204,22 @@ class vps__xen extends Lxdriverclass {
 		$template_list = lscandir_without_dot('__path_program_home/xen/template/');
 	
 		foreach($template_list as $template) {
-			if ($type === 'add') {
-				if (!cse($template, '.tar.gz') && !cse($template, '.img')) {
-					continue;
-				}
-			} else if ($type === 'img') {
-				if (!cse($template, '.img')) {
-					continue;
-				}
-			} else if ($type === 'tar.gz') {
-				if (!cse($template, '.tar.gz')) {
-					continue;
-				}
+			switch($type) {
+				case 'add':
+					if (!cse($template, '.tar.gz') && !cse($template, '.img')) {
+						continue;
+					}
+				break;
+				case 'img':
+					if (!cse($template, '.img')) {
+						continue;
+					}
+				break;
+				case 'tar.gz':
+					if (!cse($template, '.tar.gz')) {
+						continue;
+					}
+				break;
 			}
 	
 			if (cse($template, '.tar.gz')) {
