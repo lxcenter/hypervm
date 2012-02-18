@@ -203,6 +203,7 @@ class vps__xen extends Lxdriverclass {
 	{
 		$template_list = lscandir_without_dot('__path_program_home/xen/template/');
 	
+		$template_sizes = array();
 		foreach($template_list as $template) {
 			// Get the template size analizing the type
 			switch($type) {
@@ -233,10 +234,12 @@ class vps__xen extends Lxdriverclass {
 				break;
 			}
 	
-			$newlist[strtil($template, '.tar.gz')] = strtil($template, '.tar.gz') . ' (' . round($size / (1024 * 1024), 2) . 'MB)';
+			$template_filtered = strtil($template, '.tar.gz');
+			$size_MB = round($size / (1024 * 1024), 2);
+			$template_sizes[$template_filtered] = $template_filtered . ' (' . $size_MB . 'MB)';
 		}
-		return $newlist;
-	
+		
+		return $template_sizes;
 	}
 
 	public static function checkIfXenOK()
