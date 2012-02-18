@@ -183,6 +183,17 @@ class vps__xen extends Lxdriverclass {
 		return 0; // Return 0 bytes
 	}
 
+	/**
+	* 
+	* @todo Check the behaviour of this fuction, maybe is @deprecated
+	*
+	* @author Anonymous <anonymous@lxcenter.org>
+	* @author Ángel Guzmán Maeso <angel.guzman@lxcenter.org>
+	*
+	* @param $vpsid
+	* @param $command
+	* @return void
+	*/
 	public static function execCommand($vpsid, $command)
 	{
 		global $global_shell_error, $global_shell_ret;
