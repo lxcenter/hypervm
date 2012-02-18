@@ -201,30 +201,30 @@ class vps__xen extends Lxdriverclass {
 
 	public static function getOsTemplatelist($type = 'add')
 	{
-		$list = lscandir_without_dot("__path_program_home/xen/template/");
+		$list = lscandir_without_dot('__path_program_home/xen/template/');
 	
 		foreach($list as $__l) {
 			if ($type === 'add') {
-				if (!cse($__l, ".tar.gz") && !cse($__l, ".img")) {
+				if (!cse($__l, '.tar.gz') && !cse($__l, '.img')) {
 					continue;
 				}
 			} else if ($type === 'img') {
-				if (!cse($__l, ".img")) {
+				if (!cse($__l, '.img')) {
 					continue;
 				}
 			} else if ($type === 'tar.gz') {
-				if (!cse($__l, ".tar.gz")) {
+				if (!cse($__l, '.tar.gz')) {
 					continue;
 				}
 			}
 	
-			if (cse($__l, ".tar.gz")) {
-				$size = lxfile_get_uncompressed_size("__path_program_home/xen/template/$__l");
+			if (cse($__l, '.tar.gz')) {
+				$size = lxfile_get_uncompressed_size('__path_program_home/xen/template/' . $__l);
 			} else {
-				$size = lxfile_size("__path_program_home/xen/template/$__l");
+				$size = lxfile_size('__path_program_home/xen/template/' . $__l);
 			}
 	
-			$newlist[strtil($__l, ".tar.gz")] = strtil($__l, ".tar.gz") . " (" . round($size / (1024 * 1024), 2) . "MB)";
+			$newlist[strtil($__l, '.tar.gz')] = strtil($__l, '.tar.gz') . ' (' . round($size / (1024 * 1024), 2) . 'MB)';
 		}
 		return $newlist;
 	
