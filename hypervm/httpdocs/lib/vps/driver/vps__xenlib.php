@@ -277,15 +277,18 @@ class vps__xen extends Lxdriverclass {
 	{
 		self::checkIfXenOK();
 	
+		// Check if background create script is running
 		if (lx_core_lock_check_only('background.php', $vmname . '.create')) {
 			return 'create';
 		}
 	
+		// Check if background create failed
 		if (lxfile_exists('__path_program_root/tmp/' . $vmname . '.createfailed')) {
 			$reason = lfile_get_contents('__path_program_root/tmp/' . $vmname . '.createfailed');
 			return 'createfailed: ' . $reason;
 		}
 	
+		// Check if background script is deleted
 		if (!lxfile_exists($rootdir . '/' . $vmname)) {
 			return 'deleted';
 		}
@@ -295,6 +298,8 @@ class vps__xen extends Lxdriverclass {
 			throw new lxException("xm_status_locked");
 		}
 		*/
+		
+		// List info about the virtual machine
 		exec('xm list ' . $vmname, $output, $ret);
 	
 		if (!$ret) {
