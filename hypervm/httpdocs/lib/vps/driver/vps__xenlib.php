@@ -133,7 +133,7 @@ class vps__xen extends Lxdriverclass {
 		}
 	}
 
-	public static function get_bytes_for_interface($l)
+	public static function get_bytes_for_interface($interface = NULL)
 	{
 		static $net;
 	
@@ -144,11 +144,11 @@ class vps__xen extends Lxdriverclass {
 	
 		foreach($net as $n) {
 			$n = trimSpaces($n);
-			if (!csb($n, "vif$l:")) {
+			if (!csb($n, "vif$interface:")) {
 				continue;
 			}
 	
-			$n = strfrom($n, "vif$l:");
+			$n = strfrom($n, "vif$interface:");
 			$n = trimSpaces($n);
 			$b = explode(" ", $n);
 			$total = $b[0] + $b[8];
