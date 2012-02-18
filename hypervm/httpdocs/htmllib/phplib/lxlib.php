@@ -1129,7 +1129,7 @@ function cse($haystack, $needle, $insensitive = 1)
 	return char_search_end($haystack, $needle, $insensitive);
 }
 
-function char_search_end($haystack, $needle, $insensitive)
+function char_search_end($haystack, $needle, $insensitive = 1)
 {
 	if (strpos($haystack, $needle) === false) {
 		return false;
