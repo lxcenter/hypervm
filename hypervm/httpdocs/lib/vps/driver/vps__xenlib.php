@@ -50,7 +50,7 @@ class vps__xen extends Lxdriverclass {
 				$line = trimSpaces($line);
 				$value = explode(' ', $line);
 		
-				if (!cse($value[0], '.vm')) {
+				if (!char_search_end($value[0], '.vm')) {
 					continue;
 				}
 				
@@ -206,23 +206,23 @@ class vps__xen extends Lxdriverclass {
 		foreach($template_list as $template) {
 			switch($type) {
 				case 'add':
-					if (!cse($template, '.tar.gz') && !cse($template, '.img')) {
+					if (!char_search_end($template, '.tar.gz') && !char_search_end($template, '.img')) { // Char Search End
 						continue;
 					}
 				break;
 				case 'img':
-					if (!cse($template, '.img')) {
+					if (!char_search_end($template, '.img')) { // Char Search End
 						continue;
 					}
 				break;
 				case 'tar.gz':
-					if (!cse($template, '.tar.gz')) {
+					if (!char_search_end($template, '.tar.gz')) { // Char Search End
 						continue;
 					}
 				break;
 			}
 	
-			if (cse($template, '.tar.gz')) {
+			if (char_search_end($template, '.tar.gz')) {
 				$size = lxfile_get_uncompressed_size('__path_program_home/xen/template/' . $template);
 			} else {
 				$size = lxfile_size('__path_program_home/xen/template/' . $template);
@@ -540,7 +540,7 @@ class vps__xen extends Lxdriverclass {
 		if (!lxfile_exists("$mountpoint/lib/modules/$kernev")) {
 			lxfile_cp_rec("/lib/modules/$kernev", "$mountpoint/lib/modules/$kernev");
 		}
-		if (cse($kernev, "-xen")) {
+		if (char_search_end($kernev, "-xen")) {
 			$nkernev = strtil($kernev, "-xen");
 			if (!lxfile_exists("$mountpoint/lib/modules/$nkernev")) {
 				lxfile_cp_rec("/lib/modules/$kernev", "$mountpoint/lib/modules/$nkernev");
