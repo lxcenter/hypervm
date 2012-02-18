@@ -135,23 +135,24 @@ class vps__xen extends Lxdriverclass {
 
 	public static function get_bytes_for_interface($interface = NULL)
 	{
-		static $net;
+		static $networks; // Make a cache with the networks available
 	
-		if (!$net) {
-			$net = lfile_get_contents('/proc/net/dev');
-			$net = explode(PHP_EOL, $net);
+		if (!$networks) {
+			$networks = lfile_get_contents('/proc/net/dev');
+			$networks = explode(PHP_EOL, $networks);
 		}
 	
-		foreach($net as $n) {
+		foreach($networks as $network) {
 			$vif_interface = 'vif' . $interface . ':';
-			$n = trimSpaces($n);
-			if (!csb($n, $vif_interface)) {
+			$network = trimSpaces($network);
+			
+			if (!csb($network, $vif_interface)) {
 				continue;
 			}
 	
-			$n = strfrom($n, $vif_interface);
-			$n = trimSpaces($n);
-			$b = explode(' ', $n);
+			$network = strfrom($network, $vif_interface);
+			$network = trimSpaces($network);
+			$b = explode(' ', $network);
 			$total = $b[0] + $b[8];
 			// It seems for xen it is the reverse. The input for the vif is the output for the virtual machine.
 			return array(
@@ -160,6 +161,7 @@ class vps__xen extends Lxdriverclass {
 						 'outgoing' => $b[0]
 						);
 		}
+		
 		return 0;
 	}
 
