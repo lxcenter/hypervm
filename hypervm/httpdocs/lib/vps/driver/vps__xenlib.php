@@ -142,7 +142,7 @@ class vps__xen extends Lxdriverclass {
 	* @author Anonymous <anonymous@lxcenter.org>
 	* @author Ángel Guzmán Maeso <angel.guzman@lxcenter.org>
 	* 
-	* @param $interface The interface name. NULL by default.
+	* @param string $interface The interface name. NULL by default.
 	* @return array[integer] total, incoming, outgoing
 	*/
 	public static function get_bytes_for_interface($interface = NULL)
@@ -273,6 +273,23 @@ class vps__xen extends Lxdriverclass {
 		}
 	}
 
+	/**
+	* Get the status of Xen virtual machine.
+	*
+	* Check the status of background script. It
+	* could have the create, createfailed or deleted.
+	* 
+	* If not is running, it returns on or off searching
+	* by name on xm list command.
+	*
+	* @author Anonymous <anonymous@lxcenter.org>
+	* @author Ángel Guzmán Maeso <angel.guzman@lxcenter.org>
+	*
+	* @param string $virtual_machine_name The name of xen virtual machine
+	* @param string $rootdir The root folder fot the virtual machine
+	* @throws lxException
+	* @return string The status of virtual machine
+	*/
 	public static function getStatus($virtual_machine_name, $rootdir)
 	{
 		self::checkIfXenOK();
