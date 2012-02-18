@@ -273,34 +273,34 @@ class vps__xen extends Lxdriverclass {
 		}
 	}
 
-	public static function getStatus($vmname, $rootdir)
+	public static function getStatus($virtual_machine_name, $rootdir)
 	{
 		self::checkIfXenOK();
 	
 		// Check if background create script is running
-		if (lx_core_lock_check_only('background.php', $vmname . '.create')) {
+		if (lx_core_lock_check_only('background.php', $virtual_machine_name . '.create')) {
 			return 'create';
 		}
 	
 		// Check if background create failed
-		if (lxfile_exists('__path_program_root/tmp/' . $vmname . '.createfailed')) {
-			$reason = lfile_get_contents('__path_program_root/tmp/' . $vmname . '.createfailed');
+		if (lxfile_exists('__path_program_root/tmp/' . $virtual_machine_name . '.createfailed')) {
+			$reason = lfile_get_contents('__path_program_root/tmp/' . $virtual_machine_name . '.createfailed');
 			return 'createfailed: ' . $reason;
 		}
 	
 		// Check if background script is deleted
-		if (!lxfile_exists($rootdir . '/' . $vmname)) {
+		if (!lxfile_exists($rootdir . '/' . $virtual_machine_name)) {
 			return 'deleted';
 		}
 	
 		/*
-		if (lx_core_lock("$vmname.status")) {
+		if (lx_core_lock("$virtual_machine_name.status")) {
 			throw new lxException("xm_status_locked");
 		}
 		*/
 		
 		// List info about the virtual machine
-		exec('xm list ' . $vmname, $output, $ret);
+		exec('xm list ' . $virtual_machine_name, $output, $ret);
 	
 		if (!$ret) {
 			return 'on';
