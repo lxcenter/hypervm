@@ -257,8 +257,8 @@ class vps__xen extends Lxdriverclass {
 
 	public static function checkIfXenOK()
 	{
-		if (!lxfile_exists("/proc/xen")) {
-			throw new lxException("no_kernel_support_for_xen._boot_into_the_right_kernel");
+		if (!lxfile_exists('/proc/xen')) {
+			throw new lxException('no_kernel_support_for_xen._boot_into_the_right_kernel');
 		}
 	}
 
@@ -266,33 +266,31 @@ class vps__xen extends Lxdriverclass {
 	{
 		self::checkIfXenOK();
 	
-	
-		if (lx_core_lock_check_only("background.php", "$vmname.create")) {
+		if (lx_core_lock_check_only('background.php', $vmname . '.create')) {
 			return 'create';
 		}
 	
-		if (lxfile_exists("__path_program_root/tmp/$vmname.createfailed")) {
-			$reason = lfile_get_contents("__path_program_root/tmp/$vmname.createfailed");
-			return "createfailed: $reason";
+		if (lxfile_exists('__path_program_root/tmp/' . $vmname . '.createfailed')) {
+			$reason = lfile_get_contents('__path_program_root/tmp/' . $vmname . '.createfailed');
+			return 'createfailed: ' . $reason;
 		}
 	
-		if (!lxfile_exists("$rootdir/$vmname")) {
-			return "deleted";
+		if (!lxfile_exists($rootdir . '/' . $vmname)) {
+			return 'deleted';
 		}
 	
 		/*
 		if (lx_core_lock("$vmname.status")) {
 			throw new lxException("xm_status_locked");
 		}
-	*/
-		exec("xm list $vmname", $output, $ret);
+		*/
+		exec('xm list ' . $vmname, $output, $ret);
 	
 		if (!$ret) {
 			return 'on';
 		}
 	
 		return 'off';
-	
 	}
 
 	public static function getDiskUsage($disk, $winflag, $root)
