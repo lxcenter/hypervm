@@ -132,7 +132,19 @@ class vps__xen extends Lxdriverclass {
 			lfile_put_contents('__path_program_etc/newxeninterfacebw.data', serialize($total));
 		}
 	}
-
+	
+	/**
+	* Get the bytes for a given interface.
+	*
+	* Recollect the bytes column (incoming and outgoing) from
+	* the file /proc/net/dev for a given interface on a machine.
+	*
+	* @author Anonymous <anonymous@lxcenter.org>
+	* @author Ángel Guzmán Maeso <angel.guzman@lxcenter.org>
+	* 
+	* @param $interface The interface name. NULL by default.
+	* @return array[integer] total, incoming, outgoing
+	*/
 	public static function get_bytes_for_interface($interface = NULL)
 	{
 		static $networks; // Make a cache with the networks available
