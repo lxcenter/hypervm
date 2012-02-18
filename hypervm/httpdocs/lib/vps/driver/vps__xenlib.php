@@ -137,7 +137,8 @@ class vps__xen extends Lxdriverclass {
 	{
 		static $networks; // Make a cache with the networks available
 	
-		if (!$networks) {
+		// Recollect the data for first time if not cached
+		if (!isset($networks) || empty($networks)) {
 			$networks = lfile_get_contents('/proc/net/dev');
 			$networks = explode(PHP_EOL, $networks);
 		}
@@ -146,23 +147,28 @@ class vps__xen extends Lxdriverclass {
 			$vif_interface = 'vif' . $interface . ':';
 			$network = trimSpaces($network);
 			
-			if (!csb($network, $vif_interface)) {
+			if (!csb($network, $vif_interface)) { // Char search begin
 				continue;
 			}
-	
+			
+			// Parse the data for get total/incoming/outgoing
 			$network = strfrom($network, $vif_interface);
 			$network = trimSpaces($network);
-			$b = explode(' ', $network);
-			$total = $b[0] + $b[8];
+			$network_bytes = explode(' ', $network);
+			
+			$total_incoming = $network_bytes[8];
+			$total_outgoing = $network_bytes[0];
+			$total          = $total_outgoing + $total_incoming;
+			
 			// It seems for xen it is the reverse. The input for the vif is the output for the virtual machine.
 			return array(
 						 'total'    => $total, 
-						 'incoming' => $b[8], 
-						 'outgoing' => $b[0]
+						 'incoming' => $total_incoming, 
+						 'outgoing' => $total_outgoing,
 						);
 		}
 		
-		return 0;
+		return 0; // Return 0 bytes
 	}
 
 	public static function execCommand($vpsid, $command)
