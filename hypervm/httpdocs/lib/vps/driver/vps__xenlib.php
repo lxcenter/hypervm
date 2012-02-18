@@ -255,6 +255,17 @@ class vps__xen extends Lxdriverclass {
 		return $template_sizes;
 	}
 
+	/**
+	* Check the Xen availability.
+	*
+	* Check if exists /proc/xen 
+	*
+	* @author Anonymous <anonymous@lxcenter.org>
+	* @author Ángel Guzmán Maeso <angel.guzman@lxcenter.org>
+	*
+	* @throws lxException
+	* @return void
+	*/
 	public static function checkIfXenOK()
 	{
 		if (!lxfile_exists('/proc/xen')) {
