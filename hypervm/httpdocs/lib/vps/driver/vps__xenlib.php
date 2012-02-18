@@ -50,7 +50,7 @@ class vps__xen extends Lxdriverclass {
 				$line = trimSpaces($line);
 				$value = explode(' ', $line);
 		
-				if (!cse($value[0], '.vm')) {
+				if (!char_search_end($value[0], '.vm')) {
 					continue;
 				}
 				
@@ -132,106 +132,199 @@ class vps__xen extends Lxdriverclass {
 			lfile_put_contents('__path_program_etc/newxeninterfacebw.data', serialize($total));
 		}
 	}
-
-	public static function get_bytes_for_interface($l)
-	{
-		static $net;
 	
-		if (!$net) {
-			$net = lfile_get_contents("/proc/net/dev");
-			$net = explode("\n", $net);
+	/**
+	* Get the bytes for a given interface.
+	*
+	* Recollect the bytes column (incoming and outgoing) from
+	* the file /proc/net/dev for a given interface on a machine.
+	*
+	* @author Anonymous <anonymous@lxcenter.org>
+	* @author Ángel Guzmán Maeso <angel.guzman@lxcenter.org>
+	* 
+	* @param string $interface The interface name. NULL by default.
+	* @return array[integer] total, incoming, outgoing
+	*/
+	public static function get_bytes_for_interface($interface = NULL)
+	{
+		static $networks; // Make a cache with the networks available
+	
+		// Recollect the data for first time if not cached
+		if (!isset($networks) || empty($networks)) {
+			$networks = lfile_get_contents('/proc/net/dev');
+			$networks = explode(PHP_EOL, $networks);
 		}
 	
-		foreach($net as $n) {
-			$n = trimSpaces($n);
-			if (!csb($n, "vif$l:")) {
+		foreach($networks as $network) {
+			$vif_interface = 'vif' . $interface . ':';
+			$network = trimSpaces($network);
+			
+			if (!char_search_beg($network, $vif_interface)) {
 				continue;
 			}
-	
-			$n = strfrom($n, "vif$l:");
-			$n = trimSpaces($n);
-			$b = explode(" ", $n);
-			$total = $b[0] + $b[8];
+			
+			// Parse the data for get total/incoming/outgoing
+			$network = strfrom($network, $vif_interface);
+			$network = trimSpaces($network);
+			$network_bytes = explode(' ', $network);
+			
+			$total_incoming = $network_bytes[8];
+			$total_outgoing = $network_bytes[0];
+			$total          = $total_outgoing + $total_incoming;
+			
 			// It seems for xen it is the reverse. The input for the vif is the output for the virtual machine.
-			return array('total' => $total, 'incoming' => $b[8], 'outgoing' => $b[0]);
+			return array(
+						 'total'    => $total, 
+						 'incoming' => $total_incoming, 
+						 'outgoing' => $total_outgoing,
+						);
 		}
-		return 0;
+		
+		return 0; // Return 0 bytes
 	}
 
+	/**
+	* 
+	* @todo Check the behaviour of this fuction, maybe is @deprecated
+	*
+	* @author Anonymous <anonymous@lxcenter.org>
+	* @author Ángel Guzmán Maeso <angel.guzman@lxcenter.org>
+	*
+	* @param $vpsid
+	* @param $command
+	* @return void
+	*/
 	public static function execCommand($vpsid, $command)
 	{
 		global $global_shell_error, $global_shell_ret;
 	}
 
+	/**
+	 * Get the list of operating system templates.
+	 * 
+	 * Search on xen/template/ folder each type of
+	 * template, uncompress if necessary the template and
+	 * calculate the size of each template on a list.
+	 * 
+	 * @author Anonymous <anonymous@lxcenter.org>
+	 * @author Ángel Guzmán Maeso <angel.guzman@lxcenter.org>
+	 * 
+	 * @param string $type the template list to fetch. Available add|img|tar.gz by default add
+	 * @return array[string] size of each template indexed by template name
+	 */
 	public static function getOsTemplatelist($type = 'add')
 	{
-		$list = lscandir_without_dot("__path_program_home/xen/template/");
+		$template_list = lscandir_without_dot('__path_program_home/xen/template/');
 	
-		foreach($list as $__l) {
-			if ($type === 'add') {
-				if (!cse($__l, ".tar.gz") && !cse($__l, ".img")) {
-					continue;
-				}
-			} else if ($type === 'img') {
-				if (!cse($__l, ".img")) {
-					continue;
-				}
-			} else if ($type === 'tar.gz') {
-				if (!cse($__l, ".tar.gz")) {
-					continue;
-				}
+		$template_sizes = array();
+		foreach($template_list as $template) {
+			// Get the template size analizing the type
+			switch($type) {
+				case 'add':
+					if (!char_search_end($template, '.tar.gz') && !char_search_end($template, '.img')) {
+						continue; // Skip the template if not contains .tar.gz and .img
+					}
+					
+					if (char_search_end($template, '.tar.gz')) {
+						$size = lxfile_get_uncompressed_size('__path_program_home/xen/template/' . $template);
+					} else {
+						$size = lxfile_size('__path_program_home/xen/template/' . $template);
+					}
+				break;
+				case 'img':
+					if (!char_search_end($template, '.img')) {
+						continue; // Skip the template if not contains .img
+					}
+					
+					$size = lxfile_size('__path_program_home/xen/template/' . $template);
+				break;
+				case 'tar.gz':
+					if (!char_search_end($template, '.tar.gz')) {
+						continue; // Skip the template if not contains .tar.gz
+					}
+					
+					$size = lxfile_get_uncompressed_size('__path_program_home/xen/template/' . $template);
+				break;
 			}
 	
-			if (cse($__l, ".tar.gz")) {
-				$size = lxfile_get_uncompressed_size("__path_program_home/xen/template/$__l");
-			} else {
-				$size = lxfile_size("__path_program_home/xen/template/$__l");
-			}
-	
-			$newlist[strtil($__l, ".tar.gz")] = strtil($__l, ".tar.gz") . " (" . round($size / (1024 * 1024), 2) . "MB)";
+			$template_filtered = strtil($template, '.tar.gz');
+			$size_MB = round($size / (1024 * 1024), 2);
+			$template_sizes[$template_filtered] = $template_filtered . ' (' . $size_MB . 'MB)';
 		}
-		return $newlist;
-	
+		
+		return $template_sizes;
 	}
 
+	/**
+	* Check the Xen availability.
+	*
+	* Check if exists /proc/xen 
+	*
+	* @author Anonymous <anonymous@lxcenter.org>
+	* @author Ángel Guzmán Maeso <angel.guzman@lxcenter.org>
+	*
+	* @throws lxException
+	* @return void
+	*/
 	public static function checkIfXenOK()
 	{
-		if (!lxfile_exists("/proc/xen")) {
-			throw new lxException("no_kernel_support_for_xen._boot_into_the_right_kernel");
+		if (!lxfile_exists('/proc/xen')) {
+			throw new lxException('no_kernel_support_for_xen._boot_into_the_right_kernel');
 		}
 	}
 
-	public static function getStatus($vmname, $rootdir)
+	/**
+	* Get the status of Xen virtual machine.
+	*
+	* Check the status of background script. It
+	* could have the create, createfailed or deleted.
+	* 
+	* If not is running, it returns on or off searching
+	* by name on xm list command.
+	*
+	* @author Anonymous <anonymous@lxcenter.org>
+	* @author Ángel Guzmán Maeso <angel.guzman@lxcenter.org>
+	*
+	* @param string $virtual_machine_name The name of xen virtual machine
+	* @param string $rootdir The root folder fot the virtual machine
+	* @throws lxException
+	* @return string The status of virtual machine
+	*/
+	public static function getStatus($virtual_machine_name, $rootdir)
 	{
 		self::checkIfXenOK();
 	
-	
-		if (lx_core_lock_check_only("background.php", "$vmname.create")) {
+		// Check if background create script is running
+		if (lx_core_lock_check_only('background.php', $virtual_machine_name . '.create')) {
 			return 'create';
 		}
 	
-		if (lxfile_exists("__path_program_root/tmp/$vmname.createfailed")) {
-			$reason = lfile_get_contents("__path_program_root/tmp/$vmname.createfailed");
-			return "createfailed: $reason";
+		// Check if background create failed
+		if (lxfile_exists('__path_program_root/tmp/' . $virtual_machine_name . '.createfailed')) {
+			$reason = lfile_get_contents('__path_program_root/tmp/' . $virtual_machine_name . '.createfailed');
+			return 'createfailed: ' . $reason;
 		}
 	
-		if (!lxfile_exists("$rootdir/$vmname")) {
-			return "deleted";
+		// Check if background script is deleted
+		if (!lxfile_exists($rootdir . '/' . $virtual_machine_name)) {
+			return 'deleted';
 		}
 	
 		/*
-		if (lx_core_lock("$vmname.status")) {
+		if (lx_core_lock("$virtual_machine_name.status")) {
 			throw new lxException("xm_status_locked");
 		}
-	*/
-		exec("xm list $vmname", $output, $ret);
+		*/
+		
+		// List info about the virtual machine
+		exec('xm list ' . $virtual_machine_name, $output, $status);
 	
-		if (!$ret) {
+		if (!empty($status)) {
 			return 'on';
 		}
-	
-		return 'off';
-	
+		else {
+			return 'off';
+		}
 	}
 
 	public static function getDiskUsage($disk, $winflag, $root)
@@ -465,7 +558,7 @@ class vps__xen extends Lxdriverclass {
 		$out = lxshell_output("parted", $this->main->maindisk, "unit", "s", "print", "free");
 		$list = explode("\n", $out);
 		foreach($list as $l) {
-			if (csb($l, "Disk")) {
+			if (char_search_beg($l, "Disk")) {
 				$s = explode(":", $l);
 				$s = trim($s[1]);
 				$s = strtil($s, "s");
@@ -500,13 +593,13 @@ class vps__xen extends Lxdriverclass {
 		if (!lxfile_exists("$mountpoint/lib/modules/$kernev")) {
 			lxfile_cp_rec("/lib/modules/$kernev", "$mountpoint/lib/modules/$kernev");
 		}
-		if (cse($kernev, "-xen")) {
+		if (char_search_end($kernev, "-xen")) {
 			$nkernev = strtil($kernev, "-xen");
 			if (!lxfile_exists("$mountpoint/lib/modules/$nkernev")) {
 				lxfile_cp_rec("/lib/modules/$kernev", "$mountpoint/lib/modules/$nkernev");
 			}
 		}
-		if (csb($this->main->ostemplate, "centos-")) {
+		if (char_search_beg($this->main->ostemplate, "centos-")) {
 			if (lxfile_exists("$mountpoint/lib/tls")) {
 				lxfile_rm_rec("$mountpoint/lib/tls.disabled");
 				lxfile_mv_rec("$mountpoint/lib/tls", "$mountpoint/lib/tls.disabled");
@@ -652,7 +745,7 @@ class vps__xen extends Lxdriverclass {
 		}
 	
 		$mac = $this->main->macaddress;
-		if (!csb($mac, "aa:00")) { $mac = "aa:00:$mac"; }
+		if (!char_search_beg($mac, "aa:00")) { $mac = "aa:00:$mac"; }
 		if (strlen($mac) === 14) { $mac = "$mac:01"; }
 		$bridgestring = null;
 		if ($this->main->networkbridge && $this->main->networkbridge !== '--automatic--') {
@@ -691,7 +784,7 @@ class vps__xen extends Lxdriverclass {
 		}
 	
 		$mac = $this->main->macaddress;
-		if (!csb($mac, "aa:00")) { $mac = "aa:00:$mac"; }
+		if (!char_search_beg($mac, "aa:00")) { $mac = "aa:00:$mac"; }
 		$count = count($this->main->vmipaddress_a);
 		// Big bug workaround. the first vif seems to be ignored. Need to be fixed later.
 		$vifnamestring = "vifname=vif{$this->main->vifname},";
@@ -896,7 +989,7 @@ class vps__xen extends Lxdriverclass {
 
 	public function isLvm()
 	{
-		return csb($this->main->corerootdir, "lvm:");
+		return char_search_beg($this->main->corerootdir, "lvm:");
 	}
 
 	public function createSwap()
@@ -1098,7 +1191,7 @@ class vps__xen extends Lxdriverclass {
 		$this->createSwap();
 		//$this->mount_this_guy();
 	
-		if (csb($this->__oldlocation, "lvm:")) {
+		if (char_search_beg($this->__oldlocation, "lvm:")) {
 			$vgname = fix_vgname($this->__oldlocation);
 			$oldimage = "/dev/$vgname/{$this->main->maindiskname}";
 		} else {
@@ -1114,7 +1207,7 @@ class vps__xen extends Lxdriverclass {
 		// Don't do this at all. The saved space is not going to be very important for the short period.
 		//lunlink("$this->__oldlocation/{$this->main->nname}/root.img");
 		/*
-		if (csb($this->__oldlocation, "lvm:")) {
+		if (char_search_beg($this->__oldlocation, "lvm:")) {
 			$vg = fix_vgname($this->__oldlocation);
 			lvm_remove("/dev/$vg/{$this->main->swapdiskname}");
 		} else {
@@ -1804,7 +1897,7 @@ class vps__xen extends Lxdriverclass {
 		$list = lfile_trim($file);
 	
 		foreach($list as $l) {
-			if (csb($l, "#")) {
+			if (char_search_beg($l, "#")) {
 				continue;
 			}
 	
