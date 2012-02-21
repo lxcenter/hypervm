@@ -290,127 +290,119 @@ class vps__openvz extends Lxdriverclass {
 		$global_dontlogshell = $v;
 	}
 
-
-function dbactionAdd()
-{
-	global $gbl, $sgbl, $login, $ghtml; 
-
+	function dbactionAdd()
+	{
+		global $gbl, $sgbl, $login, $ghtml; 
 	
-
-	self::checkIfVzOK();
-	$ret = lxshell_return("vzctl", "--help");
-	if ($ret) {
-		throw new lxException("no_vzctl");
-	}
-
-
-	@ lunlink("__path_program_root/tmp/{$this->main->vpsid}.createfailed");
-	if ($this->main->dbaction === 'syncadd') {
+		self::checkIfVzOK();
+		$ret = lxshell_return("vzctl", "--help");
+		if ($ret) {
+			throw new lxException("no_vzctl");
+		}
+	
+		@ lunlink("__path_program_root/tmp/{$this->main->vpsid}.createfailed");
+		if ($this->main->dbaction === 'syncadd') {
+			$username = vps::create_user($this->main->username, $this->main->password, $this->main->vpsid, "/usr/bin/lxopenvz");
+			return null;
+		}
+	
+		$vpsid = $this->main->vpsid;
+	
+		dprintr("vpsid. $vpsid. ..\n");
+		if (lxfile_exists("/etc/vz/conf/$vpsid.conf")) {
+			throw new lxException("a_vps_with_the_same_id_exists", '', $vpsid);
+		}
+	
+		if (self::getStatus($vpsid, $this->main->corerootdir) === 'create') {
+			throw new lxException("a_vps_of_same_id_is_getting_created", '', $vpsid);
+		}
+	
+		if (self::getStatus($vpsid, $this->main->corerootdir) !== 'deleted') {
+			throw new lxException("a_vps_with_the_same_id_exists", '', $vpsid);
+		}
+	
+		/*
+		if (!lxfile_exists("/vz/template/cache/{$this->main->ostemplate}.tar.gz")) {
+			throw new lxException("could_not_find_the_osimage");
+		}
+	*/
+	
 		$username = vps::create_user($this->main->username, $this->main->password, $this->main->vpsid, "/usr/bin/lxopenvz");
-		return null;
-	}
-
-
-	$vpsid = $this->main->vpsid;
-
-	dprintr("vpsid. $vpsid. ..\n");
-	if (lxfile_exists("/etc/vz/conf/$vpsid.conf")) {
-		throw new lxException("a_vps_with_the_same_id_exists", '', $vpsid);
-	}
-
-	if (self::getStatus($vpsid, $this->main->corerootdir) === 'create') {
-		throw new lxException("a_vps_of_same_id_is_getting_created", '', $vpsid);
-	}
-
-	if (self::getStatus($vpsid, $this->main->corerootdir) !== 'deleted') {
-		throw new lxException("a_vps_with_the_same_id_exists", '', $vpsid);
-	}
-
-	/*
-	if (!lxfile_exists("/vz/template/cache/{$this->main->ostemplate}.tar.gz")) {
-		throw new lxException("could_not_find_the_osimage");
-	}
-*/
-
-
-	$username = vps::create_user($this->main->username, $this->main->password, $this->main->vpsid, "/usr/bin/lxopenvz");
-		
-	if ($sgbl->isDebug()) {
-		$this->doRealCreate();
-	} else {
-		callObjectInBackground($this, "doRealCreate");
-	}
-
-	//$this->doRealCreate();
+			
+		if ($sgbl->isDebug()) {
+			$this->doRealCreate();
+		} else {
+			callObjectInBackground($this, "doRealCreate");
+		}
 	
-	$ret = array("__syncv_username" => $username);
-	return $ret;
-
-}
-
-function doRealCreate()
-{
-
-	global $global_shell_error, $global_shell_ret;
-
-
-	$vpsid = $this->main->vpsid;
-	lxfile_mkdir("__path_program_root/tmp");
-
-	lx_core_lock("$vpsid.create");
-
-	$templatefile = "/vz/template/cache/{$this->main->ostemplate}.tar.gz";
-
-	$this->main->getOsTemplateFromMaster($templatefile);
-
-
-	if (!lxfile_real($templatefile)) {
-		log_error("could not create vm. Could not download $templatefile");
-		lfile_put_contents("__path_program_root/tmp/$vspid.createfailed", "Could not download $templatefile");
-		exit;
+		//$this->doRealCreate();
+		
+		$ret = array("__syncv_username" => $username);
+		return $ret;
+	
 	}
 
-	dprint($templatefile . "\n");
-
-	$ret = lxshell_return("nice", "-n", "19", "vzctl", "--verbose", "create", $this->main->vpsid, "--private", "{$this->main->corerootdir}/{$this->main->vpsid}", "--ostemplate", $this->main->ostemplate);
-
-
-	if ($ret) {
+	function doRealCreate()
+	{
+		global $global_shell_error, $global_shell_ret;
+	
+		$vpsid = $this->main->vpsid;
+		lxfile_mkdir("__path_program_root/tmp");
+	
+		lx_core_lock("$vpsid.create");
+	
+		$templatefile = "/vz/template/cache/{$this->main->ostemplate}.tar.gz";
+	
+		$this->main->getOsTemplateFromMaster($templatefile);
+	
+	
+		if (!lxfile_real($templatefile)) {
+			log_error("could not create vm. Could not download $templatefile");
+			lfile_put_contents("__path_program_root/tmp/$vspid.createfailed", "Could not download $templatefile");
+			exit;
+		}
+	
+		dprint($templatefile . "\n");
+	
+		$ret = lxshell_return("nice", "-n", "19", "vzctl", "--verbose", "create", $this->main->vpsid, "--private", "{$this->main->corerootdir}/{$this->main->vpsid}", "--ostemplate", $this->main->ostemplate);
+	
+	
+		if ($ret) {
+			lunlink("__path_program_root/tmp/$vpsid.create");
+			lfile_put_contents("__path_program_root/tmp/$vpsid.createfailed", $global_shell_error);
+			exit;
+		}
+	
+		$this->setIpaddress($this->main->vmipaddress_a, true);
+		$this->enableSecondLevelQuota();
+		//lxshell_return("vzctl", "set", $this->main->vpsid, "--quotaugidlimit", "1000", "--save");
+		$this->setInformation();
+		$ret = lxshell_return("vzctl", "set", $this->main->vpsid, "--onboot", "yes", "--save");
+	
+		$this->setEveryThing();
+		$this->setRootPassword();
+	
+	
+		$this->main->doKloxoInit("{$this->main->corerootdir}/{$this->main->vpsid}");
+		// It appears sometimes they don't setup the ostemplate properly.
+		$this->changeConf("OSTEMPLATE", $this->main->ostemplate);
+		$this->stop();
+		$this->start();
 		lunlink("__path_program_root/tmp/$vpsid.create");
-		lfile_put_contents("__path_program_root/tmp/$vpsid.createfailed", $global_shell_error);
-		exit;
+		$this->postCreate();
 	}
 
-	$this->setIpaddress($this->main->vmipaddress_a, true);
-	$this->enableSecondLevelQuota();
-	//lxshell_return("vzctl", "set", $this->main->vpsid, "--quotaugidlimit", "1000", "--save");
-	$this->setInformation();
-	$ret = lxshell_return("vzctl", "set", $this->main->vpsid, "--onboot", "yes", "--save");
-
-	$this->setEveryThing();
-	$this->setRootPassword();
-
-
-	$this->main->doKloxoInit("{$this->main->corerootdir}/{$this->main->vpsid}");
-	// It appears sometimes they don't setup the ostemplate properly.
-	$this->changeConf("OSTEMPLATE", $this->main->ostemplate);
-	$this->stop();
-	$this->start();
-	lunlink("__path_program_root/tmp/$vpsid.create");
-	$this->postCreate();
-}
-
-function postCreate()
-{
-	if ($this->main->__var_custom_exec) {
-		lxshell_direct($this->main->__var_custom_exec);
+	function postCreate()
+	{
+		if ($this->main->__var_custom_exec) {
+			lxshell_direct($this->main->__var_custom_exec);
+		}
 	}
-}
 
-function dropQuota()
-{
-	lxshell_return("vzquota", "drop", $this->main->vpsid);
-}
+	function dropQuota()
+	{
+		lxshell_return("vzquota", "drop", $this->main->vpsid);
+	}
 
 function changeLocation()
 {
