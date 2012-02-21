@@ -714,227 +714,216 @@ class vps__openvz extends Lxdriverclass {
 		$this->setGuarMemoryUsage();
 	}
 
-function limitMaxMemory($value)
-{
-	if ($value > 2147483646) { $value = 2147483646; }
-	return $value;
-}
-
-function limitNumber($value)
-{
-	if ($value > 214748364) { $value = 214748364; }
-	return $value;
-}
-
-function reboot()
-{
-	global $global_shell_out, $global_shell_error, $global_shell_ret;
-	$this->stop();
-	#$this->changeConf("CAPABILITY", "SYS_TIME:on");
-	$this->main->doKloxoInit("{$this->main->corerootdir}/{$this->main->vpsid}");
-
-	$ret = $this->start();
-
-	if ($ret) {
-		throw new lxException("could_not_start_vps", '', str_replace("\n", ": ", $global_shell_error));
+	function limitMaxMemory($value)
+	{
+		if ($value > 2147483646) { $value = 2147483646; }
+		return $value;
 	}
-}
 
+	function limitNumber($value)
+	{
+		if ($value > 214748364) { $value = 214748364; }
+		return $value;
+	}
 
-// temproary version without quotes...
-function staticChangeConf($file, $var, $val)
-{
-	$list = lfile_trim($file);
-	$match = false;
-	foreach($list as $k => $__l) {
-		if (csb($__l, "$var=")) {
-			if ($val) {
-				$list[$k] = "$var=$val";
-			} else {
-				unset($list[$k]);
+	function reboot()
+	{
+		global $global_shell_out, $global_shell_error, $global_shell_ret;
+		$this->stop();
+		#$this->changeConf("CAPABILITY", "SYS_TIME:on");
+		$this->main->doKloxoInit("{$this->main->corerootdir}/{$this->main->vpsid}");
+	
+		$ret = $this->start();
+	
+		if ($ret) {
+			throw new lxException("could_not_start_vps", '', str_replace("\n", ": ", $global_shell_error));
+		}
+	}
+
+	// temproary version without quotes...
+	function staticChangeConf($file, $var, $val)
+	{
+		$list = lfile_trim($file);
+		$match = false;
+		foreach($list as $k => $__l) {
+			if (csb($__l, "$var=")) {
+				if ($val) {
+					$list[$k] = "$var=$val";
+				} else {
+					unset($list[$k]);
+				}
+				$match = true;
 			}
-			$match = true;
 		}
-	}
-
-	if (!$match) {
-		if ($val) {
-			$list[] = "$var=$val";
-		}
-	}
-
-	lfile_put_contents($file, implode("\n", $list));
-}
-
-
-
-function removeConf($var)
-{
-	$list = lfile_trim("/etc/vz/conf/{$this->main->vpsid}.conf");
-	$match = false;
-	foreach($list as $k => $__l) {
-		if (csb($__l, "$var=")) {
+	
+		if (!$match) {
 			if ($val) {
-				//$list[$k] = "$var=\"$val\"";
-			} else {
-				unset($list[$k]);
+				$list[] = "$var=$val";
 			}
-			$match = true;
 		}
+	
+		lfile_put_contents($file, implode("\n", $list));
 	}
 
-	if (!$match) {
-		return;
+	function removeConf($var)
+	{
+		$list = lfile_trim("/etc/vz/conf/{$this->main->vpsid}.conf");
+		$match = false;
+		foreach($list as $k => $__l) {
+			if (csb($__l, "$var=")) {
+				if ($val) {
+					//$list[$k] = "$var=\"$val\"";
+				} else {
+					unset($list[$k]);
+				}
+				$match = true;
+			}
+		}
+	
+		if (!$match) {
+			return;
+		}
+	
+		lfile_put_contents("/etc/vz/conf/{$this->main->vpsid}.conf", implode("\n", $list));
 	}
 
-	lfile_put_contents("/etc/vz/conf/{$this->main->vpsid}.conf", implode("\n", $list));
-}
-
-
-function changeConf($var, $val)
-{
-	$list = lfile_trim("/etc/vz/conf/{$this->main->vpsid}.conf");
-	$match = false;
-	foreach($list as $k => $__l) {
-		if (csb($__l, "$var=")) {
+	function changeConf($var, $val)
+	{
+		$list = lfile_trim("/etc/vz/conf/{$this->main->vpsid}.conf");
+		$match = false;
+		foreach($list as $k => $__l) {
+			if (csb($__l, "$var=")) {
+				if ($val) {
+					$list[$k] = "$var=\"$val\"";
+				} else {
+					unset($list[$k]);
+				}
+				$match = true;
+			}
+		}
+	
+		if (!$match) {
 			if ($val) {
-				$list[$k] = "$var=\"$val\"";
-			} else {
-				unset($list[$k]);
+				$list[] = "$var=\"$val\"";
 			}
-			$match = true;
+		}
+	
+		lfile_put_contents("/etc/vz/conf/{$this->main->vpsid}.conf", implode("\n", $list));
+	}
+
+	function recoverVps()
+	{
+		if (!$this->main->isOn('recover_confirm_f')) {
+			throw new lxException("need_confirm_recover", 'recover_confirm_f');
+		}
+	
+		$this->stop();
+		$this->main->coreRecoverVps("{$this->main->corerootdir}/{$this->main->vpsid}");
+		$this->start();
+	}
+
+	function rebuild()
+	{
+		if (!$this->main->isOn('rebuild_confirm_f')) {
+			throw new lxException("need_confirm_rebuild", 'rebuild_confirm_f');
+		}
+	
+		$templatefile = "/vz/template/cache/{$this->main->ostemplate}.tar.gz";
+		$this->main->getOsTemplateFromMaster($templatefile);
+	
+		if(!lxfile_nonzero($templatefile)) {
+			throw new lxException("no_template_and_could_not_download", 'rebuild_confirm_f');
+		}
+	
+		$this->stop();
+		$this->dropQuota();
+		if ($this->main->isOn('rebuild_backup_f')) {
+			lxfile_mkdir("/home/hypervm/vps/{$this->main->nname}/__backup/");
+			$date = date('Y-m-d-') . time();
+			$dir = "/home/hypervm/vps/{$this->main->nname}/__backup/rebuild-backup.$date";
+			lxfile_mv_rec("{$this->main->corerootdir}/{$this->main->vpsid}", $dir);
+		} else {
+			$dir = getNotexistingFile($this->main->corerootdir, "tmp.{$this->main->vpsid}");
+			lxfile_mv_rec("{$this->main->corerootdir}/{$this->main->vpsid}", $dir);
+			lxfile_rm_rec($dir);
+		}
+		lxfile_mkdir("{$this->main->corerootdir}/{$this->main->vpsid}");
+		$ret = lxshell_return("tar", "-C", "{$this->main->corerootdir}/{$this->main->vpsid}", '--numeric-owner', "-xzpf", $templatefile);
+	
+		if ($ret) {
+			throw new lxException("rebuild_failed_could_not_untar");
+		}
+	
+		$this->changeConf("OSTEMPLATE", $this->main->ostemplate);
+	
+		$this->dropQuota();
+		$this->start();
+		$this->setRootPassword();
+	
+		if (lxfile_exists("/etc/hypervm/rebuild_fix")) {
+			$this->setEveryThing();
+			$this->setIpaddress($this->main->vmipaddress_a, true);
+			$this->enableSecondLevelQuota();
+			//lxshell_return("vzctl", "set", $this->main->vpsid, "--quotaugidlimit", "1000", "--save");
+			$this->setInformation();
+			$ret = lxshell_return("vzctl", "set", $this->main->vpsid, "--onboot", "yes", "--save");
 		}
 	}
 
-	if (!$match) {
-		if ($val) {
-			$list[] = "$var=\"$val\"";
+	function installkloxo()
+	{
+		$this->rebuild();
+	}
+
+	function oldinstallkloxo()
+	{
+	    //TODO: Remove?
+		$ret = lxshell_return("vzctl", "exec2", $this->main->vpsid, "ping -n -c 1 -w 5 lxlabs.com");
+	
+		if ($ret) {
+			throw new lxException("no_network_inside_the_vps_possibly_lack_of_dns");
 		}
-	}
-
-	lfile_put_contents("/etc/vz/conf/{$this->main->vpsid}.conf", implode("\n", $list));
-}
-
-
-
-function recoverVps()
-{
-
-	if (!$this->main->isOn('recover_confirm_f')) {
-		throw new lxException("need_confirm_recover", 'recover_confirm_f');
-	}
-
-	$this->stop();
-	$this->main->coreRecoverVps("{$this->main->corerootdir}/{$this->main->vpsid}");
-	$this->start();
-}
-
-function rebuild()
-{
-
-	if (!$this->main->isOn('rebuild_confirm_f')) {
-		throw new lxException("need_confirm_rebuild", 'rebuild_confirm_f');
-	}
-
-
-	$templatefile = "/vz/template/cache/{$this->main->ostemplate}.tar.gz";
-	$this->main->getOsTemplateFromMaster($templatefile);
-
-	if(!lxfile_nonzero($templatefile)) {
-		throw new lxException("no_template_and_could_not_download", 'rebuild_confirm_f');
-	}
-
-	$this->stop();
-	$this->dropQuota();
-	if ($this->main->isOn('rebuild_backup_f')) {
-		lxfile_mkdir("/home/hypervm/vps/{$this->main->nname}/__backup/");
-		$date = date('Y-m-d-') . time();
-		$dir = "/home/hypervm/vps/{$this->main->nname}/__backup/rebuild-backup.$date";
-		lxfile_mv_rec("{$this->main->corerootdir}/{$this->main->vpsid}", $dir);
-	} else {
-		$dir = getNotexistingFile($this->main->corerootdir, "tmp.{$this->main->vpsid}");
-		lxfile_mv_rec("{$this->main->corerootdir}/{$this->main->vpsid}", $dir);
-		lxfile_rm_rec($dir);
-	}
-	lxfile_mkdir("{$this->main->corerootdir}/{$this->main->vpsid}");
-	$ret = lxshell_return("tar", "-C", "{$this->main->corerootdir}/{$this->main->vpsid}", '--numeric-owner', "-xzpf", $templatefile);
-
-	if ($ret) {
-		throw new lxException("rebuild_failed_could_not_untar");
-	}
-
-	$this->changeConf("OSTEMPLATE", $this->main->ostemplate);
-
-	$this->dropQuota();
-	$this->start();
-	$this->setRootPassword();
-
-	if (lxfile_exists("/etc/hypervm/rebuild_fix")) {
-		$this->setEveryThing();
-		$this->setIpaddress($this->main->vmipaddress_a, true);
-		$this->enableSecondLevelQuota();
-		//lxshell_return("vzctl", "set", $this->main->vpsid, "--quotaugidlimit", "1000", "--save");
-		$this->setInformation();
-		$ret = lxshell_return("vzctl", "set", $this->main->vpsid, "--onboot", "yes", "--save");
-	}
-}
-
-function installkloxo()
-{
-	$this->rebuild();
-}
-
-function oldinstallkloxo()
-{
-    //TODO: Remove?
-	$ret = lxshell_return("vzctl", "exec2", $this->main->vpsid, "ping -n -c 1 -w 5 lxlabs.com");
-
-	if ($ret) {
-		throw new lxException("no_network_inside_the_vps_possibly_lack_of_dns");
-	}
-
-	$type = $this->main->kloxo_type;
-	if (lxfile_exists("{$this->main->corerootdir}/{$this->main->vpsid}/kloxo-install-$type.sh")) {
-		throw new lxException("old_kloxo_found");
-	}
-	if (lxfile_exists("{$this->main->corerootdir}/{$this->main->vpsid}/usr/local/lxlabs/kloxo")) {
-		throw new lxException("old_kloxo_found");
-	}
-
-	addLineIfNotExistPattern("{$this->main->corerootdir}/{$this->main->vpsid}/etc/sysconfig/rhn/up2date", "networkSetup[comment]=None", "networkSetup[comment]=None\nnetworkSetup=1\n");
-
-	lxshell_return("vzctl", "exec", $this->main->vpsid, "wget download.lxlabs.com/download/kloxo/production/kloxo-install-$type.sh");
-	lxshell_return("vzctl", "exec", $this->main->vpsid, "sh ./kloxo-install-$type.sh > hyperVm-kloxo_install.log 2>&1 &");
-
-}
-
-
-function setInformation()
-{
-	if ($this->main->hostname) {
-		lxshell_return("vzctl", "set", $this->main->vpsid, "--hostname", $this->main->hostname, "--save");
-	}
-
-	if ($this->main->nameserver) {
-		lxshell_return("vzctl", "set", $this->main->vpsid, "--nameserver", $this->main->nameserver, "--save");
-	}
-	lxfile_cp("/usr/share/zoneinfo/{$this->main->timezone}", "{$this->main->corerootdir}/{$this->main->vpsid}/etc/localtime");
-}
-
-static function getOsTemplatelist()
-{
-	$list = lscandir_without_dot("/vz/template/cache/");
-
-	foreach($list as $__l) {
-		if (!cse($__l, ".tar.gz") && !cse($__l, ".img")) {
-			continue;
+	
+		$type = $this->main->kloxo_type;
+		if (lxfile_exists("{$this->main->corerootdir}/{$this->main->vpsid}/kloxo-install-$type.sh")) {
+			throw new lxException("old_kloxo_found");
 		}
-		$size = lxfile_get_uncompressed_size("/vz/template/cache/$__l");
-		$newlist[strtil($__l, ".tar.gz")] = strtil($__l, ".tar.gz") . " (" . round($size / (1024 * 1024), 2) . "MB)";
+		if (lxfile_exists("{$this->main->corerootdir}/{$this->main->vpsid}/usr/local/lxlabs/kloxo")) {
+			throw new lxException("old_kloxo_found");
+		}
+	
+		addLineIfNotExistPattern("{$this->main->corerootdir}/{$this->main->vpsid}/etc/sysconfig/rhn/up2date", "networkSetup[comment]=None", "networkSetup[comment]=None\nnetworkSetup=1\n");
+	
+		lxshell_return("vzctl", "exec", $this->main->vpsid, "wget download.lxlabs.com/download/kloxo/production/kloxo-install-$type.sh");
+		lxshell_return("vzctl", "exec", $this->main->vpsid, "sh ./kloxo-install-$type.sh > hyperVm-kloxo_install.log 2>&1 &");
 	}
-	return $newlist;
 
-}
+	function setInformation()
+	{
+		if ($this->main->hostname) {
+			lxshell_return("vzctl", "set", $this->main->vpsid, "--hostname", $this->main->hostname, "--save");
+		}
+	
+		if ($this->main->nameserver) {
+			lxshell_return("vzctl", "set", $this->main->vpsid, "--nameserver", $this->main->nameserver, "--save");
+		}
+		lxfile_cp("/usr/share/zoneinfo/{$this->main->timezone}", "{$this->main->corerootdir}/{$this->main->vpsid}/etc/localtime");
+	}
+
+	static function getOsTemplatelist()
+	{
+		$list = lscandir_without_dot("/vz/template/cache/");
+	
+		foreach($list as $__l) {
+			if (!cse($__l, ".tar.gz") && !cse($__l, ".img")) {
+				continue;
+			}
+			$size = lxfile_get_uncompressed_size("/vz/template/cache/$__l");
+			$newlist[strtil($__l, ".tar.gz")] = strtil($__l, ".tar.gz") . " (" . round($size / (1024 * 1024), 2) . "MB)";
+		}
+		
+		return $newlist;
+	}
 
 function createTemplate()
 {
