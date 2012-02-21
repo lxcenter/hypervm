@@ -2244,7 +2244,7 @@ function getHardProperty()
 	$driverapp = $gbl->getSyncClass('localhost', $this->syncserver, 'vps');
 	if ($this->isXen()) {
 		$maindisk = $this->getXenMaindiskName();
-		$disk = rl_exec_get($this->__masterserver, $this->syncserver,  array("vps__$driverapp", "getDiskUsage"), array($maindisk, $this->isWindows(), $this->corerootdir));
+		$disk = rl_exec_get($this->__masterserver, $this->syncserver,  array("vps__$driverapp", "getDiskUsage"), array($maindisk));
 		$this->used->disk_usage = $disk['used'];
 	} else {
 		$l = rl_exec_get($this->__masterserver, $this->syncserver,  array("vps__$driverapp", "vpsInfo"), array($this->getIid(), $this->corerootdir));
@@ -2528,7 +2528,7 @@ function createShowRlist($subaction)
 
 			$maindisk = $this->getXenMaindiskName();
 
-			$disk = rl_exec_get($this->__masterserver, $this->syncserver,  array("vps__$driverapp", "getDiskUsage"), array($maindisk, $this->corerootdir));
+			$disk = rl_exec_get($this->__masterserver, $this->syncserver,  array("vps__$driverapp", "getDiskUsage"), array($maindisk));
 		}
 		if (!$this->priv->disk_usage) {
 			$this->priv->disk_usage = $disk['total'];

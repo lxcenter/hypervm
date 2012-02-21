@@ -327,7 +327,7 @@ class vps__xen extends Lxdriverclass {
 		}
 	}
 
-	public static function getDiskUsage($disk, $root)
+	public static function getDiskUsage($disk = NULL)
 	{
 		global $global_dontlogshell;
 		
@@ -2108,7 +2108,7 @@ class vps__xen extends Lxdriverclass {
 			$virtual_machine_name = $l['nname'];
 			$root_dir = '/home/xen';
 			$r['status'] = self::getStatus($virtual_machine_name, $root_dir);
-			$disk = self::getDiskUsage($l['diskname'], $l['corerootdir']);
+			$disk = self::getDiskUsage($l['diskname']);
 			$r['ldiskusage_f'] = $disk['used'];
 			$res[$l['nname']] = $r;
 		}
