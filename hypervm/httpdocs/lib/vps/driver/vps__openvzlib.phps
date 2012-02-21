@@ -925,239 +925,231 @@ class vps__openvz extends Lxdriverclass {
 		return $newlist;
 	}
 
-function createTemplate()
-{
-
-	$stem = explode("-", $this->main->ostemplate);
-	$name = "{$stem[0]}-{$stem[1]}-{$stem[2]}-";
-	$templatename = "$name{$this->main->newostemplate_name_f}";
-
-	$this->stop();
-
-	$list = lscandir_without_dot("{$this->main->corerootdir}/{$this->main->vpsid}");
-	lxshell_return("tar", "-C", "{$this->main->corerootdir}/{$this->main->vpsid}/", '--numeric-owner', "-czf", "/vz/template/cache/$templatename.tar.gz", $list);
-	$this->start();
-	$filepass = cp_fileserv("/vz/template/cache/$templatename.tar.gz");
-	$ret = array("__syncv___ostemplate_filepass" => $filepass, "__syncv___ostemplate_filename" => "$templatename.tar.gz");
-	return $ret;
-
-
-}
-
-function stop()
-{ 
-	global $gbl, $sgbl, $login, $ghtml; 
-
-	global $global_shell_error;
-	$ret =  lxshell_return("vzctl", "stop", $this->main->vpsid);
-	if (self::getStatus($this->main->vpsid, $this->main->corerootdir) === 'on') {
-		throw new lxException("could_not_stop_vps");
-	}
-}
-
-function dropOldQuota()
-{
-	lxshell_return("vzquota", "drop", $this->main->__var_oldvpsid);
-}
-
-function stopOldId()
-{ 
-	global $gbl, $sgbl, $login, $ghtml; 
-
-	global $global_shell_error;
-	$ret =  lxshell_return("vzctl", "stop", $this->main->__var_oldvpsid);
-	if (self::getStatus($this->main->__var_oldvpsid, $this->main->corerootdir) === 'on') {
-		throw new lxException("could_not_stop_vps");
-	}
-}
-
-
-function start() 
-{ 
-
-	if (self::getStatus($this->main->vpsid, $this->main->corerootdir) === 'on') {
-		return;
-	}
-	return lxshell_return("vzctl", "start", $this->main->vpsid); 
-}
-
-function changeUserPassword()
-{
-	dprint("hello\n");
-	$pass = $this->main->password;
-	lxshell_return("usermod", "-p", $pass, $this->main->username);
-}
-
-
-function getBeancounter()
-{
-	$vpsid = $this->main->vpsid;
-	$path = "/proc/user_beancounters";
+	function createTemplate()
+	{
+		$stem = explode("-", $this->main->ostemplate);
+		$name = "{$stem[0]}-{$stem[1]}-{$stem[2]}-";
+		$templatename = "$name{$this->main->newostemplate_name_f}";
 	
-	$data = `cat /proc/user_beancounters`;
-
-	$res = explode("\n", $data);
-	$match = false;
-
-	$savelist = array();
-	foreach($res as $r) {
-		$r = trim($r);
-		if (csb($r, "$vpsid:")) {
-			$match = true;
-		}
-
-		if (!$match) {
-			continue;
-		}
-
-		if (csa($r, ":")) {
-			$r = strfrom($r, ":");
-			$r = substr($r, 1);
-		}
-
-		$r = trimSpaces($r);
-		$r = explode(" ", $r);
-
-		// Check whether we have already encountered this variable. That means, we are now on the next vps.
-		if (array_search_bool($r[0], $savelist)) {
-			break;
-		}
-		if ($r[0] !== 'dummy') {
-			$savelist[] = $r[0];
-		}
-
-		$return['nname'] = $r[0];
-		$return['descr'] = $r[0];
-		$return['used'] = $r[1];
-		$return['max'] = $r[2];
-		$return['barrier'] = $r[3];
-		$return['limit'] = $r[4];
-		$return['failcnt'] = $r[5];
-
-		$ret[] = $return;
-	}
-
-	return $ret;
-}
-
-function setEveryThing()
-{
-	$this->setDiskUsage();
-	$this->setCpuUsage();
-	$this->setMemoryUsage();
-	$this->setProcessUsage();
-	$this->setSwapUsage();
-	$this->setIptables();
-	$this->changeConf("OSTEMPLATE", $this->main->ostemplate);
-	$this->setRestUsage();
-
+		$this->stop();
 	
-}
-
-
-function setRestUsage()
-{
-	static $once;
-
-	if ($once) { return; }
-
-	dprint("Execing\n");
-	$once = true;
-
-	if (is_unlimited($this->main->priv->ncpu_usage)) {
-		$cpun = os_getCpuNum();
-	} else {
-		$cpun = $this->main->priv->ncpu_usage;
+		$list = lscandir_without_dot("{$this->main->corerootdir}/{$this->main->vpsid}");
+		lxshell_return("tar", "-C", "{$this->main->corerootdir}/{$this->main->vpsid}/", '--numeric-owner', "-czf", "/vz/template/cache/$templatename.tar.gz", $list);
+		$this->start();
+		$filepass = cp_fileserv("/vz/template/cache/$templatename.tar.gz");
+		$ret = array("__syncv___ostemplate_filepass" => $filepass, "__syncv___ostemplate_filename" => "$templatename.tar.gz");
+		
+		return $ret;
 	}
 
-	$this->setVpsParam("cpus", $cpun);
-
-	if ($this->main->priv->ioprio_usage >= 0) {
-		$this->setVpsParam("ioprio", $this->main->priv->ioprio_usage);
+	function stop()
+	{ 
+		global $gbl, $sgbl, $login, $ghtml; 
+	
+		global $global_shell_error;
+		$ret =  lxshell_return("vzctl", "stop", $this->main->vpsid);
+		if (self::getStatus($this->main->vpsid, $this->main->corerootdir) === 'on') {
+			throw new lxException("could_not_stop_vps");
+		}
 	}
 
-	if ($this->main->priv->cpuunit_usage >= 0) {
-		$this->setVpsParam("cpuunits", $this->main->priv->cpuunit_usage);
+	function dropOldQuota()
+	{
+		lxshell_return("vzquota", "drop", $this->main->__var_oldvpsid);
 	}
-}
 
-function setVpsParam($name, $value)
-{
-	lxshell_return("vzctl", "set", $this->main->vpsid, "--$name", $value, "--save");
-}
-
-function setIptables()
-{
-	$this->removeConf("IPTABLES");
-	return;
-
-	if ($this->main->priv->isOn('iptables_flag')) {
-		$this->changeConf("IPTABLES", "iptable_filter iptable_mangle ipt_limit ipt_multiport ipt_tos ipt_TOS ipt_REJECT ipt_TCPMSS ipt_tcpmss ipt_ttl ipt_LOG ipt_length ip_conntrack ip_conntrack_ftp ip_conntrack_irc ipt_conntrack ipt_state  ipt_helper  iptable_nat ip_nat_ftp ip_nat_irc ipt_REDIRECT");
-	} else {
-		$this->changeConf("IPTABLES", "");
+	function stopOldId()
+	{ 
+		global $gbl, $sgbl, $login, $ghtml; 
+	
+		global $global_shell_error;
+		$ret =  lxshell_return("vzctl", "stop", $this->main->__var_oldvpsid);
+		if (self::getStatus($this->main->__var_oldvpsid, $this->main->corerootdir) === 'on') {
+			throw new lxException("could_not_stop_vps");
+		}
 	}
-}
 
-function enableSecondLevelQuota()
-{
-	if ($this->main->priv->isOn('secondlevelquota_flag')) {
-		lxshell_return("vzctl", "set", $this->main->vpsid, "--quotaugidlimit", "10000", "--save");
-	} else {
-		$this->changeConf("QUOTAUGIDLIMIT", "");
+	function start() 
+	{ 
+	
+		if (self::getStatus($this->main->vpsid, $this->main->corerootdir) === 'on') {
+			return;
+		}
+		return lxshell_return("vzctl", "start", $this->main->vpsid); 
 	}
-}
 
-function setUplinkUsage()
-{
-	$dev = os_get_default_ethernet();
+	function changeUserPassword()
+	{
+		dprint("hello\n");
+		$pass = $this->main->password;
+		lxshell_return("usermod", "-p", $pass, $this->main->username);
+	}
+	
+	function getBeancounter()
+	{
+		$vpsid = $this->main->vpsid;
+		$path = "/proc/user_beancounters";
+		
+		$data = `cat /proc/user_beancounters`;
+	
+		$res = explode("\n", $data);
+		$match = false;
+	
+		$savelist = array();
+		foreach($res as $r) {
+			$r = trim($r);
+			if (csb($r, "$vpsid:")) {
+				$match = true;
+			}
+	
+			if (!$match) {
+				continue;
+			}
+	
+			if (csa($r, ":")) {
+				$r = strfrom($r, ":");
+				$r = substr($r, 1);
+			}
+	
+			$r = trimSpaces($r);
+			$r = explode(" ", $r);
+	
+			// Check whether we have already encountered this variable. That means, we are now on the next vps.
+			if (array_search_bool($r[0], $savelist)) {
+				break;
+			}
+			if ($r[0] !== 'dummy') {
+				$savelist[] = $r[0];
+			}
+	
+			$return['nname'] = $r[0];
+			$return['descr'] = $r[0];
+			$return['used'] = $r[1];
+			$return['max'] = $r[2];
+			$return['barrier'] = $r[3];
+			$return['limit'] = $r[4];
+			$return['failcnt'] = $r[5];
+	
+			$ret[] = $return;
+		}
+	
+		return $ret;
+	}
+	
+	function setEveryThing()
+	{
+		$this->setDiskUsage();
+		$this->setCpuUsage();
+		$this->setMemoryUsage();
+		$this->setProcessUsage();
+		$this->setSwapUsage();
+		$this->setIptables();
+		$this->changeConf("OSTEMPLATE", $this->main->ostemplate);
+		$this->setRestUsage();
+	}
 
-	if (!$dev) {
-		log_error("Could not get Default Ethernet");
+	function setRestUsage()
+	{
+		static $once;
+	
+		if ($once) { return; }
+	
+		dprint("Execing\n");
+		$once = true;
+	
+		if (is_unlimited($this->main->priv->ncpu_usage)) {
+			$cpun = os_getCpuNum();
+		} else {
+			$cpun = $this->main->priv->ncpu_usage;
+		}
+	
+		$this->setVpsParam("cpus", $cpun);
+	
+		if ($this->main->priv->ioprio_usage >= 0) {
+			$this->setVpsParam("ioprio", $this->main->priv->ioprio_usage);
+		}
+	
+		if ($this->main->priv->cpuunit_usage >= 0) {
+			$this->setVpsParam("cpuunits", $this->main->priv->cpuunit_usage);
+		}
+	}
+
+	function setVpsParam($name, $value)
+	{
+		lxshell_return("vzctl", "set", $this->main->vpsid, "--$name", $value, "--save");
+	}
+
+	function setIptables()
+	{
+		$this->removeConf("IPTABLES");
 		return;
+	
+		if ($this->main->priv->isOn('iptables_flag')) {
+			$this->changeConf("IPTABLES", "iptable_filter iptable_mangle ipt_limit ipt_multiport ipt_tos ipt_TOS ipt_REJECT ipt_TCPMSS ipt_tcpmss ipt_ttl ipt_LOG ipt_length ip_conntrack ip_conntrack_ftp ip_conntrack_irc ipt_conntrack ipt_state  ipt_helper  iptable_nat ip_nat_ftp ip_nat_irc ipt_REDIRECT");
+		} else {
+			$this->changeConf("IPTABLES", "");
+		}
+	}
+	
+	function enableSecondLevelQuota()
+	{
+		if ($this->main->priv->isOn('secondlevelquota_flag')) {
+			lxshell_return("vzctl", "set", $this->main->vpsid, "--quotaugidlimit", "10000", "--save");
+		} else {
+			$this->changeConf("QUOTAUGIDLIMIT", "");
+		}
 	}
 
-	$string = null;
-	$string .= "#!/bin/sh\n";
-	$string .= "export PATH=\$PATH:/sbin\n";
-	$string .= "tc qdisc del dev $dev root\n";
-	$string .= "tc qdisc add dev $dev root handle 1: cbq avpkt 1000 bandwidth 100mbit\n";
-
-	$i = 1;
-
-	$this->main->ipaddress = get_namelist_from_objectlist($this->main->vmipaddress_a);
-	$this->main->uplink_usage = $this->main->priv->uplink_usage;
-
-	$result = $this->main->__var_uplink_list;
-
-	dprintr($result);
-	$result = merge_array_object_not_deleted($result, $this->main);
-
-	foreach((array) $result as $v) {
-		if (!$v['ipaddress']) {
-			continue;
+	function setUplinkUsage()
+	{
+		$dev = os_get_default_ethernet();
+	
+		if (!$dev) {
+			log_error("Could not get Default Ethernet");
+			return;
 		}
-
-		if (!($v['uplink_usage'] > 0)) {
-			continue;
+	
+		$string = null;
+		$string .= "#!/bin/sh\n";
+		$string .= "export PATH=\$PATH:/sbin\n";
+		$string .= "tc qdisc del dev $dev root\n";
+		$string .= "tc qdisc add dev $dev root handle 1: cbq avpkt 1000 bandwidth 100mbit\n";
+	
+		$i = 1;
+	
+		$this->main->ipaddress = get_namelist_from_objectlist($this->main->vmipaddress_a);
+		$this->main->uplink_usage = $this->main->priv->uplink_usage;
+	
+		$result = $this->main->__var_uplink_list;
+	
+		dprintr($result);
+		$result = merge_array_object_not_deleted($result, $this->main);
+	
+		foreach((array) $result as $v) {
+			if (!$v['ipaddress']) {
+				continue;
+			}
+	
+			if (!($v['uplink_usage'] > 0)) {
+				continue;
+			}
+	
+			$string .= "#vpsid {$v['vpsid']}\n";
+			$string .= "tc class add dev $dev parent 1: classid 1:$i cbq rate {$v['uplink_usage']}kbps allot 1500 prio 5 bounded isolated\n";
+			foreach($v['ipaddress'] as $vip) {
+				$vip = trim($vip);
+				if (!$vip) continue;
+				$string .= "tc filter add dev $dev parent 1: protocol ip prio 16 u32 match ip src $vip flowid 1:$i\n";
+			}
+			$string .= "tc qdisc add dev $dev parent 1:$i sfq perturb 1\n";
+			$i++;
 		}
-
-		$string .= "#vpsid {$v['vpsid']}\n";
-		$string .= "tc class add dev $dev parent 1: classid 1:$i cbq rate {$v['uplink_usage']}kbps allot 1500 prio 5 bounded isolated\n";
-		foreach($v['ipaddress'] as $vip) {
-			$vip = trim($vip);
-			if (!$vip) continue;
-			$string .= "tc filter add dev $dev parent 1: protocol ip prio 16 u32 match ip src $vip flowid 1:$i\n";
-		}
-		$string .= "tc qdisc add dev $dev parent 1:$i sfq perturb 1\n";
-		$i++;
+	
+		$string .= "\nif [ -f /etc/openvz_tc.local.sh ] ; then \n sh /etc/openvz_tc.local.sh ;\n fi ; \n"; 
+		lfile_put_contents("__path_program_etc/openvz_tc.sh", $string);
+		lxfile_unix_chmod("__path_program_etc/openvz_tc.sh", "0755");
+		createRestartFile("openvz_tc");
 	}
-
-	$string .= "\nif [ -f /etc/openvz_tc.local.sh ] ; then \n sh /etc/openvz_tc.local.sh ;\n fi ; \n"; 
-	lfile_put_contents("__path_program_etc/openvz_tc.sh", $string);
-	lxfile_unix_chmod("__path_program_etc/openvz_tc.sh", "0755");
-	createRestartFile("openvz_tc");
-
-}
 
 /**
 * @todo UNDOCUMENTED
