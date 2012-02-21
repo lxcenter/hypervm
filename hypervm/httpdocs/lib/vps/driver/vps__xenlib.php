@@ -1042,7 +1042,12 @@ class vps__xen extends Lxdriverclass {
 
 	public function isLvm()
 	{
-		return char_search_beg($this->main->corerootdir, "lvm:");
+		if(isset($this->main->corerootdir)) {
+			return char_search_beg($this->main->corerootdir, 'lvm:');
+		}
+		else {
+			return FALSE;
+		}
 	}
 
 	public function createSwap()
