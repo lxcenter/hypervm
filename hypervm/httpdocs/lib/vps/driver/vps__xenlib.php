@@ -334,26 +334,26 @@ class vps__xen extends Lxdriverclass {
 		$disk = expand_real_root($disk);
 		
 		$global_dontlogshell = true;
-		$res = lxshell_output('dumpe2fs', '-h', $disk);
+		$output = lxshell_output('dumpe2fs', '-h', $disk);
 		$global_dontlogshell = false;
 		
-		$res = explode(PHP_EOL, $res);
+		$ouput_lines = explode(PHP_EOL, $output);
 		
 		// Process the dumpe2fs output
-		foreach($res as $r) {
+		foreach($ouput_lines as $line) {
 			// Get the Block size line (on bytes) 
-			if (char_search_beg($r, 'Block size:')) {
-				$blocksize = trim(strfrom($r, 'Block size:')) / 1024; // Convert total bytes to KBytes
+			if (char_search_beg($line, 'Block size:')) {
+				$blocksize = trim(strfrom($line, 'Block size:')) / 1024; // Convert total bytes to KBytes
 			}
 			
 			// Get the Block count number line
-			if (char_search_beg($r, 'Block count:')) {
-				$block_count = trim(strfrom($r, 'Block count:'));
+			if (char_search_beg($line, 'Block count:')) {
+				$block_count = trim(strfrom($line, 'Block count:'));
 			}
 			
 			// Get the Free blocks number line
-			if (char_search_beg($r, 'Free blocks:')) {
-				$free_blocks = trim(strfrom($r, 'Free blocks:'));
+			if (char_search_beg($line, 'Free blocks:')) {
+				$free_blocks = trim(strfrom($line, 'Free blocks:'));
 			}
 		}
 		
