@@ -326,7 +326,21 @@ class vps__xen extends Lxdriverclass {
 			return 'off';
 		}
 	}
-
+	
+	/**
+	* Get the disk usage for a given disk on a Xen virtual machine.
+	*
+	* Get the data from dumpe2fs output processing the block size,
+	* block count and free blocks.
+	* 
+	* Calculate the total disk space and total disk space used.
+	*
+	* @author Anonymous <anonymous@lxcenter.org>
+	* @author Ángel Guzmán Maeso <angel.guzman@lxcenter.org>
+	*
+	* @param string $disk The disk on a xen virtual machine. Default NULL.
+	* @return array[string] The total and used integer space indexed as string
+	*/
 	public static function getDiskUsage($disk = NULL)
 	{
 		global $global_dontlogshell;
@@ -352,17 +366,17 @@ class vps__xen extends Lxdriverclass {
 				foreach($ouput_lines as $line) {
 					// Get the Block size line (on bytes) 
 					if (char_search_beg($line, 'Block size:')) {
-						$blocksize = trim(strfrom($line, 'Block size:')) / 1024; // Convert total bytes to KBytes
+						$blocksize = intval(trim(strfrom($line, 'Block size:'))) / 1024; // Convert total bytes to KBytes
 					}
 					
 					// Get the Block count number line
 					if (char_search_beg($line, 'Block count:')) {
-						$block_count = trim(strfrom($line, 'Block count:'));
+						$block_count = intval(trim(strfrom($line, 'Block count:')));
 					}
 					
 					// Get the Free blocks number line
 					if (char_search_beg($line, 'Free blocks:')) {
-						$free_blocks = trim(strfrom($line, 'Free blocks:'));
+						$free_blocks = intval(trim(strfrom($line, 'Free blocks:')));
 					}
 				}
 				
