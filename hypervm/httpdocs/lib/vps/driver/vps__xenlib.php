@@ -335,39 +335,43 @@ class vps__xen extends Lxdriverclass {
 		$result['total'] = 0;
 		$result['used']  = 0;
 		
+		// @todo Check if it is a valid disk path (never trusts on users)
 		$disk = expand_real_root($disk);
 		
+		// @todo Check if the dumpe2fs it's available to use and exists (never trusts on users)
 		$global_dontlogshell = true;
 		$output = lxshell_output('dumpe2fs', '-h', $disk);
 		$global_dontlogshell = false;
 		
-		$ouput_lines = explode(PHP_EOL, $output);
-		
-		// Process the dumpe2fs output
-		foreach($ouput_lines as $line) {
-			// Get the Block size line (on bytes) 
-			if (char_search_beg($line, 'Block size:')) {
-				$blocksize = trim(strfrom($line, 'Block size:')) / 1024; // Convert total bytes to KBytes
+		if(!empty($output)) { // If no output returned we return 0 MBytes (fallback mode)
+			$ouput_lines = explode(PHP_EOL, $output);
+			
+			// Process the dumpe2fs output
+			foreach($ouput_lines as $line) {
+				// Get the Block size line (on bytes) 
+				if (char_search_beg($line, 'Block size:')) {
+					$blocksize = trim(strfrom($line, 'Block size:')) / 1024; // Convert total bytes to KBytes
+				}
+				
+				// Get the Block count number line
+				if (char_search_beg($line, 'Block count:')) {
+					$block_count = trim(strfrom($line, 'Block count:'));
+				}
+				
+				// Get the Free blocks number line
+				if (char_search_beg($line, 'Free blocks:')) {
+					$free_blocks = trim(strfrom($line, 'Free blocks:'));
+				}
 			}
 			
-			// Get the Block count number line
-			if (char_search_beg($line, 'Block count:')) {
-				$block_count = trim(strfrom($line, 'Block count:'));
-			}
+			$total_disk_space  = $block_count * $blocksize;
+			$total_free_blocks = $free_blocks * $blocksize;
+			$total_disk_used   = $total_disk_space - $total_free_blocks;
 			
-			// Get the Free blocks number line
-			if (char_search_beg($line, 'Free blocks:')) {
-				$free_blocks = trim(strfrom($line, 'Free blocks:'));
-			}
+			// Round total and used to MBytes with 2 decimals
+			$result['total'] = round($total_disk_space / 1024, 2);
+			$result['used']  = round($total_disk_used / 1024, 2);
 		}
-		
-		$total_disk_space  = $block_count * $blocksize;
-		$total_free_blocks = $free_blocks * $blocksize;
-		$total_disk_used   = $total_disk_space - $total_free_blocks;
-		
-		// Round total and used to MBytes with 2 decimals
-		$result['total'] = round($total_disk_space / 1024, 2);
-		$result['used']  = round($total_disk_used / 1024, 2);
 		
 		return $result;
 	}
