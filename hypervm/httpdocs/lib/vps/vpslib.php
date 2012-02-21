@@ -2251,13 +2251,23 @@ function hasFunctions() { return true; }
 function getHardProperty()
 {
 	global $gbl, $sgbl, $login, $ghtml; 
-	$driverapp = $gbl->getSyncClass('localhost', $this->syncserver, 'vps');
+	
+	$master_server = $this->__masterserver;
+	$slave_server = $this->syncserver;
+	$driverapp = $gbl->getSyncClass('localhost', $slave_server, 'vps');
+	
 	if ($this->isXen()) {
-		$maindisk = $this->getXenMaindiskName();
-		$disk = rl_exec_get($this->__masterserver, $this->syncserver,  array("vps__$driverapp", "getDiskUsage"), array($maindisk));
+		// Build the params
+		$maindisk   = $this->getXenMaindiskName();
+		$is_windows = $this->isWindows();
+		$root_path  = $this->corerootdir;
+		
+		$parameters = array($maindisk, $is_windows, $root_path);
+		
+		$disk = rl_exec_get($master_server, $slave_server,  array("vps__$driverapp", "getDiskUsage"), $parameters);
 		$this->used->disk_usage = $disk['used'];
 	} else {
-		$l = rl_exec_get($this->__masterserver, $this->syncserver,  array("vps__$driverapp", "vpsInfo"), array($this->getIid(), $this->corerootdir));
+		$l = rl_exec_get($master_server, $slave_server,  array("vps__$driverapp", "vpsInfo"), array($this->getIid(), $this->corerootdir));
 		$this->used->disk_usage = $l['used_s_disk'];
 		$this->used->disk_inode = $l['used_s_inode'];
 		$this->used->memory_usage = $l['used_s_memory'];
@@ -2533,10 +2543,14 @@ function createShowRlist($subaction)
 			$disk['used'] = '300';
 			$disk['total'] = '6000';
 		}  else {
-
-			$maindisk = $this->getXenMaindiskName();
-
-			$disk = rl_exec_get($master_server, $slave_server,  array("vps__$driverapp", "getDiskUsage"), array($maindisk));
+			// Build the params
+			$maindisk   = $this->getXenMaindiskName();
+			$is_windows = $this->isWindows();
+			$root_path  = $this->corerootdir;
+			
+			$parameters = array($maindisk, $is_windows, $root_path);
+			
+			$disk = rl_exec_get($master_server, $slave_server,  array("vps__$driverapp", "getDiskUsage"), $parameters);
 		}
 		if (!$this->priv->disk_usage) {
 			$this->priv->disk_usage = $disk['total'];
