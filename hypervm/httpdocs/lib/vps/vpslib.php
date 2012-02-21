@@ -408,12 +408,12 @@ function fillWelcomeMessage($txt)
 	$insideost = false;
 	foreach($list as $l) {
 		$l = trim($l);
-		if (csb($l, "<%ostemplate:kloxo") || csb($l, "<%ostemplate:lxadmin")) {
+		if (char_search_beg($l, "<%ostemplate:kloxo") || char_search_beg($l, "<%ostemplate:lxadmin")) {
 			$insideost = true;
 			continue;
 		}
 
-		if (csb($l, "<%/ostemplate%>")) {
+		if (char_search_beg($l, "<%/ostemplate%>")) {
 			$insideost = false;
 			continue;
 		}
@@ -984,7 +984,7 @@ function doServerSpecific()
 
 function isXenLvm()
 {
-	return csb($this->corerootdir, "lvm:");
+	return char_search_beg($this->corerootdir, "lvm:");
 }
 
 function getLocationlist()
@@ -1018,7 +1018,7 @@ function getBestLocation()
 	$xenlvm = false;
 
 	foreach($list as $l) {
-		if (csb($l, "lvm:")) {
+		if (char_search_beg($l, "lvm:")) {
 			$xenlvm = true;
 		}
 		$nlist[] = $l;
@@ -1303,12 +1303,12 @@ function checkIfOffensive()
 		return true;
 	}
 
-	if (csb($this->subaction, "top_level")) {
+	if (char_search_beg($this->subaction, "top_level")) {
 		return false;
 	}
 
 	foreach($list as $l) {
-		if (csb($this->subaction, $l)) {
+		if (char_search_beg($this->subaction, $l)) {
 			return false;
 		}
 	}
@@ -1779,11 +1779,11 @@ function isNotWindows()
 
 function isWindows()
 {
-	return csb($this->ostemplate, "windows");
+	return char_search_beg($this->ostemplate, "windows");
 }
 function isBlankWindows()
 {
-	return csb($this->ostemplate, "windows-lxblank");
+	return char_search_beg($this->ostemplate, "windows-lxblank");
 }
 
 function createShowActionList(&$alist) 
