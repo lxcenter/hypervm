@@ -357,11 +357,13 @@ class vps__xen extends Lxdriverclass {
 			}
 		}
 		
-		$total = $block_count * $blocksize;
+		$total_disk_space  = $block_count * $blocksize;
 		$total_free_blocks = $free_blocks * $blocksize;
+		$total_disk_used   = $total_disk_space - $total_free_blocks;
 		
-		$ret['total'] = round($total / 1024, 2);
-		$ret['used'] = round(($total - $free) / 1024, 2);
+		// Round total and used to MBytes with 2 decimals
+		$ret['total'] = round($total_disk_space / 1024, 2);
+		$ret['used']  = round($total_disk_used / 1024, 2);
 		
 		return $ret;
 	}
