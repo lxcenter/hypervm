@@ -2,123 +2,120 @@
 
 class vps__openvz extends Lxdriverclass {
 
-static function find_memoryusage()
-{
-	$list = lfile("/proc/user_beancounters");
-	foreach($list as $l) {
-		$l = trimSpaces($l);
-
-		if (csa($l, ":")) {
-			$vpsid = strtil($l, ":");
-			$l = strfrom($l, " ");
-		}
-
-		if (!csb($l, "privvmpages")) { 
-			continue;
-		}
-
-		$load = explode(" ", $l);
-		$mem = round(($load[1]/256) * 1024 * 1024);
-		execRrdSingle("memory", "GAUGE", "openvz-$vpsid", $mem);
-	}
-}
-
-
-static function find_cpuusage()
-{
-	$list = lfile("/proc/vz/vestat");
-	foreach($list as $l) {
-		if (csa($l, "Version")) {
-			continue;
-		}
-
-		if (csa($l, "VEID")) {
-			continue;
-		}
-
-		$l = trimSpaces($l);
-		$load = explode(" ", $l);
-		$cpu = $load[1] + $load[2] + $load[3];
-		execRrdSingle("cpu", "DERIVE", "openvz-$load[0]", $cpu);
-	}
-}
-
-
-static function find_traffic()
-{
-	global $global_dontlogshell;
-
-
-
-	$res = lxshell_output("iptables", "-nvx", "-L", "FORWARD");
-
-	$res = explode("\n", $res);
-
-
-	$outgoing = null;
-	foreach($res as $r) {
-		$r = trimSpaces($r);
-
-		$list = explode(' ', $r);
-		if (!isset($list[7])) {
-			continue;
-		}
-
-		if (csb($list[7], "0.0.0")) {
-			// Just make sure that we don't calculate this thing twice, which would happen if there are multiple copies of the same rule. So mark that we have already read it in the sourcelist.
-			if (!isset($sourcelist[$list[6]])) {
-				$outgoing[$list[6]][] = $list[1];
-				$sourcelist[$list[6]] = true;
+	static function find_memoryusage()
+	{
+		$list = lfile("/proc/user_beancounters");
+		foreach($list as $l) {
+			$l = trimSpaces($l);
+	
+			if (csa($l, ":")) {
+				$vpsid = strtil($l, ":");
+				$l = strfrom($l, " ");
 			}
-		} else if(csb($list[6], "0.0.0")) {
-			if (!isset($dstlist[$list[7]])) {
-				$incoming[$list[7]][] = $list[1];
-				$dstlist[$list[7]] = true;
+	
+			if (!csb($l, "privvmpages")) { 
+				continue;
+			}
+	
+			$load = explode(" ", $l);
+			$mem = round(($load[1]/256) * 1024 * 1024);
+			execRrdSingle("memory", "GAUGE", "openvz-$vpsid", $mem);
+		}
+	}
+
+	static function find_cpuusage()
+	{
+		$list = lfile("/proc/vz/vestat");
+		foreach($list as $l) {
+			if (csa($l, "Version")) {
+				continue;
+			}
+	
+			if (csa($l, "VEID")) {
+				continue;
+			}
+	
+			$l = trimSpaces($l);
+			$load = explode(" ", $l);
+			$cpu = $load[1] + $load[2] + $load[3];
+			execRrdSingle("cpu", "DERIVE", "openvz-$load[0]", $cpu);
+		}
+	}
+
+	static function find_traffic()
+	{
+		global $global_dontlogshell;
+	
+	
+	
+		$res = lxshell_output("iptables", "-nvx", "-L", "FORWARD");
+	
+		$res = explode("\n", $res);
+	
+	
+		$outgoing = null;
+		foreach($res as $r) {
+			$r = trimSpaces($r);
+	
+			$list = explode(' ', $r);
+			if (!isset($list[7])) {
+				continue;
+			}
+	
+			if (csb($list[7], "0.0.0")) {
+				// Just make sure that we don't calculate this thing twice, which would happen if there are multiple copies of the same rule. So mark that we have already read it in the sourcelist.
+				if (!isset($sourcelist[$list[6]])) {
+					$outgoing[$list[6]][] = $list[1];
+					$sourcelist[$list[6]] = true;
+				}
+			} else if(csb($list[6], "0.0.0")) {
+				if (!isset($dstlist[$list[7]])) {
+					$incoming[$list[7]][] = $list[1];
+					$dstlist[$list[7]] = true;
+				}
 			}
 		}
-	}
-
-	if (!$outgoing) {
-		return;
-	}
-
-	if (!isset($incoming)) {
-		return;
-	}
-
-
-	$realtotalincoming = calculateRealTotal($incoming);
-	$realtotaloutgoing = calculateRealTotal($outgoing);
-
-	foreach($realtotaloutgoing as $k => $v) {
-
-		$vpsid = self::get_vpsid_from_ipaddress($k);
-
-		if ($vpsid === 0) {
-			continue;
+	
+		if (!$outgoing) {
+			return;
 		}
-
-		if (!isset($vpsoutgoing[$vpsid])) { $vpsoutgoing[$vpsid] = 0; }
-		if (!isset($vpsincoming[$vpsid])) { $vpsincoming[$vpsid] = 0; }
-
-		$vpsoutgoing[$vpsid] += $realtotaloutgoing[$k];
-		$vpsincoming[$vpsid] += $realtotalincoming[$k];
+	
+		if (!isset($incoming)) {
+			return;
+		}
+	
+	
+		$realtotalincoming = calculateRealTotal($incoming);
+		$realtotaloutgoing = calculateRealTotal($outgoing);
+	
+		foreach($realtotaloutgoing as $k => $v) {
+	
+			$vpsid = self::get_vpsid_from_ipaddress($k);
+	
+			if ($vpsid === 0) {
+				continue;
+			}
+	
+			if (!isset($vpsoutgoing[$vpsid])) { $vpsoutgoing[$vpsid] = 0; }
+			if (!isset($vpsincoming[$vpsid])) { $vpsincoming[$vpsid] = 0; }
+	
+			$vpsoutgoing[$vpsid] += $realtotaloutgoing[$k];
+			$vpsincoming[$vpsid] += $realtotalincoming[$k];
+		}
+	
+	
+		foreach($vpsincoming as $k => $v) {
+			$tot = $vpsincoming[$k] + $vpsoutgoing[$k];
+			execRrdTraffic("openvz-$k", $tot, "-$vpsincoming[$k]", $vpsoutgoing[$k]);
+			$stringa[] = time() . " " . date("d-M-Y:H:i") . " openvz-$k $tot $vpsincoming[$k] $vpsoutgoing[$k]";
+		}
+	
+		if ($stringa) {
+			$string = implode("\n", $stringa);
+			lfile_put_contents("__path_iptraffic_file", "$string\n", FILE_APPEND);
+		}
+		lxshell_return("iptables", "-Z");
 	}
-
-
-	foreach($vpsincoming as $k => $v) {
-		$tot = $vpsincoming[$k] + $vpsoutgoing[$k];
-		execRrdTraffic("openvz-$k", $tot, "-$vpsincoming[$k]", $vpsoutgoing[$k]);
-		$stringa[] = time() . " " . date("d-M-Y:H:i") . " openvz-$k $tot $vpsincoming[$k] $vpsoutgoing[$k]";
-	}
-
-	if ($stringa) {
-		$string = implode("\n", $stringa);
-		lfile_put_contents("__path_iptraffic_file", "$string\n", FILE_APPEND);
-	}
-	lxshell_return("iptables", "-Z");
-}
-
 
 static function get_vpsid_from_ipaddress($ip)
 {
