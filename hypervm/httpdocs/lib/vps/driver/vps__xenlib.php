@@ -330,12 +330,33 @@ class vps__xen extends Lxdriverclass {
 	public static function getDiskUsage($disk, $root)
 	{
 		global $global_dontlogshell;
-		$global_dontlogshell = true;
-
-		$cont = lxfile_get_disk_usage($disk);
 		
+		$disk = expand_real_root($disk);
+		
+		$global_dontlogshell = true;
+		$res = lxshell_output("dumpe2fs", "-h", $disk);
 		$global_dontlogshell = false;
-		return $cont;
+		
+		$res = explode("\n", $res);
+		foreach($res as $r) {
+			if (csb($r, "Block size:")) {
+				$blocksize = trim(strfrom($r, "Block size:")) /1024;
+			}
+		}
+		
+		foreach($res as $r) {
+			if (csb($r, "Block count:")) {
+				$total = trim(strfrom($r, "Block count:")) * $blocksize;
+			}
+			if (csb($r, "Free blocks:")) {
+				$free = trim(strfrom($r, "Free blocks:")) * $blocksize;
+			}
+		}
+		
+		$ret['total'] = round($total/1024, 2);
+		$ret['used'] = round(($total - $free)/1024, 2);
+		
+		return $ret;
 	}
 
 	public function initXenVars()
