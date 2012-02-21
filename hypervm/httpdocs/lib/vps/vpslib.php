@@ -2523,12 +2523,10 @@ function createShowRlist($subaction)
 		return $rlist;
 	}
 
+	$master_server = $this->__masterserver;
+	$slave_server  = $this->syncserver;
 
-
-	$driverapp = $gbl->getSyncClass($this->__masterserver, $this->syncserver, 'vps');
-
-
-
+	$driverapp = $gbl->getSyncClass($master_server, $slave_server, 'vps');
 
 	if ($this->isXen()) {
 		if (if_demo()) {
@@ -2538,7 +2536,7 @@ function createShowRlist($subaction)
 
 			$maindisk = $this->getXenMaindiskName();
 
-			$disk = rl_exec_get($this->__masterserver, $this->syncserver,  array("vps__$driverapp", "getDiskUsage"), array($maindisk));
+			$disk = rl_exec_get($master_server, $slave_server,  array("vps__$driverapp", "getDiskUsage"), array($maindisk));
 		}
 		if (!$this->priv->disk_usage) {
 			$this->priv->disk_usage = $disk['total'];
