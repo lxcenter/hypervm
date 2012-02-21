@@ -338,12 +338,15 @@ class vps__xen extends Lxdriverclass {
 		$global_dontlogshell = false;
 		
 		$res = explode(PHP_EOL, $res);
+		
+		// Get the Block size line (on bytes) from dumpe2fs output
 		foreach($res as $r) {
 			if (csb($r, 'Block size:')) {
-				$blocksize = trim(strfrom($r, 'Block size:')) /1024;
+				$blocksize = trim(strfrom($r, 'Block size:')) / 1024; // Convert total bytes to KBytes
 			}
 		}
 		
+		// Get the Block count line from dumpe2fs output
 		foreach($res as $r) {
 			if (csb($r, 'Block count:')) {
 				$total = trim(strfrom($r, 'Block count:')) * $blocksize;
@@ -354,7 +357,7 @@ class vps__xen extends Lxdriverclass {
 		}
 		
 		$ret['total'] = round($total / 1024, 2);
-		$ret['used'] = round(($total - $free)/1024, 2);
+		$ret['used'] = round(($total - $free) / 1024, 2);
 		
 		return $ret;
 	}
