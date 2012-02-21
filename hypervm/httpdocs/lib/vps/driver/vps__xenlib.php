@@ -331,6 +331,10 @@ class vps__xen extends Lxdriverclass {
 	{
 		global $global_dontlogshell;
 		
+		// Initialize 0 MBytes default usage (prevent errors with fallback)
+		$result['total'] = 0;
+		$result['used']  = 0;
+		
 		$disk = expand_real_root($disk);
 		
 		$global_dontlogshell = true;
@@ -362,10 +366,10 @@ class vps__xen extends Lxdriverclass {
 		$total_disk_used   = $total_disk_space - $total_free_blocks;
 		
 		// Round total and used to MBytes with 2 decimals
-		$ret['total'] = round($total_disk_space / 1024, 2);
-		$ret['used']  = round($total_disk_used / 1024, 2);
+		$result['total'] = round($total_disk_space / 1024, 2);
+		$result['used']  = round($total_disk_used / 1024, 2);
 		
-		return $ret;
+		return $result;
 	}
 
 	public function initXenVars()
