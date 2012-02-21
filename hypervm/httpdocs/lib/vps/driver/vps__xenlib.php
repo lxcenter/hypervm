@@ -339,22 +339,26 @@ class vps__xen extends Lxdriverclass {
 		
 		$res = explode(PHP_EOL, $res);
 		
-		// Get the Block size line (on bytes) from dumpe2fs output
+		// Process the dumpe2fs output
 		foreach($res as $r) {
+			// Get the Block size line (on bytes) 
 			if (char_search_beg($r, 'Block size:')) {
 				$blocksize = trim(strfrom($r, 'Block size:')) / 1024; // Convert total bytes to KBytes
 			}
+			
+			// Get the Block count number line
+			if (char_search_beg($r, 'Block count:')) {
+				$block_count = trim(strfrom($r, 'Block count:'));
+			}
+			
+			// Get the Free blocks number line
+			if (char_search_beg($r, 'Free blocks:')) {
+				$free_blocks = trim(strfrom($r, 'Free blocks:'));
+			}
 		}
 		
-		// Get the Block count line from dumpe2fs output
-		foreach($res as $r) {
-			if (char_search_beg($r, 'Block count:')) {
-				$total = trim(strfrom($r, 'Block count:')) * $blocksize;
-			}
-			if (char_search_beg($r, 'Free blocks:')) {
-				$free = trim(strfrom($r, 'Free blocks:')) * $blocksize;
-			}
-		}
+		$total = $block_count * $blocksize;
+		$total_free_blocks = $free_blocks * $blocksize;
 		
 		$ret['total'] = round($total / 1024, 2);
 		$ret['used'] = round(($total - $free) / 1024, 2);
