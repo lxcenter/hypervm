@@ -1151,261 +1151,258 @@ class vps__openvz extends Lxdriverclass {
 		createRestartFile("openvz_tc");
 	}
 
-/**
-* @todo UNDOCUMENTED
-*
-* @author Anonymous <anonymous@lxcenter.org>
-* @author Ángel Guzmán Maeso <angel.guzman@lxcenter.org>
-*
-* @return void
-*/
-function doSyncToSystemPre()
-{
-	if ($main->checkIfOffensive()) {
-		dprint('Offensive checking...' . PHP_EOL);
-		
-		$virtual_machine_name = $main->nname;
+	/**
+	* @todo UNDOCUMENTED
+	*
+	* @author Anonymous <anonymous@lxcenter.org>
+	* @author Ángel Guzmán Maeso <angel.guzman@lxcenter.org>
+	*
+	* @return void
+	*/
+	function doSyncToSystemPre()
+	{
+		if ($main->checkIfOffensive()) {
+			dprint('Offensive checking...' . PHP_EOL);
 			
-		$main->checkVPSLock($virtual_machine_name);
-	}
-
-	if (!$main->corerootdir) {
-		$main->corerootdir = '/vz/private';
-	}
-}
-
-function dosyncToSystemPost()
-{
-	// For add, it is done in dorealcreate.
-
-	if ($this->main->dbaction === 'update' && $this->main->__var_custom_exec) {
-		dprint("Execing custom exec {$this->main->__var_custom_exec}\n");
-		lxshell_direct($this->main->__var_custom_exec);
-	}
-}
-
-function fixdev()
-{
-	if (!$this->main->isOn('fixdev_confirm_f')) {
-		throw new lxException("need_to_confirm_fix_dev");
-	}
-	$this->stop();
-	lxfile_mkdir("{$this->main->corerootdir}/{$this->main->vpsid}/dev/");
-	lxshell_return("tar", "-C", "{$this->main->corerootdir}/{$this->main->vpsid}/dev/", "-xzf", "__path_program_root/file/vps-dev.tgz");
-	lxfile_mv("{$this->main->corerootdir}/sbin/udevd", "{$this->main->corerootdir}/sbin/udevd.back");
-	$this->start();
-	sleep(10);
-	lxshell_return("vzctl", "exec", $this->main->vpsid, "/sbin/MAKEDEV", "tty");
-	lxshell_return("vzctl", "exec", $this->main->vpsid, "/sbin/MAKEDEV", "pty");
-}
-
-function changevpsid()
-{
-
-	if (lxfile_exists("/etc/vz/conf/{$this->main->vpsid}.conf")) {
-		throw new lxException("conf_file_for_new_vps_exists");
-	}
-
-	if (lxfile_exists("{$this->main->corerootdir}/{$this->main->vpsid}")) {
-		throw new lxException("private_dir_for_new_vps_exists");
-	}
-
-	$this->stopOldId();
-	$this->dropOldQuota();
-	lxfile_mv_rec("/etc/vz/conf/{$this->main->__var_oldvpsid}.conf", "/etc/vz/conf/{$this->main->vpsid}.conf");
-	lxfile_mv_rec("{$this->main->corerootdir}/{$this->main->__var_oldvpsid}", "{$this->main->corerootdir}/{$this->main->vpsid}");
-	$this->changeConf("VE_PRIVATE", "{$this->main->corerootdir}/\$VEID");
-	$this->changeConf("VE_ROOT", "/vz/root/\$VEID");
-}
-
-function dbactionUpdate($subaction)
-{
-
-	global $global_shell_error;
-
-	if (!$this->main->vpsid) {
-		throw new lxException("no_vpsid_fatal_internal_error");
-	}
-
-
-	dprint("In dbactionUpdate\n");
-	flush();
-
-	switch($subaction) {
-		case "changelocation":
-			return $this->changeLocation();
-			break;
-
-		case "rebuild":
-			$this->rebuild();
-			break;
-
-		case "recovervps":
-			$this->recovervps();
-			break;
-
-		case "installkloxo":
-			$this->installKloxo();
-			break;
-
-
-		case "full_update":
-			if (!lxfile_exists("/etc/vz/conf/{$this->main->vpsid}.conf")) {
-				$this->createBaseConf();
-			}
-			$this->setEveryThing();
-			$this->setRootPassword();
-			$this->setIpaddress($this->main->vmipaddress_a, true);
-			$this->setInformation();
-			$this->toggleStatus();
-			break;
-
-
-		case "password":
-			$this->changeUserPassword();
-			break;
-
-		case "createtemplate":
-			return $this->createTemplate();
-			break;
-
-		case "fixdev":
-			$this->fixdev();
-			break;
-
-		case "disable":
-		case "enable":
-		case "toggle_status":
-			$this->toggleStatus();
-			break;
-
-		case "change_disk_usage":
-			$this->setDiskUsage();
-			break;
-
-		case "change_cpu_usage":
-			$this->setCpuUsage();
-			break;
-
-		case "change_uplink_usage":
-			$this->setUplinkUsage();
-			break;
-
-		case "change_memory_usage":
-			$this->setMemoryUsage();
-			break;
-
-		case "change_guarmem_usage":
-			$this->setGuarMemoryUsage();
-			break;
-
-        case "change_swap_usage":
-              $this->setSwapUsage();
-            break;
-
-		case "change_process_usage":
-			$this->setProcessUsage();
-			break;
-
-		case "change_ioprio_usage":
-		case "change_ncpu_usage":
-		case "change_cpuunit_usage":
-			$this->setRestUsage();
-			break;
-			
-		case "enable_iptables_flag":
-			$this->setIptables();
-			break;
-
-		case "enable_secondlevelquota_flag":
-			$this->enableSecondLevelQuota();
-			break;
-
-		case "rootpassword":
-			$this->setRootPassword();
-			break;
-
-
-		case "network":
-		case "information":
-			$this->setInformation();
-			break;
-
-		case "add_vmipaddress_a":
-			$ret = $this->setIpaddress($this->main->__t_new_vmipaddress_a_list, true);
-			if ($ret) {
-				throw new lxException("adding_ipaddress_failed", '', $global_shell_error);
-			}
-
-			break;
-
-		case "delete_vmipaddress_a":
-			$this->deleteIpaddress($this->main->__t_delete_vmipaddress_a_list, true);
-			break;
-
-		case "getBeancounter":
-			return $this->getBeanCounter();
-			break;
-
-		case "changevpsid":
-			$this->changevpsid();
-			break;
-
-
-		case "fix_everything":
-			$this->setEveryThing();
-			break;
-
-		case "reboot":
-			$this->reboot();
-			break;
-
-		case "boot":
-			$this->start();
-			break;
-
-		case "poweroff":
-			$this->toggleStatus();
-			break;
-
-		case "timezone":
-			$this->setInformation();
-			break;
-
-		case "createuser":
-			return $this->main->syncCreateUser();
-			break;
-
-		case "mainipaddress":
-			return $this->setMainIpaddress();
-
-
-		case "graph_traffic":
-			return rrd_graph_vps("traffic", "openvz-{$this->main->vpsid}.rrd", $this->main->rrdtime);
-			break;
-
-		case "graph_cpuusage":
-			return rrd_graph_vps("cpu", "openvz-{$this->main->vpsid}.rrd", $this->main->rrdtime);
-
-		case "graph_memoryusage":
-			return rrd_graph_vps("memory", "openvz-{$this->main->vpsid}.rrd", $this->main->rrdtime);
-	}
-}
-
-
-static function get_list_of_vps()
-{
-	$res = lxshell_output('vzlist', '-H', '-o', 'vpsid');
-	$list = explode("\n", $res);
-	foreach($list as $l) {
-		$l = trim($l);
-		if (!$l) {
-			continue;
+			$virtual_machine_name = $main->nname;
+				
+			$main->checkVPSLock($virtual_machine_name);
 		}
-		$nlist[] = $l;
+	
+		if (!$main->corerootdir) {
+			$main->corerootdir = '/vz/private';
+		}
 	}
-	return $nlist;
-}
+
+	function dosyncToSystemPost()
+	{
+		// For add, it is done in dorealcreate.
+	
+		if ($this->main->dbaction === 'update' && $this->main->__var_custom_exec) {
+			dprint("Execing custom exec {$this->main->__var_custom_exec}\n");
+			lxshell_direct($this->main->__var_custom_exec);
+		}
+	}
+
+	function fixdev()
+	{
+		if (!$this->main->isOn('fixdev_confirm_f')) {
+			throw new lxException("need_to_confirm_fix_dev");
+		}
+		$this->stop();
+		lxfile_mkdir("{$this->main->corerootdir}/{$this->main->vpsid}/dev/");
+		lxshell_return("tar", "-C", "{$this->main->corerootdir}/{$this->main->vpsid}/dev/", "-xzf", "__path_program_root/file/vps-dev.tgz");
+		lxfile_mv("{$this->main->corerootdir}/sbin/udevd", "{$this->main->corerootdir}/sbin/udevd.back");
+		$this->start();
+		sleep(10);
+		lxshell_return("vzctl", "exec", $this->main->vpsid, "/sbin/MAKEDEV", "tty");
+		lxshell_return("vzctl", "exec", $this->main->vpsid, "/sbin/MAKEDEV", "pty");
+	}
+
+	function changevpsid()
+	{
+	
+		if (lxfile_exists("/etc/vz/conf/{$this->main->vpsid}.conf")) {
+			throw new lxException("conf_file_for_new_vps_exists");
+		}
+	
+		if (lxfile_exists("{$this->main->corerootdir}/{$this->main->vpsid}")) {
+			throw new lxException("private_dir_for_new_vps_exists");
+		}
+	
+		$this->stopOldId();
+		$this->dropOldQuota();
+		lxfile_mv_rec("/etc/vz/conf/{$this->main->__var_oldvpsid}.conf", "/etc/vz/conf/{$this->main->vpsid}.conf");
+		lxfile_mv_rec("{$this->main->corerootdir}/{$this->main->__var_oldvpsid}", "{$this->main->corerootdir}/{$this->main->vpsid}");
+		$this->changeConf("VE_PRIVATE", "{$this->main->corerootdir}/\$VEID");
+		$this->changeConf("VE_ROOT", "/vz/root/\$VEID");
+	}
+
+	function dbactionUpdate($subaction)
+	{
+	
+		global $global_shell_error;
+	
+		if (!$this->main->vpsid) {
+			throw new lxException("no_vpsid_fatal_internal_error");
+		}
+	
+		dprint("In dbactionUpdate\n");
+		flush();
+	
+		switch($subaction) {
+			case "changelocation":
+				return $this->changeLocation();
+				break;
+	
+			case "rebuild":
+				$this->rebuild();
+				break;
+	
+			case "recovervps":
+				$this->recovervps();
+				break;
+	
+			case "installkloxo":
+				$this->installKloxo();
+				break;
+	
+	
+			case "full_update":
+				if (!lxfile_exists("/etc/vz/conf/{$this->main->vpsid}.conf")) {
+					$this->createBaseConf();
+				}
+				$this->setEveryThing();
+				$this->setRootPassword();
+				$this->setIpaddress($this->main->vmipaddress_a, true);
+				$this->setInformation();
+				$this->toggleStatus();
+				break;
+	
+	
+			case "password":
+				$this->changeUserPassword();
+				break;
+	
+			case "createtemplate":
+				return $this->createTemplate();
+				break;
+	
+			case "fixdev":
+				$this->fixdev();
+				break;
+	
+			case "disable":
+			case "enable":
+			case "toggle_status":
+				$this->toggleStatus();
+				break;
+	
+			case "change_disk_usage":
+				$this->setDiskUsage();
+				break;
+	
+			case "change_cpu_usage":
+				$this->setCpuUsage();
+				break;
+	
+			case "change_uplink_usage":
+				$this->setUplinkUsage();
+				break;
+	
+			case "change_memory_usage":
+				$this->setMemoryUsage();
+				break;
+	
+			case "change_guarmem_usage":
+				$this->setGuarMemoryUsage();
+				break;
+	
+	        case "change_swap_usage":
+	              $this->setSwapUsage();
+	            break;
+	
+			case "change_process_usage":
+				$this->setProcessUsage();
+				break;
+	
+			case "change_ioprio_usage":
+			case "change_ncpu_usage":
+			case "change_cpuunit_usage":
+				$this->setRestUsage();
+				break;
+				
+			case "enable_iptables_flag":
+				$this->setIptables();
+				break;
+	
+			case "enable_secondlevelquota_flag":
+				$this->enableSecondLevelQuota();
+				break;
+	
+			case "rootpassword":
+				$this->setRootPassword();
+				break;
+	
+	
+			case "network":
+			case "information":
+				$this->setInformation();
+				break;
+	
+			case "add_vmipaddress_a":
+				$ret = $this->setIpaddress($this->main->__t_new_vmipaddress_a_list, true);
+				if ($ret) {
+					throw new lxException("adding_ipaddress_failed", '', $global_shell_error);
+				}
+	
+				break;
+	
+			case "delete_vmipaddress_a":
+				$this->deleteIpaddress($this->main->__t_delete_vmipaddress_a_list, true);
+				break;
+	
+			case "getBeancounter":
+				return $this->getBeanCounter();
+				break;
+	
+			case "changevpsid":
+				$this->changevpsid();
+				break;
+	
+	
+			case "fix_everything":
+				$this->setEveryThing();
+				break;
+	
+			case "reboot":
+				$this->reboot();
+				break;
+	
+			case "boot":
+				$this->start();
+				break;
+	
+			case "poweroff":
+				$this->toggleStatus();
+				break;
+	
+			case "timezone":
+				$this->setInformation();
+				break;
+	
+			case "createuser":
+				return $this->main->syncCreateUser();
+				break;
+	
+			case "mainipaddress":
+				return $this->setMainIpaddress();
+	
+			case "graph_traffic":
+				return rrd_graph_vps("traffic", "openvz-{$this->main->vpsid}.rrd", $this->main->rrdtime);
+				break;
+	
+			case "graph_cpuusage":
+				return rrd_graph_vps("cpu", "openvz-{$this->main->vpsid}.rrd", $this->main->rrdtime);
+	
+			case "graph_memoryusage":
+				return rrd_graph_vps("memory", "openvz-{$this->main->vpsid}.rrd", $this->main->rrdtime);
+		}
+	}
+
+	static function get_list_of_vps()
+	{
+		$res = lxshell_output('vzlist', '-H', '-o', 'vpsid');
+		$list = explode("\n", $res);
+		foreach($list as $l) {
+			$l = trim($l);
+			if (!$l) {
+				continue;
+			}
+			$nlist[] = $l;
+		}
+		return $nlist;
+	}
 
 static function importIpaddress($vpsobject, $val)
 {
