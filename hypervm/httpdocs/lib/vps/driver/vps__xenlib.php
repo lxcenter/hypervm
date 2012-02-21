@@ -341,17 +341,17 @@ class vps__xen extends Lxdriverclass {
 		
 		// Get the Block size line (on bytes) from dumpe2fs output
 		foreach($res as $r) {
-			if (csb($r, 'Block size:')) {
+			if (char_search_beg($r, 'Block size:')) {
 				$blocksize = trim(strfrom($r, 'Block size:')) / 1024; // Convert total bytes to KBytes
 			}
 		}
 		
 		// Get the Block count line from dumpe2fs output
 		foreach($res as $r) {
-			if (csb($r, 'Block count:')) {
+			if (char_search_beg($r, 'Block count:')) {
 				$total = trim(strfrom($r, 'Block count:')) * $blocksize;
 			}
-			if (csb($r, 'Free blocks:')) {
+			if (char_search_beg($r, 'Free blocks:')) {
 				$free = trim(strfrom($r, 'Free blocks:')) * $blocksize;
 			}
 		}
