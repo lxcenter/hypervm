@@ -393,6 +393,16 @@ class vps__xen extends Lxdriverclass {
 		return $result;
 	}
 
+	/**
+	* Init the main Xen Virtual Machine vars.
+	* 
+	* It check if a LVM is found for change the normal paths.
+	*
+	* @author Anonymous <anonymous@lxcenter.org>
+	* @author Ángel Guzmán Maeso <angel.guzman@lxcenter.org>
+	*
+	* @return void
+	*/
 	public function initXenVars()
 	{
 		$main_path = $this->main;
