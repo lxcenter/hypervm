@@ -119,37 +119,6 @@ function get_free_loop()
 	return $loop;
 }
 
-function lxfile_get_ntfs_disk_usage($file, $root)
-{
-	$file = expand_real_root($file);
-	$root = fix_vgname($root);
-	$ldevice = get_partition($file, $root);
-	$res = lxshell_output("ntfscluster", "-f", $ldevice);
-	$base = basename($file);
-	kpart_remove("/dev/mapper/$root-$base");
-	$res = explode("\n", $res);
-	foreach($res as $r) {
-		$r = trim($r);
-		if (!csa($r, ":")) {
-			continue;
-		}
-		list($var, $val) = explode(":", $r);
-		$var = trim($var);
-		$val = trim($val);
-
-		if ($var === "bytes per volume") {
-			$total = round($val / (1024 * 1024), 1);
-		}
-		if ($var === "bytes of user data") {
-			$used = round($val / (1024 * 1024), 1);
-		}
-	}
-
-	$ret['total'] = $total;
-	$ret['used'] = $used;
-	return $ret;
-}
-
 function lxfile_get_disk_usage($file)
 {
 	$file = expand_real_root($file);

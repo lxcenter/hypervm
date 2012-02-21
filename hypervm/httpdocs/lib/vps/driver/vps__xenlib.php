@@ -327,15 +327,13 @@ class vps__xen extends Lxdriverclass {
 		}
 	}
 
-	public static function getDiskUsage($disk, $winflag, $root)
+	public static function getDiskUsage($disk, $root)
 	{
 		global $global_dontlogshell;
 		$global_dontlogshell = true;
-		if ($winflag) {
-			$cont = lxfile_get_ntfs_disk_usage($disk, $root);
-		} else {
-			$cont = lxfile_get_disk_usage($disk);
-		}
+
+		$cont = lxfile_get_disk_usage($disk);
+		
 		$global_dontlogshell = false;
 		return $cont;
 	}
@@ -2069,7 +2067,7 @@ class vps__xen extends Lxdriverclass {
 			$virtual_machine_name = $l['nname'];
 			$root_dir = '/home/xen';
 			$r['status'] = self::getStatus($virtual_machine_name, $root_dir);
-			$disk = self::getDiskUsage($l['diskname'], $l['winflag'], $l['corerootdir']);
+			$disk = self::getDiskUsage($l['diskname'], $l['corerootdir']);
 			$r['ldiskusage_f'] = $disk['used'];
 			$res[$l['nname']] = $r;
 		}

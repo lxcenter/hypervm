@@ -2528,7 +2528,7 @@ function createShowRlist($subaction)
 
 			$maindisk = $this->getXenMaindiskName();
 
-			$disk = rl_exec_get($this->__masterserver, $this->syncserver,  array("vps__$driverapp", "getDiskUsage"), array($maindisk, $this->isWindows(), $this->corerootdir));
+			$disk = rl_exec_get($this->__masterserver, $this->syncserver,  array("vps__$driverapp", "getDiskUsage"), array($maindisk, $this->corerootdir));
 		}
 		if (!$this->priv->disk_usage) {
 			$this->priv->disk_usage = $disk['total'];
