@@ -117,183 +117,178 @@ class vps__openvz extends Lxdriverclass {
 		lxshell_return("iptables", "-Z");
 	}
 
-static function get_vpsid_from_ipaddress($ip)
-{
-	static $res;
-
-	if (!$res) {
-		$res = lxshell_output('vzlist', '-H', '-o', 'vpsid,ip');
-	}
-
-	$list = explode("\n", $res);
-	foreach($list as $l) {
-		$l = trimSpaces($l);
-		$list = explode(" ", $l);
-		if (array_search_bool($ip, $list)) {
-			list($vpsid) = explode(" ", $l);
-			return $vpsid;
-		}
-	}
-	return 0;
-}
-
-
-static function execCommand($vpsid, $command)
-{
-	global $global_shell_error, $global_shell_ret;
-	$out = lxshell_output("vzctl", "exec", $vpsid, $command);
-
-	dprint($out);
-
-	return array('output' => $out, 'error' => $global_shell_error);
-}
-
-static function getStatus($vpsid, $rootdir)
-{
-
-	self::checkIfVzOK();
-
-
-	if (lx_core_lock_check_only("background.php", "$vpsid.create")) {
-		return 'create';
-	}
-
-	if (lxfile_exists("__path_program_root/tmp/$vpsid.createfailed")) {
-		$reason = lfile_get_contents("__path_program_root/tmp/$vpsid.createfailed");
-		return "createfailed: $reason";
-	}
-	$res = shell_exec("vzctl status $vpsid");
-
-	dprint("$res \n");
-
-	if (strtilfirst(trim(`hostname`), ".") ===  "root") {
-		return 'on';
-	}
-
-
-	if (csa($res, "running")) {
-		return 'on';
-	}
-
-	if (csa($res, "deleted")) {
-		return "deleted";
-	}
-
-
-	return 'off';
-}
-
-
-static function vpsInfo($vpsid)
-{
-	global $global_dontlogshell;
-	$global_dontlogshell = true;
-	$path = "/proc/user_beancounters";
+	static function get_vpsid_from_ipaddress($ip)
+	{
+		static $res;
 	
-	$data = `vzctl exec $vpsid cat /proc/user_beancounters`;
-
-	$res = explode("\n", $data);
-	$match = true;
-	foreach($res as $r) {
-		/*
-		if (csa($r, "$vpsid:")) {
-			$match = true;
+		if (!$res) {
+			$res = lxshell_output('vzlist', '-H', '-o', 'vpsid,ip');
 		}
-	*/
-
-		if ($match && csa($r, "privvmpages")) {
-			break;
-		}
-	}
-
-	$data = trimSpaces($r);
-
-	dprint($data . "\n");
-
-	$result = explode(" ", $data);
-	$max = $result[4];
-
-	$use = $result[1];
-
-	$use = $use/256;
-	$max = $max/256;
 	
-	$ret['priv_s_memory'] = $max;
-	$ret['used_s_memory'] = $use;
-
-	$diskcont = lxshell_output("vzquota", "stat", $vpsid);
-
-	$dcont = explode("\n", $diskcont);
-
-	foreach($dcont as $dc) {
-		$dc = trimSpaces($dc);
-		if (csb($dc, '1k-blocks')) {
-			$ddc = explode(" ", $dc);
-			$ret['used_s_disk'] = round($ddc[1]/1024);
-			$ret['priv_s_disk'] = round($ddc[2]/1024);
+		$list = explode("\n", $res);
+		foreach($list as $l) {
+			$l = trimSpaces($l);
+			$list = explode(" ", $l);
+			if (array_search_bool($ip, $list)) {
+				list($vpsid) = explode(" ", $l);
+				return $vpsid;
+			}
 		}
-		if (csb($dc, 'inodes')) {
-			$ddc = explode(" ", $dc);
-			$ret['used_s_inode'] = $ddc[1];
-			$ret['priv_s_inode'] = $ddc[2];
-		}
+		return 0;
 	}
 
-
-	foreach ($ret as &$vvv) {
-		$vvv = round($vvv);
-	}
-
-	exec("vzctl exec $vpsid cat /proc/cpuinfo", $data);
-	$processornum = 0;
+	static function execCommand($vpsid, $command)
+	{
+		global $global_shell_error, $global_shell_ret;
+		$out = lxshell_output("vzctl", "exec", $vpsid, $command);
 	
-	foreach($data as $v) {
-		if (!trim($v)){
-			continue;
-		}
-		$d = explode(':', $v);
-		$d[0] = trim($d[0]);
-		$d[1] = trim($d[1]);
-		if ($d[0] === 'processor') {
-			$processornum = $d[1];
-			continue;
-		}
-
-		if ($d[0] === 'model name') {
-			$cpu[$processornum]['used_s_cpumodel'] = $d[1];
-		}
-		if ($d[0] === 'cpu MHz') {
-			$cpu[$processornum]['used_s_cpuspeed'] = round($d[1]/100)/10 . "GHz";
-		}
-		if ($d[0] === 'cache size') {
-			$cpu[$processornum]['used_s_cpucache'] = $d[1];
-		}
+		dprint($out);
+	
+		return array('output' => $out, 'error' => $global_shell_error);
 	}
 
-	$global_dontlogshell = false;
-	$ret['cpu'] = $cpu;
-	return $ret;
-}
-
-static function checkIfVzOK()
-{
-	global $global_dontlogshell;
-
-	$v = $global_dontlogshell;
-	$global_dontlogshell = true;
-
-	if (!lxfile_exists("/proc/vz")) {
-		throw new lxException("no_kernel_support_for_openvz_check_if_right_kernel");
+	static function getStatus($vpsid, $rootdir)
+	{
+	
+		self::checkIfVzOK();
+	
+		if (lx_core_lock_check_only("background.php", "$vpsid.create")) {
+			return 'create';
+		}
+	
+		if (lxfile_exists("__path_program_root/tmp/$vpsid.createfailed")) {
+			$reason = lfile_get_contents("__path_program_root/tmp/$vpsid.createfailed");
+			return "createfailed: $reason";
+		}
+		$res = shell_exec("vzctl status $vpsid");
+	
+		dprint("$res \n");
+	
+		if (strtilfirst(trim(`hostname`), ".") ===  "root") {
+			return 'on';
+		}
+	
+	
+		if (csa($res, "running")) {
+			return 'on';
+		}
+	
+		if (csa($res, "deleted")) {
+			return "deleted";
+		}
+	
+		return 'off';
 	}
 
-	$res = lxshell_output("vzctl", "status", "10000");
-	if (!trim($res)) {
-		//throw new lxException("vzctl_doesnt_work_most_likely_vz_service_is_not_running");
+	static function vpsInfo($vpsid)
+	{
+		global $global_dontlogshell;
+		$global_dontlogshell = true;
+		$path = "/proc/user_beancounters";
+		
+		$data = `vzctl exec $vpsid cat /proc/user_beancounters`;
+	
+		$res = explode("\n", $data);
+		$match = true;
+		foreach($res as $r) {
+			/*
+			if (csa($r, "$vpsid:")) {
+				$match = true;
+			}
+		*/
+	
+			if ($match && csa($r, "privvmpages")) {
+				break;
+			}
+		}
+	
+		$data = trimSpaces($r);
+	
+		dprint($data . "\n");
+	
+		$result = explode(" ", $data);
+		$max = $result[4];
+	
+		$use = $result[1];
+	
+		$use = $use/256;
+		$max = $max/256;
+		
+		$ret['priv_s_memory'] = $max;
+		$ret['used_s_memory'] = $use;
+	
+		$diskcont = lxshell_output("vzquota", "stat", $vpsid);
+	
+		$dcont = explode("\n", $diskcont);
+	
+		foreach($dcont as $dc) {
+			$dc = trimSpaces($dc);
+			if (csb($dc, '1k-blocks')) {
+				$ddc = explode(" ", $dc);
+				$ret['used_s_disk'] = round($ddc[1]/1024);
+				$ret['priv_s_disk'] = round($ddc[2]/1024);
+			}
+			if (csb($dc, 'inodes')) {
+				$ddc = explode(" ", $dc);
+				$ret['used_s_inode'] = $ddc[1];
+				$ret['priv_s_inode'] = $ddc[2];
+			}
+		}
+	
+	
+		foreach ($ret as &$vvv) {
+			$vvv = round($vvv);
+		}
+	
+		exec("vzctl exec $vpsid cat /proc/cpuinfo", $data);
+		$processornum = 0;
+		
+		foreach($data as $v) {
+			if (!trim($v)){
+				continue;
+			}
+			$d = explode(':', $v);
+			$d[0] = trim($d[0]);
+			$d[1] = trim($d[1]);
+			if ($d[0] === 'processor') {
+				$processornum = $d[1];
+				continue;
+			}
+	
+			if ($d[0] === 'model name') {
+				$cpu[$processornum]['used_s_cpumodel'] = $d[1];
+			}
+			if ($d[0] === 'cpu MHz') {
+				$cpu[$processornum]['used_s_cpuspeed'] = round($d[1]/100)/10 . "GHz";
+			}
+			if ($d[0] === 'cache size') {
+				$cpu[$processornum]['used_s_cpucache'] = $d[1];
+			}
+		}
+	
+		$global_dontlogshell = false;
+		$ret['cpu'] = $cpu;
+		return $ret;
 	}
 
-	$global_dontlogshell = $v;
-
-}
+	static function checkIfVzOK()
+	{
+		global $global_dontlogshell;
+	
+		$v = $global_dontlogshell;
+		$global_dontlogshell = true;
+	
+		if (!lxfile_exists("/proc/vz")) {
+			throw new lxException("no_kernel_support_for_openvz_check_if_right_kernel");
+		}
+	
+		$res = lxshell_output("vzctl", "status", "10000");
+		if (!trim($res)) {
+			//throw new lxException("vzctl_doesnt_work_most_likely_vz_service_is_not_running");
+		}
+	
+		$global_dontlogshell = $v;
+	}
 
 
 function dbactionAdd()
