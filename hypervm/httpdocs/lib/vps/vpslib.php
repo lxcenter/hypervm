@@ -1214,13 +1214,24 @@ function setUpOsTemplateDownloadParam()
 	$this->__var_masterip = getOneIPForLocalhost($this->syncserver);
 }
 
-
-function check_and_throw_error_if_some_else_is_using_vps($vpsid)
+/**
+* Check the existance of a VPS lock running.
+* 
+* Throws a exception if someone else is using a VPS.
+*
+* @author Anonymous <anonymous@lxcenter.org>
+* @author Ángel Guzmán Maeso <angel.guzman@lxcenter.org>
+*
+* @throws lxException
+* @return void
+*/
+function checkVPSLock($vps_id = NULL)
 {
-	$file = "vpslock_$vpsid.pid";
+	$file = 'vpslock_' . $vpsid . '.pid';
 
+	// @todo this seems a harmful way to check a lock file with sleep. Research this
 	$i = 0;
-	while (true) {
+	while (TRUE) {
 		if (lx_core_lock($file)) {
 			sleep(3);
 			$i++;
@@ -1231,7 +1242,6 @@ function check_and_throw_error_if_some_else_is_using_vps($vpsid)
 			break;
 		}
 	}
-
 }
 
 function postadd_xen()
@@ -2244,7 +2254,7 @@ function getHardProperty()
 	$driverapp = $gbl->getSyncClass('localhost', $this->syncserver, 'vps');
 	if ($this->isXen()) {
 		$maindisk = $this->getXenMaindiskName();
-		$disk = rl_exec_get($this->__masterserver, $this->syncserver,  array("vps__$driverapp", "getDiskUsage"), array($maindisk, $this->isWindows(), $this->corerootdir));
+		$disk = rl_exec_get($this->__masterserver, $this->syncserver,  array("vps__$driverapp", "getDiskUsage"), array($maindisk));
 		$this->used->disk_usage = $disk['used'];
 	} else {
 		$l = rl_exec_get($this->__masterserver, $this->syncserver,  array("vps__$driverapp", "vpsInfo"), array($this->getIid(), $this->corerootdir));
@@ -2528,7 +2538,7 @@ function createShowRlist($subaction)
 
 			$maindisk = $this->getXenMaindiskName();
 
-			$disk = rl_exec_get($this->__masterserver, $this->syncserver,  array("vps__$driverapp", "getDiskUsage"), array($maindisk, $this->isWindows(), $this->corerootdir));
+			$disk = rl_exec_get($this->__masterserver, $this->syncserver,  array("vps__$driverapp", "getDiskUsage"), array($maindisk));
 		}
 		if (!$this->priv->disk_usage) {
 			$this->priv->disk_usage = $disk['total'];

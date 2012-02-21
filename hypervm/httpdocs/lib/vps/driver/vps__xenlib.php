@@ -326,43 +326,121 @@ class vps__xen extends Lxdriverclass {
 			return 'off';
 		}
 	}
-
-	public static function getDiskUsage($disk, $winflag, $root)
+	
+	/**
+	* Get the disk usage for a given disk on a Xen virtual machine.
+	*
+	* Get the data from dumpe2fs output processing the block size,
+	* block count and free blocks.
+	* 
+	* Calculate the total disk space and total disk space used.
+	*
+	* @author Anonymous <anonymous@lxcenter.org>
+	* @author Ángel Guzmán Maeso <angel.guzman@lxcenter.org>
+	*
+	* @param string $disk The disk on a xen virtual machine. Default NULL.
+	* @return array[string] The total and used integer space indexed as string
+	*/
+	public static function getDiskUsage($disk = NULL)
 	{
 		global $global_dontlogshell;
-		$global_dontlogshell = true;
-		if ($winflag) {
-			$cont = lxfile_get_ntfs_disk_usage($disk, $root);
-		} else {
-			$cont = lxfile_get_disk_usage($disk);
+		
+		// Initialize 0 MBytes default usage (prevent errors with fallback)
+		$result['total'] = 0;
+		$result['used']  = 0;
+		
+		// @todo Check if it is a valid disk path (never trusts on users)
+		$disk = expand_real_root($disk);
+		
+		// @todo Check if the dumpe2fs it's available to use and exists (never trusts on users)
+		$global_dontlogshell = TRUE;
+		$output = lxshell_output('dumpe2fs', '-h', $disk);
+		$global_dontlogshell = FALSE;
+		
+		if(!empty($output)) { // If no output returned we return 0 MBytes (fallback mode)
+			$ouput_lines = explode(PHP_EOL, $output);
+			
+			// Process the dumpe2fs output
+			if(!empty($ouput_lines)) // Ensure not process truncate output
+			{
+				foreach($ouput_lines as $line) {
+					// Get the Block size line (on bytes) 
+					if (char_search_beg($line, 'Block size:')) {
+						$blocksize = intval(trim(strfrom($line, 'Block size:'))) / 1024; // Convert total bytes to KBytes
+					}
+					
+					// Get the Block count number line
+					if (char_search_beg($line, 'Block count:')) {
+						$block_count = intval(trim(strfrom($line, 'Block count:')));
+					}
+					
+					// Get the Free blocks number line
+					if (char_search_beg($line, 'Free blocks:')) {
+						$free_blocks = intval(trim(strfrom($line, 'Free blocks:')));
+					}
+				}
+				
+				$total_disk_space  = $block_count * $blocksize;
+				$total_free_blocks = $free_blocks * $blocksize;
+				$total_disk_used   = $total_disk_space - $total_free_blocks;
+				
+				// Round total and used to MBytes with 2 decimals
+				$result['total'] = round($total_disk_space / 1024, 2);
+				$result['used']  = round($total_disk_used / 1024, 2);
+			}
 		}
-		$global_dontlogshell = false;
-		return $cont;
+		
+		return $result;
 	}
 
+	/**
+	* Init the main Xen Virtual Machine vars.
+	* 
+	* It check if a LVM is found for change the normal paths.
+	*
+	* @author Anonymous <anonymous@lxcenter.org>
+	* @author Ángel Guzmán Maeso <angel.guzman@lxcenter.org>
+	*
+	* @return void
+	*/
 	public function initXenVars()
 	{
+		$main_path = $this->main;
+		
+		// If LVM add core root dir with fix vg name
 		if ($this->isLvm()) {
-			$vgname = $this->main->corerootdir;
-			$vgname = fix_vgname($vgname);
-			$this->main->maindisk = "/dev/$vgname/{$this->main->maindiskname}";
-			$this->main->swapdisk = "/dev/$vgname/{$this->main->swapdiskname}";
-		} else {
-			$this->main->rootdir = "{$this->main->corerootdir}/{$this->main->nname}/";
-			$this->main->maindisk = "{$this->main->rootdir}/{$this->main->maindiskname}";
-			$this->main->swapdisk = "{$this->main->rootdir}/{$this->main->swapdiskname}";
+			$vgname = '/dev/' . fix_vgname($main_path->corerootdir) . '/';
+			$main_path->maindisk = $vgname . $main_path->maindiskname;
+			$main_path->swapdisk = $vgname . $main_path->swapdiskname;
+		} else { // If not put root dir
+			$main_path->rootdir  = $main_path->corerootdir . '/' . $main_path->nname . '/';
+			$main_path->maindisk = $main_path->rootdir     . '/' . $main_path->maindiskname;
+			$main_path->swapdisk = $main_path->rootdir     . '/' . $main_path->swapdiskname;
 		}
 	
-		$this->main->configrootdir = "__path_home_dir/xen/{$this->main->nname}/";
+		$main_path->configrootdir = '__path_home_dir/xen/' . $main_path->nname . '/';
 	}
 
+	/**
+	* @todo UNDOCUMENTED
+	*
+	* @author Anonymous <anonymous@lxcenter.org>
+	* @author Ángel Guzmán Maeso <angel.guzman@lxcenter.org>
+	*
+	* @return void
+	*/
 	public function doSyncToSystemPre()
 	{
-	
-		if ($this->main->checkIfOffensive()) {
-			dprint("Offensive.. Checking...\n");
-			$this->main->check_and_throw_error_if_some_else_is_using_vps($this->main->nname);
+		$main = $this->main;
+		
+		if ($main->checkIfOffensive()) {
+			dprint('Offensive checking...' . PHP_EOL);
+			
+			$virtual_machine_name = $main->nname;
+			
+			$main->checkVPSLock($virtual_machine_name);
 		}
+		
 		$this->initXenVars();
 	}
 
@@ -989,7 +1067,12 @@ class vps__xen extends Lxdriverclass {
 
 	public function isLvm()
 	{
-		return char_search_beg($this->main->corerootdir, "lvm:");
+		if(isset($this->main->corerootdir)) {
+			return char_search_beg($this->main->corerootdir, 'lvm:');
+		}
+		else {
+			return FALSE;
+		}
 	}
 
 	public function createSwap()
@@ -2066,8 +2149,10 @@ class vps__xen extends Lxdriverclass {
 	public static function getCompleteStatus($list)
 	{
 		foreach($list as $l) {
-			$r['status'] = self::getStatus($l['nname'], '/home/xen');
-			$disk = self::getDiskUsage($l['diskname'], $l['winflag'], $l['corerootdir']);
+			$virtual_machine_name = $l['nname'];
+			$root_dir = '/home/xen';
+			$r['status'] = self::getStatus($virtual_machine_name, $root_dir);
+			$disk = self::getDiskUsage($l['diskname']);
 			$r['ldiskusage_f'] = $disk['used'];
 			$res[$l['nname']] = $r;
 		}
