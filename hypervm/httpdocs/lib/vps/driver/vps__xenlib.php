@@ -395,18 +395,20 @@ class vps__xen extends Lxdriverclass {
 
 	public function initXenVars()
 	{
+		$main_path = $this->main;
+		
+		// If LVM add core root dir with fix vg name
 		if ($this->isLvm()) {
-			$vgname = $this->main->corerootdir;
-			$vgname = fix_vgname($vgname);
-			$this->main->maindisk = "/dev/$vgname/{$this->main->maindiskname}";
-			$this->main->swapdisk = "/dev/$vgname/{$this->main->swapdiskname}";
-		} else {
-			$this->main->rootdir = "{$this->main->corerootdir}/{$this->main->nname}/";
-			$this->main->maindisk = "{$this->main->rootdir}/{$this->main->maindiskname}";
-			$this->main->swapdisk = "{$this->main->rootdir}/{$this->main->swapdiskname}";
+			$vgname = '/dev/' . fix_vgname($main_path->corerootdir) . '/';
+			$main_path->maindisk = $vgname . $main_path->maindiskname;
+			$main_path->swapdisk = $vgname . $main_path->swapdiskname;
+		} else { // If not put root dir
+			$main_path->rootdir  = $main_path->corerootdir . '/' . $main_path->nname . '/';
+			$main_path->maindisk = $main_path->rootdir     . '/' . $main_path->maindiskname;
+			$main_path->swapdisk = $main_path->rootdir     . '/' . $main_path->swapdiskname;
 		}
 	
-		$this->main->configrootdir = "__path_home_dir/xen/{$this->main->nname}/";
+		$main_path->configrootdir = '__path_home_dir/xen/' . $main_path->nname . '/';
 	}
 
 	public function doSyncToSystemPre()
