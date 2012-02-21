@@ -1404,163 +1404,154 @@ class vps__openvz extends Lxdriverclass {
 		return $nlist;
 	}
 
-static function importIpaddress($vpsobject, $val)
-{
-	$list = explode(" ", $val);
-	foreach($list as $l) {
-		$ipadd = new vmipaddress_a(null, $vpsobject->syncserver, $l);
-		$vpsobject->vmipaddress_a[$ipadd->nname] = $ipadd;
-	}
-}
-
-
-static function importOnboot($vpsobject, $val)
-{
-	if ($val === 'no')  {
-		$vpsobject->status = 'off';
-	} else {
-		$vpsobject->status = 'on';
-	}
-}
-
-static function importLimitVar($vpsobject, $var, $val)
-{
-	if ($var === 'CPULIMIT') {
-		$rval = $val;
-	} else {
-		list($rval, $rvv) = explode(":", $val);
-	}
-
-
-	$priv = $vpsobject->priv;
-
-	switch($var) {
-		case "CPULIMIT":
-			$priv->cpu_usage = $rval;
-			break;
-
-		case "PRIVVMPAGES":
-			$priv->memory_usage = $rval/256;
-			break;
-
-		case "DISKSPACE":
-			$priv->disk_usage = $rval/1024;
-			break;
-
-		case "NUMPROC":
-			$priv->process_usage = $rval;
-			break;
-
-		case "VMGUARPAGES":
-			$priv->guarmem_usage = $rval/256;
-			break;
-
-	}
-
-}
-
-
-static function importOStemplate($vpsobject, $val)
-{
-	$vpsobject->ostemplate = $val;
-}
-
-static function importLocation($vpsobject, $val)
-{
-	$vpsobject->corerootdir = dirname($val);
-}
-
-static function createVpsObject($servername, $file)
-{
-	$vpsid = strtil($file, ".conf");
-
-
-	$name = "openvz$vpsid.vm";
-	$vpsobject = new Vps(null, $servername, $name);
-	$vpsobject->parent_clname = createParentName('client', 'admin');
-	$vpsobject->priv = new priv(null, null, $vpsobject->nname);
-	$vpsobject->priv->__parent_o = $vpsobject;
-	$vpsobject->used = new used(null, null, $vpsobject->nname);
-	$vpsobject->used->__parent_o = $vpsobject;
-	$vpsobject->vpsipaddress_a = array();
-	$vpsobject->vpsid = $vpsid;
-	$vpsobject->password = crypt("$vpsid");
-	$vpsobject->cpstatus = 'on';
-	$vpsobject->ttype = 'openvz';
-	$vpsobject->iid = $vpsid;
-	$vpsobject->ddate = time();
-	$varlist = lfile_trim("/etc/vz/conf/$file");
-
-	foreach($varlist as $v) {
-		if (!$v) {
-			continue;
+	static function importIpaddress($vpsobject, $val)
+	{
+		$list = explode(" ", $val);
+		foreach($list as $l) {
+			$ipadd = new vmipaddress_a(null, $vpsobject->syncserver, $l);
+			$vpsobject->vmipaddress_a[$ipadd->nname] = $ipadd;
 		}
+	}
 
-		if ($v[0] === '#') {
-			continue;
+	static function importOnboot($vpsobject, $val)
+	{
+		if ($val === 'no')  {
+			$vpsobject->status = 'off';
+		} else {
+			$vpsobject->status = 'on';
 		}
+	}
 
-		if (!csa($v, "=")) {
-			continue;
+	static function importLimitVar($vpsobject, $var, $val)
+	{
+		if ($var === 'CPULIMIT') {
+			$rval = $val;
+		} else {
+			list($rval, $rvv) = explode(":", $val);
 		}
-
-		list ($var, $val) = explode("=", $v);
-
-		$val = str_replace('"', "", $val);
-
+	
+		$priv = $vpsobject->priv;
+	
 		switch($var) {
-
-			case "IP_ADDRESS":
-				self::importIpaddress($vpsobject, $val);
-				break;
-
-			case "ONBOOT":
-				self::importOnboot($vpsobject, $val);
-				break;
-
-			case "NUMPROC":
-			case "PRIVVMPAGES":
-			case "VMGUARPAGES":
-			case "DISKSPACE":
 			case "CPULIMIT":
-				self::importLimitVar($vpsobject, $var, $val);
+				$priv->cpu_usage = $rval;
 				break;
-
-			case "VE_PRIVATE":
-				self::importLocation($vpsobject, $val);
+	
+			case "PRIVVMPAGES":
+				$priv->memory_usage = $rval/256;
 				break;
-
-			case "HOSTNAME":
-				$vpsobject->hostname = $val;
+	
+			case "DISKSPACE":
+				$priv->disk_usage = $rval/1024;
 				break;
-
-
-			case "OSTEMPLATE":
-				self::importOStemplate($vpsobject, $val);
+	
+			case "NUMPROC":
+				$priv->process_usage = $rval;
 				break;
-
+	
+			case "VMGUARPAGES":
+				$priv->guarmem_usage = $rval/256;
+				break;
 		}
 	}
 
-	if (!$vpsobject->corerootdir) {
-		$vpsobject->corerootdir = '/vz/private';
+	static function importOStemplate($vpsobject, $val)
+	{
+		$vpsobject->ostemplate = $val;
+	}
+	
+	static function importLocation($vpsobject, $val)
+	{
+		$vpsobject->corerootdir = dirname($val);
 	}
 
-	return $vpsobject;
-
-}
-
-static function getCompleteStatus($list)
-{
-	foreach($list as $l) {
-		$r['status'] = self::getStatus($l['vpsid'], $l['corerootdir']);
-		$list = self::vpsInfo($l['vpsid']);
-		$r['lmemoryusage_f'] = $list['used_s_memory'];
-		$r['ldiskusage_f'] = $list['used_s_disk'];
-		$res[$l['nname']] = $r;
+	static function createVpsObject($servername, $file)
+	{
+		$vpsid = strtil($file, ".conf");
+	
+		$name = "openvz$vpsid.vm";
+		$vpsobject = new Vps(null, $servername, $name);
+		$vpsobject->parent_clname = createParentName('client', 'admin');
+		$vpsobject->priv = new priv(null, null, $vpsobject->nname);
+		$vpsobject->priv->__parent_o = $vpsobject;
+		$vpsobject->used = new used(null, null, $vpsobject->nname);
+		$vpsobject->used->__parent_o = $vpsobject;
+		$vpsobject->vpsipaddress_a = array();
+		$vpsobject->vpsid = $vpsid;
+		$vpsobject->password = crypt("$vpsid");
+		$vpsobject->cpstatus = 'on';
+		$vpsobject->ttype = 'openvz';
+		$vpsobject->iid = $vpsid;
+		$vpsobject->ddate = time();
+		$varlist = lfile_trim("/etc/vz/conf/$file");
+	
+		foreach($varlist as $v) {
+			if (!$v) {
+				continue;
+			}
+	
+			if ($v[0] === '#') {
+				continue;
+			}
+	
+			if (!csa($v, "=")) {
+				continue;
+			}
+	
+			list ($var, $val) = explode("=", $v);
+	
+			$val = str_replace('"', "", $val);
+	
+			switch($var) {
+	
+				case "IP_ADDRESS":
+					self::importIpaddress($vpsobject, $val);
+					break;
+	
+				case "ONBOOT":
+					self::importOnboot($vpsobject, $val);
+					break;
+	
+				case "NUMPROC":
+				case "PRIVVMPAGES":
+				case "VMGUARPAGES":
+				case "DISKSPACE":
+				case "CPULIMIT":
+					self::importLimitVar($vpsobject, $var, $val);
+					break;
+	
+				case "VE_PRIVATE":
+					self::importLocation($vpsobject, $val);
+					break;
+	
+				case "HOSTNAME":
+					$vpsobject->hostname = $val;
+					break;
+	
+	
+				case "OSTEMPLATE":
+					self::importOStemplate($vpsobject, $val);
+					break;
+	
+			}
+		}
+	
+		if (!$vpsobject->corerootdir) {
+			$vpsobject->corerootdir = '/vz/private';
+		}
+	
+		return $vpsobject;
 	}
-	return $res;
-}
 
-
+	static function getCompleteStatus($list)
+	{
+		foreach($list as $l) {
+			$r['status'] = self::getStatus($l['vpsid'], $l['corerootdir']);
+			$list = self::vpsInfo($l['vpsid']);
+			$r['lmemoryusage_f'] = $list['used_s_memory'];
+			$r['ldiskusage_f'] = $list['used_s_disk'];
+			$res[$l['nname']] = $r;
+		}
+		return $res;
+	}
 }
