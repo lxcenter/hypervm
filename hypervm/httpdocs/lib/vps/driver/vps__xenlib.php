@@ -2066,7 +2066,9 @@ class vps__xen extends Lxdriverclass {
 	public static function getCompleteStatus($list)
 	{
 		foreach($list as $l) {
-			$r['status'] = self::getStatus($l['nname'], '/home/xen');
+			$virtual_machine_name = $l['nname'];
+			$root_dir = '/home/xen';
+			$r['status'] = self::getStatus($virtual_machine_name, $root_dir);
 			$disk = self::getDiskUsage($l['diskname'], $l['winflag'], $l['corerootdir']);
 			$r['ldiskusage_f'] = $disk['used'];
 			$res[$l['nname']] = $r;
