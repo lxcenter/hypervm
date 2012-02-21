@@ -527,207 +527,192 @@ class vps__openvz extends Lxdriverclass {
 		lxshell_return("vzctl", "set", $this->main->vpsid, "--save", "--meminfo", "pages:$memory");
 	}
 
+	function do_backup()
+	{
+		if ($this->main->isOn('__var_bc_backupextra_stopvpsflag')) {
+			$this->stop();
+		}
+	
+		$list = lscandir_without_dot("{$this->main->corerootdir}/{$this->main->vpsid}");
+		$list = array_remove($list, "{$this->main->vpsid}.conf");
+		$list = array_remove($list, "proc");
+	
+		if (count($list) < 6) {
+			throw new lxException("not_enough_directories_in_vps_root,_possibly_wrong_location", '', '');
+		}
+		return array("{$this->main->corerootdir}/{$this->main->vpsid}", $list);
+	}
 
-function do_backup()
-{
+	function do_backup_cleanup($list)
+	{
+		// I had commented out the starting of the vps after backup. I don't know why. Why is this not done.. The vps should be started after the backup is done.
+	
+		if ($this->main->isOn('__var_bc_backupextra_stopvpsflag')) {
+			$this->start();
+		}
+	}
 
-	if ($this->main->isOn('__var_bc_backupextra_stopvpsflag')) {
+	function do_restore($docd)
+	{
+		global $gbl, $sgbl, $login, $ghtml;
+	
 		$this->stop();
-	}
-
-	$list = lscandir_without_dot("{$this->main->corerootdir}/{$this->main->vpsid}");
-	$list = array_remove($list, "{$this->main->vpsid}.conf");
-	$list = array_remove($list, "proc");
-
-	if (count($list) < 6) {
-		throw new lxException("not_enough_directories_in_vps_root,_possibly_wrong_location", '', '');
-	}
-	return array("{$this->main->corerootdir}/{$this->main->vpsid}", $list);
-}
-
-
-
-
-function do_backup_cleanup($list)
-{
-	// I had commented out the starting of the vps after backup. I don't know why. Why is this not done.. The vps should be started after the backup is done.
-
-	if ($this->main->isOn('__var_bc_backupextra_stopvpsflag')) {
+		$this->dropQuota();
+	
+		$mountpoint = "{$this->main->corerootdir}/{$this->main->vpsid}";
+	
+		lxfile_mkdir($mountpoint);
+	
+		if (lxshell_exists_in_zip($docd, "{$this->main->vpsid}.conf")) {
+			log_restore("Got an Old Backup Restore for {$this->main->vpsid} $docd");
+			lxshell_unzip_with_throw($this->main->corerootdir, $docd, array("{$this->main->vpsid}/*"));
+		} else {
+			lxshell_unzip_with_throw("{$this->main->corerootdir}/{$this->main->vpsid}", $docd);
+		}
+	
+		//lxshell_return("tar", "-C", "{$this->main->corerootdir}/{$this->main->vpsid}/dev", "-xzf", "__path_program_root/file/vps-dev.tgz");
+	
+		if ($this->main->__old_driver !== 'openvz') {
+			log_restore("Restoring {$this->main->nname} from a different driver {$this->main->__old_driver} to openvz");
+			lxfile_cp("__path_program_root/file/sysfile/openvz/fstab", "$mountpoint/etc/fstab");
+	
+			//if (!lxfile_exists("/vz/template/cache/{$this->main->ostemplate}.tar.gz")) {
+				//throw new lxException("migrating_from_{$this->main->__old_driver}_needs_osImage");
+			//}
+			//lxshell_return("tar", "-C", $mountpoint, "-xzf", "__path_program_home/xen/template/{$this->main->ostemplate}.tar.gz", "etc/rc.d", "sbin", "etc/hotplug.d", "etc/dev.d", "etc/udev", "lib", "usr", "bin", "etc/inittab", "etc/sysconfig");
+			//lxshell_return("tar", "-C", $mountpoint, "-xzf", "/vz/template/cache/{$this->main->ostemplate}.tar.gz", "etc/rc.d", "sbin", "lib", "usr", "bin", "etc/inittab");
+			lunlink("$mountpoint/etc/mtab");
+			lxfile_symlink("/proc/mounts", "$mountpoint/etc/mtab");
+		}
+	
+		if (!lxfile_exists("$mountpoint/usr/bin")) {
+			throw new lxException("the_vps_directory_is_empty", '', '');
+		}
+	
+		lxfile_mkdir("$mountpoint/proc");
+		$this->createBaseConf();
+		$this->setIpaddress($this->main->vmipaddress_a, true);
+		$this->setEveryThing();
+		$this->setInformation();
+		$this->setRootPassword();
+		$this->dropQuota();
 		$this->start();
 	}
-}
 
-function do_restore($docd)
-{
-	global $gbl, $sgbl, $login, $ghtml;
-
-	$this->stop();
-	$this->dropQuota();
-
-	$mountpoint = "{$this->main->corerootdir}/{$this->main->vpsid}";
-
-	lxfile_mkdir($mountpoint);
-
-	if (lxshell_exists_in_zip($docd, "{$this->main->vpsid}.conf")) {
-		log_restore("Got an Old Backup Restore for {$this->main->vpsid} $docd");
-		lxshell_unzip_with_throw($this->main->corerootdir, $docd, array("{$this->main->vpsid}/*"));
-	} else {
-		lxshell_unzip_with_throw("{$this->main->corerootdir}/{$this->main->vpsid}", $docd);
+	function do_restore_old($docd)
+	{
+		global $gbl, $sgbl, $login, $ghtml;
+	
+		lxshell_unzip_with_throw($this->main->corerootdir, $docd, array("{$this->main->vpsid}/*", "{$this->main->vpsid}.conf"));
+		// Just create the iptables entries only...
+		lunlink("{$this->main->corerootdir}/{$this->main->vpsid}.conf");
 	}
 
-	//lxshell_return("tar", "-C", "{$this->main->corerootdir}/{$this->main->vpsid}/dev", "-xzf", "__path_program_root/file/vps-dev.tgz");
-
-	if ($this->main->__old_driver !== 'openvz') {
-		log_restore("Restoring {$this->main->nname} from a different driver {$this->main->__old_driver} to openvz");
-		lxfile_cp("__path_program_root/file/sysfile/openvz/fstab", "$mountpoint/etc/fstab");
-
-		//if (!lxfile_exists("/vz/template/cache/{$this->main->ostemplate}.tar.gz")) {
-			//throw new lxException("migrating_from_{$this->main->__old_driver}_needs_osImage");
-		//}
-		//lxshell_return("tar", "-C", $mountpoint, "-xzf", "__path_program_home/xen/template/{$this->main->ostemplate}.tar.gz", "etc/rc.d", "sbin", "etc/hotplug.d", "etc/dev.d", "etc/udev", "lib", "usr", "bin", "etc/inittab", "etc/sysconfig");
-		//lxshell_return("tar", "-C", $mountpoint, "-xzf", "/vz/template/cache/{$this->main->ostemplate}.tar.gz", "etc/rc.d", "sbin", "lib", "usr", "bin", "etc/inittab");
-		lunlink("$mountpoint/etc/mtab");
-		lxfile_symlink("/proc/mounts", "$mountpoint/etc/mtab");
-	}
-
-	if (!lxfile_exists("$mountpoint/usr/bin")) {
-		throw new lxException("the_vps_directory_is_empty", '', '');
-	}
-
-	lxfile_mkdir("$mountpoint/proc");
-	$this->createBaseConf();
-	$this->setIpaddress($this->main->vmipaddress_a, true);
-	$this->setEveryThing();
-	$this->setInformation();
-	$this->setRootPassword();
-	$this->dropQuota();
-	$this->start();
-}
-
-function do_restore_old($docd)
-{
-	global $gbl, $sgbl, $login, $ghtml;
-
-	lxshell_unzip_with_throw($this->main->corerootdir, $docd, array("{$this->main->vpsid}/*", "{$this->main->vpsid}.conf"));
-	// Just create the iptables entries only...
-	lunlink("{$this->main->corerootdir}/{$this->main->vpsid}.conf");
-}
-
-
-function setGuarMemoryUsage()
-{
-
-	if (is_unlimited($this->main->priv->guarmem_usage)) {
-		$memory = 500;
-	} else {
-		$memory = $this->main->priv->guarmem_usage;
-	}
-
-	lxshell_return("vzctl", "set", $this->main->vpsid, "--save", "--vmguarpages", "{$memory}M:2147483647");
-	lxshell_return("vzctl", "set", $this->main->vpsid, "--save", "--oomguarpages", "{$memory}M:2147483647");
-	lxshell_return("vzctl", "set", $this->main->vpsid, "--save", "--shmpages", "{$memory}M:{$memory}M");
-	lxshell_return("vzctl", "set", $this->main->vpsid, "--save", "--physpages", "0:2147483647");
-	$tcp = round(($memory * 1024)/5, 0);
-	$process = $this->main->priv->process_usage;
-	if (is_unlimited($process) || $process > 5555) {
-		$process = 5555;
-	}
-	dprint("Process Usage $process\n");
-	$limit = $tcp + 2 * $process * 16;
-	if (!$tcp) { $tcp = 1; }
-	$tcp .= "K";
-	$limit .= "K";
-	$tcp = "$tcp:$limit";
-	lxshell_return("vzctl", "set", $this->main->vpsid, "--save", "--tcpsndbuf", $tcp, "--tcprcvbuf", $tcp, "--othersockbuf", $tcp, "--dgramrcvbuf", $tcp);
-
-}
-
-function createBaseConf()
-{
-	lxfile_cp("__path_program_root/file/sysfile/openvz/base-openvz.conf", "/etc/vz/conf/{$this->main->vpsid}.conf");
-	$this->changeConf("OSTEMPLATE", $this->main->ostemplate);
-	$this->changeConf("VE_PRIVATE", "{$this->main->corerootdir}/\$VEID");
-}
-
-function setCpuUsage()
-{
-	if (is_unlimited($this->main->priv->cpu_usage)) {
-		$cpu = "100" * os_getCpuNum();
-	} else {
-		$cpu = $this->main->priv->cpu_usage;
-	}
-
-	lxshell_return("vzctl", "set", $this->main->vpsid, "--save", "--cpulimit", $cpu);
-}
-
-function setDiskUsage()
-{
-	if (is_unlimited($this->main->priv->disk_usage)) {
-		$diskusage = 99999 * 1024;
-	} else {
-		$diskusage = $this->main->priv->disk_usage * 1024;
-	}
-
-	lxshell_return("vzctl", "set", $this->main->vpsid, "--save", "--diskspace", $diskusage, "--diskinodes", round($diskusage/2));
-}
-
-
-// Added by Semir @ 2011 march 14
-
-function setSwapUsage()
-{
-        if (is_unlimited($this->main->priv->swap_usage)) {   
-                $memory = 2048;   
-        } else {
-                $memory = $this->main->priv->swap_usage;
-        }
-
-    $memory = "0:" . $memory . "M";
-
-    lxshell_return("vzctl", "set", $this->main->vpsid, "--save", "--swappages", $memory);
-
-}
-
-function setProcessUsage()
-{
-	if (is_unlimited($this->main->priv->process_usage)) {
-		$process = 999999;
-	} else {
+	function setGuarMemoryUsage()
+	{
+	
+		if (is_unlimited($this->main->priv->guarmem_usage)) {
+			$memory = 500;
+		} else {
+			$memory = $this->main->priv->guarmem_usage;
+		}
+	
+		lxshell_return("vzctl", "set", $this->main->vpsid, "--save", "--vmguarpages", "{$memory}M:2147483647");
+		lxshell_return("vzctl", "set", $this->main->vpsid, "--save", "--oomguarpages", "{$memory}M:2147483647");
+		lxshell_return("vzctl", "set", $this->main->vpsid, "--save", "--shmpages", "{$memory}M:{$memory}M");
+		lxshell_return("vzctl", "set", $this->main->vpsid, "--save", "--physpages", "0:2147483647");
+		$tcp = round(($memory * 1024)/5, 0);
 		$process = $this->main->priv->process_usage;
+		if (is_unlimited($process) || $process > 5555) {
+			$process = 5555;
+		}
+		dprint("Process Usage $process\n");
+		$limit = $tcp + 2 * $process * 16;
+		if (!$tcp) { $tcp = 1; }
+		$tcp .= "K";
+		$limit .= "K";
+		$tcp = "$tcp:$limit";
+		lxshell_return("vzctl", "set", $this->main->vpsid, "--save", "--tcpsndbuf", $tcp, "--tcprcvbuf", $tcp, "--othersockbuf", $tcp, "--dgramrcvbuf", $tcp);
 	}
 
-	$avnumproc = $process/2;
+	function createBaseConf()
+	{
+		lxfile_cp("__path_program_root/file/sysfile/openvz/base-openvz.conf", "/etc/vz/conf/{$this->main->vpsid}.conf");
+		$this->changeConf("OSTEMPLATE", $this->main->ostemplate);
+		$this->changeConf("VE_PRIVATE", "{$this->main->corerootdir}/\$VEID");
+	}
 
-	$sockets = $avnumproc * 16; 
-	$numfile = $sockets * 3;
-	$dcachesize = $numfile * 384;
+	function setCpuUsage()
+	{
+		if (is_unlimited($this->main->priv->cpu_usage)) {
+			$cpu = "100" * os_getCpuNum();
+		} else {
+			$cpu = $this->main->priv->cpu_usage;
+		}
+	
+		lxshell_return("vzctl", "set", $this->main->vpsid, "--save", "--cpulimit", $cpu);
+	}
 
-	$kernelmem = 40 * 1024 * $avnumproc + $dcachesize *100;
+	function setDiskUsage()
+	{
+		if (is_unlimited($this->main->priv->disk_usage)) {
+			$diskusage = 99999 * 1024;
+		} else {
+			$diskusage = $this->main->priv->disk_usage * 1024;
+		}
+	
+		lxshell_return("vzctl", "set", $this->main->vpsid, "--save", "--diskspace", $diskusage, "--diskinodes", round($diskusage/2));
+	}
 
+	// Added by Semir @ 2011 march 14
+	function setSwapUsage()
+	{
+	        if (is_unlimited($this->main->priv->swap_usage)) {   
+	                $memory = 2048;   
+	        } else {
+	                $memory = $this->main->priv->swap_usage;
+	        }
+	
+	    $memory = "0:" . $memory . "M";
+	
+	    lxshell_return("vzctl", "set", $this->main->vpsid, "--save", "--swappages", $memory);
+	}
 
-
-	$kernelmem = 2147483646;
-	$kernelmem = $this->limitMaxMemory($kernelmem);
-	$dcachesize = $this->limitMaxMemory($dcachesize);
-	$numfile = $this->limitNumber($numfile);
-	$sockets = $this->limitNumber($sockets);
-	$process = $this->limitNumber($process);
-
-	lxshell_return("vzctl", "set", $this->main->vpsid, "--save", "--numproc", $process);
-
-	$avnumproc = round($avnumproc);
-
-	lxshell_return("vzctl", "set", $this->main->vpsid, "--save", "--numtcpsock", $sockets, "--numothersock", $sockets, "--numfile", $numfile, "--numflock", $process, "--numsiginfo", $process, "--numpty", $avnumproc);
-
-
-
-	lxshell_return("vzctl", "set", $this->main->vpsid, "--save", "--dcachesize", $dcachesize, "--kmemsize", $kernelmem);
-	lxshell_return("vzctl", "set", $this->main->vpsid, "--save", "--numiptent", $process);
-	lxshell_return("vzctl", "set", $this->main->vpsid, "--save", "--lockedpages", $process);
-
-	$this->setGuarMemoryUsage();
-
-}
+	function setProcessUsage()
+	{
+		if (is_unlimited($this->main->priv->process_usage)) {
+			$process = 999999;
+		} else {
+			$process = $this->main->priv->process_usage;
+		}
+	
+		$avnumproc = $process/2;
+	
+		$sockets = $avnumproc * 16; 
+		$numfile = $sockets * 3;
+		$dcachesize = $numfile * 384;
+	
+		$kernelmem = 40 * 1024 * $avnumproc + $dcachesize *100;
+	
+		$kernelmem = 2147483646;
+		$kernelmem = $this->limitMaxMemory($kernelmem);
+		$dcachesize = $this->limitMaxMemory($dcachesize);
+		$numfile = $this->limitNumber($numfile);
+		$sockets = $this->limitNumber($sockets);
+		$process = $this->limitNumber($process);
+	
+		lxshell_return("vzctl", "set", $this->main->vpsid, "--save", "--numproc", $process);
+	
+		$avnumproc = round($avnumproc);
+	
+		lxshell_return("vzctl", "set", $this->main->vpsid, "--save", "--numtcpsock", $sockets, "--numothersock", $sockets, "--numfile", $numfile, "--numflock", $process, "--numsiginfo", $process, "--numpty", $avnumproc);
+	
+		lxshell_return("vzctl", "set", $this->main->vpsid, "--save", "--dcachesize", $dcachesize, "--kmemsize", $kernelmem);
+		lxshell_return("vzctl", "set", $this->main->vpsid, "--save", "--numiptent", $process);
+		lxshell_return("vzctl", "set", $this->main->vpsid, "--save", "--lockedpages", $process);
+	
+		$this->setGuarMemoryUsage();
+	}
 
 function limitMaxMemory($value)
 {
