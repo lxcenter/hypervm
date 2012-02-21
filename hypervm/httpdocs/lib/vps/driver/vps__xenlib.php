@@ -423,10 +423,16 @@ class vps__xen extends Lxdriverclass {
 
 	public function doSyncToSystemPre()
 	{
-		if ($this->main->checkIfOffensive()) {
+		$main = $this->main;
+		
+		if ($main->checkIfOffensive()) {
 			dprint('Offensive checking...' . PHP_EOL);
-			$this->main->check_and_throw_error_if_some_else_is_using_vps($this->main->nname);
+			
+			$virtual_machine_name = $main->nname;
+			
+			$main->checkVPSLock($virtual_machine_name);
 		}
+		
 		$this->initXenVars();
 	}
 

@@ -1208,16 +1208,18 @@ function setUplinkUsage()
 
 }
 
-
 function doSyncToSystemPre()
 {
-	if ($this->main->checkIfOffensive()) {
-		dprint("Offensive.. Checking...\n");
-		$this->main->check_and_throw_error_if_some_else_is_using_vps($this->main->nname);
+	if ($main->checkIfOffensive()) {
+		dprint('Offensive checking...' . PHP_EOL);
+		
+		$virtual_machine_name = $main->nname;
+			
+		$main->checkVPSLock($virtual_machine_name);
 	}
 
-	if (!$this->main->corerootdir) {
-		$this->main->corerootdir = '/vz/private';
+	if (!$main->corerootdir) {
+		$main->corerootdir = '/vz/private';
 	}
 }
 
