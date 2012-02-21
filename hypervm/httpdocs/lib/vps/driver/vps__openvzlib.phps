@@ -404,135 +404,128 @@ class vps__openvz extends Lxdriverclass {
 		lxshell_return("vzquota", "drop", $this->main->vpsid);
 	}
 
-function changeLocation()
-{
-	$this->stop();
-	$this->dropQuota();
-	lxfile_mkdir($this->main->newlocation);
-	if (lxfile_exists("{$this->main->newlocation}/{$this->main->vpsid}")) {
-		throw new lxException("vpsid_already_exists_in_new_location", 'newlocation', $this->main->vpsid);
-	}
-
-	$ret = lxfile_cp_rec("{$this->main->corerootdir}/{$this->main->vpsid}", "{$this->main->newlocation}/");
-	if ($ret) {
-		throw new lxException("copy_of_vps_failed", 'newlocation', $this->main->vpsid);
-	}
-
-	$this->changeConf("VE_PRIVATE", "{$this->main->newlocation}/\$VEID");
-	lxfile_rm_rec("{$this->main->corerootdir}/{$this->main->vpsid}");
-
-	
-	$this->start();
-	$ret = array("__syncv_corerootdir" => $this->main->newlocation);
-	return $ret;
-
-}
-
-function setMainIpaddress()
-{
-	$ret = lxshell_return("vzctl", "set", $this->main->vpsid, "--ipdel", "all", "--save");
-
-	sleep(10);
-	$ret = lxshell_return("vzctl", "set", $this->main->vpsid, "--ipadd", $this->main->mainipaddress, "--save");
-
-	sleep(10);
-	foreach($this->main->vmipaddress_a as $ip) {
-		if ($ip->nname === $this->main->mainipaddress) {
-			continue;
+	function changeLocation()
+	{
+		$this->stop();
+		$this->dropQuota();
+		lxfile_mkdir($this->main->newlocation);
+		if (lxfile_exists("{$this->main->newlocation}/{$this->main->vpsid}")) {
+			throw new lxException("vpsid_already_exists_in_new_location", 'newlocation', $this->main->vpsid);
 		}
-		$ret = lxshell_return("vzctl", "set", $this->main->vpsid, "--ipadd", $ip->nname, "--save");
+	
+		$ret = lxfile_cp_rec("{$this->main->corerootdir}/{$this->main->vpsid}", "{$this->main->newlocation}/");
+		if ($ret) {
+			throw new lxException("copy_of_vps_failed", 'newlocation', $this->main->vpsid);
+		}
+	
+		$this->changeConf("VE_PRIVATE", "{$this->main->newlocation}/\$VEID");
+		lxfile_rm_rec("{$this->main->corerootdir}/{$this->main->vpsid}");
+	
+		
+		$this->start();
+		$ret = array("__syncv_corerootdir" => $this->main->newlocation);
+		return $ret;
 	}
 
-}
-
-function setIpaddress($list, $vpsflag)
-{
-	foreach($list as $ip) {
-		if ($vpsflag) {
+	function setMainIpaddress()
+	{
+		$ret = lxshell_return("vzctl", "set", $this->main->vpsid, "--ipdel", "all", "--save");
+	
+		sleep(10);
+		$ret = lxshell_return("vzctl", "set", $this->main->vpsid, "--ipadd", $this->main->mainipaddress, "--save");
+	
+		sleep(10);
+		foreach($this->main->vmipaddress_a as $ip) {
+			if ($ip->nname === $this->main->mainipaddress) {
+				continue;
+			}
 			$ret = lxshell_return("vzctl", "set", $this->main->vpsid, "--ipadd", $ip->nname, "--save");
 		}
-		lxshell_return("iptables", "-A", "FORWARD", "-s", $ip->nname);
-		lxshell_return("iptables", "-A", "FORWARD", "-d", $ip->nname);
 	}
-	return $ret;
-}
 
-function deleteIpaddress($list, $vpsflag)
-{
-	foreach($list as $ip) {
-		if ($vpsflag) {
-			lxshell_return("vzctl", "set", $this->main->vpsid, "--ipdel", $ip->nname, "--save");
+	function setIpaddress($list, $vpsflag)
+	{
+		foreach($list as $ip) {
+			if ($vpsflag) {
+				$ret = lxshell_return("vzctl", "set", $this->main->vpsid, "--ipadd", $ip->nname, "--save");
+			}
+			lxshell_return("iptables", "-A", "FORWARD", "-s", $ip->nname);
+			lxshell_return("iptables", "-A", "FORWARD", "-d", $ip->nname);
 		}
-		lxshell_return("iptables", "-D", "FORWARD", "-s", $ip->nname);
-		lxshell_return("iptables", "-D", "FORWARD", "-d", $ip->nname);
-	}
-}
-
-function dbactionDelete()
-{
-	try {
-		$this->stop();
-	} catch (Exception $e) {
+		return $ret;
 	}
 
-	lxshell_return("vzctl", "set", $this->main->vpsid, "--ipdel", "all", "--save");
-
-	lxshell_return("vzctl", "umount", $this->main->vpsid);
-	lxshell_return("vzctl", "destroy", $this->main->vpsid);
-	$this->deleteIpaddress($this->main->vmipaddress_a, false);
-	lxshell_return("userdel", "-r", $this->main->username);
-
-	@ lunlink("__path_program_root/tmp/{$this->main->vpsid}.create");
-	@ lunlink("__path_program_root/tmp/{$this->main->vpsid}.createfailed");
-
-	// Just making sure. Sometimes the file doesn't properly get deleted.
-	if (lxfile_exists("/etc/vz/conf/{$this->main->vpsid}.conf")) {
-		lunlink("/etc/vz/conf/{$this->main->vpsid}.conf");
+	function deleteIpaddress($list, $vpsflag)
+	{
+		foreach($list as $ip) {
+			if ($vpsflag) {
+				lxshell_return("vzctl", "set", $this->main->vpsid, "--ipdel", $ip->nname, "--save");
+			}
+			lxshell_return("iptables", "-D", "FORWARD", "-s", $ip->nname);
+			lxshell_return("iptables", "-D", "FORWARD", "-d", $ip->nname);
+		}
 	}
-	//lxfile_rm_rec("__path_program_home/vps/{$this->main->nname}");
+
+	function dbactionDelete()
+	{
+		try {
+			$this->stop();
+		} catch (Exception $e) {
+		}
 	
-}
-
-
-function toggleStatus()
-{
-	global $global_shell_out, $global_shell_error, $global_shell_ret;
-
-	if ($this->main->isOn('status')) {
-		$ret = $this->start();
-		if ($ret) {
-			throw new lxException("could_not_start_vps", '', str_replace("\n", ": ", $global_shell_error));
+		lxshell_return("vzctl", "set", $this->main->vpsid, "--ipdel", "all", "--save");
+	
+		lxshell_return("vzctl", "umount", $this->main->vpsid);
+		lxshell_return("vzctl", "destroy", $this->main->vpsid);
+		$this->deleteIpaddress($this->main->vmipaddress_a, false);
+		lxshell_return("userdel", "-r", $this->main->username);
+	
+		@ lunlink("__path_program_root/tmp/{$this->main->vpsid}.create");
+		@ lunlink("__path_program_root/tmp/{$this->main->vpsid}.createfailed");
+	
+		// Just making sure. Sometimes the file doesn't properly get deleted.
+		if (lxfile_exists("/etc/vz/conf/{$this->main->vpsid}.conf")) {
+			lunlink("/etc/vz/conf/{$this->main->vpsid}.conf");
 		}
-		$ret = lxshell_return("vzctl", "set", $this->main->vpsid, "--onboot", "yes", "--save");
-	} else {
-		$ret = $this->stop();
-		$ret = lxshell_return("vzctl", "set", $this->main->vpsid, "--onboot", "no", "--save");
+		//lxfile_rm_rec("__path_program_home/vps/{$this->main->nname}");
 	}
 
-	if($ret)
-		log_message($ret);
-}
-
-function setRootPassword()
-{
-	lxshell_return("vzctl", "set", $this->main->vpsid, "--save", "--userpasswd", "root:{$this->main->rootpassword}");
-
-}
-
-
-function setMemoryUsage()
-{
-
-	if (is_unlimited($this->main->priv->memory_usage)) {
-		$memory = 999999 * 256;
-	} else {
-		$memory = $this->main->priv->memory_usage * 256;
+	function toggleStatus()
+	{
+		global $global_shell_out, $global_shell_error, $global_shell_ret;
+	
+		if ($this->main->isOn('status')) {
+			$ret = $this->start();
+			if ($ret) {
+				throw new lxException("could_not_start_vps", '', str_replace("\n", ": ", $global_shell_error));
+			}
+			$ret = lxshell_return("vzctl", "set", $this->main->vpsid, "--onboot", "yes", "--save");
+		} else {
+			$ret = $this->stop();
+			$ret = lxshell_return("vzctl", "set", $this->main->vpsid, "--onboot", "no", "--save");
+		}
+	
+		if($ret)
+			log_message($ret);
 	}
 
-	lxshell_return("vzctl", "set", $this->main->vpsid, "--save", "--privvmpages", $memory);
-	lxshell_return("vzctl", "set", $this->main->vpsid, "--save", "--meminfo", "pages:$memory");
-
-}
+	function setRootPassword()
+	{
+		lxshell_return("vzctl", "set", $this->main->vpsid, "--save", "--userpasswd", "root:{$this->main->rootpassword}");
+	}
+	
+	function setMemoryUsage()
+	{
+	
+		if (is_unlimited($this->main->priv->memory_usage)) {
+			$memory = 999999 * 256;
+		} else {
+			$memory = $this->main->priv->memory_usage * 256;
+		}
+	
+		lxshell_return("vzctl", "set", $this->main->vpsid, "--save", "--privvmpages", $memory);
+		lxshell_return("vzctl", "set", $this->main->vpsid, "--save", "--meminfo", "pages:$memory");
+	}
 
 
 function do_backup()
