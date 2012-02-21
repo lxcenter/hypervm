@@ -421,6 +421,14 @@ class vps__xen extends Lxdriverclass {
 		$main_path->configrootdir = '__path_home_dir/xen/' . $main_path->nname . '/';
 	}
 
+	/**
+	* @todo UNDOCUMENTED
+	*
+	* @author Anonymous <anonymous@lxcenter.org>
+	* @author Ángel Guzmán Maeso <angel.guzman@lxcenter.org>
+	*
+	* @return void
+	*/
 	public function doSyncToSystemPre()
 	{
 		$main = $this->main;

@@ -1208,6 +1208,14 @@ function setUplinkUsage()
 
 }
 
+/**
+* @todo UNDOCUMENTED
+*
+* @author Anonymous <anonymous@lxcenter.org>
+* @author Ángel Guzmán Maeso <angel.guzman@lxcenter.org>
+*
+* @return void
+*/
 function doSyncToSystemPre()
 {
 	if ($main->checkIfOffensive()) {
