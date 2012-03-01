@@ -601,6 +601,27 @@ class vps__xen extends Lxdriverclass {
 		return $free_disk_space;
 	}
 	
+	/**
+	 * Create a root path folder.
+	 * 
+	 * It only create for non LVM based Xen Virtual machines.
+	 * 
+	 * @author Ángel Guzmán Maeso <angel.guzman@lxcenter.org>
+	 * 
+	 * @access private
+	 * @return void
+	 */
+	private function createRootPath()
+	{
+		$main = $this->main;
+		
+		$root_path = isset($main->rootdir) ? $main->rootdir : NULL;
+		
+		if (!$this->isLvm()) {
+			lxfile_mkdir($root_path);
+		}
+	}
+	
 	public function dbactionAdd()
 	{
 		global $gbl, $sgbl, $login, $ghtml; 
@@ -656,9 +677,7 @@ class vps__xen extends Lxdriverclass {
 	
 		$username = vps::create_user($main->username, $main->password, $main->nname, '/usr/bin/lxxen');
 	
-		if (!$this->isLvm()) {
-			lxfile_mkdir($main->rootdir);
-		}
+		$this->createRootPath();
 	
 		lxfile_mkdir($main->configrootdir);
 		$this->setMemoryUsage();
@@ -683,9 +702,7 @@ class vps__xen extends Lxdriverclass {
 		$nname = $this->main->nname;
 		lx_core_lock("$nname.create");
 	
-		if (!$this->isLvm()) {
-			lxfile_mkdir($this->main->rootdir);
-		}
+		$this->createRootPath();
 	
 	
 		lxfile_mkdir($this->main->configrootdir);
@@ -1187,7 +1204,7 @@ class vps__xen extends Lxdriverclass {
 			lxshell_return("e2fsck", "-f", "-y", $disk);
 			lxshell_return("resize2fs", $disk);
 		}
-		if (!$this->isLVM()) {
+		if (!$this->isLVM()) { // @todo $this->createRootPath(); ?
 			//lo_remove($disk);
 		}
 	
