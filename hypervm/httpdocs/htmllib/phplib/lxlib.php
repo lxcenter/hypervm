@@ -1487,12 +1487,20 @@ function isQuotaGreaterThan($used, $priv)
 	return ($used > $priv) ? true : false;
 }
 
-function is_unlimited($val)
+/**
+ * Checks if a resource is no limited.
+ * 
+ * @deprecated This function is a global function to remove and needs to be deprecated
+ * and used by a general class as Resource::isUnlimited() or similar.
+ * 
+ * @author Anonymous <anonymous@lxcenter.org>
+ * @author Ángel Guzmán Maeso <angel.guzman@lxcenter.org>
+ * @param string $resource The name resource property to check
+ * @return boolean True if $resource is 'unlimited' or 'na' string
+ */
+function is_unlimited($resource)
 {
-	if (strtolower($val) === 'unlimited' || strtolower($val) === 'na') {
-		return true;
-	}
-	return false;
+	return strtolower($resource) === 'unlimited' || strtolower($resource) === 'na';
 }
 
 function if_demo_throw()
