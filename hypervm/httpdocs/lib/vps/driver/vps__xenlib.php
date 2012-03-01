@@ -548,6 +548,26 @@ class vps__xen extends Lxdriverclass {
 		}
 	}
 
+	/**
+	 * Checks if a resource is no limited.
+	 * 
+	 * This is a wrapper method for deprecate the global
+	 * function is_unlimited on lxlib.php
+	 * 
+	 * @see is_unlimited() lxlib.php
+	 * 
+	 * @author Anonymous <anonymous@lxcenter.org>
+	 * @author Ángel Guzmán Maeso <angel.guzman@lxcenter.org>
+	 * 
+	 * @access private
+	 * @param string $resource The name resource property to check
+	 * @return boolean True if $resource is 'unlimited' or 'na' string
+	 */
+	private function isUnlimited($resource)
+	{
+		return is_unlimited($resource);
+	}
+	
 	public function dbactionAdd()
 	{
 		global $gbl, $sgbl, $login, $ghtml; 
