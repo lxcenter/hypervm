@@ -614,7 +614,7 @@ class vps__xen extends Lxdriverclass {
 			return null;
 		}
 	
-		if (self::getStatus($this->main->nname, '/home/xen') !== 'deleted') {
+		if (self::getStatus($this->main->nname, self::XEN_HOME) !== 'deleted') {
 			throw new lxException('a_virtual_machine_with_the_same_id_exists');
 		}
 	
@@ -1424,7 +1424,7 @@ class vps__xen extends Lxdriverclass {
 
 	public function saveXen()
 	{
-		if (self::getStatus($this->main->nname, '/home/xen') !== 'on') {
+		if (self::getStatus($this->main->nname, self::XEN_HOME) !== 'on') {
 			return null;
 		}
 		$tmp = lx_tmp_file("{$this->main->nname}_ram");
@@ -1787,7 +1787,7 @@ class vps__xen extends Lxdriverclass {
 
 	public function hardstop()
 	{
-		if (self::getStatus($this->main->nname, '/home/xen') !== 'on') {
+		if (self::getStatus($this->main->nname, self::XEN_HOME) !== 'on') {
 			//$this->mount_this_guy();
 			return;
 		}
@@ -1795,7 +1795,7 @@ class vps__xen extends Lxdriverclass {
 		lxshell_return("xm", "shutdown", $this->main->nname);
 	
 		$count = 0;
-		while (self::getStatus($this->main->nname, '/home/xen') === 'on') {
+		while (self::getStatus($this->main->nname, self::XEN_HOME) === 'on') {
 			$count++;
 			sleep(5);
 			if ($count === 3) {
@@ -1804,7 +1804,7 @@ class vps__xen extends Lxdriverclass {
 			}
 		}
 	
-		while (self::getStatus($this->main->nname, '/home/xen') === 'on') {
+		while (self::getStatus($this->main->nname, self::XEN_HOME) === 'on') {
 			sleep(5);
 		}
 	
@@ -1814,7 +1814,7 @@ class vps__xen extends Lxdriverclass {
 
 	public function stop()
 	{
-		if (self::getStatus($this->main->nname, '/home/xen') !== 'on') {
+		if (self::getStatus($this->main->nname, self::XEN_HOME) !== 'on') {
 			//$this->mount_this_guy();
 			return;
 		}
@@ -1823,14 +1823,14 @@ class vps__xen extends Lxdriverclass {
 	
 		sleep(40);
 	
-		if (self::getStatus($this->main->nname, '/home/xen') === 'on') {
+		if (self::getStatus($this->main->nname, self::XEN_HOME) === 'on') {
 			lxshell_return("xm", "destroy", $this->main->nname);
 		}
 	
 	
 		sleep(3);
 	
-		if (self::getStatus($this->main->nname, '/home/xen') === 'on') {
+		if (self::getStatus($this->main->nname, self::XEN_HOME) === 'on') {
 			throw new lxException("could_not_stop_vps");
 		}
 	
@@ -1893,7 +1893,7 @@ class vps__xen extends Lxdriverclass {
 	public function start() 
 	{
 	
-		if (self::getStatus($this->main->nname, '/home/xen') === 'on') {
+		if (self::getStatus($this->main->nname, self::XEN_HOME) === 'on') {
 			return;
 		}
 	
@@ -2268,7 +2268,7 @@ class vps__xen extends Lxdriverclass {
 	{
 		foreach($list as $l) {
 			$virtual_machine_name = $l['nname'];
-			$root_dir             = '/home/xen';
+			$root_dir             = self::XEN_HOME;
 			
 			$r['status'] = self::getStatus($virtual_machine_name, $root_dir);
 			
