@@ -31,6 +31,13 @@
 class vps__xen extends Lxdriverclass {
 
 	/**
+	 * @author Ángel Guzmán Maeso <angel.guzman@lxcenter.org>
+	 * 
+	 * @const XEN_HOME The home path for Xen virtual machines
+	 */
+	const XEN_HOME = '/home/xen';
+	
+	/**
 	 * Finds the cpu usage on every xen machine.
 	 * 
 	 * It check the list returned by "xm list" command.
