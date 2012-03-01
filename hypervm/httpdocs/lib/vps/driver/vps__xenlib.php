@@ -589,10 +589,11 @@ class vps__xen extends Lxdriverclass {
 		$main = $this->main;
 		$privilege = isset($main->priv) ? $main->priv : NULL;
 		
+		$diskusage = $privilege->disk_usage;
+		
+		// If unlimited put 3 GB, if not get use the normal disk usage (@todo checks if it's a bug)
 		if ($this->isUnlimited($privilege->disk_usage)) {
-			$diskusage = 3 * 1024;
-		} else {
-			$diskusage = $privilege->disk_usage ;
+			$diskusage = 3 * 1024; // Put 3 GB (@todo: no byte counted, is bad done on resource backend instead)
 		}
 	
 		if ($this->main->isWindows() && $diskusage < 2 * 1024) {
