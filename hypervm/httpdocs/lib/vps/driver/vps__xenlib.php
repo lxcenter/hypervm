@@ -623,7 +623,7 @@ class vps__xen extends Lxdriverclass {
 			$diskusage = 3 * 1024; // Put 3 GB (@todo: no byte counted, is bad done on resource backend instead)
 		}
 	
-		if ($this->main->isWindows() && $diskusage < 2 * 1024) {
+		if ($main->isWindows() && $diskusage < 2 * 1024) {
 			//throw new lxException("windows_needs_more_than_2GB");
 		}
 	
@@ -633,34 +633,34 @@ class vps__xen extends Lxdriverclass {
 			throw new lxException('not_enough_space');
 		}
 	
-		if ($this->main->dbaction === 'syncadd') {
-			$username = vps::create_user($this->main->username, $this->main->password, $this->main->nname, '/usr/bin/lxxen');
+		if ($main->dbaction === 'syncadd') {
+			$username = vps::create_user($main->username, $main->password, $main->nname, '/usr/bin/lxxen');
 			return null;
 		}
 	
-		if (self::getStatus($this->main->nname, self::XEN_HOME) !== 'deleted') {
+		if (self::getStatus($main->nname, self::XEN_HOME) !== 'deleted') {
 			throw new lxException('a_virtual_machine_with_the_same_id_exists');
 		}
 	
-		if ($this->main->isBlankWindows()) {
+		if ($main->isBlankWindows()) {
 			if (!lxfile_exists('/home/wincd.img')) {
 				throw new lxException('windows_installation_image_missing');
 			}
 		}
 	
 		/*
-		if (!lxfile_exists("__path_program_home/xen/template/{$this->main->ostemplate}.tar.gz")) {
-			throw new lxException("could_not_find_the_osimage", '', $this->main->ostemplate);
+		if (!lxfile_exists("__path_program_home/xen/template/{$main->ostemplate}.tar.gz")) {
+			throw new lxException("could_not_find_the_osimage", '', $main->ostemplate);
 		}
 	*/
 	
-		$username = vps::create_user($this->main->username, $this->main->password, $this->main->nname, '/usr/bin/lxxen');
+		$username = vps::create_user($main->username, $main->password, $main->nname, '/usr/bin/lxxen');
 	
 		if (!$this->isLvm()) {
-			lxfile_mkdir($this->main->rootdir);
+			lxfile_mkdir($main->rootdir);
 		}
 	
-		lxfile_mkdir($this->main->configrootdir);
+		lxfile_mkdir($main->configrootdir);
 		$this->setMemoryUsage();
 		$this->setCpuUsage();
 		$this->setSwapUsage();
