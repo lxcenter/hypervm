@@ -556,10 +556,10 @@ class vps__xen extends Lxdriverclass {
 	
 	
 	
-		$ret = lxshell_return("xm", "--help");
+		$ret = lxshell_return('xm', '--help');
 	
 		if ($ret == 127) {
-			throw new lxException("no_xen_at_all");
+			throw new lxException('no_xen_at_all');
 		}
 	
 	
@@ -580,23 +580,23 @@ class vps__xen extends Lxdriverclass {
 		}
 	
 		if (($freediskspace - $diskusage) < 20) {
-			throw new lxException("not_enough_space");
+			throw new lxException('not_enough_space');
 		}
 	
 	
 	
 		if ($this->main->dbaction === 'syncadd') {
-			$username = vps::create_user($this->main->username, $this->main->password, $this->main->nname, "/usr/bin/lxxen");
+			$username = vps::create_user($this->main->username, $this->main->password, $this->main->nname, '/usr/bin/lxxen');
 			return null;
 		}
 	
 		if (self::getStatus($this->main->nname, '/home/xen') !== 'deleted') {
-			throw new lxException("a_virtual_machine_with_the_same_id_exists");
+			throw new lxException('a_virtual_machine_with_the_same_id_exists');
 		}
 	
 		if ($this->main->isBlankWindows()) {
-			if (!lxfile_exists("/home/wincd.img")) {
-				throw new lxException("windows_installation_image_missing");
+			if (!lxfile_exists('/home/wincd.img')) {
+				throw new lxException('windows_installation_image_missing');
 			}
 		}
 	
@@ -608,7 +608,7 @@ class vps__xen extends Lxdriverclass {
 	
 	
 	
-		$username = vps::create_user($this->main->username, $this->main->password, $this->main->nname, "/usr/bin/lxxen");
+		$username = vps::create_user($this->main->username, $this->main->password, $this->main->nname, '/usr/bin/lxxen');
 	
 	
 		if (!$this->isLvm()) {
@@ -623,10 +623,10 @@ class vps__xen extends Lxdriverclass {
 		if ($sgbl->isDebug()) {
 			$this->doRealCreate();
 		} else {
-			callObjectInBackground($this, "doRealCreate");
+			callObjectInBackground($this, 'doRealCreate');
 		}
 	
-		$ret = array("__syncv_username" => $username);
+		$ret = array('__syncv_username' => $username);
 		return $ret;
 	
 	}
