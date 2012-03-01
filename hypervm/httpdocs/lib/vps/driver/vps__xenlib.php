@@ -554,7 +554,7 @@ class vps__xen extends Lxdriverclass {
 	 * This is a wrapper method for deprecate the global
 	 * function is_unlimited on lxlib.php
 	 * 
-	 * @see is_unlimited() lxlib.php
+	 * @see $this->isUnlimited() lxlib.php
 	 * 
 	 * @author Anonymous <anonymous@lxcenter.org>
 	 * @author Ángel Guzmán Maeso <angel.guzman@lxcenter.org>
@@ -580,7 +580,7 @@ class vps__xen extends Lxdriverclass {
 			throw new lxException('no_xen_at_all');
 		}
 	
-		if (is_unlimited($this->main->priv->disk_usage)) {
+		if ($this->isUnlimited($this->main->priv->disk_usage)) {
 			$diskusage = 3 * 1024;
 		} else {
 			$diskusage = $this->main->priv->disk_usage ;
@@ -796,7 +796,7 @@ class vps__xen extends Lxdriverclass {
 
 	public function createDisk($size = 0)
 	{
-		if (is_unlimited($this->main->priv->disk_usage)) {
+		if ($this->isUnlimited($this->main->priv->disk_usage)) {
 			$diskusage = 3 * 1024;
 		} else {
 			$diskusage = $this->main->priv->disk_usage ;
@@ -903,7 +903,7 @@ class vps__xen extends Lxdriverclass {
 
 	public function getRealMemory()
 	{
-		if (is_unlimited($this->main->priv->realmem_usage)) {
+		if ($this->isUnlimited($this->main->priv->realmem_usage)) {
 			$memory = 512;
 		} else {
 			$memory = $this->main->priv->realmem_usage;
@@ -913,7 +913,7 @@ class vps__xen extends Lxdriverclass {
 
 	public function getVifString()
 	{
-		if (!is_unlimited($this->main->priv->uplink_usage) && ($this->main->priv->uplink_usage > 0)) {
+		if (!$this->isUnlimited($this->main->priv->uplink_usage) && ($this->main->priv->uplink_usage > 0)) {
 			$ratestring = "rate = {$this->main->priv->uplink_usage}KB/s,";
 		} else {
 			$ratestring = null;
@@ -944,7 +944,7 @@ class vps__xen extends Lxdriverclass {
 
 	public function addVcpu()
 	{
-		if (is_unlimited($this->main->priv->ncpu_usage)) {
+		if ($this->isUnlimited($this->main->priv->ncpu_usage)) {
 			$cpunum = os_getCpuNum();
 		} else {
 			$cpunum = $this->main->priv->ncpu_usage;
@@ -964,7 +964,7 @@ class vps__xen extends Lxdriverclass {
 		} else {
 			$vifnamestring = "vifname=vif{$this->main->vifname},";
 		}
-		if (!is_unlimited($this->main->priv->uplink_usage) && ($this->main->priv->uplink_usage > 0)) {
+		if (!$this->isUnlimited($this->main->priv->uplink_usage) && ($this->main->priv->uplink_usage > 0)) {
 			$ratestring = "rate = {$this->main->priv->uplink_usage}KB/s,";
 		} else {
 			$ratestring = null;
@@ -1074,13 +1074,13 @@ class vps__xen extends Lxdriverclass {
 			$string .= "ramdisk    = '/boot/hypervm-xen-initrd.img'\n";
 		}
 	
-		if (is_unlimited($this->main->priv->cpu_usage)) {
+		if ($this->isUnlimited($this->main->priv->cpu_usage)) {
 			$cpu = "100" * os_getCpuNum();;
 		} else {
 			$cpu = $this->main->priv->cpu_usage;
 		}
 	
-		if (is_unlimited($this->main->priv->cpuunit_usage)) {
+		if ($this->isUnlimited($this->main->priv->cpuunit_usage)) {
 			$cpuunit = "1000";
 		} else {
 			$cpuunit = $this->main->priv->cpuunit_usage;
@@ -1595,7 +1595,7 @@ class vps__xen extends Lxdriverclass {
 
 	public function setCpuUsage()
 	{
-		if (is_unlimited($this->main->priv->cpu_usage)) {
+		if ($this->isUnlimited($this->main->priv->cpu_usage)) {
 			$cpu = "100" * os_getCpuNum();;
 		} else {
 			$cpu = $this->main->priv->cpu_usage;
@@ -1605,7 +1605,7 @@ class vps__xen extends Lxdriverclass {
 
 	public function setMemoryUsage()
 	{
-		if (is_unlimited($this->main->priv->realmem_usage)) {
+		if ($this->isUnlimited($this->main->priv->realmem_usage)) {
 			$memory = 512;
 		} else {
 			$memory = $this->main->priv->realmem_usage;
@@ -1623,7 +1623,7 @@ class vps__xen extends Lxdriverclass {
 			return;
 		}
 	
-		if (is_unlimited($this->main->priv->swap_usage)) {
+		if ($this->isUnlimited($this->main->priv->swap_usage)) {
 			$memory = 512;
 		} else {
 			$memory = $this->main->priv->swap_usage;
@@ -1634,7 +1634,7 @@ class vps__xen extends Lxdriverclass {
 
 	public function setDiskUsage()
 	{
-		if (is_unlimited($this->main->priv->disk_usage)) {
+		if ($this->isUnlimited($this->main->priv->disk_usage)) {
 			$diskusage = 3 * 1024;
 		} else {
 			$diskusage = $this->main->priv->disk_usage ;
