@@ -580,10 +580,13 @@ class vps__xen extends Lxdriverclass {
 			throw new lxException('no_xen_at_all');
 		}
 	
-		if ($this->isUnlimited($this->main->priv->disk_usage)) {
+		$main = $this->main;
+		$privilege = isset($main->priv) ? $main->priv : NULL;
+		
+		if ($this->isUnlimited($privilege->disk_usage)) {
 			$diskusage = 3 * 1024;
 		} else {
-			$diskusage = $this->main->priv->disk_usage ;
+			$diskusage = $privilege->disk_usage ;
 		}
 	
 		if ($this->main->isWindows() && $diskusage < 2 * 1024) {
