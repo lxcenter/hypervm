@@ -661,9 +661,13 @@ class vps__xen extends Lxdriverclass {
 			throw new lxException('not_enough_space');
 		}
 	
+		$user_name            = $main->username;
+		$password             = $main->password;
+		$virtual_machine_name = $main->nname;
+		
 		if ($main->dbaction === 'syncadd') {
-			$vps_username_created = vps::create_user($main->username, $main->password, $main->nname, self::XEN_CONSOLE_BINARY);
-			return null;
+			$vps_username_created = vps::create_user($user_name, $password, $virtual_machine_name, self::XEN_CONSOLE_BINARY);
+			return NULL;
 		}
 	
 		if (self::getStatus($main->nname, self::XEN_HOME) !== 'deleted') {
@@ -680,7 +684,7 @@ class vps__xen extends Lxdriverclass {
 		if (!lxfile_exists("__path_program_home/xen/template/{$main->ostemplate}.tar.gz")) {
 			throw new lxException("could_not_find_the_osimage", '', $main->ostemplate);
 		}
-	*/
+		*/
 	
 		$vps_username_created = vps::create_user($main->username, $main->password, $main->nname, self::XEN_CONSOLE_BINARY);
 	
@@ -697,9 +701,9 @@ class vps__xen extends Lxdriverclass {
 			callObjectInBackground($this, 'doRealCreate');
 		}
 	
-		$ret = array('__syncv_username' => $vps_username_created);
+		$result = array('__syncv_username' => $vps_username_created);
 		
-		return $ret;
+		return $result;
 	}
 
 	public function doRealCreate()
