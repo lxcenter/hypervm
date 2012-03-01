@@ -525,10 +525,26 @@ class vps__xen extends Lxdriverclass {
 		$this->initXenVars();
 	}
 
+	/**
+	 * @todo UNDOCUMENTED
+	 * 
+	 * @see lxDriverClass::dosyncToSystemPost()
+	 * 
+	 * @author Anonymous <anonymous@lxcenter.org>
+	 * @author Ángel Guzmán Maeso <angel.guzman@lxcenter.org>
+	 *
+	 * @return void
+	 */
 	public function dosyncToSystemPost()
 	{
-		if ($this->main->dbaction === 'update' && $this->main->__var_custom_exec) {
-			lxshell_direct($this->main->__var_custom_exec);
+		$main = $this->main;
+		$database_action = isset($main->dbaction) ? $main->dbaction : NULL;
+		
+		/** @see Lxclass */
+		$custom_execution = isset($main->__var_custom_exec) ? $main->__var_custom_exec : NULL;
+		
+		if ($database_action === 'update' && $custom_execution) {
+			lxshell_direct($custom_execution); /* @todo it seems a bad habit to custom calls. Check this on a future */
 		}
 	}
 
