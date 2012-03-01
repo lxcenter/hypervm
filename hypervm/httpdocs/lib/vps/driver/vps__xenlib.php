@@ -38,6 +38,13 @@ class vps__xen extends Lxdriverclass {
 	const XEN_HOME = '/home/xen';
 	
 	/**
+	* @author Ángel Guzmán Maeso <angel.guzman@lxcenter.org>
+	*
+	* @const XEN_CONSOLE_BINARY The home path for Xen virtual machine console binary
+	*/
+	const XEN_CONSOLE_BINARY = '/usr/bin/lxxen';
+	
+	/**
 	 * Finds the cpu usage on every xen machine.
 	 * 
 	 * It check the list returned by "xm list" command.
@@ -655,7 +662,7 @@ class vps__xen extends Lxdriverclass {
 		}
 	
 		if ($main->dbaction === 'syncadd') {
-			$vps_username_created = vps::create_user($main->username, $main->password, $main->nname, '/usr/bin/lxxen');
+			$vps_username_created = vps::create_user($main->username, $main->password, $main->nname, self::XEN_CONSOLE_BINARY);
 			return null;
 		}
 	
@@ -675,7 +682,7 @@ class vps__xen extends Lxdriverclass {
 		}
 	*/
 	
-		$vps_username_created = vps::create_user($main->username, $main->password, $main->nname, '/usr/bin/lxxen');
+		$vps_username_created = vps::create_user($main->username, $main->password, $main->nname, self::XEN_CONSOLE_BINARY);
 	
 		$this->createRootPath();
 	
