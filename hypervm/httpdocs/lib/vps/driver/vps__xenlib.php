@@ -554,14 +554,11 @@ class vps__xen extends Lxdriverclass {
 	
 		self::checkIfXenOK();
 	
-	
-	
 		$ret = lxshell_return('xm', '--help');
 	
 		if ($ret == 127) {
 			throw new lxException('no_xen_at_all');
 		}
-	
 	
 		if (is_unlimited($this->main->priv->disk_usage)) {
 			$diskusage = 3 * 1024;
@@ -582,8 +579,6 @@ class vps__xen extends Lxdriverclass {
 		if (($freediskspace - $diskusage) < 20) {
 			throw new lxException('not_enough_space');
 		}
-	
-	
 	
 		if ($this->main->dbaction === 'syncadd') {
 			$username = vps::create_user($this->main->username, $this->main->password, $this->main->nname, '/usr/bin/lxxen');
@@ -606,10 +601,7 @@ class vps__xen extends Lxdriverclass {
 		}
 	*/
 	
-	
-	
 		$username = vps::create_user($this->main->username, $this->main->password, $this->main->nname, '/usr/bin/lxxen');
-	
 	
 		if (!$this->isLvm()) {
 			lxfile_mkdir($this->main->rootdir);
@@ -627,8 +619,8 @@ class vps__xen extends Lxdriverclass {
 		}
 	
 		$ret = array('__syncv_username' => $username);
+		
 		return $ret;
-	
 	}
 
 	public function doRealCreate()
