@@ -655,7 +655,7 @@ class vps__xen extends Lxdriverclass {
 		}
 	
 		if ($main->dbaction === 'syncadd') {
-			$username = vps::create_user($main->username, $main->password, $main->nname, '/usr/bin/lxxen');
+			$vps_username_created = vps::create_user($main->username, $main->password, $main->nname, '/usr/bin/lxxen');
 			return null;
 		}
 	
@@ -675,7 +675,7 @@ class vps__xen extends Lxdriverclass {
 		}
 	*/
 	
-		$username = vps::create_user($main->username, $main->password, $main->nname, '/usr/bin/lxxen');
+		$vps_username_created = vps::create_user($main->username, $main->password, $main->nname, '/usr/bin/lxxen');
 	
 		$this->createRootPath();
 	
@@ -690,7 +690,7 @@ class vps__xen extends Lxdriverclass {
 			callObjectInBackground($this, 'doRealCreate');
 		}
 	
-		$ret = array('__syncv_username' => $username);
+		$ret = array('__syncv_username' => $vps_username_created);
 		
 		return $ret;
 	}
