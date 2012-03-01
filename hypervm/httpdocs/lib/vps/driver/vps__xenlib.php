@@ -574,6 +574,33 @@ class vps__xen extends Lxdriverclass {
 		return is_unlimited($resource);
 	}
 	
+	/**
+	 * Get the free disk space on a Xen virtual machine.
+	 * 
+	 * Checks if it is LVM based.
+	 * 
+	 * @author Ángel Guzmán Maeso <angel.guzman@lxcenter.org>
+	 * 
+	 * @access private
+	 * @return integer Free disk space on MB (no bytes included via backend)
+	 */
+	private function getFreeDiskSpace()
+	{
+		$main = $this->main;
+		$root_path = isset($main->corerootdir) ? $main->corerootdir : NULL;
+		
+		// Init 0 bytes as fallback value
+		$free_disk_space = 0;
+		
+		if ($this->isLVM()) {
+			$free_disk_space = vg_diskfree($root_path);
+		} else {
+			$free_disk_space = lxfile_disk_free_space($root_path);
+		}
+		
+		return $free_disk_space;
+	}
+	
 	public function dbactionAdd()
 	{
 		global $gbl, $sgbl, $login, $ghtml; 
@@ -600,11 +627,7 @@ class vps__xen extends Lxdriverclass {
 			//throw new lxException("windows_needs_more_than_2GB");
 		}
 	
-		if ($this->isLVM()) {
-			$freediskspace = vg_diskfree($this->main->corerootdir);
-		} else  {
-			$freediskspace = lxfile_disk_free_space($this->main->corerootdir);
-		}
+		$freediskspace = $this->getFreeDiskSpace();
 	
 		if (($freediskspace - $diskusage) < 20) {
 			throw new lxException('not_enough_space');
@@ -820,11 +843,7 @@ class vps__xen extends Lxdriverclass {
 			//$diskusage = $size;
 		}
 	
-		if ($this->isLVM()) {
-			$freediskspace = vg_diskfree($this->main->corerootdir);
-		} else  {
-			$freediskspace = lxfile_disk_free_space($this->main->corerootdir);
-		}
+		$freediskspace = $this->getFreeDiskSpace();
 	
 		if (($freediskspace - $diskusage) < 20) {
 			throw new lxException("not_enough_space");
