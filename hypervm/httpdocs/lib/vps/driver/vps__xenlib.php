@@ -563,7 +563,6 @@ class vps__xen extends Lxdriverclass {
 	 * 
 	 * @see $this->isUnlimited() lxlib.php
 	 * 
-	 * @author Anonymous <anonymous@lxcenter.org>
 	 * @author Ángel Guzmán Maeso <angel.guzman@lxcenter.org>
 	 * 
 	 * @access private
