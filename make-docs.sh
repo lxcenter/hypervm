@@ -43,7 +43,7 @@ HYPERVM_DOC_PATH='./doc'
 DOCBLOX_CONFIGURATION_FILE='docblox.dist.xml'
 
 usage(){
-    echo 'Usage: $0 [-h]'
+    echo "'Usage: $0 [-h]"
     echo 'h: shows this help.'
     exit 1
 }
@@ -53,11 +53,11 @@ install_GIT()
 	# Redhat based
 	if [ -f /etc/redhat-release ] ; then
 		# Install git with curl and expat support to enable support on github cloning
-		yum install gettext-devel expat-devel curl-devel zlib-devel openssl-devel
+		yum install -y gcc gettext-devel expat-devel curl-devel zlib-devel openssl-devel
 	# Debian based
 	elif [ -f /etc/debian_version ] ; then
 		# Needed XSLTProcessor
-		apt-get install php5 php5-xsl
+		apt-get install gcc php5 php5-xsl
 	fi
 	
 	# @todo Try to get the lastest version from some site. LASTEST file?
