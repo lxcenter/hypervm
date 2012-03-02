@@ -83,7 +83,7 @@ case $1 in
 		sh ./make-distribution.sh
 		cd ../hypervm
 		sh ./make-development.sh
-		echo "'Done. For install run ${HYPERVM_PATH}/hypervm-install-[master|slave].sh with args"
+		echo "Done. For install run:\ncd ${HYPERVM_PATH}/hypervm-install/hypervm-linux/; sh hypervm-install-[master|slave].sh with args"
 		;;
 	dev )
 		# Clone from GitHub the last version using git transport (no http or https)
@@ -95,7 +95,7 @@ case $1 in
 		sh ./make-distribution.sh
 		cd ../hypervm
 		sh ./make-development.sh
-		echo "'Done. For install run ${HYPERVM_PATH}/hypervm-install-[master|slave].sh with args"
+		echo "Done. For install run:\ncd ${HYPERVM_PATH}/hypervm-install/hypervm-linux/; sh hypervm-install-[master|slave].sh with args"
 		;;
 	*   )
 		usage

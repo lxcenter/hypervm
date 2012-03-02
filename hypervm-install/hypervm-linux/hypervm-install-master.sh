@@ -58,7 +58,8 @@ if 	[ -f ./hypervm-install.zip ] ; then
 	rm -f hypervm-install.zip
 fi
 
-if [ ! -d '.git' ]; then
+if [ ! -d '../../.git' ]; then
+	pwd
 	echo Downloading installation package from LxCenter
 	wget http://download.lxcenter.org/download/hypervm-install.zip
 else
