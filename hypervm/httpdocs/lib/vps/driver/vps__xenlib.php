@@ -670,10 +670,11 @@ class vps__xen extends Lxdriverclass {
 			return NULL;
 		}
 	
-		if (self::getStatus($main->nname, self::XEN_HOME) !== 'deleted') {
+		if (self::getStatus($virtual_machine_name, self::XEN_HOME) !== 'deleted') {
 			throw new lxException('a_virtual_machine_with_the_same_id_exists');
 		}
 	
+		// Check if the template begins with "windows-lxblank"
 		if ($main->isBlankWindows()) {
 			if (!lxfile_exists('/home/wincd.img')) {
 				throw new lxException('windows_installation_image_missing');
@@ -686,7 +687,7 @@ class vps__xen extends Lxdriverclass {
 		}
 		*/
 	
-		$vps_username_created = vps::create_user($main->username, $main->password, $main->nname, self::XEN_CONSOLE_BINARY);
+		$vps_username_created = vps::create_user($user_name, $password, $virtual_machine_name, self::XEN_CONSOLE_BINARY);
 	
 		$this->createRootPath();
 	
