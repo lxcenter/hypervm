@@ -583,7 +583,7 @@ function changeDriverFunc($server, $class, $pgm)
 	if (is_array($driver[$class])) {
 		if (!array_search_bool($pgm, $driver[$class])) {
 			$str = implode(" ", $driver[$class]);
-			print("The driver name isn't correct: Available drivers for $class: $str\n");
+			print("The class name " . $class . " isn't correct.\nAvailable drivers for $class: $str\n");
 			return;
 		}
 	} else if ($driver[$class] !== $pgm) {
@@ -602,7 +602,7 @@ function changeDriverFunc($server, $class, $pgm)
 
 	$dr->write();
 
-	print("Successfully changed Driver for $class on $server->nname to $pgm\n");
+	print("Successfully changed driver to $pgm for class $class on server $server->nname\n");
 }
 
 function slave_get_db_pass()
