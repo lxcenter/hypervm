@@ -76,7 +76,9 @@ if (!isset($list['driver'])) {
 	echo 'Driver for class ' . $class . ' is ' . $driverapp . PHP_EOL;
 	exit;
 }
-
-$pgm = $list['driver'];
-
-changeDriverFunc($server, $class, $pgm);
+else 
+{
+	$driver = $list['driver'];
+	
+	changeDriverFunc($server, $class, $driver);
+}
