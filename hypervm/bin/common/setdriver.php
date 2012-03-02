@@ -54,19 +54,17 @@
  * @todo UNDOCUMENTED (needs more work)
  * 
  * @copyright 2012, (c) LxCenter.
- * @license AGPLv3 http://www.gnu.org/licenses/agpl-3.0.en.html
- * @author Anonymous <anonymous@lxcenter.org>
- * @author Ángel Guzmán Maeso <angel.guzman@lxcenter.org>
- * @version v1.0 20120302 build
- * @package scripts
+ * @license   AGPLv3 http://www.gnu.org/licenses/agpl-3.0.en.html
+ * @author    Anonymous <anonymous@lxcenter.org>
+ * @author    Ángel Guzmán Maeso <angel.guzman@lxcenter.org>
+ * @version   v1.0 20120302 build
+ * @package   scripts
  */
 include_once "htmllib/lib/include.php"; 
 
 initProgram('admin');
 
-
 $list = parse_opt($argv);
-
 
 checkIfVariablesSet($list, array('server', 'class'));
 
@@ -75,11 +73,10 @@ $class = $list['class'];
 
 if (!isset($list['driver'])) {
 	$driverapp = $gbl->getSyncClass(null, $server, $class);
-	print("Driver for $class is $driverapp\n");
+	echo 'Driver for class ' . $class . ' is ' . $driverapp . PHP_EOL;
 	exit;
 }
 
 $pgm = $list['driver'];
 
 changeDriverFunc($server, $class, $pgm);
-
