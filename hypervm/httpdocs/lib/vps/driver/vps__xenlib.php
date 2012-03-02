@@ -31,6 +31,20 @@
 class vps__xen extends Lxdriverclass {
 
 	/**
+	 * @author Ángel Guzmán Maeso <angel.guzman@lxcenter.org>
+	 * 
+	 * @const XEN_HOME The home path for Xen virtual machines
+	 */
+	const XEN_HOME = '/home/xen';
+	
+	/**
+	* @author Ángel Guzmán Maeso <angel.guzman@lxcenter.org>
+	*
+	* @const XEN_CONSOLE_BINARY The home path for Xen virtual machine console binary
+	*/
+	const XEN_CONSOLE_BINARY = '/usr/bin/lxxen';
+	
+	/**
 	 * Finds the cpu usage on every xen machine.
 	 * 
 	 * It check the list returned by "xm list" command.
@@ -525,81 +539,159 @@ class vps__xen extends Lxdriverclass {
 		$this->initXenVars();
 	}
 
+	/**
+	 * @todo UNDOCUMENTED
+	 * 
+	 * @see lxDriverClass::dosyncToSystemPost()
+	 * 
+	 * @author Anonymous <anonymous@lxcenter.org>
+	 * @author Ángel Guzmán Maeso <angel.guzman@lxcenter.org>
+	 *
+	 * @return void
+	 */
 	public function dosyncToSystemPost()
 	{
-		if ($this->main->dbaction === 'update' && $this->main->__var_custom_exec) {
-			lxshell_direct($this->main->__var_custom_exec);
+		$main = $this->main;
+		$database_action = isset($main->dbaction) ? $main->dbaction : NULL;
+		
+		/** @see Lxclass */
+		$custom_execution = isset($main->__var_custom_exec) ? $main->__var_custom_exec : NULL;
+		
+		if ($database_action === 'update' && $custom_execution) {
+			lxshell_direct($custom_execution); /* @todo it seems a bad habit to custom calls. Check this on a future */
 		}
 	}
 
+	/**
+	 * Checks if a resource is no limited.
+	 * 
+	 * This is a wrapper method for deprecate the global
+	 * function is_unlimited on lxlib.php
+	 * 
+	 * @see $this->isUnlimited() lxlib.php
+	 * 
+	 * @author Ángel Guzmán Maeso <angel.guzman@lxcenter.org>
+	 * 
+	 * @access private
+	 * @param string $resource The name resource property to check
+	 * @return boolean True if $resource is 'unlimited' or 'na' string
+	 */
+	private function isUnlimited($resource)
+	{
+		return is_unlimited($resource);
+	}
+	
+	/**
+	 * Get the free disk space on a Xen virtual machine.
+	 * 
+	 * Checks if it is LVM based.
+	 * 
+	 * @author Ángel Guzmán Maeso <angel.guzman@lxcenter.org>
+	 * 
+	 * @access private
+	 * @return integer Free disk space on MB (no bytes included via backend)
+	 */
+	private function getFreeDiskSpace()
+	{
+		$main = $this->main;
+		$root_path = isset($main->corerootdir) ? $main->corerootdir : NULL;
+		
+		// Init 0 bytes as fallback value
+		$free_disk_space = 0;
+		
+		if ($this->isLVM()) {
+			$free_disk_space = vg_diskfree($root_path);
+		} else {
+			$free_disk_space = lxfile_disk_free_space($root_path);
+		}
+		
+		return $free_disk_space;
+	}
+	
+	/**
+	 * Create a root path folder.
+	 * 
+	 * It only create for non LVM based Xen Virtual machines.
+	 * 
+	 * @author Ángel Guzmán Maeso <angel.guzman@lxcenter.org>
+	 * 
+	 * @access private
+	 * @return void
+	 */
+	private function createRootPath()
+	{
+		$main = $this->main;
+		
+		$root_path = isset($main->rootdir) ? $main->rootdir : NULL;
+		
+		if (!$this->isLvm()) {
+			lxfile_mkdir($root_path);
+		}
+	}
+	
 	public function dbactionAdd()
 	{
 		global $gbl, $sgbl, $login, $ghtml; 
 	
 		self::checkIfXenOK();
 	
-	
-	
-		$ret = lxshell_return("xm", "--help");
+		$ret = lxshell_return('xm', '--help');
 	
 		if ($ret == 127) {
-			throw new lxException("no_xen_at_all");
+			throw new lxException('no_xen_at_all');
 		}
 	
-	
-		if (is_unlimited($this->main->priv->disk_usage)) {
-			$diskusage = 3 * 1024;
-		} else {
-			$diskusage = $this->main->priv->disk_usage ;
+		$main = $this->main;
+		$privilege = isset($main->priv) ? $main->priv : NULL;
+		
+		$diskusage = $privilege->disk_usage;
+		
+		// If unlimited put 3 GB, if not get use the normal disk usage (@todo checks if it's a bug)
+		if ($this->isUnlimited($privilege->disk_usage)) {
+			$diskusage = 3 * 1024; // Put 3 GB (@todo: no byte counted, is bad done on resource backend instead)
 		}
 	
-		if ($this->main->isWindows() && $diskusage < 2 * 1024) {
+		if ($main->isWindows() && $diskusage < 2 * 1024) {
 			//throw new lxException("windows_needs_more_than_2GB");
 		}
 	
-		if ($this->isLVM()) {
-			$freediskspace = vg_diskfree($this->main->corerootdir);
-		} else  {
-			$freediskspace = lxfile_disk_free_space($this->main->corerootdir);
-		}
+		$freediskspace = $this->getFreeDiskSpace();
 	
 		if (($freediskspace - $diskusage) < 20) {
-			throw new lxException("not_enough_space");
+			throw new lxException('not_enough_space');
 		}
 	
-	
-	
-		if ($this->main->dbaction === 'syncadd') {
-			$username = vps::create_user($this->main->username, $this->main->password, $this->main->nname, "/usr/bin/lxxen");
-			return null;
+		$user_name            = $main->username;
+		$password             = $main->password;
+		$virtual_machine_name = $main->nname;
+		
+		if ($main->dbaction === 'syncadd') {
+			$vps_username_created = vps::create_user($user_name, $password, $virtual_machine_name, self::XEN_CONSOLE_BINARY);
+			return NULL;
 		}
 	
-		if (self::getStatus($this->main->nname, '/home/xen') !== 'deleted') {
-			throw new lxException("a_virtual_machine_with_the_same_id_exists");
+		if (self::getStatus($virtual_machine_name, self::XEN_HOME) !== 'deleted') {
+			throw new lxException('a_virtual_machine_with_the_same_id_exists');
 		}
 	
-		if ($this->main->isBlankWindows()) {
-			if (!lxfile_exists("/home/wincd.img")) {
-				throw new lxException("windows_installation_image_missing");
+		// Check if the template begins with "windows-lxblank"
+		if ($main->isBlankWindows()) {
+			if (!lxfile_exists('/home/wincd.img')) {
+				throw new lxException('windows_installation_image_missing');
 			}
 		}
 	
 		/*
-		if (!lxfile_exists("__path_program_home/xen/template/{$this->main->ostemplate}.tar.gz")) {
-			throw new lxException("could_not_find_the_osimage", '', $this->main->ostemplate);
+		if (!lxfile_exists("__path_program_home/xen/template/{$main->ostemplate}.tar.gz")) {
+			throw new lxException("could_not_find_the_osimage", '', $main->ostemplate);
 		}
-	*/
+		*/
 	
+		$vps_username_created = vps::create_user($user_name, $password, $virtual_machine_name, self::XEN_CONSOLE_BINARY);
 	
+		$this->createRootPath();
 	
-		$username = vps::create_user($this->main->username, $this->main->password, $this->main->nname, "/usr/bin/lxxen");
-	
-	
-		if (!$this->isLvm()) {
-			lxfile_mkdir($this->main->rootdir);
-		}
-	
-		lxfile_mkdir($this->main->configrootdir);
+		lxfile_mkdir($main->configrootdir);
 		$this->setMemoryUsage();
 		$this->setCpuUsage();
 		$this->setSwapUsage();
@@ -607,12 +699,12 @@ class vps__xen extends Lxdriverclass {
 		if ($sgbl->isDebug()) {
 			$this->doRealCreate();
 		} else {
-			callObjectInBackground($this, "doRealCreate");
+			callObjectInBackground($this, 'doRealCreate');
 		}
 	
-		$ret = array("__syncv_username" => $username);
-		return $ret;
-	
+		$result = array('__syncv_username' => $vps_username_created);
+		
+		return $result;
 	}
 
 	public function doRealCreate()
@@ -622,9 +714,7 @@ class vps__xen extends Lxdriverclass {
 		$nname = $this->main->nname;
 		lx_core_lock("$nname.create");
 	
-		if (!$this->isLvm()) {
-			lxfile_mkdir($this->main->rootdir);
-		}
+		$this->createRootPath();
 	
 	
 		lxfile_mkdir($this->main->configrootdir);
@@ -768,7 +858,7 @@ class vps__xen extends Lxdriverclass {
 
 	public function createDisk($size = 0)
 	{
-		if (is_unlimited($this->main->priv->disk_usage)) {
+		if ($this->isUnlimited($this->main->priv->disk_usage)) {
 			$diskusage = 3 * 1024;
 		} else {
 			$diskusage = $this->main->priv->disk_usage ;
@@ -782,11 +872,7 @@ class vps__xen extends Lxdriverclass {
 			//$diskusage = $size;
 		}
 	
-		if ($this->isLVM()) {
-			$freediskspace = vg_diskfree($this->main->corerootdir);
-		} else  {
-			$freediskspace = lxfile_disk_free_space($this->main->corerootdir);
-		}
+		$freediskspace = $this->getFreeDiskSpace();
 	
 		if (($freediskspace - $diskusage) < 20) {
 			throw new lxException("not_enough_space");
@@ -875,7 +961,7 @@ class vps__xen extends Lxdriverclass {
 
 	public function getRealMemory()
 	{
-		if (is_unlimited($this->main->priv->realmem_usage)) {
+		if ($this->isUnlimited($this->main->priv->realmem_usage)) {
 			$memory = 512;
 		} else {
 			$memory = $this->main->priv->realmem_usage;
@@ -885,7 +971,7 @@ class vps__xen extends Lxdriverclass {
 
 	public function getVifString()
 	{
-		if (!is_unlimited($this->main->priv->uplink_usage) && ($this->main->priv->uplink_usage > 0)) {
+		if (!$this->isUnlimited($this->main->priv->uplink_usage) && ($this->main->priv->uplink_usage > 0)) {
 			$ratestring = "rate = {$this->main->priv->uplink_usage}KB/s,";
 		} else {
 			$ratestring = null;
@@ -916,7 +1002,7 @@ class vps__xen extends Lxdriverclass {
 
 	public function addVcpu()
 	{
-		if (is_unlimited($this->main->priv->ncpu_usage)) {
+		if ($this->isUnlimited($this->main->priv->ncpu_usage)) {
 			$cpunum = os_getCpuNum();
 		} else {
 			$cpunum = $this->main->priv->ncpu_usage;
@@ -936,7 +1022,7 @@ class vps__xen extends Lxdriverclass {
 		} else {
 			$vifnamestring = "vifname=vif{$this->main->vifname},";
 		}
-		if (!is_unlimited($this->main->priv->uplink_usage) && ($this->main->priv->uplink_usage > 0)) {
+		if (!$this->isUnlimited($this->main->priv->uplink_usage) && ($this->main->priv->uplink_usage > 0)) {
 			$ratestring = "rate = {$this->main->priv->uplink_usage}KB/s,";
 		} else {
 			$ratestring = null;
@@ -1046,13 +1132,13 @@ class vps__xen extends Lxdriverclass {
 			$string .= "ramdisk    = '/boot/hypervm-xen-initrd.img'\n";
 		}
 	
-		if (is_unlimited($this->main->priv->cpu_usage)) {
+		if ($this->isUnlimited($this->main->priv->cpu_usage)) {
 			$cpu = "100" * os_getCpuNum();;
 		} else {
 			$cpu = $this->main->priv->cpu_usage;
 		}
 	
-		if (is_unlimited($this->main->priv->cpuunit_usage)) {
+		if ($this->isUnlimited($this->main->priv->cpuunit_usage)) {
 			$cpuunit = "1000";
 		} else {
 			$cpuunit = $this->main->priv->cpuunit_usage;
@@ -1130,7 +1216,7 @@ class vps__xen extends Lxdriverclass {
 			lxshell_return("e2fsck", "-f", "-y", $disk);
 			lxshell_return("resize2fs", $disk);
 		}
-		if (!$this->isLVM()) {
+		if (!$this->isLVM()) { // @todo $this->createRootPath(); ?
 			//lo_remove($disk);
 		}
 	
@@ -1387,7 +1473,7 @@ class vps__xen extends Lxdriverclass {
 
 	public function saveXen()
 	{
-		if (self::getStatus($this->main->nname, '/home/xen') !== 'on') {
+		if (self::getStatus($this->main->nname, self::XEN_HOME) !== 'on') {
 			return null;
 		}
 		$tmp = lx_tmp_file("{$this->main->nname}_ram");
@@ -1567,7 +1653,7 @@ class vps__xen extends Lxdriverclass {
 
 	public function setCpuUsage()
 	{
-		if (is_unlimited($this->main->priv->cpu_usage)) {
+		if ($this->isUnlimited($this->main->priv->cpu_usage)) {
 			$cpu = "100" * os_getCpuNum();;
 		} else {
 			$cpu = $this->main->priv->cpu_usage;
@@ -1577,7 +1663,7 @@ class vps__xen extends Lxdriverclass {
 
 	public function setMemoryUsage()
 	{
-		if (is_unlimited($this->main->priv->realmem_usage)) {
+		if ($this->isUnlimited($this->main->priv->realmem_usage)) {
 			$memory = 512;
 		} else {
 			$memory = $this->main->priv->realmem_usage;
@@ -1595,7 +1681,7 @@ class vps__xen extends Lxdriverclass {
 			return;
 		}
 	
-		if (is_unlimited($this->main->priv->swap_usage)) {
+		if ($this->isUnlimited($this->main->priv->swap_usage)) {
 			$memory = 512;
 		} else {
 			$memory = $this->main->priv->swap_usage;
@@ -1606,7 +1692,7 @@ class vps__xen extends Lxdriverclass {
 
 	public function setDiskUsage()
 	{
-		if (is_unlimited($this->main->priv->disk_usage)) {
+		if ($this->isUnlimited($this->main->priv->disk_usage)) {
 			$diskusage = 3 * 1024;
 		} else {
 			$diskusage = $this->main->priv->disk_usage ;
@@ -1750,7 +1836,7 @@ class vps__xen extends Lxdriverclass {
 
 	public function hardstop()
 	{
-		if (self::getStatus($this->main->nname, '/home/xen') !== 'on') {
+		if (self::getStatus($this->main->nname, self::XEN_HOME) !== 'on') {
 			//$this->mount_this_guy();
 			return;
 		}
@@ -1758,7 +1844,7 @@ class vps__xen extends Lxdriverclass {
 		lxshell_return("xm", "shutdown", $this->main->nname);
 	
 		$count = 0;
-		while (self::getStatus($this->main->nname, '/home/xen') === 'on') {
+		while (self::getStatus($this->main->nname, self::XEN_HOME) === 'on') {
 			$count++;
 			sleep(5);
 			if ($count === 3) {
@@ -1767,7 +1853,7 @@ class vps__xen extends Lxdriverclass {
 			}
 		}
 	
-		while (self::getStatus($this->main->nname, '/home/xen') === 'on') {
+		while (self::getStatus($this->main->nname, self::XEN_HOME) === 'on') {
 			sleep(5);
 		}
 	
@@ -1777,7 +1863,7 @@ class vps__xen extends Lxdriverclass {
 
 	public function stop()
 	{
-		if (self::getStatus($this->main->nname, '/home/xen') !== 'on') {
+		if (self::getStatus($this->main->nname, self::XEN_HOME) !== 'on') {
 			//$this->mount_this_guy();
 			return;
 		}
@@ -1786,14 +1872,14 @@ class vps__xen extends Lxdriverclass {
 	
 		sleep(40);
 	
-		if (self::getStatus($this->main->nname, '/home/xen') === 'on') {
+		if (self::getStatus($this->main->nname, self::XEN_HOME) === 'on') {
 			lxshell_return("xm", "destroy", $this->main->nname);
 		}
 	
 	
 		sleep(3);
 	
-		if (self::getStatus($this->main->nname, '/home/xen') === 'on') {
+		if (self::getStatus($this->main->nname, self::XEN_HOME) === 'on') {
 			throw new lxException("could_not_stop_vps");
 		}
 	
@@ -1856,7 +1942,7 @@ class vps__xen extends Lxdriverclass {
 	public function start() 
 	{
 	
-		if (self::getStatus($this->main->nname, '/home/xen') === 'on') {
+		if (self::getStatus($this->main->nname, self::XEN_HOME) === 'on') {
 			return;
 		}
 	
@@ -2231,7 +2317,7 @@ class vps__xen extends Lxdriverclass {
 	{
 		foreach($list as $l) {
 			$virtual_machine_name = $l['nname'];
-			$root_dir             = '/home/xen';
+			$root_dir             = self::XEN_HOME;
 			
 			$r['status'] = self::getStatus($virtual_machine_name, $root_dir);
 			
