@@ -57,8 +57,13 @@ if 	[ -f ./hypervm-install.zip ] ; then
 	echo Remove old installation package
 	rm -f hypervm-install.zip
 fi
+
+if [ ! -d '.git' ]; then
 	echo Downloading installation package from LxCenter
 	wget http://download.lxcenter.org/download/hypervm-install.zip
+else
+	echo 'Development GIT version found. Skipping download sources.'
+fi
 #
 	echo Unpacking installation package	
 	unzip -oq hypervm-install.zip
