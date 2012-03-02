@@ -19,31 +19,14 @@
 #
 #	 author: Ángel Guzmán Maeso <angel.guzman@lxcenter.org>
 #
-#    Create the php docs for all .php files involved on HyperVM
+#    Install and deploy a develoment version on a local enviroment
 #
 
-# Note: PhpDocumentor is obsoleted, unmaintained and deprecated. Using the
-# new DocBlox for generate the php-doc.
-
-# Requires:
-#   - PHP >= 5.2.6
-#   - iconv/ext (enabled by default since PHP 5.0.0)
-#   - XSL extension
-#   - Graphviz (optional, used for generating Class diagrams)
-#   - PEAR (optional, used for generating Class Diagrams or installing via PEAR)
-
-DOCBLOX_BINARY='docblox/bin/docblox.php'
-
-# The HyperVM source path to generate the php-doc
-HYPERVM_SOURCE_PATH='.' 
-
-# The HyperVM documentation path to output the php-doc
-HYPERVM_DOC_PATH='./doc'
-
-DOCBLOX_CONFIGURATION_FILE='docblox.dist.xml'
+HYPERVM_PATH='/usr/local/lxlabs'
 
 usage(){
-    echo "'Usage: $0 [-h]"
+    echo "Usage: $0 [BRANCH] [-h]"
+    echo 'BRANCH: master or dev'
     echo 'h: shows this help.'
     exit 1
 }
@@ -56,8 +39,8 @@ install_GIT()
 		yum install -y gcc gettext-devel expat-devel curl-devel zlib-devel openssl-devel
 	# Debian based
 	elif [ -f /etc/debian_version ] ; then
-		# Needed XSLTProcessor
-		apt-get install gcc php5 php5-xsl
+		# No tested
+		apt-get install gcc
 	fi
 	
 	# @todo Try to get the lastest version from some site. LASTEST file?
@@ -79,23 +62,42 @@ if [ `/usr/bin/id -u` -ne 0 ]; then
     usage
 fi
 
-if [ ! -d "docblox" ]; then
-	echo 'Installing docblox.'
-	
-	if which git >/dev/null; then
-		echo 'GIT support detected.'
-	else
-	    echo 'No GIT support detected. Installing GIT.'
-	    install_GIT
-	fi
+echo 'Installing HyperVM development version.'
 
-	# Clone from GitHub the last version using git transport (no http or https)
-	git clone git://github.com/docblox/docblox.git docblox
-	
-	# Install the new_black theme as default
-	php $DOCBLOX_BINARY template:install new_black -v 1.0.1
+if which git >/dev/null; then
+	echo 'GIT support detected.'
+else
+    echo 'No GIT support detected. Installing GIT.'
+    install_GIT
 fi
 
-# Generate the php-doc
-echo 'Generating the doc files. It could take around 180 sec or more. Be patient'
-php $DOCBLOX_BINARY run -c $DOCBLOX_CONFIGURATION_FILE -d $HYPERVM_SOURCE_PATH -t $HYPERVM_DOC_PATH
+case $1 in 
+	master )
+		# Clone from GitHub the last version using git transport (no http or https)
+		echo "Installing branch hypervm/master"
+		mkdir -p ${HYPERVM_PATH}
+		git clone git://github.com/lxcenter/hypervm.git ${HYPERVM_PATH}
+		cd ${HYPERVM_PATH}
+		git checkout master
+		cd hypervm-install
+		sh ./make-distribution.sh
+		cd ../hypervm
+		sh ./make-development.sh
+		echo "Done. For install run:\ncd ${HYPERVM_PATH}/hypervm-install/hypervm-linux/; sh hypervm-install-[master|slave].sh with args"
+		;;
+	dev )
+		# Clone from GitHub the last version using git transport (no http or https)
+		echo "Installing branch hypervm/dev"
+		git clone git://github.com/lxcenter/hypervm.git ${HYPERVM_PATH}
+		cd ${HYPERVM_PATH}
+		git checkout dev
+		cd hypervm-install
+		sh ./make-distribution.sh
+		cd ../hypervm
+		sh ./make-development.sh
+		echo "Done. For install run:\ncd ${HYPERVM_PATH}/hypervm-install/hypervm-linux/; sh hypervm-install-[master|slave].sh with args"
+		;;
+	*   )
+		usage
+		return 1 ;;
+esac

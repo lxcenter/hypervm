@@ -57,27 +57,42 @@ if 	[ -f ./hypervm-install.zip ] ; then
 	echo Remove old installation package
 	rm -f hypervm-install.zip
 fi
+
+if [ ! -d '../../.git' ]; then
+	pwd
 	echo Downloading installation package from LxCenter
 	wget http://download.lxcenter.org/download/hypervm-install.zip
+else
+	echo 'Development GIT version found. Skipping download sources.'
+fi
 #
-	echo Unpacking installation package	
-	unzip -oq hypervm-install.zip
+	
+	if [ ! -d '../../.git' ]; then
+		echo "Unpacking installation package"	
+		unzip -oq hypervm-install.zip
+	else
+		echo "Unpacking installation package from current development version"
+		unzip -oq ../hypervm-install.zip
+	fi
 	cd hypervm-install/hypervm-linux
 	echo Starting main installation script
-	php lxins.php --install-type=master $* | tee hypervm_install.log
+	php lxins.php --install-type=master $1 $2 | tee hypervm_install.log
 }
 #
 # Check how we were called.
 #
 case "$1" in
   --virtualization-type=xen)
-    start
+	echo 'Installing HyperVM with Xen virtualization'
+    start $*
     ;;
   --virtualization-type=openvz)
-    start
+	echo 'Installing HyperVM with OpenVZ virtualization'
+    start $*
     ;;
   --virtualization-type=NONE)
-    start
+	echo 'Installing HyperVM with default(Xen) virtualization'
+    start $*
     ;;
   *)
    	echo $"This is the HyperVM Install script"
