@@ -113,7 +113,7 @@ function lxins_main()
 	$list = array("which",  "lxlighttpd", "zip","unzip", "lxphp", "lxzend", "curl");
 
 	if ($installtype !== 'slave') {
-		$mysql = array("mysql", "mysql-server", "mysqlclient10");
+		$mysql = array("mysql", "mysql-server", "mysqlclient*");
 		$list = array_merge($list, $mysql);
 	}
 
