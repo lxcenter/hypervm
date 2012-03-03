@@ -6697,7 +6697,8 @@ class HtmlLib
 		global $gbl, $sgbl, $login, $ghtml;
 
 		$_t_name = $this->getcgikey($variable->name);
-		$m_value = $this->checkForScript($this->$_t_name);
+		$this->checkForScript($this->$_t_name);
+		$m_value = $this->$_t_name;
 		$ts_name = "ts_$variable->name";
 		$ts_name2 = "ts_{$variable->name}2";
 		$size = $variable->count;
@@ -6989,13 +6990,15 @@ class HtmlLib
 
 
 		if ($variable->value != "") {
-			$m_value = $this->checkForScript($variable->value);
+			$this->checkForScript($variable->value);
+			$m_value = $variable->value;
 		} else {
 			if (trim($variable->texttype) != "password") {
 				$m_value = null;
 				$index = trim($variable->name);
 				if (isset($prevvar[$index])) {
-					$m_value = $this->checkForScript($prevvar[$index]);
+					$this->checkForScript($prevvar[$index]);
+					$m_value = $prevvar[$index];
 				}
 			}
 		}
@@ -7207,7 +7210,8 @@ class HtmlLib
 			case "checkbox":
 				$m_value = null;
 				if (isset($prevvar[trim($variable->name)])) {
-					$m_value = $this->checkForScript($prevvar[trim($variable->name)]);
+					$this->checkForScript($prevvar[trim($variable->name)]);
+					$m_value = $prevvar[trim($variable->name)];
 				}
 				$checkedvalue = trim($variable->checked);
 				$checkv = null;
@@ -7224,10 +7228,10 @@ class HtmlLib
 
 
 			case "select":
-				$m_value = "";
 				$m_value = null;
 				if (isset($prevvar[trim($variable->name)])) {
-					$m_value = $this->checkForScript($prevvar[trim($variable->name)]);
+					$this->checkForScript($prevvar[trim($variable->name)]);
+					$m_value = $prevvar[trim($variable->name)];
 				}
 				print("$variable_description <br> ");
 				$v = $variable->name;
