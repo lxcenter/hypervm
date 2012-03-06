@@ -2,6 +2,7 @@
 .buildpath
 .project
 .settings/
+.externalToolBuilders/
 
 # Ignore binaries if already compiled
 hypervm/src/findfreeloop
@@ -14,4 +15,6 @@ hypervm/src/lxxen
 # Ignore .diff files on development
 *.diff
 
-
+# Ignore files from patches
+*.orig
+*.rej
