@@ -182,9 +182,9 @@ function __ac_desc_show($object)
 
 
 	$ghtml->print_message();
-	if ($ilist) {
+	//if ($ilist) {
 		//$ghtml->print_info_block($object, $ilist);
-	}
+	//}
 
 	$cname = $object->getClass();
 	$extra = $object->getExtraId();
@@ -1261,214 +1261,216 @@ function create_xml($object, $stuff, $ret)
 	$string = null;
 
 
-	foreach($vlist as $k => $v) {
-
-		if (csb($k, "__c_")) {
-			$cmd = substr($k, 4);
-			$cmd = substr($cmd, 0, strpos($cmd, '_'));
-			$string[] = $ghtml->object_variable_command($cmd, $v);
-			continue;
-		}
-
-		if (csb($k, "__v_") || csb($k, "__m_")) {
-			continue;
-		}
-
-
-		// Hack hack:: used_s is handled separately.. There is no other way, since without any other way to recognize it, quota variables  defaults to priv...
-		if (!csb($k, "used_s")) {
-			if ($v && $ghtml->is_special_variable($v[1])) {
-			} else {
-				$descr = $ghtml->get_classvar_description_after_overload($class, $k);
-				//dprintr($descr);
-				if (count($descr) < 3) {
-					dprint("Variable $k in $class Not Defined... <br> \n");
-					$descr = array($class, $k, "Not Defined");
-				}
-			}
-			lxclass::resolve_class_differences($class, $k, $dclass, $dk);
-		}
-
-
-		if ($k === "old_password_f") {
-			$string[] = $ghtml->object_variable_oldpassword($dclass, "old_password_f", $descr);
-			continue;
-		}
-
-		if ($k === "password" || $k === "dbpassword") {
-			$string[] = $ghtml->object_variable_password($class, $k);
-			continue;
-		}
-
-		if ($v) {
-			if (csa($v[0], 'I')) {
-				if ($v[1] && is_array($v[1])) {
-					$opt = $v[1];
-				} else {
-					$opt['value'] = $v[1];
-				}
-				$string[] = $ghtml->object_variable_image($stuff, $k, $opt);
-				$opt = null;
+	if(!empty($vlist)) {
+		foreach($vlist as $k => $v) {
+	
+			if (csb($k, "__c_")) {
+				$cmd = substr($k, 4);
+				$cmd = substr($cmd, 0, strpos($cmd, '_'));
+				$string[] = $ghtml->object_variable_command($cmd, $v);
 				continue;
 			}
-			if (csa($v[0], 'L')) {
-				if ($v[1] && is_array($v[1])) {
-					$opt = $v[1];
-				} else {
-					$opt['fvalue'] = $v[1];
-				}
-				$string[] = $ghtml->object_variable_fileselect($stuff, $k, $opt);
-				$opt = null;
+	
+			if (csb($k, "__v_") || csb($k, "__m_")) {
 				continue;
 			}
-			if (csa($v[0], 'm')) {
-				if ($v[1] && is_array($v[1])) {
-					$opt = $v[1];
+	
+	
+			// Hack hack:: used_s is handled separately.. There is no other way, since without any other way to recognize it, quota variables  defaults to priv...
+			if (!csb($k, "used_s")) {
+				if ($v && $ghtml->is_special_variable($v[1])) {
 				} else {
-					$opt['value'] = $v[1];
+					$descr = $ghtml->get_classvar_description_after_overload($class, $k);
+					//dprintr($descr);
+					if (count($descr) < 3) {
+						dprint("Variable $k in $class Not Defined... <br> \n");
+						$descr = array($class, $k, "Not Defined");
+					}
 				}
-				$string[] = $ghtml->object_variable_modify($stuff, $k, $opt);
-				$opt = null;
+				lxclass::resolve_class_differences($class, $k, $dclass, $dk);
+			}
+	
+	
+			if ($k === "old_password_f") {
+				$string[] = $ghtml->object_variable_oldpassword($dclass, "old_password_f", $descr);
 				continue;
 			}
-			if (csa($v[0], 'E')) {
-				if (!$v[1]) {
-					$list = exec_class_method($dclass, "getSelectList", $object, $dk);
-				} else {
-					$list = $v[1];
-				}
-				$string[] = $ghtml->object_variable_selectradio($class, $k, $list);
-				$list = null;
+	
+			if ($k === "password" || $k === "dbpassword") {
+				$string[] = $ghtml->object_variable_password($class, $k);
 				continue;
 			}
-
-			if (csa($v[0], 's')) {
-				if (!$v[1]) {
-					$list = exec_class_method($dclass, "getSelectList", $object, $dk);
-				} else {
-					$list = $v[1];
+	
+			if ($v) {
+				if (csa($v[0], 'I')) {
+					if ($v[1] && is_array($v[1])) {
+						$opt = $v[1];
+					} else {
+						$opt['value'] = $v[1];
+					}
+					$string[] = $ghtml->object_variable_image($stuff, $k, $opt);
+					$opt = null;
+					continue;
 				}
-				$string[] = $ghtml->object_variable_select($stuff, $k, $list);
-				$list = null;
+				if (csa($v[0], 'L')) {
+					if ($v[1] && is_array($v[1])) {
+						$opt = $v[1];
+					} else {
+						$opt['fvalue'] = $v[1];
+					}
+					$string[] = $ghtml->object_variable_fileselect($stuff, $k, $opt);
+					$opt = null;
+					continue;
+				}
+				if (csa($v[0], 'm')) {
+					if ($v[1] && is_array($v[1])) {
+						$opt = $v[1];
+					} else {
+						$opt['value'] = $v[1];
+					}
+					$string[] = $ghtml->object_variable_modify($stuff, $k, $opt);
+					$opt = null;
+					continue;
+				}
+				if (csa($v[0], 'E')) {
+					if (!$v[1]) {
+						$list = exec_class_method($dclass, "getSelectList", $object, $dk);
+					} else {
+						$list = $v[1];
+					}
+					$string[] = $ghtml->object_variable_selectradio($class, $k, $list);
+					$list = null;
+					continue;
+				}
+	
+				if (csa($v[0], 's')) {
+					if (!$v[1]) {
+						$list = exec_class_method($dclass, "getSelectList", $object, $dk);
+					} else {
+						$list = $v[1];
+					}
+					$string[] = $ghtml->object_variable_select($stuff, $k, $list);
+					$list = null;
+					continue;
+				}
+	
+				if (csa($v[0], 'A')) {
+					if (!$v[1]) {
+						$list = exec_class_method($dclass, "getSelectList", $object, $dk);
+					} else {
+						$list = $v[1];
+					}
+					$string[] = $ghtml->object_variable_select($stuff, $k, $list, true);
+					$list = null;
+					continue;
+				}
+	
+				if (csa($v[0], 'Q')) {
+					$string[] = $ghtml->object_variable_listquota($object, $stuff, $k, $v[1]);
+					continue;
+				}
+	
+	
+				if (csa($v[0], 'U')) {
+					if (!$v[1]) {
+						$list = exec_class_method($dclass, "getSelectList", $object, $dk);
+					} else {
+						$list = $v[1];
+					}
+					$string[] = $ghtml->object_variable_multiselect($stuff, $k, $list);
+					$list = null;
+					continue;
+				}
+	
+	
+				if (csa($v[0], 'V')) {
+					$string[] = $ghtml->object_variable_htmltextarea($stuff, $k, $v[1]);
+					continue;
+				}
+				if (csa($v[0], 't')) {
+					$string[] = $ghtml->object_variable_textarea($stuff, $k, $v[1]);
+					continue;
+				}
+				if (csa($v[0], 'T')) {
+					$string[] = $ghtml->object_variable_textarea($stuff, $k, $v[1], true);
+					continue;
+				}
+	
+				if (csa($v[0], 'h')) {
+					$string[] = $ghtml->object_variable_hidden("frm_" . $class . "_c_" . $k, $v[1]);
+					continue;
+				}
+	
+				if (csa($v[0], 'f')) {
+					$string[] = $ghtml->object_variable_check($stuff, $k, $v[1]);
+					continue;
+				}
+	
+				if (csa($v[0], 'M')) {
+					$string[] = $ghtml->object_variable_nomodify($stuff, $k, $v[1]);
+					continue;
+				}
+			}
+	
+			if (csa($descr[0], 'F')) {
+				$string[] = $ghtml->object_variable_file($stuff, $k);
 				continue;
 			}
-
-			if (csa($v[0], 'A')) {
-				if (!$v[1]) {
-					$list = exec_class_method($dclass, "getSelectList", $object, $dk);
-				} else {
-					$list = $v[1];
-				}
-				$string[] = $ghtml->object_variable_select($stuff, $k, $list, true);
-				$list = null;
+	
+			if (csa($descr[0], 'E')) {
+				$list = exec_class_method($dclass, "getSelectList", $object, $dk);
+				$string[] = $ghtml->object_variable_selectradio($stuff, $k, $list);
 				continue;
 			}
-
-			if (csa($v[0], 'Q')) {
-				$string[] = $ghtml->object_variable_listquota($object, $stuff, $k, $v[1]);
-				continue;
-			}
-
-
-			if (csa($v[0], 'U')) {
-				if (!$v[1]) {
-					$list = exec_class_method($dclass, "getSelectList", $object, $dk);
-				} else {
-					$list = $v[1];
-				}
+			if (csa($descr[0], 'U')) {
+				$list = exec_class_method($dclass, "getSelectList", $object, $dk);
 				$string[] = $ghtml->object_variable_multiselect($stuff, $k, $list);
-				$list = null;
 				continue;
 			}
-
-
-			if (csa($v[0], 'V')) {
-				$string[] = $ghtml->object_variable_htmltextarea($stuff, $k, $v[1]);
+	
+			if (csa($descr[0], 'f')) {
+				$string[] = $ghtml->object_variable_check($stuff, $k);
 				continue;
 			}
-			if (csa($v[0], 't')) {
-				$string[] = $ghtml->object_variable_textarea($stuff, $k, $v[1]);
+	
+			if (csa($descr[0], 'e') || csa($descr[0], 's')) {
+				$list = exec_class_method($dclass, "getSelectList", $object, $dk);
+				$string[] = $ghtml->object_variable_select($stuff, $k, $list, false);
 				continue;
 			}
-			if (csa($v[0], 'T')) {
-				$string[] = $ghtml->object_variable_textarea($stuff, $k, $v[1], true);
+	
+			if (csa($descr[0], 'A')) {
+				$list = exec_class_method($dclass, "getSelectList", $object, $dk);
+				$string[] = $ghtml->object_variable_select($stuff, $k, $list, true);
 				continue;
 			}
-
-			if (csa($v[0], 'h')) {
-				$string[] = $ghtml->object_variable_hidden("frm_" . $class . "_c_" . $k, $v[1]);
+	
+	
+			if (csa($descr[0], 't')) {
+				$string[] = $ghtml->object_variable_textarea($stuff, $k);
 				continue;
 			}
-
-			if (csa($v[0], 'f')) {
-				$string[] = $ghtml->object_variable_check($stuff, $k, $v[1]);
+			if (csa($descr[0], 'T')) {
+				$string[] = $ghtml->object_variable_textarea($stuff, $k, null, true);
 				continue;
 			}
-
-			if (csa($v[0], 'M')) {
-				$string[] = $ghtml->object_variable_nomodify($stuff, $k, $v[1]);
+	
+			if (csa($descr[0], 'q')) {
+				$string[] = $ghtml->object_variable_quota($object, $stuff, $k);
 				continue;
 			}
+			if (csa($descr[0], 'Q')) {
+				$string[] = $ghtml->object_variable_listquota($object, $stuff, $k);
+				continue;
+			}
+	
+	
+	
+			$string[] = $ghtml->object_variable_modify($stuff, $k);
+	
 		}
-
-		if (csa($descr[0], 'F')) {
-			$string[] = $ghtml->object_variable_file($stuff, $k);
-			continue;
-		}
-
-		if (csa($descr[0], 'E')) {
-			$list = exec_class_method($dclass, "getSelectList", $object, $dk);
-			$string[] = $ghtml->object_variable_selectradio($stuff, $k, $list);
-			continue;
-		}
-		if (csa($descr[0], 'U')) {
-			$list = exec_class_method($dclass, "getSelectList", $object, $dk);
-			$string[] = $ghtml->object_variable_multiselect($stuff, $k, $list);
-			continue;
-		}
-
-		if (csa($descr[0], 'f')) {
-			$string[] = $ghtml->object_variable_check($stuff, $k);
-			continue;
-		}
-
-		if (csa($descr[0], 'e') || csa($descr[0], 's')) {
-			$list = exec_class_method($dclass, "getSelectList", $object, $dk);
-			$string[] = $ghtml->object_variable_select($stuff, $k, $list, false);
-			continue;
-		}
-
-		if (csa($descr[0], 'A')) {
-			$list = exec_class_method($dclass, "getSelectList", $object, $dk);
-			$string[] = $ghtml->object_variable_select($stuff, $k, $list, true);
-			continue;
-		}
-
-
-		if (csa($descr[0], 't')) {
-			$string[] = $ghtml->object_variable_textarea($stuff, $k);
-			continue;
-		}
-		if (csa($descr[0], 'T')) {
-			$string[] = $ghtml->object_variable_textarea($stuff, $k, null, true);
-			continue;
-		}
-
-		if (csa($descr[0], 'q')) {
-			$string[] = $ghtml->object_variable_quota($object, $stuff, $k);
-			continue;
-		}
-		if (csa($descr[0], 'Q')) {
-			$string[] = $ghtml->object_variable_listquota($object, $stuff, $k);
-			continue;
-		}
-
-
-
-		$string[] = $ghtml->object_variable_modify($stuff, $k);
-
 	}
-
+	
 	$string[] = $ghtml->object_variable_hidden("frm_action", $action);
 
 	if (isset($ret['subaction'])) {
