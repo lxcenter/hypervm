@@ -107,7 +107,7 @@ function createExtraVariables()
 }
 
 
-static function  createListNlist($parent)
+static function  createListNlist($parent, $class = NULL)
 {
 	//$nlist["nname"] = "5%";
 	//$nlist["minute"] = "5%";
