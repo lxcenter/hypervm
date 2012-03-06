@@ -13,7 +13,7 @@ function domainshow()
         $doctype = "client";
         $domainclass = "domaina";
     }
-
+    
 
     $url = "a=show";
     $url = $ghtml->getFullUrl($url);
@@ -49,6 +49,7 @@ function domainshow()
     <title><?php echo $title ?></title>
 
     <?php
+    
     print("<link rel=\"icon\" href=\"favicon.ico\" type=\"image/x-icon\">\n");
     print("<link rel=\"shortcut icon\" href=\"favicon.ico\" type=\"image/x-icon\">\n");
 
@@ -61,7 +62,7 @@ function domainshow()
         print("<FRAME name=bottomframe src='htmllib/lbin/bottom.php'>\n");
         return;
     }
-
+    
     if ($login->isDefaultSkin()) {
         $headerheight = 93;
     } else {
@@ -93,20 +94,15 @@ function domainshow()
     }
     print("</FRAMESET>\n");
     print("</FRAMESET>\n");
-
     ?>
 </head>
     <?php
 
 }
 
-function main_main()
-{
-    global $gbl, $login, $ghtml;
-    initProgram();
-    domainshow();
-}
 
 redirect_to_https();
-main_main();
+
+initProgram();
+domainshow();
 
