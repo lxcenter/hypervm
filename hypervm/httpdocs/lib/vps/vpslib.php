@@ -12,7 +12,7 @@ static $__desc_nname	 = array("n", "",  "ipaddress");
 
 static function createListAddForm($parent, $class) { return false;}
 
-static function createListAlist($parent, $class)
+static function createListAlist($parent, $class = NULL)
 {
 
 	$alist[] = "a=list&c=$class";
@@ -547,7 +547,15 @@ function display($var)
 	}
 
 	if ($var === 'coma_vmipaddress_a') {
-		return getFirstFromList($this->vmipaddress_a)->nname;
+		$data = getFirstFromList($this->vmipaddress_a);
+		if(isset($data->nname))
+		{
+			return $data->nname;
+		}
+		else
+		{
+			return NULL;
+		}
 	}
 
 	if ($var === 'lmemoryusage_f') {
@@ -607,7 +615,7 @@ function perDisplay($var)
 	}
 }
 
-static function createListAlist($parent, $class)
+static function createListAlist($parent, $class = NULL)
 {
 	global $gbl, $sgbl, $login, $ghtml; 
 	$alist[] = "a=list&c=vps";
@@ -1602,9 +1610,15 @@ static function addform($parent, $class, $typetd = null)
 	$vlist['resourceplan_f'] = array('A', $nclist);
 
 	$vlist['__c_subtitle_server'] = "Server";
+	//var_dump($typetd['val']);
+	
+	// $typetd['val'] openvz or xen in clientlib.php
 	$serverlist = $parent->getVpsServers($typetd['val']);
 	if (!$serverlist) {
-		throw new lxexception("no_servers_configured_for_this_driver", '', '');
+		throw new lxexception('Server no configured for driver '. $typetd['val'] . '. You can use setdriver.php for configure a driver.
+		 For example:
+		cd /usr/local/lxlabs/hypervm/httpdocs;
+		lphp.exe ../bin/common/setdriver.php --server=localhost --class=vps --driver='. $typetd['val'] . '', '', '');
 	}
 
 	$sinfo = pserver::createServerInfo($serverlist, "vps");
@@ -2278,7 +2292,7 @@ function getHardProperty()
 	$this->coma_vmipaddress_a = implode(",", get_namelist_from_objectlist($this->vmipaddress_a));
 }
 
-function createShowAlistConfig(&$alist)
+function createShowAlistConfig(&$alist, $subaction = null)
 {
 	global $gbl, $sgbl, $login, $ghtml; 
 	$alist['__title_main'] = $login->getKeywordUc('resource');
@@ -2385,7 +2399,15 @@ function createShowInfoList($subaction)
 		}
 	}
 
-	$ilist['IP'] = substr(implode(",", get_namelist_from_objectlist($this->vmipaddress_a)), 0, 17);
+	$name_list = get_namelist_from_objectlist($this->vmipaddress_a);
+	
+	if(!empty($name_list)) {
+		$ilist['IP'] = substr(implode(",", $name_list), 0, 17);
+	}
+	else {
+		$ilist['IP'] = NULL;
+	}
+	
 	$this->getLastLogin($ilist);
 	return $ilist;
 }

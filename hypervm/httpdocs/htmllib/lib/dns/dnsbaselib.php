@@ -36,7 +36,7 @@ function updateform($subaction, $param)
 	return $vlist;
 }
 
-function isAction()
+function isAction($var)
 {
 	if ($this->ttype === 'ns') {
 		return false;
@@ -44,7 +44,7 @@ function isAction()
 	return true;
 }
 
-static function createListNlist($parent, $view)
+static function createListNlist($parent, $view = NULL)
 {
 
 	//$nlist['nname'] = '10%';

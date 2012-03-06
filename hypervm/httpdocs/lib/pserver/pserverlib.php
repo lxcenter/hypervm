@@ -95,7 +95,7 @@ function createGraphList()
 	return $alist;
 }
 
-static function  createListNlist($parent)
+static function  createListNlist($parent, $class = NULL)
 {
 
 	$nlist['ostype'] = '3%';

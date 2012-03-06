@@ -13,7 +13,7 @@ function getNumForString($name)
 
 function is_openvz()
 {
-	return lxfile_exists("/proc/user_beancounters");
+	return lxfile_exists("/proc/user_beancounters");  
 }
 
 
@@ -1158,6 +1158,7 @@ function mycount($olist)
 
 function full_validate_ipaddress($ip, $variable = 'ipaddress')
 {
+	// variable is nname or ipaddress
 	global $gbl, $sgbl, $login, $ghtml; 
 	global $global_dontlogshell;
 	$global_dontlogshell = true;
@@ -1166,13 +1167,14 @@ function full_validate_ipaddress($ip, $variable = 'ipaddress')
 
 
 	if (!validate_ipaddress($ip)) {
-		throw new lxException("invalid_ipaddress", $variable);
+		throw new lxException('Invalid IP address: ' . $ip, $variable);
 	}
 
 	$ret = lxshell_return("ping", "-n", "-c", "1", "-w", "5", $ip);
-
-	if (!$ret) {
-		throw new lxexception("some_other_host_uses_this_ip", $variable);
+	
+	// If the return status is 1, the ping fail and nobody uses. But if return is 0, somebody is using the IP
+	if(intval($ret) !== 1) { 
+		throw new lxexception('Another host is using the IP ' . $ip . ' and it is responding to the IP ping. Please you will ensure to use an available IP to add.', $variable);
 	}
 
 	$global_dontlogshell = false;
@@ -1213,7 +1215,7 @@ function do_actionlog($login, $object, $action, $subaction)
 
 function validate_email($email)
 {
-	if(!eregi("^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,5})$", $email)){
+	if(!preg_match("#^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,5})$#", $email)){
 		return false;
 	}
 	return true;
@@ -1223,7 +1225,7 @@ function validate_email($email)
 function validate_ipaddress_and_throw($ip, $variable)
 {
 	if (!validate_ipaddress($ip)) {
-		throw new lxException("invalid_ipaddress", $variable);
+		throw new lxException('Invalid IP address: ' . $ip, $variable);
 	}
 }
 
