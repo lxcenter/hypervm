@@ -258,7 +258,7 @@ static function initThisList($parent, $class)
 	return $res;
 }
 
-static function createListAlist($parent, $class)
+static function createListAlist($parent, $class = NULL)
 {
 	$v = $parent->createShowAlist($alist);
 	return $v['property'];

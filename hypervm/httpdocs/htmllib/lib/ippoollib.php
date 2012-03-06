@@ -7,7 +7,7 @@ class ippoolextraip_a extends Lxaclass {
 static $__desc = array("", "", "extra_ip");
 static $__desc_nname = array("n", "", "ipaddress");
 
-static function createListAlist($parent, $class)
+static function createListAlist($parent, $class = NULL)
 {
 	$alist[] = 'a=show';
 	$alist[] = 'a=list&c=ippoolip';
@@ -24,7 +24,7 @@ class ippoolexceptionip_a extends Lxaclass {
 static $__desc = array("", "", "exception_ip");
 static $__desc_nname = array("n", "", "ipaddress");
 
-static function createListAlist($parent, $class)
+static function createListAlist($parent, $class = NULL)
 {
 	return ippoolextraip_a::createListAlist($parent, $class);
 	return $alist;
@@ -39,7 +39,7 @@ static $__desc_nname = array("n", "", "ipaddress");
 
 
 
-static function createListAlist($parent, $class)
+static function createListAlist($parent, $class = NULL)
 {
 	return ippoolextraip_a::createListAlist($parent, $class);
 	return $alist;
@@ -65,13 +65,13 @@ static function initThisList($parent, $class)
 }
 
 function isSelect() { return false ; }
-static function createListNlist($parent, $view)
+static function createListNlist($parent, $view = NULL)
 {
 	$nlist['nname'] = '100%';
 	$nlist['assigned'] = '40%';
 	return $nlist;
 }
-static function createListAlist($parent, $class)
+static function createListAlist($parent, $class = NULL)
 {
 	return ippoolextraip_a::createListAlist($parent, $class);
 }
@@ -113,7 +113,7 @@ static function add($parent, $class, $param)
 	validate_ipaddress_and_throw($param['lastip'], 'lastip');
 
 	if (!$param['pserver_list']) {
-		throw new lxException ("need_to_select_pserver", 'pserver_list');
+		throw new lxException ('It is needed select a production server from the list', 'pserver_list');
 	}
 
 	$param['pserver_list'] = explode(',', $param['pserver_list']);

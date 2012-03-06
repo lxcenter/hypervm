@@ -13,13 +13,13 @@ static function getExtraParameters($parent, $list)
 	return $parent->getExtraP('xen_location_a', $list);
 }
 
-static function createListNlist($parent, $view)
+static function createListNlist($parent, $view = NULL)
 {
 	$nlist['nname'] = '100%';
 	$nlist['diskfree'] = '50%';
 	return $nlist;
 }
-static function createListAlist($parent, $class)
+static function createListAlist($parent, $class = NULL)
 {
 
 	global $gbl, $sgbl, $login, $ghtml; 

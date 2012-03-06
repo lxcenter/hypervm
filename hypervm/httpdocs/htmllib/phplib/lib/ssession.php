@@ -190,10 +190,12 @@ static function initThisList($parent, $class)
 	foreach($list as $l) {
 		$pp = lfile_get_json_unserialize("__path_program_root/session/$l");
 		if (!$pp) { lunlink("__path_program_root/session/$l"); continue; }
-		if (!$parent->isAdmin()) {
-			//$result = $db->getRowsWhere("parent_clname = '" . $parent->getClName() . "'");
-			if ($pp['parent_clname'] !== $parent->getClName()) {
-				continue;
+		if(!empty($parent)) {
+			if (!$parent->isAdmin()) {
+				//$result = $db->getRowsWhere("parent_clname = '" . $parent->getClName() . "'");
+				if ($pp['parent_clname'] !== $parent->getClName()) {
+					continue;
+				}
 			}
 		}
 		$result[] = $pp;
@@ -202,7 +204,9 @@ static function initThisList($parent, $class)
 
 
 	if ($result) {
-		$parent->setListFromArray($parent->__masterserver, $parent->__readserver, 'ssessionlist', $result, true);
+		if(!empty($parent)) {
+			$parent->setListFromArray($parent->__masterserver, $parent->__readserver, 'ssessionlist', $result, true);
+		}
 	}
 	return null;
 }
