@@ -99,7 +99,6 @@
  *
  */
 
-
 #include "program-backend.h"
 
 int run_php_prog_ssl(SSL *ssl, int sock)
@@ -141,7 +140,8 @@ int run_php_prog_ssl(SSL *ssl, int sock)
 		}
 	}
 
-	printf("Input %d %s\n", strlen(data), data);
+	/* ISO C90 uses unsigned long for size_t (%lu). For ISO C99 %zd is used as signed decimal portable for data (size_t) */
+	printf("Input %lu %s\n", (unsigned long) strlen(data), data);
 	bzero(buf, sizeof(buf));
 	/* printf ("Received %d chars:'%s'\n", err, buf); */
 
@@ -374,10 +374,11 @@ int accept_and(int listen_sock)
 {
 	int sock;
 	struct sockaddr_in sa_cli;
-	size_t client_len;
-	client_len = sizeof(sa_cli);
+	socklen_t client_len;
+	client_len = sizeof(struct sockaddr_in);
+
 	/* Socket for a TCP/IP connection is created */
-	sock = accept(listen_sock, (struct sockaddr*)&sa_cli, &client_len);
+	sock = accept(listen_sock, (struct sockaddr*)&sa_cli, (socklen_t *) &client_len);
 	/* printf ("Connection from %lx, port %x\n", sa_cli.sin_addr.s_addr, sa_cli.sin_port); */
 	return sock;
 }
