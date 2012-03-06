@@ -140,7 +140,7 @@ class vps__openvz extends Lxdriverclass {
 	static function execCommand($vpsid, $command)
 	{
 		global $global_shell_error, $global_shell_ret;
-		$out = lxshell_output("vzctl", "exec", $vpsid, $command);
+		$out = lxshell_output("/usr/sbin/vzctl", "exec", $vpsid, $command);
 	
 		dprint($out);
 	
@@ -161,8 +161,8 @@ class vps__openvz extends Lxdriverclass {
 			return "createfailed: $reason";
 		}
 		$res = shell_exec("vzctl status $vpsid");
-	
-		dprint("$res \n");
+		
+		dprint("vzctl status: $res \n");
 	
 		if (strtilfirst(trim(`hostname`), ".") ===  "root") {
 			return 'on';
@@ -186,7 +186,7 @@ class vps__openvz extends Lxdriverclass {
 		$global_dontlogshell = true;
 		$path = "/proc/user_beancounters";
 		
-		$data = `vzctl exec $vpsid cat /proc/user_beancounters`;
+		$data = `/usr/sbin/vzctl exec $vpsid cat /proc/user_beancounters`;
 	
 		$res = explode("\n", $data);
 		$match = true;
@@ -240,7 +240,7 @@ class vps__openvz extends Lxdriverclass {
 			$vvv = round($vvv);
 		}
 	
-		exec("vzctl exec $vpsid cat /proc/cpuinfo", $data);
+		exec("/usr/sbin/vzctl exec $vpsid cat /proc/cpuinfo", $data);
 		$processornum = 0;
 		
 		foreach($data as $v) {
@@ -282,7 +282,7 @@ class vps__openvz extends Lxdriverclass {
 			throw new lxException("no_kernel_support_for_openvz_check_if_right_kernel");
 		}
 	
-		$res = lxshell_output("vzctl", "status", "10000");
+		$res = lxshell_output("/usr/sbin/vzctl", "status", "10000");
 		if (!trim($res)) {
 			//throw new lxException("vzctl_doesnt_work_most_likely_vz_service_is_not_running");
 		}
@@ -295,9 +295,12 @@ class vps__openvz extends Lxdriverclass {
 		global $gbl, $sgbl, $login, $ghtml; 
 	
 		self::checkIfVzOK();
-		$ret = lxshell_return("vzctl", "--help");
-		if ($ret) {
-			throw new lxException("no_vzctl");
+		$ret = lxshell_return('/usr/sbin/vzctl', '--help');
+		
+		// 127 == Not found
+		// 20 = all right
+		if (intval($ret) === 127) {
+			throw new lxException('No vzctl binary detected on /usr/sbin/vzctl. Please install vzctl or symlink to /usr/sbin/vzctl');
 		}
 	
 		@ lunlink("__path_program_root/tmp/{$this->main->vpsid}.createfailed");
@@ -364,8 +367,7 @@ class vps__openvz extends Lxdriverclass {
 	
 		dprint($templatefile . "\n");
 	
-		$ret = lxshell_return("nice", "-n", "19", "vzctl", "--verbose", "create", $this->main->vpsid, "--private", "{$this->main->corerootdir}/{$this->main->vpsid}", "--ostemplate", $this->main->ostemplate);
-	
+		$ret = lxshell_return("nice", "-n", "19", "/usr/sbin/vzctl", "--verbose", "create", $this->main->vpsid, "--private", "{$this->main->corerootdir}/{$this->main->vpsid}", "--ostemplate", $this->main->ostemplate);
 	
 		if ($ret) {
 			lunlink("__path_program_root/tmp/$vpsid.create");
@@ -375,9 +377,9 @@ class vps__openvz extends Lxdriverclass {
 	
 		$this->setIpaddress($this->main->vmipaddress_a, true);
 		$this->enableSecondLevelQuota();
-		//lxshell_return("vzctl", "set", $this->main->vpsid, "--quotaugidlimit", "1000", "--save");
+		//lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--quotaugidlimit", "1000", "--save");
 		$this->setInformation();
-		$ret = lxshell_return("vzctl", "set", $this->main->vpsid, "--onboot", "yes", "--save");
+		$ret = lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--onboot", "yes", "--save");
 	
 		$this->setEveryThing();
 		$this->setRootPassword();
@@ -429,17 +431,17 @@ class vps__openvz extends Lxdriverclass {
 
 	function setMainIpaddress()
 	{
-		$ret = lxshell_return("vzctl", "set", $this->main->vpsid, "--ipdel", "all", "--save");
+		$ret = lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--ipdel", "all", "--save");
 	
 		sleep(10);
-		$ret = lxshell_return("vzctl", "set", $this->main->vpsid, "--ipadd", $this->main->mainipaddress, "--save");
+		$ret = lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--ipadd", $this->main->mainipaddress, "--save");
 	
 		sleep(10);
 		foreach($this->main->vmipaddress_a as $ip) {
 			if ($ip->nname === $this->main->mainipaddress) {
 				continue;
 			}
-			$ret = lxshell_return("vzctl", "set", $this->main->vpsid, "--ipadd", $ip->nname, "--save");
+			$ret = lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--ipadd", $ip->nname, "--save");
 		}
 	}
 
@@ -447,7 +449,7 @@ class vps__openvz extends Lxdriverclass {
 	{
 		foreach($list as $ip) {
 			if ($vpsflag) {
-				$ret = lxshell_return("vzctl", "set", $this->main->vpsid, "--ipadd", $ip->nname, "--save");
+				$ret = lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--ipadd", $ip->nname, "--save");
 			}
 			lxshell_return("iptables", "-A", "FORWARD", "-s", $ip->nname);
 			lxshell_return("iptables", "-A", "FORWARD", "-d", $ip->nname);
@@ -459,7 +461,7 @@ class vps__openvz extends Lxdriverclass {
 	{
 		foreach($list as $ip) {
 			if ($vpsflag) {
-				lxshell_return("vzctl", "set", $this->main->vpsid, "--ipdel", $ip->nname, "--save");
+				lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--ipdel", $ip->nname, "--save");
 			}
 			lxshell_return("iptables", "-D", "FORWARD", "-s", $ip->nname);
 			lxshell_return("iptables", "-D", "FORWARD", "-d", $ip->nname);
@@ -473,10 +475,10 @@ class vps__openvz extends Lxdriverclass {
 		} catch (Exception $e) {
 		}
 	
-		lxshell_return("vzctl", "set", $this->main->vpsid, "--ipdel", "all", "--save");
+		lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--ipdel", "all", "--save");
 	
-		lxshell_return("vzctl", "umount", $this->main->vpsid);
-		lxshell_return("vzctl", "destroy", $this->main->vpsid);
+		lxshell_return("/usr/sbin/vzctl", "umount", $this->main->vpsid);
+		lxshell_return("/usr/sbin/vzctl", "destroy", $this->main->vpsid);
 		$this->deleteIpaddress($this->main->vmipaddress_a, false);
 		lxshell_return("userdel", "-r", $this->main->username);
 	
@@ -499,10 +501,10 @@ class vps__openvz extends Lxdriverclass {
 			if ($ret) {
 				throw new lxException("could_not_start_vps", '', str_replace("\n", ": ", $global_shell_error));
 			}
-			$ret = lxshell_return("vzctl", "set", $this->main->vpsid, "--onboot", "yes", "--save");
+			$ret = lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--onboot", "yes", "--save");
 		} else {
 			$ret = $this->stop();
-			$ret = lxshell_return("vzctl", "set", $this->main->vpsid, "--onboot", "no", "--save");
+			$ret = lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--onboot", "no", "--save");
 		}
 	
 		if($ret)
@@ -511,7 +513,7 @@ class vps__openvz extends Lxdriverclass {
 
 	function setRootPassword()
 	{
-		lxshell_return("vzctl", "set", $this->main->vpsid, "--save", "--userpasswd", "root:{$this->main->rootpassword}");
+		lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--save", "--userpasswd", "root:{$this->main->rootpassword}");
 	}
 	
 	function setMemoryUsage()
@@ -523,8 +525,8 @@ class vps__openvz extends Lxdriverclass {
 			$memory = $this->main->priv->memory_usage * 256;
 		}
 	
-		lxshell_return("vzctl", "set", $this->main->vpsid, "--save", "--privvmpages", $memory);
-		lxshell_return("vzctl", "set", $this->main->vpsid, "--save", "--meminfo", "pages:$memory");
+		lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--save", "--privvmpages", $memory);
+		lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--save", "--meminfo", "pages:$memory");
 	}
 
 	function do_backup()
@@ -617,10 +619,10 @@ class vps__openvz extends Lxdriverclass {
 			$memory = $this->main->priv->guarmem_usage;
 		}
 	
-		lxshell_return("vzctl", "set", $this->main->vpsid, "--save", "--vmguarpages", "{$memory}M:2147483647");
-		lxshell_return("vzctl", "set", $this->main->vpsid, "--save", "--oomguarpages", "{$memory}M:2147483647");
-		lxshell_return("vzctl", "set", $this->main->vpsid, "--save", "--shmpages", "{$memory}M:{$memory}M");
-		lxshell_return("vzctl", "set", $this->main->vpsid, "--save", "--physpages", "0:2147483647");
+		lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--save", "--vmguarpages", "{$memory}M:2147483647");
+		lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--save", "--oomguarpages", "{$memory}M:2147483647");
+		lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--save", "--shmpages", "{$memory}M:{$memory}M");
+		lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--save", "--physpages", "0:2147483647");
 		$tcp = round(($memory * 1024)/5, 0);
 		$process = $this->main->priv->process_usage;
 		if (is_unlimited($process) || $process > 5555) {
@@ -632,7 +634,7 @@ class vps__openvz extends Lxdriverclass {
 		$tcp .= "K";
 		$limit .= "K";
 		$tcp = "$tcp:$limit";
-		lxshell_return("vzctl", "set", $this->main->vpsid, "--save", "--tcpsndbuf", $tcp, "--tcprcvbuf", $tcp, "--othersockbuf", $tcp, "--dgramrcvbuf", $tcp);
+		lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--save", "--tcpsndbuf", $tcp, "--tcprcvbuf", $tcp, "--othersockbuf", $tcp, "--dgramrcvbuf", $tcp);
 	}
 
 	function createBaseConf()
@@ -650,7 +652,7 @@ class vps__openvz extends Lxdriverclass {
 			$cpu = $this->main->priv->cpu_usage;
 		}
 	
-		lxshell_return("vzctl", "set", $this->main->vpsid, "--save", "--cpulimit", $cpu);
+		lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--save", "--cpulimit", $cpu);
 	}
 
 	function setDiskUsage()
@@ -661,7 +663,7 @@ class vps__openvz extends Lxdriverclass {
 			$diskusage = $this->main->priv->disk_usage * 1024;
 		}
 	
-		lxshell_return("vzctl", "set", $this->main->vpsid, "--save", "--diskspace", $diskusage, "--diskinodes", round($diskusage/2));
+		lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--save", "--diskspace", $diskusage, "--diskinodes", round($diskusage/2));
 	}
 
 	// Added by Semir @ 2011 march 14
@@ -675,7 +677,7 @@ class vps__openvz extends Lxdriverclass {
 	
 	    $memory = "0:" . $memory . "M";
 	
-	    lxshell_return("vzctl", "set", $this->main->vpsid, "--save", "--swappages", $memory);
+	    lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--save", "--swappages", $memory);
 	}
 
 	function setProcessUsage()
@@ -701,15 +703,15 @@ class vps__openvz extends Lxdriverclass {
 		$sockets = $this->limitNumber($sockets);
 		$process = $this->limitNumber($process);
 	
-		lxshell_return("vzctl", "set", $this->main->vpsid, "--save", "--numproc", $process);
+		lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--save", "--numproc", $process);
 	
 		$avnumproc = round($avnumproc);
 	
-		lxshell_return("vzctl", "set", $this->main->vpsid, "--save", "--numtcpsock", $sockets, "--numothersock", $sockets, "--numfile", $numfile, "--numflock", $process, "--numsiginfo", $process, "--numpty", $avnumproc);
+		lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--save", "--numtcpsock", $sockets, "--numothersock", $sockets, "--numfile", $numfile, "--numflock", $process, "--numsiginfo", $process, "--numpty", $avnumproc);
 	
-		lxshell_return("vzctl", "set", $this->main->vpsid, "--save", "--dcachesize", $dcachesize, "--kmemsize", $kernelmem);
-		lxshell_return("vzctl", "set", $this->main->vpsid, "--save", "--numiptent", $process);
-		lxshell_return("vzctl", "set", $this->main->vpsid, "--save", "--lockedpages", $process);
+		lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--save", "--dcachesize", $dcachesize, "--kmemsize", $kernelmem);
+		lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--save", "--numiptent", $process);
+		lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--save", "--lockedpages", $process);
 	
 		$this->setGuarMemoryUsage();
 	}
@@ -864,9 +866,9 @@ class vps__openvz extends Lxdriverclass {
 			$this->setEveryThing();
 			$this->setIpaddress($this->main->vmipaddress_a, true);
 			$this->enableSecondLevelQuota();
-			//lxshell_return("vzctl", "set", $this->main->vpsid, "--quotaugidlimit", "1000", "--save");
+			//lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--quotaugidlimit", "1000", "--save");
 			$this->setInformation();
-			$ret = lxshell_return("vzctl", "set", $this->main->vpsid, "--onboot", "yes", "--save");
+			$ret = lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--onboot", "yes", "--save");
 		}
 	}
 
@@ -878,7 +880,7 @@ class vps__openvz extends Lxdriverclass {
 	function oldinstallkloxo()
 	{
 	    //TODO: Remove?
-		$ret = lxshell_return("vzctl", "exec2", $this->main->vpsid, "ping -n -c 1 -w 5 lxlabs.com");
+		$ret = lxshell_return("/usr/sbin/vzctl", "exec2", $this->main->vpsid, "ping -n -c 1 -w 5 lxlabs.com");
 	
 		if ($ret) {
 			throw new lxException("no_network_inside_the_vps_possibly_lack_of_dns");
@@ -894,18 +896,18 @@ class vps__openvz extends Lxdriverclass {
 	
 		addLineIfNotExistPattern("{$this->main->corerootdir}/{$this->main->vpsid}/etc/sysconfig/rhn/up2date", "networkSetup[comment]=None", "networkSetup[comment]=None\nnetworkSetup=1\n");
 	
-		lxshell_return("vzctl", "exec", $this->main->vpsid, "wget download.lxlabs.com/download/kloxo/production/kloxo-install-$type.sh");
-		lxshell_return("vzctl", "exec", $this->main->vpsid, "sh ./kloxo-install-$type.sh > hyperVm-kloxo_install.log 2>&1 &");
+		lxshell_return("/usr/sbin/vzctl", "exec", $this->main->vpsid, "wget download.lxlabs.com/download/kloxo/production/kloxo-install-$type.sh");
+		lxshell_return("/usr/sbin/vzctl", "exec", $this->main->vpsid, "sh ./kloxo-install-$type.sh > hyperVm-kloxo_install.log 2>&1 &");
 	}
 
 	function setInformation()
 	{
 		if ($this->main->hostname) {
-			lxshell_return("vzctl", "set", $this->main->vpsid, "--hostname", $this->main->hostname, "--save");
+			lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--hostname", $this->main->hostname, "--save");
 		}
 	
 		if ($this->main->nameserver) {
-			lxshell_return("vzctl", "set", $this->main->vpsid, "--nameserver", $this->main->nameserver, "--save");
+			lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--nameserver", $this->main->nameserver, "--save");
 		}
 		lxfile_cp("/usr/share/zoneinfo/{$this->main->timezone}", "{$this->main->corerootdir}/{$this->main->vpsid}/etc/localtime");
 	}
@@ -947,7 +949,7 @@ class vps__openvz extends Lxdriverclass {
 		global $gbl, $sgbl, $login, $ghtml; 
 	
 		global $global_shell_error;
-		$ret =  lxshell_return("vzctl", "stop", $this->main->vpsid);
+		$ret =  lxshell_return("/usr/sbin/vzctl", "stop", $this->main->vpsid);
 		if (self::getStatus($this->main->vpsid, $this->main->corerootdir) === 'on') {
 			throw new lxException("could_not_stop_vps");
 		}
@@ -963,7 +965,7 @@ class vps__openvz extends Lxdriverclass {
 		global $gbl, $sgbl, $login, $ghtml; 
 	
 		global $global_shell_error;
-		$ret =  lxshell_return("vzctl", "stop", $this->main->__var_oldvpsid);
+		$ret =  lxshell_return("/usr/sbin/vzctl", "stop", $this->main->__var_oldvpsid);
 		if (self::getStatus($this->main->__var_oldvpsid, $this->main->corerootdir) === 'on') {
 			throw new lxException("could_not_stop_vps");
 		}
@@ -975,7 +977,7 @@ class vps__openvz extends Lxdriverclass {
 		if (self::getStatus($this->main->vpsid, $this->main->corerootdir) === 'on') {
 			return;
 		}
-		return lxshell_return("vzctl", "start", $this->main->vpsid); 
+		return lxshell_return("/usr/sbin/vzctl", "start", $this->main->vpsid); 
 	}
 
 	function changeUserPassword()
@@ -1076,7 +1078,7 @@ class vps__openvz extends Lxdriverclass {
 
 	function setVpsParam($name, $value)
 	{
-		lxshell_return("vzctl", "set", $this->main->vpsid, "--$name", $value, "--save");
+		lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--$name", $value, "--save");
 	}
 
 	function setIptables()
@@ -1094,7 +1096,7 @@ class vps__openvz extends Lxdriverclass {
 	function enableSecondLevelQuota()
 	{
 		if ($this->main->priv->isOn('secondlevelquota_flag')) {
-			lxshell_return("vzctl", "set", $this->main->vpsid, "--quotaugidlimit", "10000", "--save");
+			lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--quotaugidlimit", "10000", "--save");
 		} else {
 			$this->changeConf("QUOTAUGIDLIMIT", "");
 		}
@@ -1195,8 +1197,8 @@ class vps__openvz extends Lxdriverclass {
 		lxfile_mv("{$this->main->corerootdir}/sbin/udevd", "{$this->main->corerootdir}/sbin/udevd.back");
 		$this->start();
 		sleep(10);
-		lxshell_return("vzctl", "exec", $this->main->vpsid, "/sbin/MAKEDEV", "tty");
-		lxshell_return("vzctl", "exec", $this->main->vpsid, "/sbin/MAKEDEV", "pty");
+		lxshell_return("/usr/sbin/vzctl", "exec", $this->main->vpsid, "/sbin/MAKEDEV", "tty");
+		lxshell_return("/usr/sbin/vzctl", "exec", $this->main->vpsid, "/sbin/MAKEDEV", "pty");
 	}
 
 	function changevpsid()
