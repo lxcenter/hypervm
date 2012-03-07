@@ -57,10 +57,15 @@ install_GIT()
 	cd ..; rm -rf git-*
 }
 
-if [ `/usr/bin/id -u` -ne 0 ]; then
-    echo 'Please, run this script as root.'
-    usage
-fi
+require_root()
+{
+	if [ `/usr/bin/id -u` -ne 0 ]; then
+    	echo 'Please, run this script as root.'
+    	usage
+	fi
+}
+
+require_root
 
 echo 'Installing HyperVM development version.'
 
