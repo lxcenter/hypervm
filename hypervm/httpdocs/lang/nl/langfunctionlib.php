@@ -19,20 +19,32 @@
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/*
+ * $id: langfunctionlib.php
+ * $version: HyperVM Dutch (NL) 2.1.X
+ * $modified by: Gerard van der Vegt
+ * $last update: 28 februari 2012
+ */
+
 function get_plural($word)
 {
-
-
-	if ($word[strlen($word) - 1] === 'e' || $word[strlen($word) - 1] === 'i' || $word[strlen($word) - 1] === '�' || $word[strlen($word) - 1] === '�') {
-		$ret = "{$word}ler";
-		return ucfirst($ret);
-	} else if ($word[strlen($word) - 1] === 'a' || $word[strlen($word) - 1] === '�' || $word[strlen($word) - 1] === 'o' || $word[strlen($word) - 1] === 'u') {
-		$ret = "{$word}lar";
-		return ucfirst($ret);
+	if ($word[strlen($word) - 1] === 't' and $word[strlen($word) - 2] === 'n') {
+		$ret = "{$word}";
+	} else {
+		$ret = "{$word}";
 	}
-
-	$ret = "{$word}ler";
 	return ucfirst($ret);
 }
 
+// This is an alternate get_plural, which has the all the plurals are defined in a file.
+function get_plural_alternate($word)
+{
+	include_once "lang/nl/lang_plural.inc";
+
+	if (isset($__plural_desc[$word])) {
+		return $__plural_desc[$word];
+	}
+
+	return "{$word}";
+}
 
