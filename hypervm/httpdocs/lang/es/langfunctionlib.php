@@ -21,18 +21,17 @@
 
 function get_plural($word)
 {
-
-
-	if ($word[strlen($word) - 1] === 'e' || $word[strlen($word) - 1] === 'i' || $word[strlen($word) - 1] === '�' || $word[strlen($word) - 1] === '�') {
-		$ret = "{$word}ler";
-		return ucfirst($ret);
-	} else if ($word[strlen($word) - 1] === 'a' || $word[strlen($word) - 1] === '�' || $word[strlen($word) - 1] === 'o' || $word[strlen($word) - 1] === 'u') {
-		$ret = "{$word}lar";
-		return ucfirst($ret);
+	switch ($word[strlen($word) - 1]) {
+		case ' ':
+		case 's':
+		break;
+		case 'r':
+		case 'n':
+		
+			$word="{$word}es";
+		break;
+		default:
+			$word="{$word}s";
 	}
-
-	$ret = "{$word}ler";
-	return ucfirst($ret);
+	return $word;
 }
-
-
