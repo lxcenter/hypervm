@@ -701,6 +701,7 @@ function createWindowsConfig()
 	}
 	$string .= "vncunused=0\n";
 	$string .= "vncdisplay={$this->main->vncdisplay}\n";
+	$string .= "usbdevice='tablet'\n";
 
 	if ($this->main->text_xen_config) {
 		$string .= "{$this->main->text_xen_config}\n";
