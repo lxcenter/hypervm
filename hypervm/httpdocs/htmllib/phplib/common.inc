@@ -33,10 +33,16 @@ function __autoload($class)
 */
 
 	if (csb($class, "all_")) { $class = strfrom($class, "all_"); }
-	if (file_exists(getreal($gl_class_array[$class]))) {
-		include_once $gl_class_array[$class];
-		return;
+	
+	if(isset($gl_class_array[$class])) {
+		$class_name = $gl_class_array[$class];
+		
+		if (file_exists(getreal($class_name))) {
+			include_once $class_name;
+			return;
+		}
 	}
+	
 	dprint("Class Not found $class <br> \n");
 }
 

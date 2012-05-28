@@ -86,10 +86,18 @@ static function initThisListRule($parent, $class)
 
 	$listvar = "{$class}_l";
 
-	$parent->checkChildExists($class);
+	$ret = array();
+	if(!empty($parent))	{
+		$parent->checkChildExists($class);
 
-
-	$ret[] = array('parent_clname', '=', "'{$parent->getClName()}'");
+		$ret[] = array('parent_clname', '=', "'{$parent->getClName()}'");
+	}
+	else
+	{
+		dprint('Warning ' . $class . ' have a missing parent<br />');
+		debug_for_backend();
+	} 
+	
 	return $ret;
 
 

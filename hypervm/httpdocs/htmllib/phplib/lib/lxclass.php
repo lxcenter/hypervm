@@ -3003,7 +3003,12 @@ function defaultValue($var)
 
 function getVariable($var)
 {
-	return $this->$var;
+	if(isset($this->$var)) {
+		return $this->$var;
+	}
+	else {
+		return NULL;
+	}
 }
 
 static function exec_collectQuota()
@@ -3079,8 +3084,12 @@ function display($var)
 		return null;
 	}
 
-	return $this->$var;
-
+	if(isset($this->$var)) {
+		return $this->$var;
+	}
+	else {
+		return NULL;
+	}
 }
 
 
@@ -3388,7 +3397,6 @@ final function setFromObject($obj)
 
 final function setFromArray($array)
 {
-
 	foreach($array as $key => $value) {
 		if (is_numeric($key)) {
 			//dprint("The Key is {$key} integer in .  {$this->get__table()}:{$this->nname} <br> ");
@@ -3430,32 +3438,36 @@ final function setFromArray($array)
 
 		if (csb($key, "ser_")) {
 			$key = strfrom($key, "ser_");
-			$value = unserialize(base64_decode($value));
-			if ($value === false) {
-				dprint("Unserialize failed: {$this->get__table()}: {$key}<br>\n", 3);
-				if (cse($key, "_b") && !is_object($value)) {
-					$value = new $key(null, null, $this->nname);
-					$this->$key = $value;
-					continue;
-				}
-			} else {
-
-				if (cse($key, "_b") && !is_object($value)) {
+			
+			if(!empty($value))
+			{
+				$value = unserialize(base64_decode($value));
+				if ($value === false) {
 					dprint("Unserialize failed: {$this->get__table()}: {$key}<br>\n", 3);
-					$value = new $key(null, null, $this->nname);
-					$this->$key = $value;
-					continue;
+					if (cse($key, "_b") && !is_object($value)) {
+						$value = new $key(null, null, $this->nname);
+						$this->$key = $value;
+						continue;
+					}
+				} else {
+	
+					if (cse($key, "_b") && !is_object($value)) {
+						//dprint("Unserialize failed for table {$this->get__table()} with key {$key}<br>\n", 3);
+						$value = new $key(null, null, $this->nname);
+						$this->$key = $value;
+						continue;
+					}
 				}
-			}
-
-			if (cse($key, "_a")) {
-				if ($value) foreach($value as $k => $v) {
-					$value[$k]->__parent_o = $this;
+	
+				if (cse($key, "_a")) {
+					if ($value) foreach($value as $k => $v) {
+						$value[$k]->__parent_o = $this;
+					}
 				}
+	
+				$this->$key = $value;
+				continue;
 			}
-
-			$this->$key = $value;
-			continue;
 		}
 
 
@@ -5833,7 +5845,7 @@ function showPrivInResource()
 class LxaClass extends Lxclass {
 function get() {}
 function write() {}
-static function createListAlist($parent, $class)
+static function createListAlist($parent, $class = NULL)
 {
 	return null;
 }

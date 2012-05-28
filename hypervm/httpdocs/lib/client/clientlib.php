@@ -97,14 +97,20 @@ static function addform($parent, $class, $typetd = null)
 function getVpsServers($type)
 {
 	global $gbl, $sgbl, $login, $ghtml; 
-	$list = $login->getServerList('vps');
+
+	$vps_list = $login->getServerList('vps');
+
 	$outlist = null;
-	foreach($list as $l) {
-		$driverapp = $gbl->getSyncClass(null, $l, 'vps');
-		if ($driverapp === $type) {
-			$outlist[] = $l;
+	if(!empty($vps_list)) {
+		foreach($vps_list as $vps) {
+			$driverapp = $gbl->getSyncClass(NULL, $vps, 'vps');
+
+			if ($driverapp === $type) {
+				$outlist[] = $vps;
+			}
 		}
 	}
+	
 	return $outlist;
 }
 

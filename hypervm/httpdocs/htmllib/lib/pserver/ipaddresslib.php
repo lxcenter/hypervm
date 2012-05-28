@@ -504,7 +504,9 @@ function isSync()
 
 static function VerifyString($parent, $param)
 {
-	if (!self::isValidIpaddress($param['ipaddr'])) {
+	$ip = $param['ipaddr'];
+	
+	if (!self::isValidIpaddress($ip)) {
 		throw new lxexception("ipaddress_invalid", 'ipaddr');
 	}
 
@@ -522,12 +524,15 @@ static function VerifyString($parent, $param)
 	$res = $sq->getRowsWhere("syncserver = '$parent->nname'");
 	$list = get_namelist_from_arraylist($res, "ipaddr");
 
-	if (array_search_bool($param['ipaddr'], $list)) {
+	if (array_search_bool($ip, $list)) {
 		throw new lxexception("ipaddress_already_configured", 'ipaddr');
 	}
-	$ret = lxshell_return("ping", "-n", "-c", "1", "-w", "5", $param['ipaddr']);
-	if (!$ret) {
-		throw new lxexception("some_other_host_uses_this_ip", 'ipaddr');
+	
+	$ret = lxshell_return("ping", "-n", "-c", "1", "-w", "5", $ip);
+	
+	// If the return status is 1, the ping fail and nobody uses. But if return is 0, somebody is using the IP
+	if(intval($ret) !== 1) {
+		throw new lxexception($ret. 'Another host is using the IP ' . $ip . ' and it is responding to the IP ping. Please you will ensure to use an available IP to add.', 'ipaddr');
 	}
 
 }

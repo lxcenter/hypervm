@@ -113,7 +113,7 @@ function lxins_main()
 	$list = array("which",  "lxlighttpd", "zip","unzip", "lxphp", "lxzend", "curl");
 
 	if ($installtype !== 'slave') {
-		$mysql = array("mysql", "mysql-server", "mysqlclient10");
+		$mysql = array("mysql", "mysql-server", "mysqlclient*");
 		$list = array_merge($list, $mysql);
 	}
 
@@ -142,7 +142,14 @@ function lxins_main()
 	chdir("/usr/local/lxlabs/hypervm");
 	system("mkdir -p /usr/local/lxlabs/hypervm/log");
 	@ unlink("hypervm-current.zip");
-	system("wget http://download.lxcenter.org/download/hypervm/production/hypervm/hypervm-current.zip");
+	
+	if(file_exists('.git'))	{
+		echo 'Development GIT version found. Skipping download sources.';
+	}
+	else {
+		system("wget http://download.lxcenter.org/download/hypervm/production/hypervm/hypervm-current.zip");
+	}
+	
     system("unzip -oq hypervm-current.zip", $return); 
 
 	if ($return) {
