@@ -12,7 +12,7 @@ static $__desc_nname	 = array("n", "",  "ipaddress");
 
 static function createListAddForm($parent, $class) { return false;}
 
-static function createListAlist($parent, $class)
+static function createListAlist($parent, $class = NULL)
 {
 
 	$alist[] = "a=list&c=$class";
@@ -408,12 +408,12 @@ function fillWelcomeMessage($txt)
 	$insideost = false;
 	foreach($list as $l) {
 		$l = trim($l);
-		if (csb($l, "<%ostemplate:kloxo") || csb($l, "<%ostemplate:lxadmin")) {
+		if (char_search_beg($l, "<%ostemplate:kloxo") || char_search_beg($l, "<%ostemplate:lxadmin")) {
 			$insideost = true;
 			continue;
 		}
 
-		if (csb($l, "<%/ostemplate%>")) {
+		if (char_search_beg($l, "<%/ostemplate%>")) {
 			$insideost = false;
 			continue;
 		}
@@ -547,7 +547,15 @@ function display($var)
 	}
 
 	if ($var === 'coma_vmipaddress_a') {
-		return getFirstFromList($this->vmipaddress_a)->nname;
+		$data = getFirstFromList($this->vmipaddress_a);
+		if(isset($data->nname))
+		{
+			return $data->nname;
+		}
+		else
+		{
+			return NULL;
+		}
 	}
 
 	if ($var === 'lmemoryusage_f') {
@@ -607,7 +615,7 @@ function perDisplay($var)
 	}
 }
 
-static function createListAlist($parent, $class)
+static function createListAlist($parent, $class = NULL)
 {
 	global $gbl, $sgbl, $login, $ghtml; 
 	$alist[] = "a=list&c=vps";
@@ -984,7 +992,7 @@ function doServerSpecific()
 
 function isXenLvm()
 {
-	return csb($this->corerootdir, "lvm:");
+	return char_search_beg($this->corerootdir, "lvm:");
 }
 
 function getLocationlist()
@@ -1018,7 +1026,7 @@ function getBestLocation()
 	$xenlvm = false;
 
 	foreach($list as $l) {
-		if (csb($l, "lvm:")) {
+		if (char_search_beg($l, "lvm:")) {
 			$xenlvm = true;
 		}
 		$nlist[] = $l;
@@ -1214,13 +1222,24 @@ function setUpOsTemplateDownloadParam()
 	$this->__var_masterip = getOneIPForLocalhost($this->syncserver);
 }
 
-
-function check_and_throw_error_if_some_else_is_using_vps($vpsid)
+/**
+* Check the existance of a VPS lock running.
+* 
+* Throws a exception if someone else is using a VPS.
+*
+* @author Anonymous <anonymous@lxcenter.org>
+* @author Ángel Guzmán Maeso <angel.guzman@lxcenter.org>
+*
+* @throws lxException
+* @return void
+*/
+function checkVPSLock($vps_id = NULL)
 {
-	$file = "vpslock_$vpsid.pid";
+	$file = 'vpslock_' . $vpsid . '.pid';
 
+	// @todo this seems a harmful way to check a lock file with sleep. Research this
 	$i = 0;
-	while (true) {
+	while (TRUE) {
 		if (lx_core_lock($file)) {
 			sleep(3);
 			$i++;
@@ -1231,7 +1250,6 @@ function check_and_throw_error_if_some_else_is_using_vps($vpsid)
 			break;
 		}
 	}
-
 }
 
 function postadd_xen()
@@ -1293,12 +1311,12 @@ function checkIfOffensive()
 		return true;
 	}
 
-	if (csb($this->subaction, "top_level")) {
+	if (char_search_beg($this->subaction, "top_level")) {
 		return false;
 	}
 
 	foreach($list as $l) {
-		if (csb($this->subaction, $l)) {
+		if (char_search_beg($this->subaction, $l)) {
 			return false;
 		}
 	}
@@ -1592,9 +1610,15 @@ static function addform($parent, $class, $typetd = null)
 	$vlist['resourceplan_f'] = array('A', $nclist);
 
 	$vlist['__c_subtitle_server'] = "Server";
+	//var_dump($typetd['val']);
+	
+	// $typetd['val'] openvz or xen in clientlib.php
 	$serverlist = $parent->getVpsServers($typetd['val']);
 	if (!$serverlist) {
-		throw new lxexception("no_servers_configured_for_this_driver", '', '');
+		throw new lxexception('Server no configured for driver '. $typetd['val'] . '. You can use setdriver.php for configure a driver.
+		 For example:
+		cd /usr/local/lxlabs/hypervm/httpdocs;
+		lphp.exe ../bin/common/setdriver.php --server=localhost --class=vps --driver='. $typetd['val'] . '', '', '');
 	}
 
 	$sinfo = pserver::createServerInfo($serverlist, "vps");
@@ -1769,11 +1793,11 @@ function isNotWindows()
 
 function isWindows()
 {
-	return csb($this->ostemplate, "windows");
+	return char_search_beg($this->ostemplate, "windows");
 }
 function isBlankWindows()
 {
-	return csb($this->ostemplate, "windows-lxblank");
+	return char_search_beg($this->ostemplate, "windows-lxblank");
 }
 
 function createShowActionList(&$alist) 
@@ -2241,13 +2265,23 @@ function hasFunctions() { return true; }
 function getHardProperty()
 {
 	global $gbl, $sgbl, $login, $ghtml; 
-	$driverapp = $gbl->getSyncClass('localhost', $this->syncserver, 'vps');
+	
+	$master_server = $this->__masterserver;
+	$slave_server = $this->syncserver;
+	$driverapp = $gbl->getSyncClass('localhost', $slave_server, 'vps');
+	
 	if ($this->isXen()) {
-		$maindisk = $this->getXenMaindiskName();
-		$disk = rl_exec_get($this->__masterserver, $this->syncserver,  array("vps__$driverapp", "getDiskUsage"), array($maindisk, $this->isWindows(), $this->corerootdir));
+		// Build the params
+		$maindisk   = $this->getXenMaindiskName();
+		$is_windows = $this->isWindows();
+		$root_path  = $this->corerootdir;
+		
+		$parameters = array($maindisk, $is_windows, $root_path);
+		
+		$disk = rl_exec_get($master_server, $slave_server,  array("vps__$driverapp", "getDiskUsage"), $parameters);
 		$this->used->disk_usage = $disk['used'];
 	} else {
-		$l = rl_exec_get($this->__masterserver, $this->syncserver,  array("vps__$driverapp", "vpsInfo"), array($this->getIid(), $this->corerootdir));
+		$l = rl_exec_get($master_server, $slave_server,  array("vps__$driverapp", "vpsInfo"), array($this->getIid(), $this->corerootdir));
 		$this->used->disk_usage = $l['used_s_disk'];
 		$this->used->disk_inode = $l['used_s_inode'];
 		$this->used->memory_usage = $l['used_s_memory'];
@@ -2258,7 +2292,7 @@ function getHardProperty()
 	$this->coma_vmipaddress_a = implode(",", get_namelist_from_objectlist($this->vmipaddress_a));
 }
 
-function createShowAlistConfig(&$alist)
+function createShowAlistConfig(&$alist, $subaction = null)
 {
 	global $gbl, $sgbl, $login, $ghtml; 
 	$alist['__title_main'] = $login->getKeywordUc('resource');
@@ -2365,7 +2399,15 @@ function createShowInfoList($subaction)
 		}
 	}
 
-	$ilist['IP'] = substr(implode(",", get_namelist_from_objectlist($this->vmipaddress_a)), 0, 17);
+	$name_list = get_namelist_from_objectlist($this->vmipaddress_a);
+	
+	if(!empty($name_list)) {
+		$ilist['IP'] = substr(implode(",", $name_list), 0, 17);
+	}
+	else {
+		$ilist['IP'] = NULL;
+	}
+	
 	$this->getLastLogin($ilist);
 	return $ilist;
 }
@@ -2513,22 +2555,24 @@ function createShowRlist($subaction)
 		return $rlist;
 	}
 
+	$master_server = $this->__masterserver;
+	$slave_server  = $this->syncserver;
 
-
-	$driverapp = $gbl->getSyncClass($this->__masterserver, $this->syncserver, 'vps');
-
-
-
+	$driverapp = $gbl->getSyncClass($master_server, $slave_server, 'vps');
 
 	if ($this->isXen()) {
 		if (if_demo()) {
 			$disk['used'] = '300';
 			$disk['total'] = '6000';
 		}  else {
-
-			$maindisk = $this->getXenMaindiskName();
-
-			$disk = rl_exec_get($this->__masterserver, $this->syncserver,  array("vps__$driverapp", "getDiskUsage"), array($maindisk, $this->isWindows(), $this->corerootdir));
+			// Build the params
+			$maindisk   = $this->getXenMaindiskName();
+			$is_windows = $this->isWindows();
+			$root_path  = $this->corerootdir;
+			
+			$parameters = array($maindisk, $is_windows, $root_path);
+			
+			$disk = rl_exec_get($master_server, $slave_server,  array("vps__$driverapp", "getDiskUsage"), $parameters);
 		}
 		if (!$this->priv->disk_usage) {
 			$this->priv->disk_usage = $disk['total'];

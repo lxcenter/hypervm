@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<docblox>
+  <files>
+    <directory>.</directory>
+    <directory>hypervm</directory>
+    <directory>hypervm-install</directory>
+    <ignore>doc/*</ignore>
+    <ignore>docblox/*</ignore>
+  </files>
+</docblox>

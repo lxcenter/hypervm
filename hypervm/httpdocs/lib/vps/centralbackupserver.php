@@ -33,7 +33,7 @@ static function createListAlist($parent, $class)
 }
 
 
-static function createListNlist($parent)
+static function createListNlist($parent, $class = NULL)
 {
 	//$nlist['enable_flag'] = '5%';
 	$nlist['nname'] = '100%';
