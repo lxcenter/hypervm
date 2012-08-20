@@ -1210,7 +1210,7 @@ function postAdd()
 		if ($totallist) foreach($totallist as $ip) {
 			$ipadd = new vmipaddress_a(null, $this->syncserver, $ip);
 			$this->vmipaddress_a[$ipadd->nname] = $ipadd;
-			ippool::addToTmpIpAssign($l);
+			ippool::addToTmpIpAssign($ip);
 
 		}
 	}
@@ -1283,7 +1283,7 @@ function setUpOsTemplateDownloadParam()
 * @throws lxException
 * @return void
 */
-function checkVPSLock($vps_id = NULL)
+function checkVPSLock($vpsid = NULL)
 {
 	$file = 'vpslock_' . $vpsid . '.pid';
 

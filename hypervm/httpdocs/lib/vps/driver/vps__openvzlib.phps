@@ -361,7 +361,7 @@ class vps__openvz extends Lxdriverclass {
 	
 		if (!lxfile_real($templatefile)) {
 			log_error("could not create vm. Could not download $templatefile");
-			lfile_put_contents("__path_program_root/tmp/$vspid.createfailed", "Could not download $templatefile");
+			lfile_put_contents("__path_program_root/tmp/$vpsid.createfailed", "Could not download $templatefile");
 			exit;
 		}
 	
@@ -1177,16 +1177,16 @@ class vps__openvz extends Lxdriverclass {
 	*/
 	function doSyncToSystemPre()
 	{
-		if ($main->checkIfOffensive()) {
+		if ($this->main->checkIfOffensive()) {
 			dprint('Offensive checking...' . PHP_EOL);
 			
-			$virtual_machine_name = $main->nname;
+			$virtual_machine_name = $this->main->nname;
 				
-			$main->checkVPSLock($virtual_machine_name);
+			$this->main->checkVPSLock($virtual_machine_name);
 		}
 	
-		if (!$main->corerootdir) {
-			$main->corerootdir = '/vz/private';
+		if (!$this->main->corerootdir) {
+			$this->main->corerootdir = '/vz/private';
 		}
 	}
 
