@@ -1137,7 +1137,7 @@ class vps__openvz extends Lxdriverclass {
 			}
 	
 			$string .= "#vpsid {$v['vpsid']}\n";
-			$string .= "tc class add dev $dev parent 1: classid 1:$i cbq rate {$v['uplink_usage']}kbps allot 1500 prio 5 bounded isolated\n";
+			$string .= "tc class add dev $dev parent 1: classid 1:$i cbq rate {$v['uplink_usage']}kbit allot 1500 prio 5 bounded isolated\n";
 			foreach($v['ipaddress'] as $vip) {
 				$vip = trim($vip);
 				if (!$vip) continue;
