@@ -1229,7 +1229,19 @@ function validate_ipaddress_and_throw($ip, $variable)
 	}
 }
 
+
 function validate_ipaddress($ip)
+{
+    if(strchr($ip, '.'))  // most likely IPV4
+        return validate_ipaddressV4($ip);
+    else if(strchr($ip, ':'))
+        return validate_ipaddressV6($ip);
+    
+    return 0;	//neither
+}
+
+
+function validate_ipaddressV4($ip)
 {
 	$ind= explode(".",$ip);
 	$d=0;
@@ -1252,6 +1264,37 @@ function validate_ipaddress($ip)
 		return 0;
 	}
 }
+
+function validate_ipaddressV6($ip)
+{
+	$ip = strtoupper($ip);
+	$ind = expandIP6ToArray($ip);
+	$d=0;
+	$c=0;
+
+	if(count($ind) >8) return 0;
+
+	foreach($ind as $in) {
+		$valid = preg_match("[0_9ABCDEF]*");
+		if(!$valid)
+			return 0;
+	}
+	return 1;
+}
+
+function expandIP6ToArray($ip){
+        //Make sure we have 8 parts
+        while(count(explode(":",$ip)) < 8){
+                $ip = str_replace("::",":::",$ip);
+        } 
+          
+        $ipa = explode(":",$ip);
+        for($i=0;$i<8;$i++){    
+                $ipa[$i]=str_pad($ipa[$i],4,"0",STRPADLEFT);
+        } 
+        return $ipa;
+} 
+
 
 function make_sure_directory_is_lxlabs($file)
 {
