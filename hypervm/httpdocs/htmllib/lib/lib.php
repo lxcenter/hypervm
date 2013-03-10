@@ -1295,6 +1295,12 @@ function expandIP6ToArray($ip){
         return $ipa;
 } 
 
+// !! we only check for . and : !!
+// NO validation done!
+function isIPV6($ip)
+{
+  return strchr($ip, ':');
+}
 
 function make_sure_directory_is_lxlabs($file)
 {
