@@ -1155,7 +1155,6 @@ function mycount($olist)
 
 
 
-
 function full_validate_ipaddress($ip, $variable = 'ipaddress')
 {
 	// variable is nname or ipaddress
@@ -1170,7 +1169,9 @@ function full_validate_ipaddress($ip, $variable = 'ipaddress')
 		throw new lxException('Invalid IP address: ' . $ip, $variable);
 	}
 
-	$ret = lxshell_return("ping", "-n", "-c", "1", "-w", "5", $ip);
+	if(isIPV6($ip))
+             $ret = lxshell_return("ping6", "-n", "-c", "1", "-w", "5", $ip);
+	else $ret = lxshell_return("ping", "-n", "-c", "1", "-w", "5", $ip);
 	
 	// If the return status is 1, the ping fail and nobody uses. But if return is 0, somebody is using the IP
 	if(intval($ret) !== 1) { 
@@ -1229,7 +1230,19 @@ function validate_ipaddress_and_throw($ip, $variable)
 	}
 }
 
+
 function validate_ipaddress($ip)
+{
+    if(strchr($ip, '.'))  // most likely IPV4
+        return validate_ipaddressV4($ip);
+    else if(strchr($ip, ':'))
+        return validate_ipaddressV6($ip);
+    
+    return 0;	//neither
+}
+
+
+function validate_ipaddressV4($ip)
 {
 	$ind= explode(".",$ip);
 	$d=0;
@@ -1251,6 +1264,53 @@ function validate_ipaddress($ip)
 	} else  {
 		return 0;
 	}
+}
+
+function validate_ipaddressV6($ip)
+{
+	$ip = strtoupper($ip);
+	$ind = expandIP6ToArray($ip);
+	$d=0;
+	$c=0;
+
+	if(count($ind) >8) {
+	    throw new lxException('Invalid IP address: ' . $ip . ' Not enough parts', $variable);
+
+	    return 0;
+	}
+
+	foreach($ind as $in) {
+		$valid = preg_match("/[0_9ABCDEF]*/", $in);
+		if(!$valid){
+                        throw new lxException('Invalid IP address: ' . $ip . ' Contains not hexa characters', $variable);
+			return 0;
+                    }
+	}
+	return 1;
+}
+
+function expandIP6ToArray($ip){
+        //Make sure we have 8 parts
+        while(count(explode(":",$ip)) < 8){
+                $ip = str_replace("::",":::",$ip);
+        } 
+          
+        $ipa = explode(":",$ip);
+        for($i=0;$i<8;$i++){    
+                $ipa[$i]=str_pad($ipa[$i],4,"0",STRPADLEFT);
+        } 
+        return $ipa;
+} 
+
+// !! we only check for . and : !!
+// NO validation done!
+function isIPV6($ip)
+{
+  if(strchr($ip, ':') && !strchr($ip, '.')) return true;
+  if(strchr($ip, '.') && !strchr($ip, ':')) return false;
+  
+  throw new lxException('Invalid IP address: ' . $ip . ' Contains both dot and colon!', $variable);
+    return false;  
 }
 
 function make_sure_directory_is_lxlabs($file)

@@ -361,7 +361,7 @@ class vps__openvz extends Lxdriverclass {
 	
 		if (!lxfile_real($templatefile)) {
 			log_error("could not create vm. Could not download $templatefile");
-			lfile_put_contents("__path_program_root/tmp/$vspid.createfailed", "Could not download $templatefile");
+			lfile_put_contents("__path_program_root/tmp/$vpsid.createfailed", "Could not download $templatefile");
 			exit;
 		}
 	
@@ -451,8 +451,15 @@ class vps__openvz extends Lxdriverclass {
 			if ($vpsflag) {
 				$ret = lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--ipadd", $ip->nname, "--save");
 			}
-			lxshell_return("iptables", "-A", "FORWARD", "-s", $ip->nname);
-			lxshell_return("iptables", "-A", "FORWARD", "-d", $ip->nname);
+			if(isIPV6($ip->nname)){
+				lxshell_return("ip6tables", "-A", "FORWARD", "-s", $ip->nname, "-j", "ACCEPT");
+				lxshell_return("ip6tables", "-A", "FORWARD", "-d", $ip->nname, "-j", "ACCEPT");
+			}
+			else
+			{
+				lxshell_return("iptables", "-A", "FORWARD", "-s", $ip->nname, "-j", "ACCEPT");
+				lxshell_return("iptables", "-A", "FORWARD", "-d", $ip->nname, "-j", "ACCEPT");
+			}
 		}
 		return $ret;
 	}
@@ -463,8 +470,15 @@ class vps__openvz extends Lxdriverclass {
 			if ($vpsflag) {
 				lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--ipdel", $ip->nname, "--save");
 			}
-			lxshell_return("iptables", "-D", "FORWARD", "-s", $ip->nname);
-			lxshell_return("iptables", "-D", "FORWARD", "-d", $ip->nname);
+			if(isIPV6($ip->nname)){
+				lxshell_return("ip6tables", "-D", "FORWARD", "-s", $ip->nname, "-j", "ACCEPT");
+				lxshell_return("ip6tables", "-D", "FORWARD", "-d", $ip->nname, "-j", "ACCEPT");
+			}
+			else
+			{
+				lxshell_return("iptables", "-D", "FORWARD", "-s", $ip->nname, "-j", "ACCEPT");
+				lxshell_return("iptables", "-D", "FORWARD", "-d", $ip->nname, "-j", "ACCEPT");
+			}
 		}
 	}
 
@@ -1137,7 +1151,7 @@ class vps__openvz extends Lxdriverclass {
 			}
 	
 			$string .= "#vpsid {$v['vpsid']}\n";
-			$string .= "tc class add dev $dev parent 1: classid 1:$i cbq rate {$v['uplink_usage']}kbps allot 1500 prio 5 bounded isolated\n";
+			$string .= "tc class add dev $dev parent 1: classid 1:$i cbq rate {$v['uplink_usage']}kbit allot 1500 prio 5 bounded isolated\n";
 			foreach($v['ipaddress'] as $vip) {
 				$vip = trim($vip);
 				if (!$vip) continue;
@@ -1163,16 +1177,16 @@ class vps__openvz extends Lxdriverclass {
 	*/
 	function doSyncToSystemPre()
 	{
-		if ($main->checkIfOffensive()) {
+		if ($this->main->checkIfOffensive()) {
 			dprint('Offensive checking...' . PHP_EOL);
 			
-			$virtual_machine_name = $main->nname;
+			$virtual_machine_name = $this->main->nname;
 				
-			$main->checkVPSLock($virtual_machine_name);
+			$this->main->checkVPSLock($virtual_machine_name);
 		}
 	
-		if (!$main->corerootdir) {
-			$main->corerootdir = '/vz/private';
+		if (!$this->main->corerootdir) {
+			$this->main->corerootdir = '/vz/private';
 		}
 	}
 
