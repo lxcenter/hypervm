@@ -243,7 +243,63 @@ function getIpPool($totalneeded)
 		$nameserver = $l->nameserver;
 		$networkgateway = $l->networkgateway;
 		$netmask = $l->networknetmask;
-		$iplist = $l->getFreeIp($newnum);
+		$iplist = $l->getFreeIp($newnumm, null);
+		$totallist = lx_array_merge(array($iplist, $totallist));
+
+		if (count($totallist) >= $totalneeded) {
+			break;
+		} else {
+			$newnum = $totalneeded - count($totallist);
+		}
+	}
+	return array('nameserver' => $nameserver, 'networkgateway' => $networkgateway, 'ip' => $totallist, 'networknetmask' => $netmask);
+}
+
+function getIpv4Pool($totalneeded)
+{
+
+	if (!($totalneeded > 0)) {
+		return;
+	}
+	$list = $this->getList('ippool');
+	if (!$list) {
+		throw new lxException('This slave has not a IP pool configured.', null, $this->nname);
+	}
+	$totallist = null;
+	$newnum = $totalneeded;
+	foreach((array) $list as $l) {
+		$nameserver = $l->nameserver;
+		$networkgateway = $l->networkgateway;
+		$netmask = $l->networknetmask;
+		$iplist = $l->getFreeIp($newnumm, 'ipv4');
+		$totallist = lx_array_merge(array($iplist, $totallist));
+
+		if (count($totallist) >= $totalneeded) {
+			break;
+		} else {
+			$newnum = $totalneeded - count($totallist);
+		}
+	}
+	return array('nameserver' => $nameserver, 'networkgateway' => $networkgateway, 'ip' => $totallist, 'networknetmask' => $netmask);
+}
+
+function getIpv6Pool($totalneeded)
+{
+
+	if (!($totalneeded > 0)) {
+		return;
+	}
+	$list = $this->getList('ippool');
+	if (!$list) {
+		throw new lxException('This slave has not a IP pool configured.', null, $this->nname);
+	}
+	$totallist = null;
+	$newnum = $totalneeded;
+	foreach((array) $list as $l) {
+		$nameserver = $l->nameserver;
+		$networkgateway = $l->networkgateway;
+		$netmask = $l->networknetmask;
+		$iplist = $l->getFreeIp($newnum, 'ipv6');
 		$totallist = lx_array_merge(array($iplist, $totallist));
 
 		if (count($totallist) >= $totalneeded) {
