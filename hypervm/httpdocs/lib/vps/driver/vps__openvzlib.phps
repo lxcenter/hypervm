@@ -451,8 +451,15 @@ class vps__openvz extends Lxdriverclass {
 			if ($vpsflag) {
 				$ret = lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--ipadd", $ip->nname, "--save");
 			}
-			lxshell_return("iptables", "-A", "FORWARD", "-s", $ip->nname);
-			lxshell_return("iptables", "-A", "FORWARD", "-d", $ip->nname);
+			if(isIPV6($ip->nname)){
+				lxshell_return("ip6tables", "-A", "FORWARD", "-s", $ip->nname, "-j", "ACCEPT");
+				lxshell_return("ip6tables", "-A", "FORWARD", "-d", $ip->nname, "-j", "ACCEPT");
+			}
+			else
+			{
+				lxshell_return("iptables", "-A", "FORWARD", "-s", $ip->nname, "-j", "ACCEPT");
+				lxshell_return("iptables", "-A", "FORWARD", "-d", $ip->nname, "-j", "ACCEPT");
+			}
 		}
 		return $ret;
 	}
@@ -463,8 +470,15 @@ class vps__openvz extends Lxdriverclass {
 			if ($vpsflag) {
 				lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--ipdel", $ip->nname, "--save");
 			}
-			lxshell_return("iptables", "-D", "FORWARD", "-s", $ip->nname);
-			lxshell_return("iptables", "-D", "FORWARD", "-d", $ip->nname);
+			if(isIPV6($ip->nname)){
+				lxshell_return("ip6tables", "-D", "FORWARD", "-s", $ip->nname, "-j", "ACCEPT");
+				lxshell_return("ip6tables", "-D", "FORWARD", "-d", $ip->nname, "-j", "ACCEPT");
+			}
+			else
+			{
+				lxshell_return("iptables", "-D", "FORWARD", "-s", $ip->nname, "-j", "ACCEPT");
+				lxshell_return("iptables", "-D", "FORWARD", "-d", $ip->nname, "-j", "ACCEPT");
+			}
 		}
 	}
 

@@ -263,8 +263,7 @@ function display($var)
 }
 
 
-// TODO with IPV6 getting and checking individual ips could take a while...
-function getFreeIp($num)
+function getFreeIp($num, $type=null)
 {
 
 	if (!$num) { return; }
@@ -282,7 +281,9 @@ function getFreeIp($num)
 
 	$pingip = null;
 	foreach($list as $l) {
-
+		if($type && $type=='ipv6') 
+			if(!isIPV6($l)) return $res;
+			
 		$p = $sq->getRowsWhere("nname = '$l'");
 
 		if ($p) { continue; }
@@ -342,6 +343,7 @@ static function addToTmpIpAssign($l)
 
 function getIndividualIpList()
 {
+
 	if(isIPV6($this->lastip)) $sep=':';
 	else $sep='.';
 
@@ -351,10 +353,20 @@ function getIndividualIpList()
 	$base = explode($sep, $this->firstip);
 	$start = array_pop($base);
 	$base = implode($sep, $base);
-	for($i = $start ; $i <= $end ; $i++) {
-		$out[] = "$base$sep$i";
+	if(isIPV6($this->lastip))
+	{
+		for($i = hexdec($start) ; $i <= hexdec($end) ; $i++) {
+			$out[] = "$base$sep".dechex($i);
+		}
+	
 	}
-
+	else
+	{
+		for($i = $start ; $i <= $end ; $i++) {
+			$out[] = "$base$sep$i";
+		}
+	}
+	
 	$ex = get_namelist_from_objectlist($this->ippoolextraip_a);
 	$out = lx_merge_good($out, $ex);
 

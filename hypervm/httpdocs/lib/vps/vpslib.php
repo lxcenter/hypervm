@@ -3,10 +3,13 @@
 class vmipaddress_a extends LxaClass {
 
 static $__desc = array("n", "",  "ipaddress");
-static $__desc_ip_num = array("n", "",  "number_of_ip_from_pool");
+static $__desc_ip_num = array("n", "",  "number_of_ip_from_pool4");
+static $__desc_ip_num6 = array("n", "",  "number_of_ip_from_pool6");
 static $__desc_type = array("e", "",  "ipaddress");
-static $__desc_type_v_ippool = array("e", "",  "from_ippool");
-static $__desc_type_v_npool = array("e", "",  "number_from_ippool");
+static $__desc_type_v_ippool = array("e", "",  "from_ippool4");
+static $__desc_type_v_ippool6 = array("e", "",  "from_ippool6");
+static $__desc_type_v_npool = array("e", "",  "number_from_ippool4");
+static $__desc_type_v_npool6 = array("e", "",  "number_from_ippool6");
 static $__desc_type_v_normal = array("e", "",  "directly");
 static $__desc_nname	 = array("n", "",  "ipaddress");
 
@@ -16,9 +19,11 @@ static function createListAlist($parent, $class = NULL)
 {
 
 	$alist[] = "a=list&c=$class";
-	$alist['__v_dialog_ippo'] = "a=addform&c=$class&dta[var]=type&dta[val]=ippool";
-	$alist['__v_dialog_norm'] = "a=addform&c=$class&dta[var]=type&dta[val]=npool";
-	$alist['__v_dialog_npoo'] = "a=addform&c=$class&dta[var]=type&dta[val]=normal";
+	$alist['__v_dialog_ippo']  = "a=addform&c=$class&dta[var]=type&dta[val]=ippool";
+	$alist['__v_dialog_ippo6'] = "a=addform&c=$class&dta[var]=type&dta[val]=ippool6";
+	$alist['__v_dialog_norm']  = "a=addform&c=$class&dta[var]=type&dta[val]=npool";
+	$alist['__v_dialog_norm6'] = "a=addform&c=$class&dta[var]=type&dta[val]=npool6";
+	$alist['__v_dialog_npoo']  = "a=addform&c=$class&dta[var]=type&dta[val]=normal";
 	return $alist;
 }
 
@@ -43,7 +48,16 @@ static function addform($parent, $class, $typetd = null)
 		} else {
 			$vlist['nname'] = array('M', 'no_address');
 		}
-	} else if ($typetd['val'] === 'npool') {
+	} else if ($typetd['val'] === 'ippool6') {
+		$snco = new Pserver(null, $parent->syncserver, $parent->syncserver);
+		$list = $snco->getIpv6Pool(100000000);
+
+		if ($list['ip']) {
+			$vlist['nname'] = array('s', $list['ip']);
+		} else {
+			$vlist['nname'] = array('M', 'no_address');
+		}
+	} else if ($typetd['val'] === 'npool' || $typetd['val'] === 'npool6' ) {
 		$vlist['ip_num'] = array('s', range(1,30));
 	} else {
 		$vlist['nname'] = null;
@@ -59,6 +73,20 @@ static function add($parent, $class, $param)
 	if ($param['type'] === 'npool') {
 		$snco = new Pserver(null, $parent->syncserver, $parent->syncserver);
 		$list = $snco->getIpPool($param['ip_num']);
+		$list = $list['ip'];
+		$first = array_shift($list);
+		foreach($list as $lp) {
+			full_validate_ipaddress($lp, 'nname');
+			$vmip = new vmipaddress_a(null, null, $lp);
+			$parent->addToList('vmipaddress_a', $vmip);
+			//ippool::addToTmpIpAssign($lp);
+			//$parent->__t_new_vmipaddress_a_list[$vmip->nname] = $vmip;
+		}
+		$param['nname'] = $first;
+
+	} else if ($param['type'] === 'npool6') {
+		$snco = new Pserver(null, $parent->syncserver, $parent->syncserver);
+		$list = $snco->getIpv6Pool($param['ip_num']);
 		$list = $list['ip'];
 		$first = array_shift($list);
 		foreach($list as $lp) {
@@ -105,6 +133,7 @@ static $__desc_coma_vmipaddress_a = array("", "",  "ipaddress");
 static $__desc_parent_name_f = array("", "",  "owner");
 static $__desc_one_ipaddress_f = array("", "",  "Ip_Address_(optional)");
 static $__desc_num_ipaddress_f = array("", "",  "number_of_ips(from_pool)");
+static $__desc_num_ipv6address_f = array("", "",  "number_of_ipv6s(from_v6pool)");
 static $__desc_syncserver = array("", "",  "Server");
 
 /// Fake Variables
@@ -1145,7 +1174,28 @@ function postAdd()
 
 
 	if ($this->num_ipaddress_f) {
-		$netinfo = $syncs->getIpPool($this->num_ipaddress_f);
+		$netinfo = $syncs->getIpv4Pool($this->num_ipaddress_f);
+
+		$totallist = $netinfo['ip'];
+
+		if (!$this->nameserver) {
+			$this->nameserver = $netinfo['nameserver'];
+		}
+
+		$this->networkgateway = $netinfo['networkgateway'];
+		$this->networknetmask = $netinfo['networknetmask'];
+	
+
+		if ($totallist) foreach($totallist as $ip) {
+			$ipadd = new vmipaddress_a(null, $this->syncserver, $ip);
+			$this->vmipaddress_a[$ipadd->nname] = $ipadd;
+			ippool::addToTmpIpAssign($l);
+
+		}
+	}
+
+	if ($this->num_ipv6address_f) {
+		$netinfo = $syncs->getIpv6Pool($this->num_ipv6address_f);
 
 		$totallist = $netinfo['ip'];
 
@@ -1564,7 +1614,7 @@ static function continueForm($parent, $class, $param, $continueaction)
 static function addCommand($parent, $class, $p)
 {
 
-	checkIfVariablesSet($p, array('name', 'v-password', 'v-num_ipaddress_f', 'v-contactemail', 'v-syncserver', 'v-ostemplate'));
+	checkIfVariablesSet($p, array('name', 'v-password', 'v-num_ipaddress_f', 'v-num_ipv6address_f', 'v-contactemail', 'v-syncserver', 'v-ostemplate'));
 
 	checkIfVariablesSetOr($p, $param, 'resourceplan_f', array('v-plan_name'));
 	checkIfVariablesSetOr($p, $param, 'ttype', array('v-type'));
@@ -1596,6 +1646,7 @@ static function addform($parent, $class, $typetd = null)
 	$vlist['__v_button'] = $login->getKeywordUc('add');
 	$vlist['password'] = null;
 	$vlist['num_ipaddress_f'] = array('s', range(0, 8));
+	$vlist['num_ipv6address_f'] = array('s', range(0, 8));
 	$vlist['one_ipaddress_f'] = null;
 	$vlist['contactemail'] = "";
 	$vlist['send_welcome_f'] = "";
