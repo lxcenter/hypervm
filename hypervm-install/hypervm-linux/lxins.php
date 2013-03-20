@@ -141,16 +141,16 @@ function lxins_main()
 	system("mkdir -p /usr/local/lxlabs/hypervm");
 	chdir("/usr/local/lxlabs/hypervm");
 	system("mkdir -p /usr/local/lxlabs/hypervm/log");
-	@ unlink("hypervm-current.zip");
-	
+
 	if(file_exists('.git'))	{
 		echo 'Development GIT version found. Skipping download sources.';
 	}
 	else {
+        @ unlink("hypervm-current.zip");
 		system("wget http://download.lxcenter.org/download/hypervm/production/hypervm/hypervm-current.zip");
 	}
 	
-    system("unzip -oq hypervm-current.zip", $return); 
+    system("unzip -oq ", $return);
 
 	if ($return) {
 		print("Unzipping the core Failed.. Most likely it is corrupted. Please contact the support personnel\n");
