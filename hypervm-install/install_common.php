@@ -193,7 +193,7 @@ function install_yum_repo($osversion)
 		return;
 	}
 
-	$cont = our_file_get_contents("../lxcenter.repo.template");
+	$cont = our_file_get_contents("lxcenter.repo.template");
 	$cont = str_replace("%distro%", $osversion, $cont);
 	our_file_put_contents("/etc/yum.repos.d/lxcenter.repo", $cont);
 	if ($osversion === 'centos-4') {
