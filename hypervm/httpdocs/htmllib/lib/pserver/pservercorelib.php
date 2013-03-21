@@ -243,7 +243,7 @@ function getIpPool($totalneeded)
 		$nameserver = $l->nameserver;
 		$networkgateway = $l->networkgateway;
 		$netmask = $l->networknetmask;
-		$iplist = $l->getFreeIp($newnumm, null);
+		$iplist = $l->getFreeIp($newnum, null);
 		$totallist = lx_array_merge(array($iplist, $totallist));
 
 		if (count($totallist) >= $totalneeded) {
@@ -271,7 +271,7 @@ function getIpv4Pool($totalneeded)
 		$nameserver = $l->nameserver;
 		$networkgateway = $l->networkgateway;
 		$netmask = $l->networknetmask;
-		$iplist = $l->getFreeIp($newnumm, 'ipv4');
+		$iplist = $l->getFreeIp($newnum, 'ipv4');
 		$totallist = lx_array_merge(array($iplist, $totallist));
 
 		if (count($totallist) >= $totalneeded) {
