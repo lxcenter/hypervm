@@ -283,6 +283,8 @@ function getFreeIp($num, $type=null)
 	foreach($list as $l) {
 		if($type && $type=='ipv6') 
 			if(!isIPV6($l)) return $res;
+		if(!$type || $type=='ipv4') 
+			if(isIPV6($l)) return $res;
 			
 		$p = $sq->getRowsWhere("nname = '$l'");
 
