@@ -36,12 +36,13 @@ if [ ! -d '../.git' ]; then
 	# Read version
 	# Please note, this must be a running (HyperVM installed)  machine (Development/Test/Release server)
 	if ! [ -f /script/version ] ; then
-	    echo "## Packaging failed. No /script/version found."
-	    echo "## Are you sure you are running a development version?"
+		echo "## Packaging failed. No /script/version found."
+		echo "## Are you sure you are running a development version?"
 		echo "### Aborted."
 		echo "################################"
-	    exit
+		exit
 	fi
+
 	version=`/script/version`
 	build=`git log --pretty=format:'' | wc -l`
 else
@@ -50,11 +51,12 @@ else
 fi
 
 rm -f hypervm-$version.$build.zip
-#
+
 echo "### Compile c files..."
 # Compile C files
 cd src
-make all; make install
+make all
+make install
 cd ../
 #
 echo "### Create zip package..."
@@ -65,7 +67,6 @@ zip -r9 $file ./src ./bin ./cexe ./file ./httpdocs ./pscript ./sbin ./RELEASEINF
     "*/CVS/*" \
     "*/.git/*" \
     "*/.svn/*"
-#
 
 file=hypervm-$version.$build.tar.gz
 
@@ -91,5 +92,3 @@ fi
 echo "### Finished"
 echo "################################"
 ls -lh hypervm-*.*
-#
-
