@@ -808,6 +808,9 @@ class vps__openvz extends Lxdriverclass {
 
 	function reboot()
 	{
+		if (!$this->main->isOn('reboot_confirm_f')) {
+			throw new lxException("need_confirm_reboot", 'reboot_confirm_f');
+		}
 		global $global_shell_out, $global_shell_error, $global_shell_ret;
 		$this->stop();
 		#$this->changeConf("CAPABILITY", "SYS_TIME:on");

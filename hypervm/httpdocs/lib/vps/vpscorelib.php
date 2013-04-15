@@ -31,6 +31,8 @@ static $__desc_rootpassword = array("", "",  "root_password");
 static $__desc_kloxo_type = array("", "",  "kloxo_install_type");
 static $__desc_newostemplate_name_f = array("n", "",  "new_osimage_name");
 static $__desc_rebuild_confirm_f = array("f", "",  "confirm_rebuild");
+static $__desc_reboot_confirm_f = array("f", "",  "confirm_reboot");
+static $__desc_poweroff_confirm_f = array("f", "",  "confirm_poweroff");
 static $__desc_recover_confirm_f = array("f", "",  "confirm_recover");
 
 
@@ -67,7 +69,7 @@ static $__acdesc_update_information =  array("","",  "information");
 static $__acdesc_update_view =  array("","",  "view_site"); 
 static $__acdesc_show_config  =  array("","",  "advanced"); 
 static $__acdesc_show_graph  =  array("","",  "graph"); 
-static $__acdesc_update_poweroff  =  array("","",  "shutdown"); 
+static $__acdesc_update_poweroff  =  array("","",  "poweroff"); 
 static $__acdesc_update_installkloxo  =  array("","",  "install_kloxo"); 
 static $__acdesc_update_reboot =  array("","",  "Reboot"); 
 static $__acdesc_update_changenname =  array("","",  "Change Name"); 
