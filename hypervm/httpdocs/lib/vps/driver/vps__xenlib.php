@@ -1330,6 +1330,9 @@ class vps__xen extends Lxdriverclass {
 			}
 			$ret = lxfile_symlink("{$this->main->configrootdir}/{$this->main->nname}.cfg", "/etc/xen/auto");
 		} else {
+			if (!$this->main->isOn('poweroff_confirm_f')) {
+				throw new lxException("need_confirm_poweroff", 'poweroff_confirm_f');
+			}
 			$ret = $this->stop();
 			lunlink("/etc/xen/auto/{$this->main->nname}.cfg");
 		}
@@ -1703,6 +1706,10 @@ class vps__xen extends Lxdriverclass {
 
 	public function reboot()
 	{
+		if (!$this->main->isOn('reboot_confirm_f')) {
+			throw new lxException("need_confirm_reboot", 'reboot_confirm_f');
+		}
+
 		global $global_shell_out, $global_shell_error, $global_shell_ret;
 		$this->stop();
 		$ret = $this->start();

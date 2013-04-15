@@ -517,6 +517,10 @@ class vps__openvz extends Lxdriverclass {
 			}
 			$ret = lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--onboot", "yes", "--save");
 		} else {
+			if (!$this->main->isOn('poweroff_confirm_f')) {
+				throw new lxException("need_confirm_poweroff", 'poweroff_confirm_f');
+			}
+
 			$ret = $this->stop();
 			$ret = lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--onboot", "no", "--save");
 		}
@@ -744,6 +748,9 @@ class vps__openvz extends Lxdriverclass {
 
 	function reboot()
 	{
+		if (!$this->main->isOn('reboot_confirm_f')) {
+			throw new lxException("need_confirm_reboot", 'reboot_confirm_f');
+		}
 		global $global_shell_out, $global_shell_error, $global_shell_ret;
 		$this->stop();
 		#$this->changeConf("CAPABILITY", "SYS_TIME:on");
