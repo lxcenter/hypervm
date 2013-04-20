@@ -68,7 +68,7 @@ class vps__openvz extends Lxdriverclass {
 					$outgoing[$list[6]][] = $list[1];
 					$sourcelist[$list[6]] = true;
 				}
-			} else if(csb($list[6], "0.0.0")) {
+			} else if(csb($list[7], "0.0.0")) {
 				if (!isset($dstlist[$list[7]])) {
 					$incoming[$list[7]][] = $list[1];
 					$dstlist[$list[7]] = true;
@@ -452,13 +452,13 @@ class vps__openvz extends Lxdriverclass {
 				$ret = lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--ipadd", $ip->nname, "--save");
 			}
 			if(isIPV6($ip->nname)){
-				lxshell_return("ip6tables", "-A", "FORWARD", "-s", $ip->nname, "-j", "ACCEPT");
-				lxshell_return("ip6tables", "-A", "FORWARD", "-d", $ip->nname, "-j", "ACCEPT");
+				lxshell_return("ip6tables", "-I", "FORWARD", "1", "-s", $ip->nname);
+				lxshell_return("ip6tables", "-I", "FORWARD", "1", "-d", $ip->nname);
 			}
 			else
 			{
-				lxshell_return("iptables", "-A", "FORWARD", "-s", $ip->nname, "-j", "ACCEPT");
-				lxshell_return("iptables", "-A", "FORWARD", "-d", $ip->nname, "-j", "ACCEPT");
+				lxshell_return("iptables", "-I", "FORWARD", "1", "-s", $ip->nname);
+				lxshell_return("iptables", "-I", "FORWARD", "1", "-d", $ip->nname);
 			}
 		}
 		return $ret;
@@ -471,13 +471,13 @@ class vps__openvz extends Lxdriverclass {
 				lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--ipdel", $ip->nname, "--save");
 			}
 			if(isIPV6($ip->nname)){
-				lxshell_return("ip6tables", "-D", "FORWARD", "-s", $ip->nname, "-j", "ACCEPT");
-				lxshell_return("ip6tables", "-D", "FORWARD", "-d", $ip->nname, "-j", "ACCEPT");
+				lxshell_return("ip6tables", "-D", "FORWARD", "-s", $ip->nname);
+				lxshell_return("ip6tables", "-D", "FORWARD", "-d", $ip->nname);
 			}
 			else
 			{
-				lxshell_return("iptables", "-D", "FORWARD", "-s", $ip->nname, "-j", "ACCEPT");
-				lxshell_return("iptables", "-D", "FORWARD", "-d", $ip->nname, "-j", "ACCEPT");
+				lxshell_return("iptables", "-D", "FORWARD", "-s", $ip->nname);
+				lxshell_return("iptables", "-D", "FORWARD", "-d", $ip->nname);
 			}
 		}
 	}

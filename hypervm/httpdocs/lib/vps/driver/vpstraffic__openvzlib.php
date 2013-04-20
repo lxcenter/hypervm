@@ -49,9 +49,9 @@ static function iptables_delete()
 				break;
 			}
 			dprint($output);
-			dprint("\n $cmd -D FORWARD -s $l -j ACCEPT\n");
-			exec("$cmd -D FORWARD -s $l -j ACCEPT > /dev/null");
-			exec("$cmd -D FORWARD -d $l -j ACCEPT> /dev/null");
+			dprint("\n $cmd -D FORWARD -s $l \n");
+			exec("$cmd -D FORWARD -s $l  > /dev/null");
+			exec("$cmd -D FORWARD -d $l  > /dev/null");
 		}
 	}
 
@@ -68,12 +68,12 @@ static function iptables_create()
 			continue;
 		}
 		if(self::isIPV6($l)){
-			exec("ip6tables -A FORWARD -s $l -j ACCEPT");
-			exec("ip6tables -A FORWARD -d $l -j ACCEPT");
+			exec("ip6tables -I FORWARD 1 -s $l ");
+			exec("ip6tables -I FORWARD 1 -d $l ");
 		}
 		else{
-			exec("iptables -A FORWARD -s $l -j ACCEPT");
-			exec("iptables -A FORWARD -d $l -j ACCEPT");
+			exec("iptables -I FORWARD 1 -s $l ");
+			exec("iptables -I FORWARD 1 -d $l ");
 		}
 	}
 }
