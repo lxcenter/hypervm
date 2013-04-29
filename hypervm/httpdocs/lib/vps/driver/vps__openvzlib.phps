@@ -382,7 +382,14 @@ class vps__openvz extends Lxdriverclass {
 		$ret = lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--onboot", "yes", "--save");
 	
 		$this->setEveryThing();
-		$this->setRootPassword();
+		$this->setUplinkUsage();
+
+		if (lxfile_exists($this->main->corerootdir."/".$this->main->vpsid."/usr/lib/inithooks/run"))
+		{
+			log_log("turnkey", "creating: " .$this->main->corerootdir."/".$this->main->vpsid."/etc/inithooks.conf");
+			$this->setTurnkey();
+		}
+
 	
 	
 		$this->main->doKloxoInit("{$this->main->corerootdir}/{$this->main->vpsid}");
@@ -532,6 +539,18 @@ class vps__openvz extends Lxdriverclass {
 	function setRootPassword()
 	{
 		lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--save", "--userpasswd", "root:{$this->main->rootpassword}");
+	}
+
+	function setTurnkey()
+	{
+		$string  = "HUB_APIKEY=SKIP\n"
+			."ROOT_PASS={$this->main->rootpassword}\n"
+			."DB_PASS={$this->main->rootpassword}\n"
+		 	."APP_EMAIL={$this->main->contactemail}\n"
+			."APP_DOMAIN=DEFAULT\n" 
+			."SEC_UPDATES=FORCE\n"
+			."APP_PASS={$this->main->rootpassword}\n";
+		lfile_put_contents("{$this->main->corerootdir}/{$this->main->vpsid}/etc/inithooks.conf", $string);
 	}
 	
 	function setMemoryUsage()
@@ -872,10 +891,16 @@ class vps__openvz extends Lxdriverclass {
 		}
 		lxfile_mkdir("{$this->main->corerootdir}/{$this->main->vpsid}");
 		$ret = lxshell_return("tar", "-C", "{$this->main->corerootdir}/{$this->main->vpsid}", '--numeric-owner', "-xzpf", $templatefile);
-	
 		if ($ret) {
 			throw new lxException("rebuild_failed_could_not_untar");
 		}
+
+		if (lxfile_exists($this->main->corerootdir."/".$this->main->vpsid."/usr/lib/inithooks/run"))
+		{
+			log_log("turnkey", "creating: " .$this->main->corerootdir."/".$this->main->vpsid."/etc/inithooks.conf");
+			$this->setTurnkey();
+		}
+
 	
 		$this->changeConf("OSTEMPLATE", $this->main->ostemplate);
 	
