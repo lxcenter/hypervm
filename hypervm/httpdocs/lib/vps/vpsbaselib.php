@@ -201,11 +201,13 @@ function updateform($subaction, $param)
 			return $vlist;
 
 		case "reboot":
-			$vlist['confirm_f'] = array("M", "Confirm");
+			$vlist['reboot_confirm_f'] =null;//  array("f", "Confirm");
+			$vlist['__v_button']= 'Reboot';
 			return $vlist;
 
 		case "shutdown":
-			$vlist['confirm_f'] = array("M", "Confirm");
+			$vlist['poweroff_confirm_f'] =null;//  array("f", "Confirm");
+			$vlist['__v_button']= 'Power OFF';
 			return $vlist;
 
 		case "mainipaddress":
