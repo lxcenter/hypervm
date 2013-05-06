@@ -8,7 +8,8 @@ debug_for_backend();
 $global_dontlogshell = true;
 execSisinfoc();
 
-system("iptables -t nat -L");
+// Why do we run this?? OA
+system("iptables -t nat -nvL");
 
 vpstraffic__openvz::iptables_delete();
 vpstraffic__openvz::iptables_create();

@@ -68,7 +68,7 @@ class vps__openvz extends Lxdriverclass {
 					$outgoing[$list[6]][] = $list[1];
 					$sourcelist[$list[6]] = true;
 				}
-			} else if(csb($list[6], "0.0.0")) {
+			} else if(csb($list[7], "0.0.0")) {
 				if (!isset($dstlist[$list[7]])) {
 					$incoming[$list[7]][] = $list[1];
 					$dstlist[$list[7]] = true;
@@ -382,7 +382,14 @@ class vps__openvz extends Lxdriverclass {
 		$ret = lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--onboot", "yes", "--save");
 	
 		$this->setEveryThing();
-		$this->setRootPassword();
+		$this->setUplinkUsage();
+
+		if (lxfile_exists($this->main->corerootdir."/".$this->main->vpsid."/usr/lib/inithooks/run"))
+		{
+			log_log("turnkey", "creating: " .$this->main->corerootdir."/".$this->main->vpsid."/etc/inithooks.conf");
+			$this->setTurnkey();
+		}
+
 	
 	
 		$this->main->doKloxoInit("{$this->main->corerootdir}/{$this->main->vpsid}");
@@ -452,13 +459,13 @@ class vps__openvz extends Lxdriverclass {
 				$ret = lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--ipadd", $ip->nname, "--save");
 			}
 			if(isIPV6($ip->nname)){
-				lxshell_return("ip6tables", "-A", "FORWARD", "-s", $ip->nname, "-j", "ACCEPT");
-				lxshell_return("ip6tables", "-A", "FORWARD", "-d", $ip->nname, "-j", "ACCEPT");
+				lxshell_return("ip6tables", "-I", "FORWARD", "1", "-s", $ip->nname);
+				lxshell_return("ip6tables", "-I", "FORWARD", "1", "-d", $ip->nname);
 			}
 			else
 			{
-				lxshell_return("iptables", "-A", "FORWARD", "-s", $ip->nname, "-j", "ACCEPT");
-				lxshell_return("iptables", "-A", "FORWARD", "-d", $ip->nname, "-j", "ACCEPT");
+				lxshell_return("iptables", "-I", "FORWARD", "1", "-s", $ip->nname);
+				lxshell_return("iptables", "-I", "FORWARD", "1", "-d", $ip->nname);
 			}
 		}
 		return $ret;
@@ -471,13 +478,13 @@ class vps__openvz extends Lxdriverclass {
 				lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--ipdel", $ip->nname, "--save");
 			}
 			if(isIPV6($ip->nname)){
-				lxshell_return("ip6tables", "-D", "FORWARD", "-s", $ip->nname, "-j", "ACCEPT");
-				lxshell_return("ip6tables", "-D", "FORWARD", "-d", $ip->nname, "-j", "ACCEPT");
+				lxshell_return("ip6tables", "-D", "FORWARD", "-s", $ip->nname);
+				lxshell_return("ip6tables", "-D", "FORWARD", "-d", $ip->nname);
 			}
 			else
 			{
-				lxshell_return("iptables", "-D", "FORWARD", "-s", $ip->nname, "-j", "ACCEPT");
-				lxshell_return("iptables", "-D", "FORWARD", "-d", $ip->nname, "-j", "ACCEPT");
+				lxshell_return("iptables", "-D", "FORWARD", "-s", $ip->nname);
+				lxshell_return("iptables", "-D", "FORWARD", "-d", $ip->nname);
 			}
 		}
 	}
@@ -517,6 +524,10 @@ class vps__openvz extends Lxdriverclass {
 			}
 			$ret = lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--onboot", "yes", "--save");
 		} else {
+			if (!$this->main->isOn('poweroff_confirm_f')) {
+				throw new lxException("need_confirm_poweroff", 'poweroff_confirm_f');
+			}
+
 			$ret = $this->stop();
 			$ret = lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--onboot", "no", "--save");
 		}
@@ -528,6 +539,18 @@ class vps__openvz extends Lxdriverclass {
 	function setRootPassword()
 	{
 		lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--save", "--userpasswd", "root:{$this->main->rootpassword}");
+	}
+
+	function setTurnkey()
+	{
+		$string  = "HUB_APIKEY=SKIP\n"
+			."ROOT_PASS={$this->main->rootpassword}\n"
+			."DB_PASS={$this->main->rootpassword}\n"
+		 	."APP_EMAIL={$this->main->contactemail}\n"
+			."APP_DOMAIN=DEFAULT\n" 
+			."SEC_UPDATES=FORCE\n"
+			."APP_PASS={$this->main->rootpassword}\n";
+		lfile_put_contents("{$this->main->corerootdir}/{$this->main->vpsid}/etc/inithooks.conf", $string);
 	}
 	
 	function setMemoryUsage()
@@ -744,6 +767,9 @@ class vps__openvz extends Lxdriverclass {
 
 	function reboot()
 	{
+		if (!$this->main->isOn('reboot_confirm_f')) {
+			throw new lxException("need_confirm_reboot", 'reboot_confirm_f');
+		}
 		global $global_shell_out, $global_shell_error, $global_shell_ret;
 		$this->stop();
 		#$this->changeConf("CAPABILITY", "SYS_TIME:on");
@@ -865,10 +891,16 @@ class vps__openvz extends Lxdriverclass {
 		}
 		lxfile_mkdir("{$this->main->corerootdir}/{$this->main->vpsid}");
 		$ret = lxshell_return("tar", "-C", "{$this->main->corerootdir}/{$this->main->vpsid}", '--numeric-owner', "-xzpf", $templatefile);
-	
 		if ($ret) {
 			throw new lxException("rebuild_failed_could_not_untar");
 		}
+
+		if (lxfile_exists($this->main->corerootdir."/".$this->main->vpsid."/usr/lib/inithooks/run"))
+		{
+			log_log("turnkey", "creating: " .$this->main->corerootdir."/".$this->main->vpsid."/etc/inithooks.conf");
+			$this->setTurnkey();
+		}
+
 	
 		$this->changeConf("OSTEMPLATE", $this->main->ostemplate);
 	

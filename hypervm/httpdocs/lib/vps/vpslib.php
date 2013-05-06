@@ -41,7 +41,7 @@ static function addform($parent, $class, $typetd = null)
 
 	if ($typetd['val'] === 'ippool') {
 		$snco = new Pserver(null, $parent->syncserver, $parent->syncserver);
-		$list = $snco->getIpPool(100000000);
+		$list = $snco->getIpv4Pool(10000000);
 
 		if ($list['ip']) {
 			$vlist['nname'] = array('s', $list['ip']);
@@ -72,7 +72,7 @@ static function add($parent, $class, $param)
 
 	if ($param['type'] === 'npool') {
 		$snco = new Pserver(null, $parent->syncserver, $parent->syncserver);
-		$list = $snco->getIpPool($param['ip_num']);
+		$list = $snco->getIpv4Pool($param['ip_num']);
 		$list = $list['ip'];
 		$first = array_shift($list);
 		foreach($list as $lp) {
@@ -292,7 +292,8 @@ static function findVpsGraph($server, $type)
 	$driverapp = $gbl->getSyncClass(null, $server, 'vps');
 
 	$sq = new Sqlite(null, 'vps');
-	$list = $sq->getRowsWhere("syncserver = '$server'", array("nname", "vifname", "vpsid"));
+	$list = $sq->getRowsWhere("syncserver = '$server' AND status='on' ", array("nname", "vifname", "vpsid"));
+//	$list = $sq->getRowsWhere("syncserver = '$server'  ", array("nname", "vifname", "vpsid"));
 
 	switch($type) {
 		case "vpstraffic":
@@ -2093,8 +2094,8 @@ function createShowAlist(&$alist, $subaction = null)
 
 
 	$alist[] = "a=update&sa=boot";
-	$alist[] = "a=update&sa=poweroff";
-	$alist[] = "a=update&sa=reboot";
+	$alist[] = "a=updateform&sa=poweroff";
+	$alist[] = "a=updateform&sa=reboot";
 	if ($this->isXen()) {
 		$alist[] = "a=updateform&sa=mount";
 	}
@@ -2239,8 +2240,8 @@ static function get_full_alist()
 
 
 
-	$alist[] = "a=update&sa=reboot";
-	$alist[] = "a=update&sa=poweroff";
+	$alist[] = "a=updateform&sa=reboot";
+	$alist[] = "a=updateform&sa=poweroff";
 
 	$alist[] = "a=list&c=openvzqos";
 	//$this->getLxclientActions($alist);
