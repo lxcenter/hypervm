@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #    HyperVM, Server Virtualization GUI for OpenVZ and Xen
 #
 #    Copyright (C) 2000-2009	LxLabs
@@ -18,7 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 # This file creates binaries.
-# 
+#
 #
 ######
 echo "################################"
@@ -26,8 +26,8 @@ echo "### Start compiling"
 # Compile C files
 # Part 1
 cd src/
-make all; make install
+make all
+make install
 cd ../
 echo "### Finished"
 echo "################################"
-#

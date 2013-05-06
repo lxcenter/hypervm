@@ -34,21 +34,24 @@ static function iptables_delete()
 		if (!$l) {
 			continue;
 		}
+		if(self::isIPV6($l)) $cmd= "ip6tables";
+		else $cmd="iptables";
+		
 		$count = 0;
 		while (true) {
 			$count++;
-			exec("iptables -nv -L FORWARD", $output);
+			exec("$cmd -nv -L FORWARD", $output);
 			$output = implode("\n", $output);
-			if ($count > 10) {
+			if ($count > 20) {
 				break;
 			}
 			if (!preg_match("/$l/", $output)) {
 				break;
 			}
 			dprint($output);
-			dprint("iptables -D FORWARD -s $l\n");
-			exec("iptables -D FORWARD -s $l");
-			exec("iptables -D FORWARD -d $l");
+			dprint("\n $cmd -D FORWARD -s $l \n");
+			exec("$cmd -D FORWARD -s $l  > /dev/null");
+			exec("$cmd -D FORWARD -d $l  > /dev/null");
 		}
 	}
 
@@ -64,12 +67,27 @@ static function iptables_create()
 		if (!$l) {
 			continue;
 		}
-		exec("iptables -A FORWARD -s $l");
-		exec("iptables -A FORWARD -d $l");
+		if(self::isIPV6($l)){
+			exec("ip6tables -I FORWARD 1 -s $l ");
+			exec("ip6tables -I FORWARD 1 -d $l ");
+		}
+		else{
+			exec("iptables -I FORWARD 1 -s $l ");
+			exec("iptables -I FORWARD 1 -d $l ");
+		}
 	}
 }
 
-
+static function isIPV6($ip)   
+{
+  if(strchr($ip, ':') && !strchr($ip, '.')) return true;
+    if(strchr($ip, '.') && !strchr($ip, ':')) return false;
+    
+      throw new lxException('Invalid IP address: ' . $ip . ' Contains both dot and colon!', $variable);
+          return false;  
+          }
+          
+          
 static function findTotaltrafficUsage($list, $oldtime, $newtime)
 {
 	global $gbl, $sgbl, $login, $ghtml; 
