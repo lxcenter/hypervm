@@ -46,32 +46,56 @@ class vps__openvz extends Lxdriverclass {
 	{
 		global $global_dontlogshell;
 	
-	
-	
-		$res = lxshell_output("iptables", "-nvx", "-L", "FORWARD");
-	
+		$res = lxshell_output("iptables", "-nv", "-L", "FORWARD");
+
 		$res = explode("\n", $res);
-	
-	
+
+
 		$outgoing = null;
 		foreach($res as $r) {
+			// First column may have spaces because of the number of digits in the column
+			$r = trim($r, ' ');
+			// Trim internal spaces
 			$r = trimSpaces($r);
-	
+
 			$list = explode(' ', $r);
-			if (!isset($list[7])) {
+
+			if(stripos($r, "source") !== false && stripos($r, "destination") !== false)
+			{
+			  // header, get important columns number
+			  for ($i=0; $i<count($list);$i++)
+			  {
+			    if($list[$i] == "bytes") $byteIdx=$i;
+			    // Removing 1, because the header has an extra field cause of 'target' column
+			    // FIXME: any better idea? 
+			    if($list[$i] == "source") $srcIdx=$i-1;
+			    if($list[$i] == "destination") $dstIdx=$i-1;
+			  }
+			}
+
+
+			if (count($list)-1>$dstIdx) {
 				continue;
 			}
-	
-			if (csb($list[7], "0.0.0")) {
-				// Just make sure that we don't calculate this thing twice, which would happen if there are multiple copies of the same rule. So mark that we have already read it in the sourcelist.
-				if (!isset($sourcelist[$list[6]])) {
-					$outgoing[$list[6]][] = $list[1];
-					$sourcelist[$list[6]] = true;
+
+			if (csb($list[$dstIdx], "0.0.0")) {
+				// Just make sure that we don't calculate this goddamn thing twice, which would happen if there are multiple copies of the same rule. So mark that we have already read it in the sourcelist.
+				// OA: Since we dont care lines that have a rule set (fixed above), this wont happen
+				if (!isset($sourcelist[$list[$srcIdx]])) {
+					$outgoing[$list[$srcIdx]][] = $list[$byteIdx];
+					$sourcelist[$list[$srcIdx]] = true;
 				}
+<<<<<<< HEAD
 			} else if(csb($list[6], "0.0.0")) {
 				if (!isset($dstlist[$list[7]])) {
 					$incoming[$list[7]][] = $list[1];
 					$dstlist[$list[7]] = true;
+=======
+			} else if(csb($list[$srcIdx], "0.0.0")) {
+				if (!isset($dstlist[$list[$dstIdx]])) {
+					$incoming[$list[$dstIdx]][] = $list[$byteIdx];
+					$dstlist[$list[$dstIdx]] = true;
+>>>>>>> 62b9a89... Made iptraffic logging more robust
 				}
 			}
 		}
@@ -390,9 +414,8 @@ class vps__openvz extends Lxdriverclass {
 		$this->setEveryThing();
 		$this->setUplinkUsage();
 
-		if (lxfile_exists($this->main->corerootdir."/".$this->main->vpsid."/usr/lib/inithooks/run"))
+		if (lxfile_exists("{$this->main->corerootdir}/{$this->main->vpsid}/etc/inithooks.conf"))
 		{
-			log_log("turnkey", "creating: " .$this->main->corerootdir."/".$this->main->vpsid."/etc/inithooks.conf");
 			$this->setTurnkey();
 		}
 
@@ -530,6 +553,13 @@ class vps__openvz extends Lxdriverclass {
 			}
 			$ret = lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--onboot", "yes", "--save");
 		} else {
+<<<<<<< HEAD
+=======
+//			if (!$this->main->isOn('poweroff_confirm_f')) {
+//				throw new lxException("need_confirm_poweroff", 'poweroff_confirm_f');
+//			}
+
+>>>>>>> 62b9a89... Made iptraffic logging more robust
 			$ret = $this->stop();
 			$ret = lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--onboot", "no", "--save");
 		}
@@ -548,9 +578,7 @@ class vps__openvz extends Lxdriverclass {
 		$string  = "HUB_APIKEY=SKIP\n"
 			."ROOT_PASS={$this->main->rootpassword}\n"
 			."DB_PASS={$this->main->rootpassword}\n"
-		 	."APP_EMAIL={$this->main->contactemail}\n"
-			."APP_DOMAIN=DEFAULT\n" 
-			."SEC_UPDATES=FORCE\n"
+			."APP_EMAIL={$this->main->contactemail}\n"
 			."APP_PASS={$this->main->rootpassword}\n";
 		lfile_put_contents("{$this->main->corerootdir}/{$this->main->vpsid}/etc/inithooks.conf", $string);
 	}
@@ -913,9 +941,8 @@ class vps__openvz extends Lxdriverclass {
 			throw new lxException("rebuild_failed_could_not_untar");
 		}
 
-		if (lxfile_exists($this->main->corerootdir."/".$this->main->vpsid."/usr/lib/inithooks/run"))
+		if (lxfile_exists("{$this->main->corerootdir}/{$this->main->vpsid}/etc/inithooks.conf"))
 		{
-			log_log("turnkey", "creating: " .$this->main->corerootdir."/".$this->main->vpsid."/etc/inithooks.conf");
 			$this->setTurnkey();
 		}
 
