@@ -117,3 +117,5 @@ $__emessage['rebuild_time_limit'] = " Please wait for [%s] minutes before you re
 $__emessage['vpsid_already_exists_on_another_server'] = "The vpsid [%s] exists on another server.";
 $__smessage['vps_creation_in_background'] = "Vpses are getting created in the background. Just periodically refresh this page, and you can see them listed.";
 $__smessage['kloxo_installation_started'] = "Kloxo Installation has been started in the VPS. The log is kept in a file called HyperVM-kloxo_install.log in the / directory, which you can view using the File Manager";
+$__emessage['need_confirm_reboot'] = "Confirmation is needed for rebooting.";
+$__emessage['need_confirm_poweroff'] = "Confirmation is needed for halting.";

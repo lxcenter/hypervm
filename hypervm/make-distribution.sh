@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #    HyperVM, Server Virtualization GUI for OpenVZ and Xen
 #
 #    Copyright (C) 2000-2009	LxLabs
@@ -20,7 +20,7 @@
 #
 #
 # This file creates hypervm-[version].zip for distribution.
-# 
+#
 #
 # - read version
 # - compile c files
@@ -40,11 +40,12 @@ if ! [ -f /script/version ] ; then
 fi
 version=`/script/version`
 rm -f hypervm-$version.zip
-#
+
 echo "### Compile c files..."
 # Compile C files
 cd src
-make all; make install
+make all
+make install
 cd ../
 #
 echo "### Create zip package..."
@@ -53,9 +54,7 @@ zip -r9 hypervm-$version.zip ./src ./bin ./cexe ./file ./httpdocs ./pscript ./sb
 "*/CVS/*" \
 "*/.git/*" \
 "*/.svn/*"
-#
+
 echo "### Finished"
 echo "################################"
 ls -lh hypervm-*.zip
-#
-
