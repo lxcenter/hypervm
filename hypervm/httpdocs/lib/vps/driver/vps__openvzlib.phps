@@ -424,6 +424,8 @@ class vps__openvz extends Lxdriverclass {
 		$this->main->doKloxoInit("{$this->main->corerootdir}/{$this->main->vpsid}");
 		// It appears sometimes they don't setup the ostemplate properly.
 		$this->changeConf("OSTEMPLATE", $this->main->ostemplate);
+                // 20130722 OA - I cannot see it setting anywhere else at creation time
+                $this->setRootPassword();
 		$this->stop();
 		$this->start();
 		lunlink("__path_program_root/tmp/$vpsid.create");
