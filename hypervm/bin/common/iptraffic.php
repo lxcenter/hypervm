@@ -138,7 +138,7 @@ function iptraffic_main()
 
 
 
-	$res = lxshell_output("iptables", "-nv", "-L", "FORWARD");
+	$res = lxshell_output("iptables", "-nvx", "-L", "FORWARD");
 
 	$res = explode("\n", $res);
 
@@ -279,3 +279,4 @@ function get_vpsid_from_ipaddress($ip)
 	}
 	return 0;
 }
+
