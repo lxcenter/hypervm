@@ -46,7 +46,7 @@ class vps__openvz extends Lxdriverclass {
 	{
 		global $global_dontlogshell;
 	
-		$res = lxshell_output("iptables", "-nv", "-L", "FORWARD");
+		$res = lxshell_output("iptables", "-nxv", "-L", "FORWARD");
 
 		$res = explode("\n", $res);
 
