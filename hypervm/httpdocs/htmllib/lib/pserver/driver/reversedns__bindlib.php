@@ -95,7 +95,8 @@ function createMainFile()
 		}
 		
 		
-		if($isIPV6 === true &&false)$string .= "zone \"".reversedns::createDottedIPV6($k)."ip6.arpa\" {type master; file \"$sgbl->__path_named_path/".reversedns::createDottedIPV6($k)."ip6.arpa\"; $transferstring};\n\n";
+                if( reversedns::isIPV6($v[0]['nname']))       
+  		     $string .= "zone \"".reversedns::createDottedIPV6($k)."ip6.arpa\" {type master; file \"$sgbl->__path_named_path/".reversedns::createDottedIPV6($k)."ip6.arpa\"; $transferstring};\n\n";
 		else $string .= "zone \"$k.in-addr.arpa\" {type master; file \"$sgbl->__path_named_path/$k.in-addr.arpa\"; $transferstring};\n\n";
 	}
 	if($isIPV6 === true) $string .= "zone \"".$base."ip6.arpa\" {type master; file \"$sgbl->__path_named_path/".$base."ip6.arpa\"; $transferstring};\n\n";
