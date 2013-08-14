@@ -373,9 +373,9 @@ int tcp_sock_read(int sock)
 int accept_and(int listen_sock)
 {
 	int sock;
-	struct sockaddr_in sa_cli;
+	struct sockaddr_in6 sa_cli;
 	socklen_t client_len;
-	client_len = sizeof(struct sockaddr_in);
+	client_len = sizeof(struct sockaddr_in6);
 
 	/* Socket for a TCP/IP connection is created */
 	sock = accept(listen_sock, (struct sockaddr*)&sa_cli, (socklen_t *) &client_len);
