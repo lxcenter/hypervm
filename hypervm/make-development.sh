@@ -59,7 +59,11 @@ cd ../
 #
 echo "### Create zip package..."
 # Package part
-file=hypervm-$version.$build.zip
+if [ "${build}" == "" ]; then
+      file=hypervm-$version.zip
+else
+      file=hypervm-$version.$build.zip
+fi
 
 zip -r9 $file ./src ./bin ./cexe ./file ./httpdocs ./pscript ./sbin ./RELEASEINFO -x \
     "*/CVS/*" \
