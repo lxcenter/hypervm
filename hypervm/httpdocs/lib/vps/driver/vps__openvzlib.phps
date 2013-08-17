@@ -204,7 +204,13 @@ class vps__openvz extends Lxdriverclass {
 		$path = "/proc/user_beancounters";
 		
 		$data = `/usr/sbin/vzctl exec $vpsid cat /proc/user_beancounters`;
-	
+
+                if (self::checkIfRHEL6Kernel()) {
+                    $beancounter = "physpages";
+                } else {
+                    $beancounter = "privvmpages";
+                }
+                
 		$res = explode("\n", $data);
 		$match = true;
 		foreach($res as $r) {
@@ -214,7 +220,7 @@ class vps__openvz extends Lxdriverclass {
 			}
 		*/
 	
-			if ($match && csa($r, "privvmpages")) {
+			if ($match && csa($r, $beancounter)) {
 				break;
 			}
 		}
@@ -577,10 +583,13 @@ class vps__openvz extends Lxdriverclass {
 		} else {
 			$memory = $this->main->priv->memory_usage * 256;
 		}
-	
-		lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--save", "--privvmpages", $memory);
-		lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--save", "--meminfo", "pages:$memory");
-	}
+
+                if (!self::checkIfRHEL6Kernel()) {
+        		lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--save", "--privvmpages", $memory);
+                }
+
+                lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--save", "--meminfo", "pages:$memory");
+        }
 
 	function do_backup()
 	{
@@ -672,10 +681,15 @@ class vps__openvz extends Lxdriverclass {
 			$memory = $this->main->priv->guarmem_usage;
 		}
 	
-		lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--save", "--vmguarpages", "{$memory}M:2147483647");
-		lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--save", "--oomguarpages", "{$memory}M:2147483647");
-		lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--save", "--shmpages", "{$memory}M:{$memory}M");
-		lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--save", "--physpages", "0:2147483647");
+                if (self::checkIfRHEL6Kernel()) {
+                   lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--save", "--physpages", "0:{$memory}M");
+                } else {
+                    lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--save", "--vmguarpages", "{$memory}M:2147483647");
+                    lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--save", "--oomguarpages", "{$memory}M:2147483647");
+                    lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--save", "--shmpages", "{$memory}M:{$memory}M");
+                    lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--save", "--physpages", "0:2147483647");
+                }
+                
 		$tcp = round(($memory * 1024)/5, 0);
 		$process = $this->main->priv->process_usage;
 		if (is_unlimited($process) || $process > 5555) {
@@ -1617,4 +1631,22 @@ class vps__openvz extends Lxdriverclass {
 		}
 		return $res;
 	}
+        
+        static function checkIfRHEL6Kernel()
+        {
+ 
+            $proc_version = file_get_contents('/proc/version');
+
+            if (preg_match("/2.6.32-/", $proc_version)) {
+
+                return true;
+                
+            } else {
+                
+                return false;
+                
+            }
+            
+        }
+        
 }
