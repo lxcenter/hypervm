@@ -186,42 +186,30 @@ class vps__openvz extends Lxdriverclass {
 		$global_dontlogshell = true;
 		$path = "/proc/user_beancounters";
 		
-                $is_rhel6 = self::checkIfRHEL6Kernel();
-                
 		$data = `/usr/sbin/vzctl exec $vpsid cat /proc/user_beancounters`;
 	
 		$res = explode("\n", $data);
 		$match = true;
 		foreach($res as $r) {
+			/*
+			if (csa($r, "$vpsid:")) {
+				$match = true;
+			}
+		*/
 	
 			if ($match && csa($r, "privvmpages")) {
-				$privmpages = $r;
+				break;
 			}
-                        
-                        if ($is_rhel6 && $match && csa($r, "physpages")) {
-				$physpages = $r;
-			}
-                        
 		}
-
-                if ($is_rhel6) {
-                    // first: get actual usage of memory from privvmpages
-        	    $data = trimSpaces($privmpages);
-                    dprint($data . "\n");
-                    $result = explode(" ", $data);
-                    $use = $result[1];
-                    // second: get max memory from physpages
-        	    $data = trimSpaces($physpages);
-                    dprint($data . "\n");
-                    $result = explode(" ", $data);
-                    $max = $result[4];
-                } else {
-        	    $data = trimSpaces($privmpages);
-                    dprint($data . "\n");
-                    $result = explode(" ", $data);
-                    $max = $result[4];
-                    $use = $result[1];
-                }
+	
+		$data = trimSpaces($r);
+	
+		dprint($data . "\n");
+	
+		$result = explode(" ", $data);
+		$max = $result[4];
+	
+		$use = $result[1];
 	
 		$use = $use/256;
 		$max = $max/256;
