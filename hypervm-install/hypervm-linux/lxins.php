@@ -110,7 +110,7 @@ function lxins_main()
 	exec("groupadd lxlabs");
 	exec("useradd lxlabs -g lxlabs -s '/sbin/nologin'");
 
-	$list = array("which",  "lxlighttpd", "zip","unzip", "lxphp", "lxzend", "curl");
+	$list = array("which", "lxlighttpd", "zip", "unzip", "lxphp", "lxzend", "curl");
 
 	if ($installtype !== 'slave') {
 		$mysql = array("mysql", "mysql-server", "mysqlclient*");
@@ -136,21 +136,20 @@ function lxins_main()
 
 	exec("killall wget");
 
-
-
 	system("mkdir -p /usr/local/lxlabs/hypervm");
-	chdir("/usr/local/lxlabs/hypervm");
 	system("mkdir -p /usr/local/lxlabs/hypervm/log");
 
-	if(file_exists('.git'))	{
-		echo 'Development GIT version found. Skipping download sources.';
+	if(file_exists('../../../../.git'))	{
+                echo 'Development GIT version found. Skipping download sources.';
+                system("cp -a ../../../../hypervm/hypervm-current.zip /usr/local/lxlabs/hypervm/");
 	}
 	else {
-        @ unlink("hypervm-current.zip");
+                @ unlink("hypervm-current.zip");
 		system("wget http://download.lxcenter.org/download/hypervm/production/hypervm/hypervm-current.zip");
 	}
-	
-    system("unzip -oq ", $return);
+        
+	chdir("/usr/local/lxlabs/hypervm");
+        system("unzip -oq hypervm-current.zip", $return);
 
 	if ($return) {
 		print("Unzipping the core Failed.. Most likely it is corrupted. Please contact the support personnel\n");
