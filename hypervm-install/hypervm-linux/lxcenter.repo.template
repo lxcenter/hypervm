@@ -2,7 +2,7 @@
 #additional packages that may be useful
 [lxcenter-base]
 name=HyperVM - $releasever - lxcenter-base
-baseurl=http://download.lxcenter.org/download/update/%distro%/$basearch/
+baseurl=http://repo.ippartners.pl/hypervm/%distro%/$basearch/
 gpgcheck=0
 enabled=1
 
