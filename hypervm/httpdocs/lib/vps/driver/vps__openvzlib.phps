@@ -188,6 +188,12 @@ class vps__openvz extends Lxdriverclass {
 		
 		$data = `/usr/sbin/vzctl exec $vpsid cat /proc/user_beancounters`;
 	
+                if (self::checkIfRHEL6Kernel()) {
+                    $beancounter = "privvmpages";
+                } else {
+                    $beancounter = "physpages";
+                }
+                
 		$res = explode("\n", $data);
 		$match = true;
 		foreach($res as $r) {
@@ -197,7 +203,7 @@ class vps__openvz extends Lxdriverclass {
 			}
 		*/
 	
-			if ($match && csa($r, "privvmpages")) {
+			if ($match && csa($r, $beancounter)) {
 				break;
 			}
 		}
