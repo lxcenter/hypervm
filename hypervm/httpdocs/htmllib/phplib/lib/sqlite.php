@@ -32,6 +32,17 @@ function __construct($readserver, $table, $force = false)
 
 		if ($sgbl->__var_database_type === 'mysql') {
 			$gbl->$fdbvar = mysql_connect($readserver, $user, $pass);
+                        if(!mysql_query("SET NAMES 'utf8'",$gbl->$fdbvar))
+                        {
+                                log_error(mysql_error());
+                                throw new lxException('could_set_names_on_db'. mysql_error($gbl->$fdbvar). "<<", '', '');
+                        }
+                        mysql_query("SET CHARACTER SET 'utf8'",$gbl->$fdbvar);
+                        if(!mysql_query("SET character_set_connection= 'utf8'",$gbl->$fdbvar)) 
+                        {
+                                log_error(mysql_error());
+                                throw new lxException('could_set_charset_on_db', '', '');
+                        }
 			mysql_select_db($db);
 			self::$__database = 'mysql';
 		} else if ($sgbl->__var_database_type === 'mssql') {

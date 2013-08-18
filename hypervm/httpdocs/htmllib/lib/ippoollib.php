@@ -7,7 +7,7 @@ class ippoolextraip_a extends Lxaclass {
 static $__desc = array("", "", "extra_ip");
 static $__desc_nname = array("n", "", "ipaddress");
 
-static function createListAlist($parent, $class)
+static function createListAlist($parent, $class = NULL)
 {
 	$alist[] = 'a=show';
 	$alist[] = 'a=list&c=ippoolip';
@@ -24,7 +24,7 @@ class ippoolexceptionip_a extends Lxaclass {
 static $__desc = array("", "", "exception_ip");
 static $__desc_nname = array("n", "", "ipaddress");
 
-static function createListAlist($parent, $class)
+static function createListAlist($parent, $class = NULL)
 {
 	return ippoolextraip_a::createListAlist($parent, $class);
 	return $alist;
@@ -39,7 +39,7 @@ static $__desc_nname = array("n", "", "ipaddress");
 
 
 
-static function createListAlist($parent, $class)
+static function createListAlist($parent, $class = NULL)
 {
 	return ippoolextraip_a::createListAlist($parent, $class);
 	return $alist;
@@ -65,13 +65,13 @@ static function initThisList($parent, $class)
 }
 
 function isSelect() { return false ; }
-static function createListNlist($parent, $view)
+static function createListNlist($parent, $view = NULL)
 {
 	$nlist['nname'] = '100%';
 	$nlist['assigned'] = '40%';
 	return $nlist;
 }
-static function createListAlist($parent, $class)
+static function createListAlist($parent, $class = NULL)
 {
 	return ippoolextraip_a::createListAlist($parent, $class);
 }
@@ -113,13 +113,18 @@ static function add($parent, $class, $param)
 	validate_ipaddress_and_throw($param['lastip'], 'lastip');
 
 	if (!$param['pserver_list']) {
-		throw new lxException ("need_to_select_pserver", 'pserver_list');
+		throw new lxException ('It is needed select a production server from the list', 'pserver_list');
 	}
 
 	$param['pserver_list'] = explode(',', $param['pserver_list']);
 
-	$first = strtil($param['firstip'], ".");
-	$last = strtil($param['lastip'], ".");
+	if(isIPV6($param['firstip'])) $param['isipv6'] = true;
+	else $param['isipv6']= false;
+
+	if(isIPV6($param['firstip'])) $separator=':';
+	else $separator = '.';
+	$first = strtil($param['firstip'], $separator);
+	$last = strtil($param['lastip'], $separator);
 	if ($first !== $last) {
 		throw new lxException ("first_and_last_should_be_same_network", 'lastip');
 	}
@@ -155,8 +160,14 @@ function updateUpdate($param)
 {
 	validate_ipaddress_and_throw($param['firstip'], 'firstip');
 	validate_ipaddress_and_throw($param['lastip'], 'lastip');
-	$first = strtil($param['firstip'], ".");
-	$last = strtil($param['lastip'], ".");
+	if(isIPV6($param['firstip'])) $separator=':';
+	else $separator = '.';
+	
+	if(isIPV6($param['firstip'])) $param['isipv6']= true;
+	else $param['isipv6']=false;                
+	
+	$first = strtil($param['firstip'], $separator);
+	$last = strtil($param['lastip'], $separator );
 
 	if ($first !== $last) {
 		throw new lxException ("first_and_last_same_network", 'lastip');
@@ -176,7 +187,7 @@ function postUpdate()
 function recalibrate()
 {
 	$this->freeflag = 'on';
-	$fip = $this->getFreeIp(10000);
+	$fip = $this->getFreeIp(10000, 'any');
 	if ($fip) { 
 		$this->freeflag = 'on';
 	} else { 
@@ -192,7 +203,11 @@ function updateform($subaction, $param)
 	$vlist['lastip'] = null;
 	$vlist['nameserver'] = null;
 	$vlist['networkgateway'] = null;
-	if (!$this->networknetmask) { $this->networknetmask = "255.255.255.0"; }
+	if (!$this->networknetmask) { 
+		if($param['isipv6'])
+			$this->networknetmask = "::0";
+		else    $this->networknetmask = "255.255.255.0"; 
+	}
 	$vlist['networknetmask'] = null;
 	$pslist = get_namelist_from_objectlist($this->getParentO()->getRealPserverList('vps'));
 
@@ -247,7 +262,8 @@ function display($var)
 	return parent::display($var);
 }
 
-function getFreeIp($num)
+
+function getFreeIp($num, $type=null)
 {
 
 	if (!$num) { return; }
@@ -265,7 +281,11 @@ function getFreeIp($num)
 
 	$pingip = null;
 	foreach($list as $l) {
-
+		if($type && $type=='ipv6') 
+			if(!isIPV6($l)) return $res;
+		if(!$type || $type=='ipv4') 
+			if(isIPV6($l)) return $res;
+			
 		$p = $sq->getRowsWhere("nname = '$l'");
 
 		if ($p) { continue; }
@@ -322,19 +342,33 @@ static function addToTmpIpAssign($l)
 	$sq->rawQuery("insert into tmpipassign (nname, ddate) values ('$l', '$date');");
 }
 
+
 function getIndividualIpList()
 {
 
-	$base = explode(".", $this->lastip);
+	if(isIPV6($this->lastip)) $sep=':';
+	else $sep='.';
+
+	$base = explode($sep, $this->lastip);
 	$end = array_pop($base);
 
-	$base = explode(".", $this->firstip);
+	$base = explode($sep, $this->firstip);
 	$start = array_pop($base);
-	$base = implode(".", $base);
-	for($i = $start ; $i <= $end ; $i++) {
-		$out[] = "$base.$i";
+	$base = implode($sep, $base);
+	if(isIPV6($this->lastip))
+	{
+		for($i = hexdec($start) ; $i <= hexdec($end) ; $i++) {
+			$out[] = "$base$sep".dechex($i);
+		}
+	
 	}
-
+	else
+	{
+		for($i = $start ; $i <= $end ; $i++) {
+			$out[] = "$base$sep$i";
+		}
+	}
+	
 	$ex = get_namelist_from_objectlist($this->ippoolextraip_a);
 	$out = lx_merge_good($out, $ex);
 

@@ -82,6 +82,7 @@ function check_for_debug($file)
 	} else {
 		$sgbl->dbg = -1;
 	}
+
 	if ($sgbl->dbg > 0) {
 		ini_set("error_reporting", E_ALL & ~E_STRICT);
 		ini_set("display_errors", "On");
@@ -201,7 +202,7 @@ function find_os_pointversion()
 }
 
 function lscandir_without_dot($arg, $dotflag = false)
-{
+{  
 	$list = lscandir($arg);
 
 	if (!$list) {
@@ -464,42 +465,59 @@ function new_process_cmd($user, $dir, $cmd)
 function lfile_put_contents($file, $data, $flag = null)
 {
 	$file = expand_real_root($file);
-
+	
 	if (is_soft_or_hardlink($file)) {
 		log_log("link_error", "$file is hard or symlink. Not writing\n");
 		return;
 	}
-
+	
 	if (char_search_a($data, "__path_")) {
 		dprint("<font color=red>Warning : Trying to write __path into a file $file: </font> $data <br> \n", 3);
 	}
 
+
 	lxfile_mkdir(dirname($file));
 
-	if (file_exists($file)){
-		if (is_readable($file)){
-			if (is_writable($file)){
-				return file_put_contents($file, $data, $flag);
+	if(file_exists($file))
+	{
+		if(is_readable($file))
+		{
+			if(is_writable($file)){
+				$result = file_put_contents($file, $data, $flag);
+				chown($file, 'lxlabs');
+				return $result;
 			}
 			else{
-				$error_msg = 'Could not write the file \''.$file.'\' with permissions: '.substr(sprintf('%o', fileperms($file)), -4);
+				$posix_data = posix_getpwuid(fileowner($file));
+				$error_msg = 'Could not write the file \'' . $file . '\' with permissions: ' .
+				substr(sprintf('%o', fileperms($file)), -4) .
+                ' UID: ' . $posix_data['name'] .  ':' . $posix_data['uid'] .
+                ' GID: ' . $posix_data['gecos'] .  ':' . $posix_data['gid'] .
+				( PHP_SAPI !== 'cgi-fcgi' ? PHP_EOL : '<br />');
+
 				dprint($error_msg);
-				log_log('filesys', $error_msg);
+				//log_log('filesys', $error_msg);
 				return false;
 			}
 		}
-		else{
-			$error_msg = 'Could not read the file \''.$file.'\' with permissions: '.substr(sprintf('%o', fileperms($file)), -4);
+		else
+		{
+			$error_msg = 'Could not read the file \''.$file.'\' with permissions: '.substr(sprintf('%o', fileperms($file)), -4) . ( PHP_SAPI !== 'cgi-fcgi' ? PHP_EOL : '<br />');
 			dprint($error_msg);
-			log_log('filesys', $error_msg);
+			//log_log('filesys', $error_msg);
 			return false;
 		}
 	}
-	else{
-		if (file_put_contents($file, $data, $flag) === false){
+	else
+	{
+		$result = file_put_contents($file, $data, $flag);
+		chown($file, 'lxlabs');
+		 
+		if($result === false)
+		{
 			$error_msg = 'File \''.$file.'\' could not be created.';
 			dprint($error_msg);
-			log_log('filesys', $error_msg);
+			//log_log('filesys', $error_msg);
 			return false;
 		}
 		return true;
@@ -587,7 +605,9 @@ function lx_merge_good($arg)
 	$start = 0;
 	$transforming_func = null;
 
-	eval($sgbl->arg_getting_string);
+	$arglist = array();
+	for ($i = 0; $i < func_num_args(); $i++)
+	$arglist[] = func_get_arg($i);
 
 	//dprintr($arglist);
 
@@ -867,11 +887,12 @@ function lx_redefine_func($func)
 {
 	global $gbl, $sgbl, $login, $ghtml;
 
-	$start = 1;
-	$transforming_func = "expand_real_root";
-
-	eval($sgbl->arg_getting_string);
-
+	global $gbl, $sgbl, $login, $ghtml;
+	
+	$arglist = array();
+	for ($i = 1; $i < func_num_args(); $i++)
+	$arglist[] = expand_real_root(func_get_arg($i));
+	
 	return call_user_func_array($func, $arglist);
 }
 
@@ -1113,7 +1134,7 @@ function csb($haystack, $needle, $insensitive = 1)
 	return char_search_beg($haystack, $needle, $insensitive);
 }
 
-function char_search_beg($haystack, $needle)
+function char_search_beg($haystack, $needle, $insensitive = 1)
 {
 	if (is_array($haystack)) {
 		//debugBacktrace();
@@ -1129,7 +1150,7 @@ function cse($haystack, $needle, $insensitive = 1)
 	return char_search_end($haystack, $needle, $insensitive);
 }
 
-function char_search_end($haystack, $needle, $insensitive)
+function char_search_end($haystack, $needle, $insensitive = 1)
 {
 	if (strpos($haystack, $needle) === false) {
 		return false;
@@ -1487,12 +1508,20 @@ function isQuotaGreaterThan($used, $priv)
 	return ($used > $priv) ? true : false;
 }
 
-function is_unlimited($val)
+/**
+ * Checks if a resource is no limited.
+ * 
+ * @deprecated This function is a global function to remove and needs to be deprecated
+ * and used by a general class as Resource::isUnlimited() or similar.
+ * 
+ * @author Anonymous <anonymous@lxcenter.org>
+ * @author Ángel Guzmán Maeso <angel.guzman@lxcenter.org>
+ * @param string $resource The name resource property to check
+ * @return boolean True if $resource is 'unlimited' or 'na' string
+ */
+function is_unlimited($resource)
 {
-	if (strtolower($val) === 'unlimited' || strtolower($val) === 'na') {
-		return true;
-	}
-	return false;
+	return strtolower($resource) === 'unlimited' || strtolower($resource) === 'na';
 }
 
 function if_demo_throw()
@@ -1843,11 +1872,14 @@ function init_language()
 
 	include_once("htmllib/lib/commonmessagelib.php");
 
+	date_default_timezone_set('America/New_York');
 	$g_language_mes = new Language_Mes();
 	$g_language_mes->__information = $__information;
 	$g_language_mes->__emessage = $__emessage;
 	$g_language_mes->__keyword = $__keyword;
+	if(!isset($__help))  $__help = NULL;
 	$g_language_mes->__help = $__help;
+	if(!isset($__helpvar))  $__helpvar = NULL;
 	$g_language_mes->__helpvar = $__helpvar;
 	$g_language_mes->__commonhelp = $g_commonhelp;
 
@@ -1950,7 +1982,7 @@ function lx_exception_handler($e)
 function check_raw_password($class, $client, $pass)
 {
 	//return true;
-
+	
 	if (!$class || !$client || !$pass) {
 		return false;
 	}
@@ -1958,7 +1990,7 @@ function check_raw_password($class, $client, $pass)
 	$rawdb = new Sqlite(null, $class);
 	$password = $rawdb->rawquery("select password from $class where nname = '$client'");
 	$enp = $password[0]['password'];
-
+	
 	if ($enp && check_password($pass, $enp)) {
 		return true;
 	}
@@ -2052,7 +2084,7 @@ function initProgramlib($ctype = null)
 	}
 	static $var = 0;
 	$var++;
-
+	
 	$progname = $sgbl->__var_program_name;
 	lfile_put_contents($sgbl->__var_error_file, "");
 	set_exception_handler("lx_exception_handler");
@@ -2060,7 +2092,7 @@ function initProgramlib($ctype = null)
 	set_error_handler("lx_error_handler");
 
 	//setcookie("XDEBUG_SESSION", "sess");
-
+	
 	if ($var >= 2) {
 		dprint("initProgramlib called twice \n <br> ");
 	}
@@ -2077,11 +2109,12 @@ function initProgramlib($ctype = null)
 		$login->get();
 		return;
 	} else if ($ctype != "") {
+		
 		$login = new Client(null, null, $ctype, "login", "forced");
 		$login->get();
 		return;
 	}
-
+	
 	$sessobj = null;
 	if ($ghtml->frm_consumedlogin === 'true') {
 		$clientname = $_COOKIE["$progname-consumed-clientname"];
@@ -2091,6 +2124,7 @@ function initProgramlib($ctype = null)
 		$login->__session_id = $session_id;
 		$sessobj = $login->getObject('ssession');
 	} else {
+		
 		if (isset($_COOKIE["$progname-session-id"])) {
 			$clientname = $_COOKIE["$progname-clientname"];
 			$classname = $_COOKIE["$progname-classname"];
@@ -2111,7 +2145,7 @@ function initProgramlib($ctype = null)
 			}
 		}
 	}
-
+	
 	if (!$sessobj || $sessobj->dbaction === 'add') {
 		if ($ghtml->frm_ssl) {
 			$ssl = unserialize(base64_decode($ghtml->frm_ssl));
@@ -2131,7 +2165,7 @@ function initProgramlib($ctype = null)
 			$sessobj->dbaction = 'clean';
 		}
 	}
-
+	
 	//get_savedlogin($classname, $clientname);
 	//print_time('login_get', "Login Get");
 	//dprintr($login);
@@ -2150,7 +2184,7 @@ if (isset($login)) {
 		clear_all_cookie();
 		$ghtml->print_redirect_self("/login/");
 	}
-
+	
 	$gbl->c_session = $sessobj;
 
 	if ($login->getClName() !== $sessobj->parent_clname) {
@@ -2160,7 +2194,7 @@ if (isset($login)) {
 		clear_all_cookie();
 		$ghtml->print_redirect_self("/login/?frm_emessage=sessionname_not_client");
 	}
-
+	
 	$gen = $login->getObject('general')->generalmisc_b;
 
 	if (!$gen->isOn('disableipcheck') && $_SERVER['REMOTE_ADDR'] != $sessobj->ip_address) {
@@ -2179,7 +2213,7 @@ if (isset($login)) {
 			}
 		}
 	}
-
+	
 	if (intval($login->getSpecialObject('sp_specialplay')->ssession_timeout) <= 100) {
 		$login->getSpecialObject('sp_specialplay')->ssession_timeout = 100;
 		$login->setUpdateSubaction();
@@ -2190,7 +2224,7 @@ if (isset($login)) {
 	//$timeout  =  $sessobj->last_access + 4;
 	$sessobj->last_access = time();
 	$sessobj->setUpdateSubaction();
-
+	
 	if ($sessobj->auxiliary_id) {
 		$aux = new Auxiliary(null, null, $sessobj->auxiliary_id);
 		$aux->get();
@@ -2207,7 +2241,7 @@ if (isset($login)) {
 			$ghtml->print_redirect_self("/login/?frm_emessage=session_timeout");
 		}
 	}
-
+	
 	addToUtmp($sessobj, 'update');
 }
 
@@ -2633,7 +2667,9 @@ function exec_class_method($class, $func)
 	//Arg getting string is a function that needs $start to be set.
 	$start = 2;
 
-	eval($sgbl->arg_getting_string);
+	$arglist = array();
+	for ($i = $start; $i < func_num_args(); $i++)
+	$arglist[] = func_get_arg($i);
 
 	// workaround for the following php bug:
 	//   http://bugs.php.net/bug.php?id=47948

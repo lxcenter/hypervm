@@ -138,30 +138,49 @@ function iptraffic_main()
 
 
 
-	$res = lxshell_output("iptables", "-nv", "-L", "FORWARD");
+	$res = lxshell_output("iptables", "-nvx", "-L", "FORWARD");
 
 	$res = explode("\n", $res);
 
 
 	$outgoing = null;
 	foreach($res as $r) {
+		// First column may have spaces because of the number of digits in the column
+                $r = trim($r, ' ');
+                // Trim internal spaces
 		$r = trimSpaces($r);
 
 		$list = explode(' ', $r);
-		if (!isset($list[7])) {
+
+	        if(stripos($r, "source") !== false && stripos($r, "destination") !== false)
+	        {
+	          // header, get important columns number
+	          for ($i=0; $i<count($list);$i++)
+	          {
+	            if($list[$i] == "bytes") $byteIdx=$i;
+	            // Removing 1, because the header has an extra field cause of 'target' column
+	            // FIXME: any better idea? 
+	            if($list[$i] == "source") $srcIdx=$i-1;
+	            if($list[$i] == "destination") $dstIdx=$i-1;
+	          }
+	        }
+
+
+		if (count($list)-1>$dstIdx) {
 			continue;
 		}
 
-		if (csb($list[7], "0.0.0")) {
+		if (csb($list[$dstIdx], "0.0.0")) {
 			// Just make sure that we don't calculate this goddamn thing twice, which would happen if there are multiple copies of the same rule. So mark that we have already read it in the sourcelist.
-			if (!isset($sourcelist[$list[6]])) {
-				$outgoing[$list[6]][] = $list[1];
-				$sourcelist[$list[6]] = true;
+			// OA: Since we dont care lines that have a rule set (fixed above), this wont happen
+			if (!isset($sourcelist[$list[$srcIdx]])) {
+				$outgoing[$list[$srcIdx]][] = $list[$byteIdx];
+				$sourcelist[$list[$srcIdx]] = true;
 			}
-		} else if(csb($list[6], "0.0.0")) {
-			if (!isset($dstlist[$list[7]])) {
-				$incoming[$list[7]][] = $list[1];
-				$dstlist[$list[7]] = true;
+		} else if(csb($list[$srcIdx], "0.0.0")) {
+			if (!isset($dstlist[$list[$dstIdx]])) {
+				$incoming[$list[$dstIdx]][] = $list[$byteIdx];
+				$dstlist[$list[$dstIdx]] = true;
 			}
 		}
 	}
@@ -260,3 +279,4 @@ function get_vpsid_from_ipaddress($ip)
 	}
 	return 0;
 }
+

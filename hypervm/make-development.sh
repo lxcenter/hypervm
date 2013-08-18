@@ -30,25 +30,33 @@
 ######
 echo "################################"
 echo "### Start packaging"
-echo "### read version..."
-# Read version
-# Please note, this must be a running (HyperVM installed)  machine (Development/Test/Release server)
-if ! [ -f /script/version ] ; then
-    echo "## Packaging failed. No /script/version found."
-    echo "## Are you sure you are running a development version?"
-	echo "### Aborted."
-	echo "################################"
-    exit
+
+if [ ! -d '../.git' ]; then
+	echo "### read version..."
+	# Read version
+	# Please note, this must be a running (HyperVM installed)  machine (Development/Test/Release server)
+	if ! [ -f /script/version ] ; then
+		echo "## Packaging failed. No /script/version found."
+		echo "## Are you sure you are running a development version?"
+		echo "### Aborted."
+		echo "################################"
+		exit
+	fi
+
+	version=`/script/version`
+	build=`git log --pretty=format:'' | wc -l`
+else
+	version='current'
+	build=''
 fi
-version=`/script/version`
-build=`git log --pretty=format:'' | wc -l`
 
 rm -f hypervm-$version.$build.zip
-#
+
 echo "### Compile c files..."
 # Compile C files
 cd src
-make all; make install
+make all
+make install
 cd ../
 #
 echo "### Create zip package..."
@@ -59,7 +67,6 @@ zip -r9 $file ./src ./bin ./cexe ./file ./httpdocs ./pscript ./sbin ./RELEASEINF
     "*/CVS/*" \
     "*/.git/*" \
     "*/.svn/*"
-#
 
 file=hypervm-$version.$build.tar.gz
 
@@ -71,15 +78,17 @@ tar cvfz $file \
 
 file=hypervm-$version.$build.7z
 
+if [ -f /usr/bin/7za ] ; then
+# This requires RPMforge enabled (Centos 5.7 still not provide 7za binary)
+# yum install p7zip
 7za a \
     -xr!?svn\* \
     -xr!?git\* \
     -xr!CVS\* \
     $file \
     ./src ./bin ./cexe ./file ./httpdocs ./pscript ./sbin ./RELEASEINFO
+fi
 
 echo "### Finished"
 echo "################################"
 ls -lh hypervm-*.*
-#
-

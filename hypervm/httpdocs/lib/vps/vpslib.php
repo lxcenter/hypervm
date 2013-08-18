@@ -3,22 +3,27 @@
 class vmipaddress_a extends LxaClass {
 
 static $__desc = array("n", "",  "ipaddress");
-static $__desc_ip_num = array("n", "",  "number_of_ip_from_pool");
+static $__desc_ip_num = array("n", "",  "number_of_ip_from_pool4");
+static $__desc_ip_num6 = array("n", "",  "number_of_ip_from_pool6");
 static $__desc_type = array("e", "",  "ipaddress");
-static $__desc_type_v_ippool = array("e", "",  "from_ippool");
-static $__desc_type_v_npool = array("e", "",  "number_from_ippool");
+static $__desc_type_v_ippool = array("e", "",  "from_ippool4");
+static $__desc_type_v_ippool6 = array("e", "",  "from_ippool6");
+static $__desc_type_v_npool = array("e", "",  "number_from_ippool4");
+static $__desc_type_v_npool6 = array("e", "",  "number_from_ippool6");
 static $__desc_type_v_normal = array("e", "",  "directly");
 static $__desc_nname	 = array("n", "",  "ipaddress");
 
 static function createListAddForm($parent, $class) { return false;}
 
-static function createListAlist($parent, $class)
+static function createListAlist($parent, $class = NULL)
 {
 
 	$alist[] = "a=list&c=$class";
-	$alist['__v_dialog_ippo'] = "a=addform&c=$class&dta[var]=type&dta[val]=ippool";
-	$alist['__v_dialog_norm'] = "a=addform&c=$class&dta[var]=type&dta[val]=npool";
-	$alist['__v_dialog_npoo'] = "a=addform&c=$class&dta[var]=type&dta[val]=normal";
+	$alist['__v_dialog_ippo']  = "a=addform&c=$class&dta[var]=type&dta[val]=ippool";
+	$alist['__v_dialog_ippo6'] = "a=addform&c=$class&dta[var]=type&dta[val]=ippool6";
+	$alist['__v_dialog_norm']  = "a=addform&c=$class&dta[var]=type&dta[val]=npool";
+	$alist['__v_dialog_norm6'] = "a=addform&c=$class&dta[var]=type&dta[val]=npool6";
+	$alist['__v_dialog_npoo']  = "a=addform&c=$class&dta[var]=type&dta[val]=normal";
 	return $alist;
 }
 
@@ -36,14 +41,23 @@ static function addform($parent, $class, $typetd = null)
 
 	if ($typetd['val'] === 'ippool') {
 		$snco = new Pserver(null, $parent->syncserver, $parent->syncserver);
-		$list = $snco->getIpPool(100000000);
+		$list = $snco->getIpv4Pool(10000000);
 
 		if ($list['ip']) {
 			$vlist['nname'] = array('s', $list['ip']);
 		} else {
 			$vlist['nname'] = array('M', 'no_address');
 		}
-	} else if ($typetd['val'] === 'npool') {
+	} else if ($typetd['val'] === 'ippool6') {
+		$snco = new Pserver(null, $parent->syncserver, $parent->syncserver);
+		$list = $snco->getIpv6Pool(100000000);
+
+		if ($list['ip']) {
+			$vlist['nname'] = array('s', $list['ip']);
+		} else {
+			$vlist['nname'] = array('M', 'no_address');
+		}
+	} else if ($typetd['val'] === 'npool' || $typetd['val'] === 'npool6' ) {
 		$vlist['ip_num'] = array('s', range(1,30));
 	} else {
 		$vlist['nname'] = null;
@@ -58,7 +72,21 @@ static function add($parent, $class, $param)
 
 	if ($param['type'] === 'npool') {
 		$snco = new Pserver(null, $parent->syncserver, $parent->syncserver);
-		$list = $snco->getIpPool($param['ip_num']);
+		$list = $snco->getIpv4Pool($param['ip_num']);
+		$list = $list['ip'];
+		$first = array_shift($list);
+		foreach($list as $lp) {
+			full_validate_ipaddress($lp, 'nname');
+			$vmip = new vmipaddress_a(null, null, $lp);
+			$parent->addToList('vmipaddress_a', $vmip);
+			//ippool::addToTmpIpAssign($lp);
+			//$parent->__t_new_vmipaddress_a_list[$vmip->nname] = $vmip;
+		}
+		$param['nname'] = $first;
+
+	} else if ($param['type'] === 'npool6') {
+		$snco = new Pserver(null, $parent->syncserver, $parent->syncserver);
+		$list = $snco->getIpv6Pool($param['ip_num']);
 		$list = $list['ip'];
 		$first = array_shift($list);
 		foreach($list as $lp) {
@@ -105,6 +133,7 @@ static $__desc_coma_vmipaddress_a = array("", "",  "ipaddress");
 static $__desc_parent_name_f = array("", "",  "owner");
 static $__desc_one_ipaddress_f = array("", "",  "Ip_Address_(optional)");
 static $__desc_num_ipaddress_f = array("", "",  "number_of_ips(from_pool)");
+static $__desc_num_ipv6address_f = array("", "",  "number_of_ipv6s(from_v6pool)");
 static $__desc_syncserver = array("", "",  "Server");
 
 /// Fake Variables
@@ -263,7 +292,8 @@ static function findVpsGraph($server, $type)
 	$driverapp = $gbl->getSyncClass(null, $server, 'vps');
 
 	$sq = new Sqlite(null, 'vps');
-	$list = $sq->getRowsWhere("syncserver = '$server'", array("nname", "vifname", "vpsid"));
+	$list = $sq->getRowsWhere("syncserver = '$server' AND status='on' ", array("nname", "vifname", "vpsid"));
+//	$list = $sq->getRowsWhere("syncserver = '$server'  ", array("nname", "vifname", "vpsid"));
 
 	switch($type) {
 		case "vpstraffic":
@@ -408,12 +438,12 @@ function fillWelcomeMessage($txt)
 	$insideost = false;
 	foreach($list as $l) {
 		$l = trim($l);
-		if (csb($l, "<%ostemplate:kloxo") || csb($l, "<%ostemplate:lxadmin")) {
+		if (char_search_beg($l, "<%ostemplate:kloxo") || char_search_beg($l, "<%ostemplate:lxadmin")) {
 			$insideost = true;
 			continue;
 		}
 
-		if (csb($l, "<%/ostemplate%>")) {
+		if (char_search_beg($l, "<%/ostemplate%>")) {
 			$insideost = false;
 			continue;
 		}
@@ -547,7 +577,15 @@ function display($var)
 	}
 
 	if ($var === 'coma_vmipaddress_a') {
-		return getFirstFromList($this->vmipaddress_a)->nname;
+		$data = getFirstFromList($this->vmipaddress_a);
+		if(isset($data->nname))
+		{
+			return $data->nname;
+		}
+		else
+		{
+			return NULL;
+		}
 	}
 
 	if ($var === 'lmemoryusage_f') {
@@ -607,7 +645,7 @@ function perDisplay($var)
 	}
 }
 
-static function createListAlist($parent, $class)
+static function createListAlist($parent, $class = NULL)
 {
 	global $gbl, $sgbl, $login, $ghtml; 
 	$alist[] = "a=list&c=vps";
@@ -984,7 +1022,7 @@ function doServerSpecific()
 
 function isXenLvm()
 {
-	return csb($this->corerootdir, "lvm:");
+	return char_search_beg($this->corerootdir, "lvm:");
 }
 
 function getLocationlist()
@@ -1018,7 +1056,7 @@ function getBestLocation()
 	$xenlvm = false;
 
 	foreach($list as $l) {
-		if (csb($l, "lvm:")) {
+		if (char_search_beg($l, "lvm:")) {
 			$xenlvm = true;
 		}
 		$nlist[] = $l;
@@ -1137,7 +1175,7 @@ function postAdd()
 
 
 	if ($this->num_ipaddress_f) {
-		$netinfo = $syncs->getIpPool($this->num_ipaddress_f);
+		$netinfo = $syncs->getIpv4Pool($this->num_ipaddress_f);
 
 		$totallist = $netinfo['ip'];
 
@@ -1153,6 +1191,27 @@ function postAdd()
 			$ipadd = new vmipaddress_a(null, $this->syncserver, $ip);
 			$this->vmipaddress_a[$ipadd->nname] = $ipadd;
 			ippool::addToTmpIpAssign($l);
+
+		}
+	}
+
+	if ($this->num_ipv6address_f) {
+		$netinfo = $syncs->getIpv6Pool($this->num_ipv6address_f);
+
+		$totallist = $netinfo['ip'];
+
+		if (!$this->nameserver) {
+			$this->nameserver = $netinfo['nameserver'];
+		}
+
+		$this->networkgateway = $netinfo['networkgateway'];
+		$this->networknetmask = $netinfo['networknetmask'];
+	
+
+		if ($totallist) foreach($totallist as $ip) {
+			$ipadd = new vmipaddress_a(null, $this->syncserver, $ip);
+			$this->vmipaddress_a[$ipadd->nname] = $ipadd;
+			ippool::addToTmpIpAssign($ip);
 
 		}
 	}
@@ -1214,13 +1273,24 @@ function setUpOsTemplateDownloadParam()
 	$this->__var_masterip = getOneIPForLocalhost($this->syncserver);
 }
 
-
-function check_and_throw_error_if_some_else_is_using_vps($vpsid)
+/**
+* Check the existance of a VPS lock running.
+* 
+* Throws a exception if someone else is using a VPS.
+*
+* @author Anonymous <anonymous@lxcenter.org>
+* @author Ángel Guzmán Maeso <angel.guzman@lxcenter.org>
+*
+* @throws lxException
+* @return void
+*/
+function checkVPSLock($vpsid = NULL)
 {
-	$file = "vpslock_$vpsid.pid";
+	$file = 'vpslock_' . $vpsid . '.pid';
 
+	// @todo this seems a harmful way to check a lock file with sleep. Research this
 	$i = 0;
-	while (true) {
+	while (TRUE) {
 		if (lx_core_lock($file)) {
 			sleep(3);
 			$i++;
@@ -1231,7 +1301,6 @@ function check_and_throw_error_if_some_else_is_using_vps($vpsid)
 			break;
 		}
 	}
-
 }
 
 function postadd_xen()
@@ -1293,12 +1362,12 @@ function checkIfOffensive()
 		return true;
 	}
 
-	if (csb($this->subaction, "top_level")) {
+	if (char_search_beg($this->subaction, "top_level")) {
 		return false;
 	}
 
 	foreach($list as $l) {
-		if (csb($this->subaction, $l)) {
+		if (char_search_beg($this->subaction, $l)) {
 			return false;
 		}
 	}
@@ -1546,7 +1615,7 @@ static function continueForm($parent, $class, $param, $continueaction)
 static function addCommand($parent, $class, $p)
 {
 
-	checkIfVariablesSet($p, array('name', 'v-password', 'v-num_ipaddress_f', 'v-contactemail', 'v-syncserver', 'v-ostemplate'));
+	checkIfVariablesSet($p, array('name', 'v-password', 'v-num_ipaddress_f', 'v-num_ipv6address_f', 'v-contactemail', 'v-syncserver', 'v-ostemplate'));
 
 	checkIfVariablesSetOr($p, $param, 'resourceplan_f', array('v-plan_name'));
 	checkIfVariablesSetOr($p, $param, 'ttype', array('v-type'));
@@ -1578,6 +1647,7 @@ static function addform($parent, $class, $typetd = null)
 	$vlist['__v_button'] = $login->getKeywordUc('add');
 	$vlist['password'] = null;
 	$vlist['num_ipaddress_f'] = array('s', range(0, 8));
+	$vlist['num_ipv6address_f'] = array('s', range(0, 8));
 	$vlist['one_ipaddress_f'] = null;
 	$vlist['contactemail'] = "";
 	$vlist['send_welcome_f'] = "";
@@ -1592,9 +1662,15 @@ static function addform($parent, $class, $typetd = null)
 	$vlist['resourceplan_f'] = array('A', $nclist);
 
 	$vlist['__c_subtitle_server'] = "Server";
+	//var_dump($typetd['val']);
+	
+	// $typetd['val'] openvz or xen in clientlib.php
 	$serverlist = $parent->getVpsServers($typetd['val']);
 	if (!$serverlist) {
-		throw new lxexception("no_servers_configured_for_this_driver", '', '');
+		throw new lxexception('Server no configured for driver '. $typetd['val'] . '. You can use setdriver.php for configure a driver.
+		 For example:
+		cd /usr/local/lxlabs/hypervm/httpdocs;
+		lphp.exe ../bin/common/setdriver.php --server=localhost --class=vps --driver='. $typetd['val'] . '', '', '');
 	}
 
 	$sinfo = pserver::createServerInfo($serverlist, "vps");
@@ -1769,11 +1845,11 @@ function isNotWindows()
 
 function isWindows()
 {
-	return csb($this->ostemplate, "windows");
+	return char_search_beg($this->ostemplate, "windows");
 }
 function isBlankWindows()
 {
-	return csb($this->ostemplate, "windows-lxblank");
+	return char_search_beg($this->ostemplate, "windows-lxblank");
 }
 
 function createShowActionList(&$alist) 
@@ -2018,8 +2094,8 @@ function createShowAlist(&$alist, $subaction = null)
 
 
 	$alist[] = "a=update&sa=boot";
-	$alist[] = "a=update&sa=poweroff";
-	$alist[] = "a=update&sa=reboot";
+	$alist[] = "a=updateform&sa=poweroff";
+	$alist[] = "a=updateform&sa=reboot";
 	if ($this->isXen()) {
 		$alist[] = "a=updateform&sa=mount";
 	}
@@ -2164,8 +2240,8 @@ static function get_full_alist()
 
 
 
-	$alist[] = "a=update&sa=reboot";
-	$alist[] = "a=update&sa=poweroff";
+	$alist[] = "a=updateform&sa=reboot";
+	$alist[] = "a=updateform&sa=poweroff";
 
 	$alist[] = "a=list&c=openvzqos";
 	//$this->getLxclientActions($alist);
@@ -2241,13 +2317,23 @@ function hasFunctions() { return true; }
 function getHardProperty()
 {
 	global $gbl, $sgbl, $login, $ghtml; 
-	$driverapp = $gbl->getSyncClass('localhost', $this->syncserver, 'vps');
+	
+	$master_server = $this->__masterserver;
+	$slave_server = $this->syncserver;
+	$driverapp = $gbl->getSyncClass('localhost', $slave_server, 'vps');
+	
 	if ($this->isXen()) {
-		$maindisk = $this->getXenMaindiskName();
-		$disk = rl_exec_get($this->__masterserver, $this->syncserver,  array("vps__$driverapp", "getDiskUsage"), array($maindisk, $this->isWindows(), $this->corerootdir));
+		// Build the params
+		$maindisk   = $this->getXenMaindiskName();
+		$is_windows = $this->isWindows();
+		$root_path  = $this->corerootdir;
+		
+		$parameters = array($maindisk, $is_windows, $root_path);
+		
+		$disk = rl_exec_get($master_server, $slave_server,  array("vps__$driverapp", "getDiskUsage"), $parameters);
 		$this->used->disk_usage = $disk['used'];
 	} else {
-		$l = rl_exec_get($this->__masterserver, $this->syncserver,  array("vps__$driverapp", "vpsInfo"), array($this->getIid(), $this->corerootdir));
+		$l = rl_exec_get($master_server, $slave_server,  array("vps__$driverapp", "vpsInfo"), array($this->getIid(), $this->corerootdir));
 		$this->used->disk_usage = $l['used_s_disk'];
 		$this->used->disk_inode = $l['used_s_inode'];
 		$this->used->memory_usage = $l['used_s_memory'];
@@ -2258,7 +2344,7 @@ function getHardProperty()
 	$this->coma_vmipaddress_a = implode(",", get_namelist_from_objectlist($this->vmipaddress_a));
 }
 
-function createShowAlistConfig(&$alist)
+function createShowAlistConfig(&$alist, $subaction = null)
 {
 	global $gbl, $sgbl, $login, $ghtml; 
 	$alist['__title_main'] = $login->getKeywordUc('resource');
@@ -2365,7 +2451,15 @@ function createShowInfoList($subaction)
 		}
 	}
 
-	$ilist['IP'] = substr(implode(",", get_namelist_from_objectlist($this->vmipaddress_a)), 0, 17);
+	$name_list = get_namelist_from_objectlist($this->vmipaddress_a);
+	
+	if(!empty($name_list)) {
+		$ilist['IP'] = substr(implode(",", $name_list), 0, 17);
+	}
+	else {
+		$ilist['IP'] = NULL;
+	}
+	
 	$this->getLastLogin($ilist);
 	return $ilist;
 }
@@ -2513,22 +2607,24 @@ function createShowRlist($subaction)
 		return $rlist;
 	}
 
+	$master_server = $this->__masterserver;
+	$slave_server  = $this->syncserver;
 
-
-	$driverapp = $gbl->getSyncClass($this->__masterserver, $this->syncserver, 'vps');
-
-
-
+	$driverapp = $gbl->getSyncClass($master_server, $slave_server, 'vps');
 
 	if ($this->isXen()) {
 		if (if_demo()) {
 			$disk['used'] = '300';
 			$disk['total'] = '6000';
 		}  else {
-
-			$maindisk = $this->getXenMaindiskName();
-
-			$disk = rl_exec_get($this->__masterserver, $this->syncserver,  array("vps__$driverapp", "getDiskUsage"), array($maindisk, $this->isWindows(), $this->corerootdir));
+			// Build the params
+			$maindisk   = $this->getXenMaindiskName();
+			$is_windows = $this->isWindows();
+			$root_path  = $this->corerootdir;
+			
+			$parameters = array($maindisk, $is_windows, $root_path);
+			
+			$disk = rl_exec_get($master_server, $slave_server,  array("vps__$driverapp", "getDiskUsage"), $parameters);
 		}
 		if (!$this->priv->disk_usage) {
 			$this->priv->disk_usage = $disk['total'];

@@ -37,7 +37,7 @@ Function display($var)
 
 
 
-static  function createListNlist($parent)
+static  function createListNlist($parent, $class = NULL)
 {
 	$nlist["nname"] = "100%";
 	$nlist["used"] = "15%";

@@ -42,7 +42,7 @@ static function addform($parent, $class, $typetd = null)
 	return $ret;
 }
 
-function updateForm()
+function updateForm($subaction, $param)
 {
 	$vlist['nname'] = array('M', null);
 	$vlist['description'] = null;

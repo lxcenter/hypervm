@@ -47,21 +47,116 @@ static function add($parent, $class, $param)
 
 static function getBaseEnd($ip, $rangelist = null)
 {
-	$comp = explode(".", $ip);
-	$last = array_pop($comp);
-	$base = "$comp[2].$comp[1].$comp[0]";
+        if(isIPV6($ip))
+        {
+                $comp = expandIP6ToArray($ip);
+                $last = array_pop($comp);
+                
+                $base  = self::createDottedRevedIPV6($comp[6])."." ;
+                $base .= self::createDottedRevedIPV6($comp[5])."." ;
+                $base .= self::createDottedRevedIPV6($comp[4])."." ;
+                $base .= self::createDottedRevedIPV6($comp[3])."." ;
+                $base .= self::createDottedRevedIPV6($comp[2])."." ;
+                $base .= self::createDottedRevedIPV6($comp[1])."." ;
+                $base .= self::createDottedRevedIPV6($comp[0])."." ;
+                
+                if ($rangelist && false){
+                        // FIXME: OA: The whole rangelist must be reworked
+                        //              I dont care it now, clients cannot declare rangelists
+                        foreach($rangelist as $v) {
+                                list($rb, $rf, $rl) = $v;
+                                if ($rb === $base && $last >= $rf && $last <= $rl) {
+                                        $base = "$rf-$rl.$base";
+                                        break;
+                                }
+                        }
+                }
+        }
+        else{
 
-	if ($rangelist) {
-		foreach($rangelist as $v) {
-			list($rb, $rf, $rl) = $v;
-			if ($rb === $base && $last >= $rf && $last <= $rl) {
-				$base = "$rf-$rl.$base";
-				break;
+		$comp = explode(".", $ip);
+		$last = array_pop($comp);
+		$base = "$comp[2].$comp[1].$comp[0]";
+
+		if ($rangelist) {
+			foreach($rangelist as $v) {
+				list($rb, $rf, $rl) = $v;
+				if ($rb === $base && $last >= $rf && $last <= $rl) {
+					$base = "$rf-$rl.$base";
+					break;
+				}
 			}
 		}
 	}
 	return array($base, $last);
 }
+
+function expandIP6($ip){
+	$ip = strtoupper($ip);
+        //Make sure we have 8 parts
+        while(count(explode(":",$ip)) < 8){
+                $ip = str_replace("::",":::",$ip);
+        } 
+        return $ip;
+}
+
+
+function expandIP6ToArray($ip){
+	$ip = strtoupper($ip);
+
+        //Make sure we have 8 parts
+        while(count(explode(":",$ip)) < 8){
+                $ip = str_replace("::",":::",$ip);
+        } 
+          
+        $ipa = explode(":",$ip);
+        for($i=0;$i<8;$i++){    
+                $ipa[$i]=str_pad($ipa[$i],4,"0",STRPADLEFT);
+        } 
+        return $ipa;
+}
+
+
+// !! we only check for . and : !! 
+// NO validation done!
+function isIPV6($ip)
+{
+  if(strchr($ip, ':') && !strchr($ip, '.')) return true;
+  if(strchr($ip, '.') && !strchr($ip, ':')) return false;
+
+  throw new lxException('Invalid IP address: ' . $ip . ' Contains both dot and colon!', $variable);
+    return false;
+}
+ 
+static function createDottedIPV6($ippart)
+{
+        $chars = str_split($ippart); 
+        $ret = "";
+
+        foreach($chars as $c)
+        {
+        	if($c== '.') continue;
+                $ret .= $c ."." ;
+        }
+        return $ret;
+}
+
+static function createDottedRevedIPV6($ippart)
+{
+        $chars = str_split($ippart); 
+        $ret = "";
+
+        for($i=count($chars)-1; $i> 0;$i--)
+        {
+        	if($chars[$i]== '.') continue;
+                $ret .= $chars[$i] .".";
+        }
+        $ret .= $chars[0];
+        
+        return $ret;
+}
+
+
 
 function createExtraVariables()
 {
@@ -89,7 +184,10 @@ function createExtraVariables()
 	$sq = new Sqlite(null, 'reversedns');
 	$res = $sq->getTable();
 	foreach($res as $r) {
+		$r['nname'] = strtoupper($r['nname']);
+		
 		list($base, $last) = self::getBaseEnd($r['nname'], $this->__var_rdnsrange);
+		
 		$total[$base][] = array('nname' => $r['nname'], 'end' => $last, 'reversename' => $r['reversename']);
 	}
 

@@ -21,7 +21,7 @@ static $__desc_nname	 = array("n", "",  "server_role");
 
 static function createListAddForm($parent, $class) { return true;}
 
-static function createListAlist($parent, $class)
+static function createListAlist($parent, $class = NULL)
 {
 	global $gbl, $sgbl, $login, $ghtml; 
 
@@ -235,7 +235,7 @@ function getIpPool($totalneeded)
 	}
 	$list = $this->getList('ippool');
 	if (!$list) {
-		throw new lxException("no_ippool_configured_for_this_slave", null, $this->nname);
+		throw new lxException('This slave has not a IP pool configured.', null, $this->nname);
 	}
 	$totallist = null;
 	$newnum = $totalneeded;
@@ -243,7 +243,63 @@ function getIpPool($totalneeded)
 		$nameserver = $l->nameserver;
 		$networkgateway = $l->networkgateway;
 		$netmask = $l->networknetmask;
-		$iplist = $l->getFreeIp($newnum);
+		$iplist = $l->getFreeIp($newnum, null);
+		$totallist = lx_array_merge(array($iplist, $totallist));
+
+		if (count($totallist) >= $totalneeded) {
+			break;
+		} else {
+			$newnum = $totalneeded - count($totallist);
+		}
+	}
+	return array('nameserver' => $nameserver, 'networkgateway' => $networkgateway, 'ip' => $totallist, 'networknetmask' => $netmask);
+}
+
+function getIpv4Pool($totalneeded)
+{
+
+	if (!($totalneeded > 0)) {
+		return;
+	}
+	$list = $this->getList('ippool');
+	if (!$list) {
+		throw new lxException('This slave has not a IP pool configured.', null, $this->nname);
+	}
+	$totallist = null;
+	$newnum = $totalneeded;
+	foreach((array) $list as $l) {
+		$nameserver = $l->nameserver;
+		$networkgateway = $l->networkgateway;
+		$netmask = $l->networknetmask;
+		$iplist = $l->getFreeIp($newnum, 'ipv4');
+		$totallist = lx_array_merge(array($iplist, $totallist));
+
+		if (count($totallist) >= $totalneeded) {
+			break;
+		} else {
+			$newnum = $totalneeded - count($totallist);
+		}
+	}
+	return array('nameserver' => $nameserver, 'networkgateway' => $networkgateway, 'ip' => $totallist, 'networknetmask' => $netmask);
+}
+
+function getIpv6Pool($totalneeded)
+{
+
+	if (!($totalneeded > 0)) {
+		return;
+	}
+	$list = $this->getList('ippool');
+	if (!$list) {
+		throw new lxException('This slave has not a IP pool configured.', null, $this->nname);
+	}
+	$totallist = null;
+	$newnum = $totalneeded;
+	foreach((array) $list as $l) {
+		$nameserver = $l->nameserver;
+		$networkgateway = $l->networkgateway;
+		$netmask = $l->networknetmask;
+		$iplist = $l->getFreeIp($newnum, 'ipv6');
 		$totallist = lx_array_merge(array($iplist, $totallist));
 
 		if (count($totallist) >= $totalneeded) {
@@ -315,7 +371,7 @@ static function createServerInfo($list, $class = null)
 	return $ret;
 }
 
-static function  createListNlist($parent)
+static function  createListNlist($parent, $class = NULL)
 {
 
 	//$nlist['cpstatus'] = '3%';
@@ -420,12 +476,14 @@ function createShowRlist($subaction)
 		$rlist[] = array('lvm', "{$c['nname']}", $c['used'], $c['total']);
 	}
 	$disk = $l['disk'];
-	foreach($disk as $k => $c) {
-		$c['nname'] = str_replace(":", "_", $c['nname']);
-		if (csa($c['nname'], "mapper")) {
-			$c['nname'] = strfrom($c['nname'], "/dev/mapper/");
+	if(!empty($disk)) {
+		foreach($disk as $k => $c) {
+			$c['nname'] = str_replace(":", "_", $c['nname']);
+			if (csa($c['nname'], "mapper")) {
+				$c['nname'] = strfrom($c['nname'], "/dev/mapper/");
+			}
+			$rlist[] = array('disk', "{$c['mountedon']} ({$c['nname']})", $c['used'], $c['kblock']);
 		}
-		$rlist[] = array('disk', "{$c['mountedon']} ({$c['nname']})", $c['used'], $c['kblock']);
 	}
 	/// Rlist takes an array... 
 	$rlist[] = array('memory_usage', "Memory:Memory Usage (MB)",  $l['used_s_memory'], $l['priv_s_memory']);
@@ -442,9 +500,11 @@ function createShowRlist($subaction)
 	$rlist[] = array('Server Traffic', "Traffic:Server Traffic For Last Month", $this->used->server_traffic_last_usage, '-');
 
 	$cpu = $l['cpu'];
-	foreach($cpu as $k => $c) {
-		//$rlist[] = array('cpu', "CPU$k Model (speed)",  "{$c['used_s_cpumodel']} ({$c['used_s_cpuspeed']})", '-');
-		$rlist[] = array('cpu', "CPU$k speed",  "{$c['used_s_cpuspeed']}", '-');
+	if(!empty($cpu)) {
+		foreach($cpu as $k => $c) {
+			//$rlist[] = array('cpu', "CPU$k Model (speed)",  "{$c['used_s_cpumodel']} ({$c['used_s_cpuspeed']})", '-');
+			$rlist[] = array('cpu', "CPU$k speed",  "{$c['used_s_cpuspeed']}", '-');
+		}
 	}
 
 
