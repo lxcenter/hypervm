@@ -1891,13 +1891,6 @@ class vps__xen extends Lxdriverclass {
 	
 		sleep(3);
 	
-//  doesn't make sense and doesn't work. It just check the return code of xm list $this->main->nname
-//  when XEN vps has been created started but fails then with this you would not be able to remove broken vps 
-//  because "it could_not_stop_vps". This part have to be rewritten to something else, like:
-//  - check the real status of XEN. if it is not on the xm list then it means it's shutdown / has been badly created
-//  - when you send shutdown command and it it still on the xm list as a running vps then force to shutdown and when it fails
-//    then notice that "could_not_stop_vps"
-//
 		if (self::getStatus($this->main->nname, self::XEN_HOME) === 'on') {
       		throw new lxException("could_not_stop_vps");
 		}
