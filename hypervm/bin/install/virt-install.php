@@ -88,6 +88,9 @@ function xen_install($installtype)
             system("chkconfig libvirtd off");
         }
 	system("chkconfig xendomains on");
+        if (is_centossix()) {
+        	system("../bin/grub-bootxen.sh");            
+        }
 }
 
 
