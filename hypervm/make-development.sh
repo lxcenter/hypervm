@@ -2,7 +2,7 @@
 #    HyperVM, Server Virtualization GUI for OpenVZ and Xen
 #
 #    Copyright (C) 2000-2009	LxLabs
-#    Copyright (C) 2009-2011	LxCenter
+#    Copyright (C) 2009-2013	LxCenter
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -27,6 +27,8 @@
 # - read version
 # - compile c files
 # - create zip package
+# - create tar.gz package (not yet in use)
+# - create 7z package (not yet in use)
 ######
 echo "################################"
 echo "### Start packaging"
@@ -43,14 +45,16 @@ if [ ! -d '../.git' ]; then
 		exit
 	fi
 
+    buildtype=0
 	version=`/script/version`
 	build=`git log --pretty=format:'' | wc -l`
+	rm -f hypervm-$version.$build.zip
 else
+    buildtype=1
 	version='current'
 	build=''
+	rm -f hypervm-$version.zip
 fi
-
-rm -f hypervm-$version.$build.zip
 
 echo "### Compile c files..."
 # Compile C files
@@ -61,24 +65,36 @@ cd ../
 #
 echo "### Create zip package..."
 # Package part
-file=hypervm-$version.$build.zip
+if [ $buildtype -eq 1 ]; then
+    file=hypervm-$version.zip
+else
+    file=hypervm-$version.$build.zip
+fi
 
 zip -r9 $file ./src ./bin ./cexe ./file ./httpdocs ./pscript ./sbin ./RELEASEINFO -x \
     "*/CVS/*" \
     "*/.git/*" \
     "*/.svn/*"
 
-file=hypervm-$version.$build.tar.gz
-
+if [ $buildtype -eq 1 ]; then
+    file=hypervm-$version.tar.gz
+else
+    file=hypervm-$version.$build.tar.gz
+fi
 tar cvfz $file \
     ./src ./bin ./cexe ./file ./httpdocs ./pscript ./sbin ./RELEASEINFO \
     --exclude="CVS" \
     --exclude=".svn" \
     --exclude=".git"
 
-file=hypervm-$version.$build.7z
-
 if [ -f /usr/bin/7za ] ; then
+
+    if [ $buildtype -eq 1 ]; then
+        file=hypervm-$version.7z
+    else
+        file=hypervm-$version.$build.7z
+    fi
+
 # This requires RPMforge enabled (Centos 5.7 still not provide 7za binary)
 # yum install p7zip
 7za a \
