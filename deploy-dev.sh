@@ -2,7 +2,7 @@
 #    HyperVM, Server Virtualization GUI for OpenVZ and Xen
 #
 #    Copyright (C) 2000-2009	LxLabs
-#    Copyright (C) 2009-2011	LxCenter
+#    Copyright (C) 2009-2013	LxCenter
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -21,7 +21,9 @@
 #
 #    Install and deploy a develoment version on a local enviroment
 #
-
+#    Version 0.2 Changed git version [ Danny Terweij <d.terweij@lxcenter.org> ]
+#    Version 0.1 Initial release [ Ángel Guzmán Maeso <angel.guzman@lxcenter.org> ]
+#
 HYPERVM_PATH='/usr/local/lxlabs'
 
 usage(){
@@ -43,8 +45,8 @@ install_GIT()
 		apt-get install gcc
 	fi
 	
-	# @todo Try to get the lastest version from some site. LASTEST file?
-	GIT_VERSION='1.7.9.1'
+	# @todo Try to get the lastest version from some site. LATEST file?
+	GIT_VERSION='1.8.3.4'
 	
 	echo "Downloading and compiling GIT ${GIT_VERSION}"
 	wget http://git-core.googlecode.com/files/git-${GIT_VERSION}.tar.gz
