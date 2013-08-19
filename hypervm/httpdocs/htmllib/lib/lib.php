@@ -2424,7 +2424,7 @@ function lvm_disksize($lvmpath)
 	//$out = explode(":", $out);
 	//return $out[6] / 1024;
 
-	$out = exec_with_all_closed_output("/usr/sbin/lvs --nosuffix --units b --noheadings -o lv_size $lvmpath");
+	$out = exec_with_all_closed_output("lvs --nosuffix --units b --noheadings -o lv_size $lvmpath");
 	$out = trim($out);
 	return $out/ (1024 * 1024);
 
