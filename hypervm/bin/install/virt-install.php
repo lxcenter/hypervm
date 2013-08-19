@@ -74,7 +74,11 @@ function installOstemplates($virtualization)
 function xen_install($installtype)
 {
 
-
+        // newest OpenVZ kernels comes provides kernel-xen (!?) which breaks RHEL5 instalations
+        // If openvz.repo file exist remove it imediately before install kernel-xen
+        if (file_exists("/etc/yum.repos.d/openvz.repo")) {
+            unlink("/etc/yum.repos.d/openvz.repo");
+        }
 	$list = array("kernel-xen", "xen", "virt-manager");
 	run_package_installer($list);
 	if (file_exists("/boot/vmlinuz-2.6-xen") && !file_exists("/boot/hypervm-xen-vmlinuz")) {
