@@ -333,7 +333,7 @@ class vps__xen extends Lxdriverclass {
 		// List info about the virtual machine
 		exec('xm list ' . $virtual_machine_name, $output, $status);
 	
-		if (!empty($status)) {
+		if (empty($status)) {
 			return 'on';
 		}
 		else {
@@ -1898,9 +1898,9 @@ class vps__xen extends Lxdriverclass {
 //  - when you send shutdown command and it it still on the xm list as a running vps then force to shutdown and when it fails
 //    then notice that "could_not_stop_vps"
 //
-//		if (self::getStatus($this->main->nname, self::XEN_HOME) === 'on') {
-//      		throw new lxException("could_not_stop_vps");
-//		}
+		if (self::getStatus($this->main->nname, self::XEN_HOME) === 'on') {
+      		throw new lxException("could_not_stop_vps");
+		}
 	
 		$this->mount_this_guy();
 	}
