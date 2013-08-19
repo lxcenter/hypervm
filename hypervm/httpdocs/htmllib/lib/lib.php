@@ -2382,8 +2382,15 @@ function get_best_location($list)
 
 function vg_complete()
 {
-	if (!lxfile_exists("/usr/sbin/vgdisplay")) { return; }
-	$out = exec_with_all_closed_output("vgdisplay -c");
+        if (is_centosfive()) {
+            if (!lxfile_exists("/usr/sbin/vgdisplay")) { return; }
+        else if (is_centossix()) {
+            if (!lxfile_exists("/sbin/vgdisplay")) { return; }            
+        } else {
+            return;
+        }
+        
+        $out = exec_with_all_closed_output("vgdisplay -c");
 	$list = explode("\n", $out);
 	$ret = null;
 	foreach($list as $l) {
@@ -2405,7 +2412,14 @@ function vg_complete()
 
 function vg_diskfree($vgname)
 {
-	if (!lxfile_exists("/usr/sbin/vgdisplay")) { return; }
+        if (is_centosfive()) {
+            if (!lxfile_exists("/usr/sbin/vgdisplay")) { return; }
+        else if (is_centossix()) {
+            if (!lxfile_exists("/sbin/vgdisplay")) { return; }            
+        } else {
+            return;
+        }
+        
 	$vgname = fix_vgname($vgname);
 	$out = exec_with_all_closed_output("vgdisplay -c $vgname");
 	$out = trim($out);
@@ -3812,6 +3826,15 @@ function is_centosfive()
 	return false;
 }
 
+function is_centossix()
+{
+    //TODO Fix this like Kloxo lib
+	$cont = lfile_get_contents("/etc/redhat-release");
+	if (csa($cont, " 6 ") || csa($cont, " 6.")) {
+		return true;
+	} 
+	return false;
+}
 
 function migrateResourceplan($class)
 {
