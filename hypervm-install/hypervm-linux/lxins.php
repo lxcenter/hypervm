@@ -80,8 +80,8 @@ function lxins_main()
 
 
 	if ($virtualization === 'xen') {
-		if (!char_search_beg($osversion, "fedora-9") && !char_search_beg($osversion, "centos-5") && !char_search_beg($osversion, "rhel-5")) {
-			print("Xen is only supported on Fedora 9 or CentOS 5\n");
+		if (!char_search_beg($osversion, "fedora-9") && !char_search_beg($osversion, "centos-6") && !char_search_beg($osversion, "centos-5") && !char_search_beg($osversion, "rhel-5")) {
+			print("Xen is only supported on Fedora 9, CentOS 5 and CentOS 6\n");
 			exit;
 		}
 	}
