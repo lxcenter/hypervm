@@ -835,26 +835,31 @@ class vps__xen extends Lxdriverclass {
 
 	public function copyKernelModules()
 	{
-		$mountpoint = $this->mount_this_guy();
-		$kernev = trim(`uname -r`);
+                // if template name contains pygrub then skip copying of kernel modules, 
+                // they should be already included into template        
+		$pygrub_record = explode('-', $this->main->ostemplate);
+		if (stripos($pygrub_record[3], 'pygrub') == TRUE) {
+                
+                    $mountpoint = $this->mount_this_guy();
+                    $kernev = trim(`uname -r`);
 	
-	
-		if (!lxfile_exists("$mountpoint/lib/modules/$kernev")) {
-			lxfile_cp_rec("/lib/modules/$kernev", "$mountpoint/lib/modules/$kernev");
-		}
-		if (char_search_end($kernev, "-xen")) {
-			$nkernev = strtil($kernev, "-xen");
-			if (!lxfile_exists("$mountpoint/lib/modules/$nkernev")) {
-				lxfile_cp_rec("/lib/modules/$kernev", "$mountpoint/lib/modules/$nkernev");
-			}
-		}
-		if (char_search_beg($this->main->ostemplate, "centos-")) {
-			if (lxfile_exists("$mountpoint/lib/tls")) {
-				lxfile_rm_rec("$mountpoint/lib/tls.disabled");
-				lxfile_mv_rec("$mountpoint/lib/tls", "$mountpoint/lib/tls.disabled");
-			}
-		}
-	}
+                	if (!lxfile_exists("$mountpoint/lib/modules/$kernev")) {
+                        	lxfile_cp_rec("/lib/modules/$kernev", "$mountpoint/lib/modules/$kernev");
+                        }
+                        if (char_search_end($kernev, "-xen")) {
+                                $nkernev = strtil($kernev, "-xen");
+                                if (!lxfile_exists("$mountpoint/lib/modules/$nkernev")) {
+                                        lxfile_cp_rec("/lib/modules/$kernev", "$mountpoint/lib/modules/$nkernev");
+                                }
+                        }
+                        if (char_search_beg($this->main->ostemplate, "centos-")) {
+                                if (lxfile_exists("$mountpoint/lib/tls")) {
+                                        lxfile_rm_rec("$mountpoint/lib/tls.disabled");
+                                        lxfile_mv_rec("$mountpoint/lib/tls", "$mountpoint/lib/tls.disabled");
+                                }
+                        }
+                }
+        }
 
 	public function createDisk($size = 0)
 	{
