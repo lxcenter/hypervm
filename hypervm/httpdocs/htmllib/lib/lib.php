@@ -2384,7 +2384,7 @@ function vg_complete()
 {
         if (is_centosfive()) {
             if (!lxfile_exists("/usr/sbin/vgdisplay")) { return; }
-        else if (is_centossix()) {
+        } else if (is_centossix()) {
             if (!lxfile_exists("/sbin/vgdisplay")) { return; }            
         } else {
             return;
@@ -2414,7 +2414,7 @@ function vg_diskfree($vgname)
 {
         if (is_centosfive()) {
             if (!lxfile_exists("/usr/sbin/vgdisplay")) { return; }
-        else if (is_centossix()) {
+        } else if (is_centossix()) {
             if (!lxfile_exists("/sbin/vgdisplay")) { return; }            
         } else {
             return;
