@@ -84,8 +84,10 @@ function xen_install($installtype)
 	if (file_exists("/boot/vmlinuz-2.6-xen") && !file_exists("/boot/hypervm-xen-vmlinuz")) {
 		system("cd /boot ; ln -s vmlinuz-2.6-xen hypervm-xen-vmlinuz; ln -s initrd-2.6-xen.img hypervm-xen-initrd.img");
 	}
+        if (file_exists("/etc/init.d/libvirtd")) {
+            system("chkconfig libvirtd off");
+        }
 	system("chkconfig xendomains on");
-	system("chkconfig libvirtd off");
 }
 
 
