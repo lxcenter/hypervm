@@ -42,4 +42,6 @@ cd hypervm-install
 sh ./make-distribution.sh
 cd ../hypervm
 sh ./make-development.sh
-echo "Done. For install run:\ncd hypervm-install/hypervm-linux/; sh hypervm-install-[master|slave].sh with args"
+echo "Done. For install run:"
+echo "cd hypervm-install/hypervm-linux/; sh hypervm-install-[master|slave].sh with args"
+echo ""
