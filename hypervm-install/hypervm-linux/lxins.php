@@ -107,15 +107,23 @@ function lxins_main()
 		$list = array_merge($list, $mysql);
 	}
 
-	while (true) {
-		run_package_installer($list);
-		if (file_exists("/usr/local/lxlabs/ext/php/php")) {
-			break;
-		} else {
-			print("Yum Gave Error... Trying Again...\n");
-		}
-	}
+    // When installing development version, don't loop yum (.git found)
+    if(!file_exists('.git'))	{
 
+	    while (true) {
+		    run_package_installer($list);
+		        if (file_exists("/usr/local/lxlabs/ext/php/php")) {
+			        break;
+		        } else {
+                    // This can be a endless loop, needs another check!
+			        print("Yum Gave Error... Trying Again...\n");
+		        }
+
+	    }
+
+    } else {
+        run_package_installer($list);
+    }
 
 	if ($installtype !== 'slave') {
 		check_default_mysql($dbroot, $dbpass);
