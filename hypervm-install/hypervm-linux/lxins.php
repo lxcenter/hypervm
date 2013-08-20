@@ -132,17 +132,20 @@ function lxins_main()
 
 	$xenfailed = false;
 
-	exec("killall wget");
-
-
+//  why is that?
+//	exec("killall wget");
 
 	system("mkdir -p /usr/local/lxlabs/hypervm");
 	chdir("/usr/local/lxlabs/hypervm");
 	system("mkdir -p /usr/local/lxlabs/hypervm/log");
-	@ unlink("hypervm-current.zip");
+
+    // Prevents deleting the development package
+    if(!file_exists('/usr/local/lxlabs/.git'))	{
+	    @ unlink("hypervm-current.zip");
+    }
 	
 	if(file_exists('/usr/local/lxlabs/.git'))	{
-		echo 'Development GIT version found. Skipping download sources.';
+		echo 'Development GIT version found. Skipping download from LxCenter.';
 	}
 	else {
 		system("wget http://download.lxcenter.org/download/hypervm/production/hypervm/hypervm-current.zip");
