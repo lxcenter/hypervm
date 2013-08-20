@@ -108,7 +108,7 @@ function lxins_main()
 	}
 
     // When installing development version, don't loop yum (.git found)
-    if(!file_exists('.git'))	{
+    if(!file_exists('/usr/local/lxlabs/.git'))	{
 
 	    while (true) {
 		    run_package_installer($list);
@@ -141,7 +141,7 @@ function lxins_main()
 	system("mkdir -p /usr/local/lxlabs/hypervm/log");
 	@ unlink("hypervm-current.zip");
 	
-	if(file_exists('.git'))	{
+	if(file_exists('/usr/local/lxlabs/.git'))	{
 		echo 'Development GIT version found. Skipping download sources.';
 	}
 	else {
@@ -211,7 +211,7 @@ function lxins_main()
 		print("sh /script/install-extra-ostemplates\n");
 		print("\nThese template are left out the install process to speed up the HyperVM installation. By default only CentOS 5 and HostInBox(Kloxo) OS templates are installed.\n\n");
 
-    if(file_exists('.git'))	{
+    if(file_exists('/usr/local/lxlabs/.git'))	{
         echo 'Remember, you installed a Development version. Do not use it on production servers!';
     }
 
