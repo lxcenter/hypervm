@@ -47,12 +47,12 @@ start() {
 		exit
 	fi
 
-	if [ -f ./hypervm-install.zip ] ; then
-		echo "Remove old installation package"
-		rm -f hypervm-install.zip
-	fi
-
 	if [ ! -d '../../.git' ]; then
+
+		if [ -f ./hypervm-install.zip ] ; then
+    		echo "Remove old installation package"
+    		rm -f hypervm-install.zip
+    	fi
 		pwd
 		echo "Downloading installation package from LxCenter"
 		wget http://download.lxcenter.org/download/hypervm-install.zip
