@@ -89,7 +89,8 @@ function xen_install($installtype)
         }
 	system("chkconfig xendomains on");
         if (is_centossix()) {
-        	system("../bin/grub-bootxen.sh");            
+        	system("../bin/grub-bootxen.sh");
+                lxfile_cp("../file/sysfile/xen/xend-config.sxp", "/etc/xen/xend-config.sxp");
         }
 }
 
