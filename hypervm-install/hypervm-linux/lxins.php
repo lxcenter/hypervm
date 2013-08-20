@@ -115,6 +115,7 @@ function lxins_main()
 		        if (file_exists("/usr/local/lxlabs/ext/php/php")) {
 			        break;
 		        } else {
+                    // This can be a endless loop, needs another check!
 			        print("Yum Gave Error... Trying Again...\n");
 		        }
 
