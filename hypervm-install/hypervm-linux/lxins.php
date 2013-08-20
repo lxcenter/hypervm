@@ -121,6 +121,8 @@ function lxins_main()
 
 	    }
 
+    } else {
+        run_package_installer($list);
     }
 
 	if ($installtype !== 'slave') {
