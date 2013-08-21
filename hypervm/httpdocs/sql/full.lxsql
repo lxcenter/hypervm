@@ -7,7 +7,7 @@ $gl_sql_string = <<<SQL
 #pserver #lxclient server_traffic_usage server_traffic_last_usage
 #lxbackup backupschedule_flag
 #monitorserver monitorport_num
-#vps #monitorserver monitorserver_num disk_usage backupdisk_usage backup_num memory_usage kernelmem_usage guarmem_usage process_usage realmem_usage cpu_usage iptables_flag traffic_usage uplink_usage traffic_last_usage cpuguarantee_usage memoryguarantee_usage #lxbackup backup_flag swap_usage #lxclient vmipaddress_a_num secondlevelquota_flag cpuunit_usage ioprio_usage ncpu_usage managereversedns_flag managedns_flag rebuildvps_flag centralbackup_flag
+#vps #monitorserver monitorserver_num disk_usage backupdisk_usage backup_num memory_usage kernelmem_usage guarmem_usage process_usage realmem_usage cpu_usage iptables_flag traffic_usage uplink_usage traffic_last_usage cpuguarantee_usage memoryguarantee_usage #lxbackup backup_flag swap_usage #lxclient vmipaddress_a_num vswap_flag secondlevelquota_flag cpuunit_usage ioprio_usage ncpu_usage managereversedns_flag managedns_flag rebuildvps_flag centralbackup_flag
 #uuser disk_usage #lxclient
 #client #monitorserver monitorserver_num pserver_num client_num vps_num ip_manage_flag vps_add_flag vps_limit_flag #vps
 
