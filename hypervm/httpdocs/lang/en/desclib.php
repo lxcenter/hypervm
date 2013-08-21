@@ -690,6 +690,7 @@ $__description["memory:memory_usage(MB)(xen_only)"] = array("Memory:Memory Usage
 $__description["traffic:traffic_(MB/month)"] = array("Traffic:Traffic (MB/month)");
 $__description["enable_iptables_(only_for_openvz)"] = array("Enable Iptables (only For Openvz)");
 $__description["swap:swap_(MB)"] = array("Swap (MB)");
+$__description["enable_vswap"] = array("OpenVZ vSwap enabled");
 $__description["can_change_logo"] = array("Can Change Logo");
 $__description["VM_server_pool"] = array("VM Server Pool");
 $__description["Ltraffic:traffic_usage_for_last_month_(MB)"] = array("Ltraffic:Traffic Usage For Last Month (MB)");

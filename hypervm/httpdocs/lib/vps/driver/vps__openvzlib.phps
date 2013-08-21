@@ -672,10 +672,10 @@ class vps__openvz extends Lxdriverclass {
 			$memory = $this->main->priv->guarmem_usage;
 		}
 	
-		lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--save", "--vmguarpages", "{$memory}M:2147483647");
-		lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--save", "--oomguarpages", "{$memory}M:2147483647");
+		lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--save", "--vmguarpages", "{$memory}M:". PHP_INT_MAX);
+		lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--save", "--oomguarpages", "{$memory}M:".PHP_INT_MAX);
 		lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--save", "--shmpages", "{$memory}M:{$memory}M");
-		lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--save", "--physpages", "0:2147483647");
+		lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--save", "--physpages", "0:".PHP_INT_MAX);
 		$tcp = round(($memory * 1024)/5, 0);
 		$process = $this->main->priv->process_usage;
 		if (is_unlimited($process) || $process > 5555) {
@@ -731,6 +731,13 @@ class vps__openvz extends Lxdriverclass {
 	    $memory = "0:" . $memory . "M";
 	
 	    lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--save", "--swappages", $memory);
+		
+		// If vswap is enabled we change physpages to privvmpages
+		if($this->main->priv->isOn('vswap_flag'))
+		    // multiply it with the block size
+		    lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--save", "--physpages", $this->main->priv->memory_usage * 256);
+		else 
+		    lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--save", "--physpages", 'unlimited');
 	}
 
 	function setProcessUsage()
@@ -766,12 +773,11 @@ class vps__openvz extends Lxdriverclass {
 		lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--save", "--numiptent", $process);
 		lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--save", "--lockedpages", $process);
 	
-		$this->setGuarMemoryUsage();
 	}
 
 	function limitMaxMemory($value)
 	{
-		if ($value > 2147483646) { $value = 2147483646; }
+		if ($value > PHP_INT_MAX-1) { $value = PHP_INT_MAX-1; }
 		return $value;
 	}
 
@@ -1105,6 +1111,7 @@ class vps__openvz extends Lxdriverclass {
 		$this->setCpuUsage();
 		$this->setMemoryUsage();
 		$this->setProcessUsage();
+		$this->setGuarMemoryUsage();
 		$this->setSwapUsage();
 		$this->setIptables();
 		$this->changeConf("OSTEMPLATE", $this->main->ostemplate);
@@ -1361,9 +1368,10 @@ class vps__openvz extends Lxdriverclass {
 				$this->setGuarMemoryUsage();
 				break;
 	
-	        case "change_swap_usage":
-	              $this->setSwapUsage();
-	            break;
+			case "change_swap_usage":
+			case "enable_vswap_flag":
+			      $this->setSwapUsage();
+			break;
 	
 			case "change_process_usage":
 				$this->setProcessUsage();
