@@ -3908,15 +3908,17 @@ function addLineIfNotExistPattern($filename, $searchpattern, $pattern)
 function fix_self_ssl()
 {
 	global $gbl, $sgbl, $login, $ghtml; 
-	$pgm = $sgbl->__var_program_name;
-	$ret = lxshell_return("diff", "../etc/program.pem", "htmllib/filecore/old.program.pem");
-
-	if (!$ret) {
-		lxfile_cp("htmllib/filecore/program.pem", "../etc/program.pem");
-	}
-	//system("/etc/init.d/$pgm restart");
-
+//
+//  Removed because not needed anymore.
+//	$pgm = $sgbl->__var_program_name;
+//	$ret = lxshell_return("diff", "../etc/program.pem", "htmllib/filecore/old.program.pem");
+//
+//	if (!$ret) {
+//		lxfile_cp("htmllib/filecore/program.pem", "../etc/program.pem");
+//	}
+//	//system("/etc/init.d/$pgm restart");
 }
+
 function remove_line($filename, $pattern)
 {
 	$list = lfile($filename);
