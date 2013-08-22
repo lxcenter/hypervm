@@ -2,7 +2,7 @@
 #    HyperVM, Server Virtualization GUI for OpenVZ and Xen
 #
 #    Copyright (C) 2000-2009	LxLabs
-#    Copyright (C) 2009-2011	LxCenter
+#    Copyright (C) 2009-2013	LxCenter
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -24,6 +24,13 @@
 
 # Note: PhpDocumentor is obsoleted, unmaintained and deprecated. Using the
 # new DocBlox for generate the php-doc.
+
+# Note: DocBlox is obsoleted, merged with PhpDocumentor and called PhpDocumentor2
+# This script is obsoleted and not working therefore it ends here until a new script
+# is made.
+echo "This script is not working anymore. Wait for an update."
+exit;
+
 
 # Requires:
 #   - PHP >= 5.2.6
