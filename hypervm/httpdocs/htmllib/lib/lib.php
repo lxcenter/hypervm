@@ -1468,11 +1468,7 @@ function get_admin_license_var()
 function get_license_resource()
 {
 	global $gbl, $sgbl, $login, $ghtml; 
-	if ($sgbl->isKloxo()) {
-		return array("maindomain_num");
-	} else {
-		return array("vps_num");
-	}
+	return array("vps_num");
 }
 
 function cp_fileserv_list($root, $list)
