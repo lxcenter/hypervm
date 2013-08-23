@@ -85,17 +85,10 @@ class vps__openvz extends Lxdriverclass {
 					$outgoing[$list[$srcIdx]][] = $list[$byteIdx];
 					$sourcelist[$list[$srcIdx]] = true;
 				}
-<<<<<<< HEAD
-			} else if(csb($list[6], "0.0.0")) {
-				if (!isset($dstlist[$list[7]])) {
-					$incoming[$list[7]][] = $list[1];
-					$dstlist[$list[7]] = true;
-=======
 			} else if(csb($list[$srcIdx], "0.0.0")) {
 				if (!isset($dstlist[$list[$dstIdx]])) {
 					$incoming[$list[$dstIdx]][] = $list[$byteIdx];
 					$dstlist[$list[$dstIdx]] = true;
->>>>>>> 62b9a89... Made iptraffic logging more robust
 				}
 			}
 		}
