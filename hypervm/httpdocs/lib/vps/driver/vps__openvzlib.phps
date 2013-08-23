@@ -548,13 +548,10 @@ class vps__openvz extends Lxdriverclass {
 			}
 			$ret = lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--onboot", "yes", "--save");
 		} else {
-<<<<<<< HEAD
-=======
 //			if (!$this->main->isOn('poweroff_confirm_f')) {
 //				throw new lxException("need_confirm_poweroff", 'poweroff_confirm_f');
 //			}
 
->>>>>>> 62b9a89... Made iptraffic logging more robust
 			$ret = $this->stop();
 			$ret = lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--onboot", "no", "--save");
 		}
