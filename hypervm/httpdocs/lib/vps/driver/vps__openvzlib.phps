@@ -205,7 +205,7 @@ class vps__openvz extends Lxdriverclass {
 		
 		$data = `/usr/sbin/vzctl exec $vpsid cat /proc/user_beancounters`;
 
-                if (self::checkIfRHEL6Kernel()) {
+                if (self::checkIfRHEL6Kernel() && self::checkIfVswapEnabled($vpsid) ) {
                     $beancounter = "physpages";
                 } else {
                     $beancounter = "privvmpages";
@@ -584,12 +584,9 @@ class vps__openvz extends Lxdriverclass {
 			$memory = $this->main->priv->memory_usage * 256;
 		}
 
-                if (!self::checkIfRHEL6Kernel()) {
-        		lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--save", "--privvmpages", $memory);
-                }
-
-                lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--save", "--meminfo", "pages:$memory");
-        }
+               lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--save", "--privvmpages", $memory);
+               lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--save", "--meminfo", "pages:$memory");
+       }
 
 	function do_backup()
 	{
@@ -1637,19 +1634,34 @@ class vps__openvz extends Lxdriverclass {
         
         static function checkIfRHEL6Kernel()
         {
- 
-            $proc_version = file_get_contents('/proc/version');
-
-            if (preg_match("/2.6.32-/", $proc_version)) {
-
+            if (lxfile_exists("/proc/vz/vswap")) {
                 return true;
-                
             } else {
-                
                 return false;
-                
             }
-            
         }
+        
+        static function checkIfVswapEnabled($vpsid)
+        {
+
+                $data = `/usr/sbin/vzctl exec $vpsid cat /proc/user_beancounters`;
+        	$res = explode("\n", $data);
+		$match = true;
+		foreach($res as $r) {
+			if ($match && csa($r, "physpages")) {
+				break;
+			}
+		}
+		$data = trimSpaces($r);
+		dprint($data . "\n");
+		$result = explode(" ", $data);
+		$limit = $result[4];
+	        
+                if ($limit < PHP_INT_MAX ) {
+                    return true;
+                } else {
+                    return false;
+                }
+        }     
         
 }
