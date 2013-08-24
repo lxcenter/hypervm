@@ -3818,22 +3818,28 @@ function get_class_for_table($table)
 
 function is_centosfive()
 {
-    //TODO Fix this like Kloxo lib
-	$cont = lfile_get_contents("/etc/redhat-release");
-	if (csa($cont, " 5 ") || csa($cont, " 5.")) {
-		return true;
-	} 
-	return false;
+        $find = find_os_pointversion();
+        $check = strpos($find, 'centos-5');
+
+        if ($check !== false) {
+                return true;
+        }
+        else {
+                return false;
+        }
 }
 
 function is_centossix()
 {
-    //TODO Fix this like Kloxo lib
-	$cont = lfile_get_contents("/etc/redhat-release");
-	if (csa($cont, " 6 ") || csa($cont, " 6.")) {
-		return true;
-	} 
-	return false;
+        $find = find_os_pointversion();
+        $check = strpos($find, 'centos-6');
+
+        if ($check !== false) {
+                return true;
+        }
+        else {
+                return false;
+        }
 }
 
 function migrateResourceplan($class)
