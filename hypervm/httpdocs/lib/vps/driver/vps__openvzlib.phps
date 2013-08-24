@@ -205,7 +205,7 @@ class vps__openvz extends Lxdriverclass {
 		
 		$data = `/usr/sbin/vzctl exec $vpsid cat /proc/user_beancounters`;
 
-                if (self::checkIfRHEL6Kernel()) {
+                if (self::checkIfVswapEnabled($vpsid) ) {
                     $beancounter = "physpages";
                 } else {
                     $beancounter = "privvmpages";
@@ -584,12 +584,9 @@ class vps__openvz extends Lxdriverclass {
 			$memory = $this->main->priv->memory_usage * 256;
 		}
 
-                if (!self::checkIfRHEL6Kernel()) {
-        		lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--save", "--privvmpages", $memory);
-                }
-
-                lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--save", "--meminfo", "pages:$memory");
-        }
+               lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--save", "--privvmpages", $memory);
+               lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--save", "--meminfo", "pages:$memory");
+       }
 
 	function do_backup()
 	{
@@ -681,15 +678,10 @@ class vps__openvz extends Lxdriverclass {
 			$memory = $this->main->priv->guarmem_usage;
 		}
 	
-                if (self::checkIfRHEL6Kernel()) {
-                   lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--save", "--physpages", "0:{$memory}M");
-                } else {
-                    lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--save", "--vmguarpages", "{$memory}M:2147483647");
-                    lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--save", "--oomguarpages", "{$memory}M:2147483647");
-                    lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--save", "--shmpages", "{$memory}M:{$memory}M");
-                    lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--save", "--physpages", "0:2147483647");
-                }
-                
+		lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--save", "--vmguarpages", "{$memory}M:". PHP_INT_MAX);
+		lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--save", "--oomguarpages", "{$memory}M:".PHP_INT_MAX);
+		lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--save", "--shmpages", "{$memory}M:{$memory}M");
+		lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--save", "--physpages", "0:".PHP_INT_MAX);
 		$tcp = round(($memory * 1024)/5, 0);
 		$process = $this->main->priv->process_usage;
 		if (is_unlimited($process) || $process > 5555) {
@@ -745,6 +737,13 @@ class vps__openvz extends Lxdriverclass {
 	    $memory = "0:" . $memory . "M";
 	
 	    lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--save", "--swappages", $memory);
+		
+		// If vswap is enabled we change physpages to privvmpages
+		if($this->main->priv->isOn('vswap_flag'))
+		    // multiply it with the block size
+		    lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--save", "--physpages", $this->main->priv->memory_usage * 256);
+		else 
+		    lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--save", "--physpages", 'unlimited');
 	}
 
 	function setProcessUsage()
@@ -780,12 +779,11 @@ class vps__openvz extends Lxdriverclass {
 		lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--save", "--numiptent", $process);
 		lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--save", "--lockedpages", $process);
 	
-		$this->setGuarMemoryUsage();
 	}
 
 	function limitMaxMemory($value)
 	{
-		if ($value > 2147483646) { $value = 2147483646; }
+		if ($value > PHP_INT_MAX-1) { $value = PHP_INT_MAX-1; }
 		return $value;
 	}
 
@@ -1119,6 +1117,7 @@ class vps__openvz extends Lxdriverclass {
 		$this->setCpuUsage();
 		$this->setMemoryUsage();
 		$this->setProcessUsage();
+		$this->setGuarMemoryUsage();
 		$this->setSwapUsage();
 		$this->setIptables();
 		$this->changeConf("OSTEMPLATE", $this->main->ostemplate);
@@ -1375,9 +1374,10 @@ class vps__openvz extends Lxdriverclass {
 				$this->setGuarMemoryUsage();
 				break;
 	
-	        case "change_swap_usage":
-	              $this->setSwapUsage();
-	            break;
+			case "change_swap_usage":
+			case "enable_vswap_flag":
+			      $this->setSwapUsage();
+			break;
 	
 			case "change_process_usage":
 				$this->setProcessUsage();
@@ -1632,21 +1632,27 @@ class vps__openvz extends Lxdriverclass {
 		return $res;
 	}
         
-        static function checkIfRHEL6Kernel()
+        static function checkIfVswapEnabled($vpsid)
         {
- 
-            $proc_version = file_get_contents('/proc/version');
 
-            if (preg_match("/2.6.32-/", $proc_version)) {
-
-                return true;
-                
-            } else {
-                
-                return false;
-                
-            }
-            
-        }
+                $data = `/usr/sbin/vzctl exec $vpsid cat /proc/user_beancounters`;
+        	$res = explode("\n", $data);
+		$match = true;
+		foreach($res as $r) {
+			if ($match && csa($r, "physpages")) {
+				break;
+			}
+		}
+		$data = trimSpaces($r);
+		dprint($data . "\n");
+		$result = explode(" ", $data);
+		$limit = $result[4];
+	        
+                if ($limit < PHP_INT_MAX ) {
+                    return true;
+                } else {
+                    return false;
+                }
+        }     
         
 }
