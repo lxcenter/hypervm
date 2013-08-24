@@ -106,7 +106,10 @@ print("Fixing OS template permissions\n");
 	save_admin_email();
 	print("Checking Skin Images\n");
 	copy_image();
-	system("mysql -u hypervm -p`cat ../etc/conf/hypervm.pass` hypervm1_0 < ../file/interface/interface_template.dump");
+
+    // Unknown usage within HyperVM, anyone can tell what this is doing?
+    print("Checking Interface Template\n");
+	system("mysql -u hypervm -p`cat ../etc/conf/hypervm.pass` hypervm1_0 < ../file/interface/interface_template.sql");
 
 	if (lxfile_exists("/etc/init.d/libvirtd")) {
 	print("Make sure libvirtd is not started after reboot\n");
@@ -129,9 +132,9 @@ print("Fixing Base OS templates\n");
 	fix_self_ssl();
 	print("Fix database password\n");
 	critical_change_db_pass();
-	print("Delete old repo's\n");
 if (lxfile_exists("/etc/yum.repos.d/lxlabs.repo")) {
-		lxfile_mv("/etc/yum.repos.d/lxlabs.repo","/etc/yum.repos.d/lxlabs.repo.lxsave");
+    print("Delete old repo's\n");
+    lxfile_mv("/etc/yum.repos.d/lxlabs.repo","/etc/yum.repos.d/lxlabs.repo.lxsave");
 		system("rm -f /etc/yum.repos.d/lxlabs.repo");
 	print("Removed lxlabs.repo\n");
 		}
@@ -139,6 +142,7 @@ if (lxfile_exists("/etc/yum.repos.d/lxlabs.repo")) {
 
 function fix_ipaddress_column_type()
 {
+    // is this also the case when the database is created at install time? Else this can be removed in HyperVM 2.1.0 release
 	$sq = new Sqlite(null, 'vps');
 	$sq->rawQuery('alter table vps modify coma_vmipaddress_a text');
 }
