@@ -447,9 +447,13 @@ class vps__xen extends Lxdriverclass {
 		else { // For Unix based Xen virtual machine
 			// @todo Check if the dumpe2fs it's available to use and exists (never trusts on users)
 			$global_dontlogshell = TRUE;
-			$output = lxshell_output('dumpe2fs', '-h', $disk);
+                        if (is_centosfive()) {
+        			$output = lxshell_output('dumpe4fs', '-h', $disk);
+                        }
+                        if (is_centossix()) {
+        			$output = lxshell_output('dumpe2fs', '-h', $disk);
+                        }
 			$global_dontlogshell = FALSE;
-			
 			if(!empty($output)) { // If no output returned we return 0 MBytes (fallback mode)
 				$ouput_lines = explode(PHP_EOL, $output);
 				
@@ -1218,8 +1222,14 @@ class vps__xen extends Lxdriverclass {
 		if ($this->main->isWindows()) {
 			$this->expandPartitionToImage();
 		} else {
-			lxshell_return("e2fsck", "-f", "-y", $disk);
-			lxshell_return("resize2fs", $disk);
+                        if(is_centosfive()) {
+                            lxshell_return("e4fsck", "-f", "-y", $disk);
+                            lxshell_return("resize4fs", $disk);                            
+                        }
+                        if(is_centossix()) {
+                            lxshell_return("e2fsck", "-f", "-y", $disk);
+                            lxshell_return("resize2fs", $disk);
+                        }
 		}
 		if (!$this->isLVM()) { // @todo $this->createRootPath(); ?
 			//lo_remove($disk);
@@ -1369,7 +1379,12 @@ class vps__xen extends Lxdriverclass {
 	
 	
 		$loop = $this->main->maindisk;
-		lxshell_return("e2fsck", "-y", $loop);
+                if(is_centosfive()) {
+                    lxshell_return("e4fsck", "-y", $loop);
+                }
+                if(is_centossix()) {
+                    lxshell_return("e2fsck", "-y", $loop);
+                }
 	
 		if ($this->isLVM()) {
 			$ret = lxshell_return("mount", $loop, $mountpoint);
@@ -1418,7 +1433,12 @@ class vps__xen extends Lxdriverclass {
 		}
 	
 		if (!$this->main->isWindows()) {
+                    if(is_centosfive()) {
+			lxshell_return("e4fsck", "-f", "-y", $sfpath);
+                    }
+                    if(is_centossix()) {
 			lxshell_return("e2fsck", "-f", "-y", $sfpath);
+                    }
 			lxshell_return("mount", "-o", "ro", $sfpath, $tmp);
 		} else {
 			$tmp = $sfpath;
