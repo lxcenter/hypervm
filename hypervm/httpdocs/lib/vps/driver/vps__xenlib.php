@@ -891,7 +891,7 @@ class vps__xen extends Lxdriverclass {
 		}
 	
 		if (!$this->main->isWindows()) {
-			lxshell_return("mkfs.ext3", "-F", $this->main->maindisk);
+			lxshell_return("mkfs.ext4", "-F", $this->main->maindisk);
 		}
 	}
 
@@ -1761,7 +1761,7 @@ class vps__xen extends Lxdriverclass {
 	
 		if ($this->main->isNotWindows()) {
 			if ($this->isLvm()) {
-				lxshell_return("mkfs.ext3", "-F", $this->main->maindisk);
+				lxshell_return("mkfs.ext4", "-F", $this->main->maindisk);
 			} else {
 				lxfile_rm_rec($this->main->maindisk);
 				$this->createDisk();
