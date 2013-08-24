@@ -52,6 +52,7 @@ static $__desc_status_v_create  = array("", "",  "Creating");
 static $__desc_status_v_createfailed  = array("", "",  "Create failed");
 
 static $__desc_iptables_flag =  array("q", "",  "enable_iptables_(only_for_openvz)");
+static $__desc_vswap_flag =  array("q", "",  "enable_vswap");
 static $__desc_backup_flag =  array("q", "",  "allow_backing_up");
 static $__desc_backupschedule_flag =  array("q", "",  "allow_backup_schedule");
 
