@@ -205,7 +205,7 @@ class vps__openvz extends Lxdriverclass {
 		
 		$data = `/usr/sbin/vzctl exec $vpsid cat /proc/user_beancounters`;
 
-                if (self::checkIfRHEL6Kernel() && self::checkIfVswapEnabled($vpsid) ) {
+                if (self::checkIfVswapEnabled($vpsid) ) {
                     $beancounter = "physpages";
                 } else {
                     $beancounter = "privvmpages";
@@ -1632,15 +1632,6 @@ class vps__openvz extends Lxdriverclass {
 		}
 		return $res;
 	}
-        
-        static function checkIfRHEL6Kernel()
-        {
-            if (lxfile_exists("/proc/vz/vswap")) {
-                return true;
-            } else {
-                return false;
-            }
-        }
         
         static function checkIfVswapEnabled($vpsid)
         {
