@@ -81,9 +81,32 @@ function xen_install($installtype)
         }
 	$list = array("kernel-xen", "xen", "virt-manager");
 	run_package_installer($list);
-	if (file_exists("/boot/vmlinuz-2.6-xen") && !file_exists("/boot/hypervm-xen-vmlinuz")) {
-		system("cd /boot ; ln -s vmlinuz-2.6-xen hypervm-xen-vmlinuz; ln -s initrd-2.6-xen.img hypervm-xen-initrd.img");
+	
+        // hypervm-xen-vmlinuz and lxxen-initrd.img must be created from last installed dom0 kernel
+        if (is_centosfive()) {
+            $kernel_installed = exec_with_all_closed_output('rpm -q kernel-xen --last | cut -f 1 -d " " | head -n 1 | sed "s/kernel-xen-//g"');
+            $kernel_name = "vmlinuz-".$kernel_installed."xen";
+        } else if(is_centossix()) {
+            $kernel_installed = exec_with_all_closed_output('rpm -q kernel --last | cut -f 1 -d " " | head -n 1 | sed "s/kernel-//g"');        
+            $kernel_name = "vmlinuz-$kernel_installed";
+        } else {
+            print("Unsupported OS\n");
+            die();
+        }
+        
+        if (file_exists("/boot/$kernel_name") && !file_exists("/boot/hypervm-xen-vmlinuz")) {
+		system("cd /boot ; ln -s $kernel_name hypervm-xen-vmlinuz;");
+                
+                if(is_centosfive()) {
+                    system("mkinitrd -f --with=xennet --builtin=aic7xxx --builtin=serverworks --preload=xenblk --omit-raid-modules --omit-lvm-modules --fstab=../file/sysfile/xen/fstab  /boot/lxxen-initrd.img $kernel_installed"."xen");
+                }
+                if(is_centossix()) {
+                    system("mkinitrd -f --with=xennet --builtin=aic7xxx --builtin=serverworks --preload=xenblk --omit-raid-modules --omit-lvm-modules --fstab=../file/sysfile/xen/fstab  /boot/lxxen-initrd.img $kernel_installed");
+                }
+
+                system("cd /boot ; ln -sf lxxen-initrd.img hypervm-xen-initrd.img");
 	}
+
         if (file_exists("/etc/init.d/libvirtd")) {
             system("chkconfig libvirtd off");
         }
