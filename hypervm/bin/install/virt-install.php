@@ -79,7 +79,7 @@ function xen_install($installtype)
         if (file_exists("/etc/yum.repos.d/openvz.repo")) {
             unlink("/etc/yum.repos.d/openvz.repo");
         }
-	$list = array("kernel-xen", "xen", "virt-manager");
+	$list = array("kernel-xen", "xen", "virt-manager", "e4fsprogs");
 	run_package_installer($list);
 	
         // hypervm-xen-vmlinuz and lxxen-initrd.img must be created from last installed dom0 kernel
