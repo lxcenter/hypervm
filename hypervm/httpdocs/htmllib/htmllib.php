@@ -7439,9 +7439,6 @@ class HtmlLib
 		} else {
 			dprint($info);
 			print("<table cellpadding=0 cellspacing=0> <tr height=10> <td > </td> </tr> </table> ");
-			if (lxfile_exists("__path_program_htmlbase/help/$info.dart")) {
-				$pinfo = lfile_get_contents("__path_program_htmlbase/help/$info.dart");
-			}
 		}
 
 		if (!$pinfo) {
@@ -7452,10 +7449,7 @@ class HtmlLib
 				}
 			} else {
 				dprint($info);
-				if (lxfile_exists("__path_program_htmlbase/help/$info.dart")) {
-					$pinfo = lfile_get_contents("__path_program_htmlbase/help/$info.dart");
-				}
-			}
+		}
 		}
 
 		if (!$pinfo) {
