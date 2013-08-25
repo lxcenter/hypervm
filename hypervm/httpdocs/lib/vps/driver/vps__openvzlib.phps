@@ -204,7 +204,13 @@ class vps__openvz extends Lxdriverclass {
 		$path = "/proc/user_beancounters";
 		
 		$data = `/usr/sbin/vzctl exec $vpsid cat /proc/user_beancounters`;
-	
+
+                if (self::checkIfVswapEnabled($vpsid) ) {
+                    $beancounter = "physpages";
+                } else {
+                    $beancounter = "privvmpages";
+                }
+                
 		$res = explode("\n", $data);
 		$match = true;
 		foreach($res as $r) {
@@ -214,7 +220,7 @@ class vps__openvz extends Lxdriverclass {
 			}
 		*/
 	
-			if ($match && csa($r, "privvmpages")) {
+			if ($match && csa($r, $beancounter)) {
 				break;
 			}
 		}
@@ -577,10 +583,10 @@ class vps__openvz extends Lxdriverclass {
 		} else {
 			$memory = $this->main->priv->memory_usage * 256;
 		}
-	
-		lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--save", "--privvmpages", $memory);
-		lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--save", "--meminfo", "pages:$memory");
-	}
+
+               lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--save", "--privvmpages", $memory);
+               lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--save", "--meminfo", "pages:$memory");
+       }
 
 	function do_backup()
 	{
@@ -1625,4 +1631,28 @@ class vps__openvz extends Lxdriverclass {
 		}
 		return $res;
 	}
+        
+        static function checkIfVswapEnabled($vpsid)
+        {
+
+                $data = `/usr/sbin/vzctl exec $vpsid cat /proc/user_beancounters`;
+        	$res = explode("\n", $data);
+		$match = true;
+		foreach($res as $r) {
+			if ($match && csa($r, "physpages")) {
+				break;
+			}
+		}
+		$data = trimSpaces($r);
+		dprint($data . "\n");
+		$result = explode(" ", $data);
+		$limit = $result[4];
+	        
+                if ($limit < PHP_INT_MAX ) {
+                    return true;
+                } else {
+                    return false;
+                }
+        }     
+        
 }

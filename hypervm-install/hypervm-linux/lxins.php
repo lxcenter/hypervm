@@ -3,7 +3,7 @@
 //    HyperVM, Server Virtualization GUI for OpenVZ and Xen
 //
 //    Copyright (C) 2000-2009     LxLabs
-//    Copyright (C) 2009          LxCenter
+//    Copyright (C) 2009-2013     LxCenter
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU Affero General Public License as
@@ -94,16 +94,6 @@ function lxins_main()
 		}
 	}
 
-
-	/*
-	$file = "http://download.lxlabs.com/download/update/$osversion/headers/header.info";
-	$cont = @file_get_contents($file);
-	if (!$cont) {
-		print("This OS is not suported at this moment.... Please contact our Support personnel\n");
-		exit;
-	}
-*/
-
 	//install_rhn_sources($osversion);
 	install_yum_repo($osversion);
 
@@ -117,15 +107,23 @@ function lxins_main()
 		$list = array_merge($list, $mysql);
 	}
 
-	while (true) {
-		run_package_installer($list);
-		if (file_exists("/usr/local/lxlabs/ext/php/php")) {
-			break;
-		} else {
-			print("Yum Gave Error... Trying Again...\n");
-		}
-	}
+    // When installing development version, don't loop yum (.git found)
+    if(!file_exists('/usr/local/lxlabs/.git'))	{
 
+	    while (true) {
+		    run_package_installer($list);
+		        if (file_exists("/usr/local/lxlabs/ext/php/php")) {
+			        break;
+		        } else {
+                    // This can be a endless loop, needs another check!
+			        print("Yum Gave Error... Trying Again...\n");
+		        }
+
+	    }
+
+    } else {
+        run_package_installer($list);
+    }
 
 	if ($installtype !== 'slave') {
 		check_default_mysql($dbroot, $dbpass);
@@ -134,17 +132,20 @@ function lxins_main()
 
 	$xenfailed = false;
 
-	exec("killall wget");
-
-
+//  why is that?
+//	exec("killall wget");
 
 	system("mkdir -p /usr/local/lxlabs/hypervm");
 	chdir("/usr/local/lxlabs/hypervm");
 	system("mkdir -p /usr/local/lxlabs/hypervm/log");
-	@ unlink("hypervm-current.zip");
+
+    // Prevents deleting the development package
+    if(!file_exists('/usr/local/lxlabs/.git'))	{
+	    @ unlink("hypervm-current.zip");
+    }
 	
-	if(file_exists('.git'))	{
-		echo 'Development GIT version found. Skipping download sources.';
+	if(file_exists('/usr/local/lxlabs/.git'))	{
+		echo 'Development GIT version found. Skipping download from LxCenter.';
 	}
 	else {
 		system("wget http://download.lxcenter.org/download/hypervm/production/hypervm/hypervm-current.zip");
@@ -211,7 +212,11 @@ function lxins_main()
 		print("\n\nExtra note:\n");
 		print("To install extra XEN and/or OpenVZ OS templates please run:\n\n");
 		print("sh /script/install-extra-ostemplates\n");
-				print("\nThese template are left out the install process to speed up the HyperVM installation. By default only CentOS 5 and HostInBox(Kloxo) OS templates are installed.");
+		print("\nThese template are left out the install process to speed up the HyperVM installation. By default only CentOS 5 and HostInBox(Kloxo) OS templates are installed.\n\n");
+
+    if(file_exists('/usr/local/lxlabs/.git'))	{
+        echo 'Remember, you installed a Development version. Do not use it on production servers!';
+    }
 
 
 }
