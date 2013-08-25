@@ -1167,8 +1167,8 @@ class vps__xen extends Lxdriverclass {
 	
 		$string .= "vncviewer  = 0\n";
 		$string .= "serial     = 'pty'\n";
-		$string .= "disk       = ['$loc:{$this->main->maindisk},sda1,w', '$loc:{$this->main->swapdisk},sda2,w']\n";
-		$string .= "root = '/dev/sda1 ro'\n";
+		$string .= "disk       = ['$loc:{$this->main->maindisk},xvda1,w', '$loc:{$this->main->swapdisk},xvda2,w']\n";
+		$string .= "root = '/dev/xvda1 xen_blkfront.sda_is_xvda=1 ro'\n";
 		
 		//Add pygrub configuration if template name contains pygrub
 		$pygrub_record = explode('-', $this->main->ostemplate);
