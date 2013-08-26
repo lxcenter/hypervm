@@ -840,13 +840,19 @@ class vps__xen extends Lxdriverclass {
 	public function copyKernelModules()
 	{
                 // if template name contains pygrub then skip copying of kernel modules, 
-                // they should be already included into template        
-		$pygrub_record = explode('-', $this->main->ostemplate);
-		if (stripos($pygrub_record[3], 'pygrub') == TRUE) {
+                // they should be already included into template
+		if (! self::isPygrubTemplate($this->main->ostemplate)) {
                 
                     $mountpoint = $this->mount_this_guy();
-                    $kernev = trim(`uname -r`);
-	
+
+                        if (is_centosfive()) {
+                            $kernev = trim(`rpm -q kernel-xen --last | cut -f 1 -d " " | head -n 1 | sed "s/kernel-xen-//g"`);
+                        } else if(is_centossix()) {
+                            $kernev = trim(`rpm -q kernel-2.6.32 --last | cut -f 1 -d " " | head -n 1 | sed "s/kernel-//g"`);                        
+                        } else {
+                            $kernev = trim(`uname -r`);
+                        }
+                    	
                 	if (!lxfile_exists("$mountpoint/lib/modules/$kernev")) {
                         	lxfile_cp_rec("/lib/modules/$kernev", "$mountpoint/lib/modules/$kernev");
                         }
@@ -1168,11 +1174,14 @@ class vps__xen extends Lxdriverclass {
 		$string .= "vncviewer  = 0\n";
 		$string .= "serial     = 'pty'\n";
 		$string .= "disk       = ['$loc:{$this->main->maindisk},xvda1,w', '$loc:{$this->main->swapdisk},xvda2,w']\n";
-		$string .= "root = '/dev/xvda1 xen_blkfront.sda_is_xvda=1 ro'\n";
-		
+                if (is_centosfive()) {
+                    $string .= "root = '/dev/xvda1 enforcing=0 console=xvc0 ro'\n";
+                } else {
+                    $string .= "root = '/dev/xvda1 enforcing=0 console=hvc0 ro'\n";                    
+                }
+                
 		//Add pygrub configuration if template name contains pygrub
-		$pygrub_record = explode('-', $this->main->ostemplate);
-		if (stripos($pygrub_record[3], 'pygrub') !== FALSE) {
+		if (self::isPygrubTemplate($this->main->ostemplate)) {
 			$string .= "kernel = '';\nroot = '';\nbootloader = '/usr/bin/pygrub'\n";
 		}
 	
@@ -1997,6 +2006,16 @@ class vps__xen extends Lxdriverclass {
 		return lxshell_return("xm", "create", "{$this->main->configrootdir}/{$this->main->nname}.cfg"); 
 	}
 
+        static function isPygrubTemplate($name)
+        {
+		$pygrub_record = explode('-', $name);
+		if (stripos($pygrub_record[3], 'pygrub') !== FALSE) {
+			return true;
+		} else {
+                        return false;
+                }
+        }
+        
 	public function setInternalParam($mountpoint)
 	{
 		$name = $this->main->ostemplate;
@@ -2007,7 +2026,7 @@ class vps__xen extends Lxdriverclass {
 	
 		if ($name === 'unknown') { return; }
 	
-	
+
 	
 		$name = strtolower($name);
 		$mountpoint = expand_real_root($mountpoint);
