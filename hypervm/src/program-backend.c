@@ -284,15 +284,15 @@ char tcp_create_socket(short int s_port)
 
 	int     err;
 	int     listen_sock;
-	struct sockaddr_in sa_serv;
+	struct sockaddr_in6  sa_serv;
 
-	listen_sock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
+	listen_sock = socket(AF_INET6, SOCK_STREAM, IPPROTO_IP);
 
 	RETURN_ERR(listen_sock, "socket");
 	memset (&sa_serv, '\0', sizeof(sa_serv));
-	sa_serv.sin_family      = AF_INET;
-	sa_serv.sin_addr.s_addr = INADDR_ANY;
-	sa_serv.sin_port        = htons (s_port);          /* Server Port number */
+	sa_serv.sin6_family      = AF_INET6;
+	sa_serv.sin6_addr = in6addr_any;
+	sa_serv.sin6_port        = htons (s_port);          /* Server Port number */
 	err = bind(listen_sock, (struct sockaddr*)&sa_serv,sizeof(sa_serv));
 	RETURN_ERR(err, "bind");
 	err = listen(listen_sock, 500000);
@@ -373,9 +373,9 @@ int tcp_sock_read(int sock)
 int accept_and(int listen_sock)
 {
 	int sock;
-	struct sockaddr_in sa_cli;
+	struct sockaddr_in6 sa_cli;
 	socklen_t client_len;
-	client_len = sizeof(struct sockaddr_in);
+	client_len = sizeof(struct sockaddr_in6);
 
 	/* Socket for a TCP/IP connection is created */
 	sock = accept(listen_sock, (struct sockaddr*)&sa_cli, (socklen_t *) &client_len);
