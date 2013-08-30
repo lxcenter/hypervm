@@ -7022,7 +7022,7 @@ class HtmlLib
 		if ($variable->type === 'fileselect') {
 			?>
 		<a href="javascript:void(0);"
-		   onclick="javascript:selectFolder(<?=trim($form) ?>.<?=trim($variable->name)?>, '', '<?=$url ?>';);"><img
+		   onclick="javascript:selectFolder(<?=trim($form) ?>.<?=trim($variable->name)?>, '', '<?=$url ?>');"><img
 				width=15 height=15 src="img/image/collage/button/ffile_ttype_v_directory.gif" border="0"
 				alt="Select Folder" align="absmiddle"></a>
 			<?php

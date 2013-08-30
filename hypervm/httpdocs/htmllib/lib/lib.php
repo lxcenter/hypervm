@@ -2384,8 +2384,15 @@ function get_best_location($list)
 
 function vg_complete()
 {
-	if (!lxfile_exists("/usr/sbin/vgdisplay")) { return; }
-	$out = exec_with_all_closed_output("vgdisplay -c");
+        if (is_centosfive()) {
+            if (!lxfile_exists("/usr/sbin/vgdisplay")) { return; }
+        } else if (is_centossix()) {
+            if (!lxfile_exists("/sbin/vgdisplay")) { return; }            
+        } else {
+            return;
+        }
+        
+        $out = exec_with_all_closed_output("vgdisplay -c");
 	$list = explode("\n", $out);
 	$ret = null;
 	foreach($list as $l) {
@@ -2407,7 +2414,14 @@ function vg_complete()
 
 function vg_diskfree($vgname)
 {
-	if (!lxfile_exists("/usr/sbin/vgdisplay")) { return; }
+        if (is_centosfive()) {
+            if (!lxfile_exists("/usr/sbin/vgdisplay")) { return; }
+        } else if (is_centossix()) {
+            if (!lxfile_exists("/sbin/vgdisplay")) { return; }            
+        } else {
+            return;
+        }
+        
 	$vgname = fix_vgname($vgname);
 	$out = exec_with_all_closed_output("vgdisplay -c $vgname");
 	$out = trim($out);
@@ -2426,7 +2440,7 @@ function lvm_disksize($lvmpath)
 	//$out = explode(":", $out);
 	//return $out[6] / 1024;
 
-	$out = exec_with_all_closed_output("/usr/sbin/lvs --nosuffix --units b --noheadings -o lv_size $lvmpath");
+	$out = exec_with_all_closed_output("lvs --nosuffix --units b --noheadings -o lv_size $lvmpath");
 	$out = trim($out);
 	return $out/ (1024 * 1024);
 
@@ -3806,14 +3820,29 @@ function get_class_for_table($table)
 
 function is_centosfive()
 {
-    //TODO Fix this like Kloxo lib
-	$cont = lfile_get_contents("/etc/redhat-release");
-	if (csa($cont, " 5 ") || csa($cont, " 5.")) {
-		return true;
-	} 
-	return false;
+        $find = find_os_pointversion();
+        $check = strpos($find, 'centos-5');
+
+        if ($check !== false) {
+                return true;
+        }
+        else {
+                return false;
+        }
 }
 
+function is_centossix()
+{
+        $find = find_os_pointversion();
+        $check = strpos($find, 'centos-6');
+
+        if ($check !== false) {
+                return true;
+        }
+        else {
+                return false;
+        }
+}
 
 function migrateResourceplan($class)
 {

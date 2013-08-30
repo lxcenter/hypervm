@@ -177,6 +177,7 @@ function findOperatingSystem($type = null)
 
 function find_os_pointversion()
 {
+/*
 	if (file_exists("/etc/fedora-release")) {
 		$release = trim(file_get_contents("/etc/fedora-release"));
 		$osv = explode(" ", $release);
@@ -199,6 +200,53 @@ function find_os_pointversion()
 		}
 		return $osversion;
 	}
+*/
+	return find_os_selecttype('pointversion');
+}
+
+function find_os_selecttype($select)
+{
+        // list os support
+        $ossup = array('redhat' => 'rhel', 'fedora' => 'fedora', 'centos' => 'centos');
+
+        foreach(array_keys($ossup) as $k) {
+                $osrel = file_get_contents("/etc/{$k}-release");
+
+                if ($osrel) {
+                                if ($select === 'release') {
+                                        return $osrel;
+                                }
+
+                                $osrel = strtolower(trim($osrel));
+
+                                break;
+                }
+        }
+
+        // specific for 'red hat'
+        $osrel = str_replace('red hat', 'redhat', $osrel);
+
+        $osver = explode(" ", $osrel);
+
+        $verpos = sizeof($osver) - 2;
+
+        if (array_key_exists($osver[0], $ossup)) {
+                // specific for 'red hat'
+                if ($osrel === 'redhat') {
+                        $oss = $osver[$verpos];
+                }
+                else {
+                        $mapos = explode(".", $osver[$verpos]);
+                        $oss = $mapos[0];
+                }
+
+                if ($select === 'distro') {
+                        return $ossup[$osver[0]];
+                }
+                else if ($select === 'pointversion') {
+                        return $ossup[$osver[0]]."-".$oss;
+                }
+        }
 }
 
 function lscandir_without_dot($arg, $dotflag = false)
@@ -1110,12 +1158,12 @@ function char_search_end($haystack, $needle, $insensitive = 1)
 	}
 }
 
-function array_search_bool($needle, $haystack)
+function array_search_bool($needle, $haystack, $strict=false)
 {
 	if (!$haystack) {
 		return false;
 	}
-	if (array_search($needle, $haystack) !== false) {
+	if (array_search($needle, $haystack, $strict) !== false) {
 		return true;
 	}
 

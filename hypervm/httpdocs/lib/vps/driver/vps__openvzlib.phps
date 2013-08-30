@@ -405,7 +405,6 @@ class vps__openvz extends Lxdriverclass {
 		$ret = lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--onboot", "yes", "--save");
 	
 		$this->setEveryThing();
-		$this->setUplinkUsage();
 
 		if (lxfile_exists("{$this->main->corerootdir}/{$this->main->vpsid}/etc/inithooks.conf"))
 		{
@@ -1120,6 +1119,7 @@ class vps__openvz extends Lxdriverclass {
 		$this->setGuarMemoryUsage();
 		$this->setSwapUsage();
 		$this->setIptables();
+		$this->setUplinkUsage();
 		$this->changeConf("OSTEMPLATE", $this->main->ostemplate);
 		$this->setRestUsage();
 	}
@@ -1215,7 +1215,10 @@ class vps__openvz extends Lxdriverclass {
 			foreach($v['ipaddress'] as $vip) {
 				$vip = trim($vip);
 				if (!$vip) continue;
-				$string .= "tc filter add dev $dev parent 1: protocol ip prio 16 u32 match ip src $vip flowid 1:$i\n";
+                                if(reversedns::isIPV6($vip))                                				
+				        $string .= "tc filter add dev $dev parent 1: protocol ip prio 16 u32 match ip6 src $vip flowid 1:$i\n";
+                                else
+				        $string .= "tc filter add dev $dev parent 1: protocol ip prio 16 u32 match ip src $vip flowid 1:$i\n";
 			}
 			$string .= "tc qdisc add dev $dev parent 1:$i sfq perturb 1\n";
 			$i++;
