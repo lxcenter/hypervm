@@ -1,14 +1,15 @@
-#	$OpenBSD: sshd_config,v 1.73 2005/12/06 22:38:28 reyk Exp $
-
 # This is the sshd server system-wide configuration file.  See
 # sshd_config(5) for more information.
-
-# This sshd was compiled with PATH=/usr/local/bin:/bin:/usr/bin
 
 # The strategy used for options in the default sshd_config shipped with
 # OpenSSH is to specify options with their default value where
 # possible, but leave them commented.  Uncommented options change a
 # default value.
+
+#
+# This file is created by HyperVM
+# Source: hypervm/file/template/sshd_config
+#
 
 Port %ssh_port%
 #Protocol 2,1

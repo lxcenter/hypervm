@@ -896,41 +896,6 @@ function kill_pid($name)
 	os_killpid($pid);
 }
 
-/************************************
-* HOW-TO GENERATE KEYPAIRS
-* //Passphrase is helloworld
-* $ openssl req -x509 -newkey rsa:1024 -keyout mykey.key -out mycert.crt
-*/
-
-function licenseDecrypt($license_content)
-{
-	global $gbl, $sgbl, $login, $ghtml;
-
-	$fp = lfopen("__path_program_root/file/lprogram.crt", "r");
-	$public_key = fread($fp, 8192);
-	fclose($fp);
-
-	openssl_get_publickey($public_key);
-
-	$list = explode("\n", $license_content);
-
-	// decrypt
-	print_time('decrypt');
-	$fullstring = null;
-	foreach ($list as $l) {
-		$l = trim($l);
-		if (!$l) {
-			continue;
-		}
-		$decrypted_string = null;
-		openssl_public_decrypt(base64_decode($l), $decrypted_string, $public_key);
-		//dprintr($decrypted_string . " $l<br> \n");
-		$fullstring .= $decrypted_string;
-	}
-	print_time('decrypt', "Time Taken For decrypt:", 3);
-	return $fullstring;
-}
-
 function lx_redefine_func($func)
 {
 	global $gbl, $sgbl, $login, $ghtml;
@@ -942,24 +907,6 @@ function lx_redefine_func($func)
 	$arglist[] = expand_real_root(func_get_arg($i));
 	
 	return call_user_func_array($func, $arglist);
-}
-
-function licenseEncrypt($string)
-{
-	global $gbl, $sgbl, $login, $ghtml;
-	$file = "$sgbl->__path_program_root/file/license_privatekey.key";
-	// encrypt
-	$pass = "helloworld";
-	$result = openssl_get_privatekey(array("file://" . $file, $pass));
-	$ar = str_split($string, 100);
-	$fullstring = null;
-	foreach ($ar as $s) {
-		openssl_private_encrypt($s, $encrypted_string, $result);
-		$fullstring .= base64_encode($encrypted_string) . "\n";
-	}
-	print(openssl_error_string());
-
-	return $fullstring;
 }
 
 function remove_unnecessary_stat(&$stat)
@@ -1270,67 +1217,6 @@ function setLicenseTodefault()
 		$licv = "lic_$l";
 		$lic->$licv = $def[$l];
 	}
-	$license->setUpdateSubaction();
-	$license->write();
-}
-
-function decodeAndStoreLicense($ip, $license_content)
-{
-	global $gbl, $sgbl, $login, $ghtml;
-
-	$license = $login->getObject('license');
-	$license->parent_clname = $login->getClName();
-	$lic = $license->licensecom_b;
-	$get = licenseDecrypt($license_content);
-	$license->text_license_content = $license_content;
-
-	if (!$get) {
-		throw new lxException("could_not_decrypt_license");
-	}
-	$get = 'licence.php?' . $get;
-	$ghtml->get_post_from_get($get, $path, $post);
-
-	if (!isset($post['maindomain_num'])) {
-		$post['maindomain_num'] = $post['domain_num'];
-	}
-
-	if ($sgbl->isDebug()) {
-		$post['maindomain_num'] = '1000';
-	}
-
-	foreach ($post as $k => $v) {
-		$var = "lic_" . $k;
-		$lic->$var = $v;
-	}
-
-	$lic->lic_ipaddress .= " ($ip)";
-
-	$prilist = $login->getQuotaVariableList();
-
-	foreach ($prilist as $k => $v) {
-		if (cse($k, "_flag")) {
-			$login->priv->$k = 'On';
-		} else if (cse($k, "_usage")) {
-			$login->priv->$k = 'Unlimited';
-		} else if (cse($k, "_num")) {
-			$login->priv->$k = 'Unlimited';
-		}
-	}
-
-	$login->priv->client_num = $post['client_num'];
-
-	if (isset($post['maindomain_num'])) {
-		$login->priv->maindomain_num = $post['maindomain_num'];
-	}
-
-	if (isset($post['vps_num'])) {
-		$login->priv->vps_num = $post['vps_num'];
-	}
-
-	$login->priv->pserver_num = $post['pserver_num'];
-	$login->setUpdateSubaction();
-	$login->write();
-
 	$license->setUpdateSubaction();
 	$license->write();
 }

@@ -124,14 +124,16 @@ class Sgbl extends Sgbllib
 
         $conffile = "$this->__path_program_root/file/conf/os.conf";
 
-        if (!file_exists($conffile)) {
-
-            $ret = findOperatingSystem();
-            $os = $ret['os'];
-
-            copy("$this->__path_program_root/file/conf/$os.conf", $conffile);
-        }
-
+/*
+ * Turned off as its usage is useless for one supported OS.
+ *       if (!file_exists($conffile)) {
+ *
+ *           $ret = findOperatingSystem();
+ *           $os = $ret['os'];
+ *
+ *           copy("$this->__path_program_root/file/conf/$os.conf", $conffile);
+ *      }
+ */
         $this->__var_exit_char = "___...___";
         $this->__var_remote_char = "_._";
 

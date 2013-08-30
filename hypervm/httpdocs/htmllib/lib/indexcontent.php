@@ -2,7 +2,7 @@
 $accountlist = array('client' => "Kloxo Account", 'domain' => 'Domain Owner', 'mailaccount' => "Mail Account");
 $progname = $sgbl->__var_program_name;
 
-// If existing, use a own header for the login page else use the default.
+// If existing, use a own header for the header page else use the default.
 if (lxfile_exists("__path_program_htmlbase/lib/indexheader_vendor.html")) {
     lreadfile("__path_program_htmlbase/lib/indexheader_vendor.html");
 } else {
@@ -14,7 +14,18 @@ $ghtml->print_jscript_source("/htmllib/js/lxa.js");
 
 // Is this a Slave server?
 if ($sgbl->is_this_slave()) {
-    print("This is a HyperVM Slave Server. Operate it at the Master.\n");
+    // If existing, use a own header for the slave page else use the default.
+    if (lxfile_exists("__path_program_htmlbase/lib/indexslave_vendor.html")) {
+        lreadfile("__path_program_htmlbase/lib/indexslave_vendor.html");
+    } else {
+        lreadfile("__path_program_htmlbase/lib/indexslave.html");
+    }
+    // If existing, use a own footer for the footer page else use the default.
+    if (lxfile_exists("__path_program_htmlbase/lib/indexfooter_vendor.html")) {
+        lreadfile("__path_program_htmlbase/lib/indexfooter_vendor.html");
+    } else {
+        lreadfile("__path_program_htmlbase/lib/indexfooter.html");
+    }
     exit;
 }
 
@@ -181,7 +192,7 @@ elseif ($cgi_forgotpwd == 1) {
         }
     }
 }
-// If existing, use a own footer for the login page else use the default.
+// If existing, use a own footer for the footer page else use the default.
 if (lxfile_exists("__path_program_htmlbase/lib/indexfooter_vendor.html")) {
     lreadfile("__path_program_htmlbase/lib/indexfooter_vendor.html");
 } else {

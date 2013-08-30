@@ -1405,11 +1405,17 @@ function getFQDNforServer($v)
 	if ($servername) {
 		return $servername;
 	}
-
-	return getOneIPForServer($v);
-	
+    // Did not found a hostname in the database, getting a IP from the database
+    $ServerIP = getOneIPForServer($v);
+    // Try to find a hostname using the system tool host. When that fails it returns the IP
+    return getHostNameFromIP($ServerIP);
 }
 
+function getHostNameFromIP($ip)
+{
+    $host = `host $ip`;
+    return (($host ? end ( explode (' ', $host)) : $ip));
+}
 
 function getOneIPForServer($v)
 {
@@ -1462,11 +1468,7 @@ function get_admin_license_var()
 function get_license_resource()
 {
 	global $gbl, $sgbl, $login, $ghtml; 
-	if ($sgbl->isKloxo()) {
-		return array("maindomain_num");
-	} else {
-		return array("vps_num");
-	}
+	return array("vps_num");
 }
 
 function cp_fileserv_list($root, $list)
@@ -3931,15 +3933,17 @@ function addLineIfNotExistPattern($filename, $searchpattern, $pattern)
 function fix_self_ssl()
 {
 	global $gbl, $sgbl, $login, $ghtml; 
-	$pgm = $sgbl->__var_program_name;
-	$ret = lxshell_return("diff", "../etc/program.pem", "htmllib/filecore/old.program.pem");
-
-	if (!$ret) {
-		lxfile_cp("htmllib/filecore/program.pem", "../etc/program.pem");
-	}
-	//system("/etc/init.d/$pgm restart");
-
+//
+//  Removed because not needed anymore.
+//	$pgm = $sgbl->__var_program_name;
+//	$ret = lxshell_return("diff", "../etc/program.pem", "htmllib/filecore/old.program.pem");
+//
+//	if (!$ret) {
+//		lxfile_cp("htmllib/filecore/program.pem", "../etc/program.pem");
+//	}
+//	//system("/etc/init.d/$pgm restart");
 }
+
 function remove_line($filename, $pattern)
 {
 	$list = lfile($filename);
@@ -4063,8 +4067,9 @@ function checkClusterDiskQuota()
 		}
 
 		foreach($list as $l) {
-			if (intval($l['pused']) >= 87) {
-				$mess .= "Filesystem  {$l['mountedon']} ({$l['nname']}) on {$mc->nname} is using {$l['pused']}%\n";
+            // Set warn level from 85% usage (was 87)
+			if (intval($l['pused']) >= 85) {
+				$mess .= "\nFilesystem  {$l['mountedon']} ({$l['nname']}) on {$mc->nname} is using {$l['pused']}% space.\n";
 			}
 		}
 	}
@@ -4073,7 +4078,7 @@ function checkClusterDiskQuota()
 	dprint($mess);
 	dprint("\n");
 	if ($mess) {
-		lx_mail(null, $login->contactemail, "Filesystem Warning" , $mess);
+		lx_mail(null, $login->contactemail, "Filesystem Warning on {$mc->nname}" , $mess);
 	}
 
 	lxfile_generic_chown("..", "lxlabs");

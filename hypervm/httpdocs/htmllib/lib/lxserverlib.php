@@ -32,11 +32,7 @@ function lxserver_main()
 	//set_exception_handler("lx_exception_handler");
 
 	set_time_limit (0);
-	if (WindowsOs()) {
-		some_server_windows();
-	} else {
-		some_server();
-	}
+	some_server();
 
 
 
