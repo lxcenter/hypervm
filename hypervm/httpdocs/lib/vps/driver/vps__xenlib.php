@@ -333,7 +333,7 @@ class vps__xen extends Lxdriverclass {
 		// List info about the virtual machine
 		exec('xm list ' . $virtual_machine_name, $output, $status);
 	
-		if (!empty($status)) {
+		if (empty($status)) {
 			return 'on';
 		}
 		else {
@@ -835,26 +835,31 @@ class vps__xen extends Lxdriverclass {
 
 	public function copyKernelModules()
 	{
-		$mountpoint = $this->mount_this_guy();
-		$kernev = trim(`uname -r`);
+                // if template name contains pygrub then skip copying of kernel modules, 
+                // they should be already included into template        
+		$pygrub_record = explode('-', $this->main->ostemplate);
+		if (stripos($pygrub_record[3], 'pygrub') == TRUE) {
+                
+                    $mountpoint = $this->mount_this_guy();
+                    $kernev = trim(`uname -r`);
 	
-	
-		if (!lxfile_exists("$mountpoint/lib/modules/$kernev")) {
-			lxfile_cp_rec("/lib/modules/$kernev", "$mountpoint/lib/modules/$kernev");
-		}
-		if (char_search_end($kernev, "-xen")) {
-			$nkernev = strtil($kernev, "-xen");
-			if (!lxfile_exists("$mountpoint/lib/modules/$nkernev")) {
-				lxfile_cp_rec("/lib/modules/$kernev", "$mountpoint/lib/modules/$nkernev");
-			}
-		}
-		if (char_search_beg($this->main->ostemplate, "centos-")) {
-			if (lxfile_exists("$mountpoint/lib/tls")) {
-				lxfile_rm_rec("$mountpoint/lib/tls.disabled");
-				lxfile_mv_rec("$mountpoint/lib/tls", "$mountpoint/lib/tls.disabled");
-			}
-		}
-	}
+                	if (!lxfile_exists("$mountpoint/lib/modules/$kernev")) {
+                        	lxfile_cp_rec("/lib/modules/$kernev", "$mountpoint/lib/modules/$kernev");
+                        }
+                        if (char_search_end($kernev, "-xen")) {
+                                $nkernev = strtil($kernev, "-xen");
+                                if (!lxfile_exists("$mountpoint/lib/modules/$nkernev")) {
+                                        lxfile_cp_rec("/lib/modules/$kernev", "$mountpoint/lib/modules/$nkernev");
+                                }
+                        }
+                        if (char_search_beg($this->main->ostemplate, "centos-")) {
+                                if (lxfile_exists("$mountpoint/lib/tls")) {
+                                        lxfile_rm_rec("$mountpoint/lib/tls.disabled");
+                                        lxfile_mv_rec("$mountpoint/lib/tls", "$mountpoint/lib/tls.disabled");
+                                }
+                        }
+                }
+        }
 
 	public function createDisk($size = 0)
 	{
@@ -1887,7 +1892,7 @@ class vps__xen extends Lxdriverclass {
 		sleep(3);
 	
 		if (self::getStatus($this->main->nname, self::XEN_HOME) === 'on') {
-			throw new lxException("could_not_stop_vps");
+      		throw new lxException("could_not_stop_vps");
 		}
 	
 		$this->mount_this_guy();

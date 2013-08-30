@@ -1,0 +1,10 @@
+# CentOS-Xen.repo
+#
+# Please see http://wiki.centos.org/QaWiki/Xen4 for more 
+# information
+
+[Xen4CentOS]
+name=CentOS-$releasever - xen
+baseurl=http://mirror.centos.org/centos/$releasever/xen4/$basearch/
+gpgcheck=0
+enabled=1
