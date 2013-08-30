@@ -2,8 +2,9 @@
 
 function os_update_server()
 {
-	$list = array("rrdtool", "lxlighttpd", "lxphp", "lxzend");
-	//$list = array("rrdtool");
+//    Removed lxzend package (not needed anymore since opensourced version)
+//    $list = array("rrdtool", "lxlighttpd", "lxphp", "lxzend");
+	$list = array("rrdtool", "lxlighttpd", "lxphp");
 	$package = implode(" ", $list);
 	system("yum -y install $package > /dev/null 2>&1 &");
 }

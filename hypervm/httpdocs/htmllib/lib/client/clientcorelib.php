@@ -605,29 +605,6 @@ function updateDnstemplatelist($param)
 	return $param;
 }
 
-function updateLicense($param)
-{
-	global $gbl, $sgbl, $login, $ghtml; 
-	if (!$login->isLteAdmin()) {
-		throw new lxException ("not_admin", '');
-	}
-
-
-	//$this->license_upload_f =  $param['license_upload_f'];
-	$fname = $_FILES["license_upload_f"]["tmp_name"]; 
-	//$val = str_replace(" ", "", $this->license_upload_f);
-	//lfile_put_contents("__path_program_etc/license.txt", $val);
-	if (!lcopy($fname, "__path_program_etc/license.txt")) {
-		throw new lxException ("failed_to_copy_license_file_permission_error", 'licence');
-	}
-	decodeAndStoreLicense();
-
-	// This is set so that the license alone feature - happens when the license expires - will properly redirect back to the original page. 
-	$gbl->__this_redirect = '/display.php?frm_action=show';
-	return null;
-}
-
-
 final function updatepserver_s($param)
 {
 

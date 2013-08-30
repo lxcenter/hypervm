@@ -608,28 +608,13 @@ function check_for_license()
 	$lic = $login->getObject('license')->licensecom_b;
 
 	$prgm = $sgbl->__var_program_name;
-	if ($prgm === 'lxlabsclient') {
-		return;
-	}
-
 	$list = get_admin_license_var();
 
-	//dprintr($list);
 	foreach($list as $k => $l) {
 		$res = strfrom($k, "used_q_");
 		$licv = "lic_$res";
 		if ($licv === "lic_maindomain_num" && !isset($lic->$licv)) {
 			$lic->$licv = $lic->lic_domain_num;
-		}
-		if ($l > $lic->$licv) {
-			if ($login->isAdmin()) {
-		//		$mess = $ghtml->show_error_message("The system is not at present working because there is not enough license for $res. Please go to [b]  admin home -> advanced -> license update [/b]  and click on [b] get license from lxcenter [/b]. You will have to first create a valid license at client.lxlabs.com.");
-			} else {
-		//		$mess = $ghtml->show_error_message("The system is not at present working because there is not enough license for $res. Please contact your administrator.");
-			}
-//
-//			exit;
-// disabled by dterweij
 		}
 	}
 

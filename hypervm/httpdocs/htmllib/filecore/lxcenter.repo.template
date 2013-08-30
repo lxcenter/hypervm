@@ -1,15 +1,45 @@
-#additional packages that may be useful
-[lxcenter-base]
-name=HyperVM -$releasever - lxcenter-base
+#
+#    HyperVM, Server Virtualization GUI for OpenVZ and Xen
+#
+#    Copyright (C) 2000-2009    LxLabs
+#    Copyright (C) 2009-2013    LxCenter
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+# File source - hypervm/httpdocs/htmllib/filecore/lxcenter.repo.template
+# This file/process will be replaced with a RPM package in the future.
+
+#
+# LxCenter Repository
+#
+[lxcenter-updates]
+name=centos-$releasever - LxCenter-Updates
 baseurl=http://download.lxcenter.org/download/update/%distro%/$basearch/
 gpgcheck=0
 enabled=1
 
-#packages used/produced in the build but not released
-[lxcenter-extra]
-name=HyperVM - $releasever - lxcenter-extra
-baseurl=http://download.lxcenter.org/download/update/lxgeneral
+################################
+# LxCenter test packages
+# Do not enable/use this. Use it at your own risc.
+# It can damage your production server.
+#
+[lxcenter-test]
+name=centos-$releasever - LxCenter-Test
+baseurl=http://download.lxcenter.org/download/test/%distro%/$basearch/
 gpgcheck=0
-enabled=1
+enabled=0
+#
+###############################
 
 
