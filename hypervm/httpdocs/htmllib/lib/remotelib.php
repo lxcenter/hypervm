@@ -594,7 +594,15 @@ function some_server_windows()
 function createSslStream()
 {
 	global $gbl, $sgbl, $login, $ghtml; 
-	$sockr = stream_socket_server("ssl://0.0.0.0:{$sgbl->__var_remote_port}");
+
+
+        // CHECK FIXME TESTME
+        // this only listens on ipv4
+	//      $sockr = stream_socket_server("ssl://0.0.0.0:{$sgbl->__var_remote_port}");
+	// What will this cause on ipv4 only systems? 
+	$sockr = stream_socket_server("ssl://[::]:{$sgbl->__var_remote_port}");
+        
+                                
 	stream_context_set_option($sockr, 'ssl', 'verify_peer', false);
 	//stream_set_timeout($sockr, 30000000);
 	stream_context_set_option($sockr, 'ssl', 'allow_self_signed', true);

@@ -1163,12 +1163,12 @@ function char_search_end($haystack, $needle, $insensitive = 1)
 	}
 }
 
-function array_search_bool($needle, $haystack)
+function array_search_bool($needle, $haystack, $strict=false)
 {
 	if (!$haystack) {
 		return false;
 	}
-	if (array_search($needle, $haystack) !== false) {
+	if (array_search($needle, $haystack, $strict) !== false) {
 		return true;
 	}
 
