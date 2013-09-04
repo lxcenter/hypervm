@@ -385,9 +385,9 @@ function updateApplicableToSlaveToo()
 	print("Fixing openvz repo\n");
 	// add centos-5-openvz.repo.template
     if (is_centossix()) {
-        lxfile_cp("../file/centos-6-centos-5-openvz.repo.template.template", "/etc/yum.repos.d/centos-5-openvz.repo.template");
+        lxfile_cp("../file/centos-6-openvz.repo.template", "/etc/yum.repos.d/openvz.repo");
     } else {
-        lxfile_cp("../file/centos-5-centos-5-openvz.repo.template.template", "/etc/yum.repos.d/centos-5-openvz.repo.template");
+        lxfile_cp("../file/centos-5-openvz.repo.template", "/etc/yum.repos.d/openvz.repo");
     }
 	print("Fixing lxcenter repo\n");
 	// add lxcenter.repo
