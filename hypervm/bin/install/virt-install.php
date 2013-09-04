@@ -80,8 +80,8 @@ function xen_install($installtype)
 
         // newest OpenVZ kernels comes provides kernel-xen (!?) which breaks RHEL5 instalations
         // If centos-5-openvz.repo.template file exist remove it imediately before install kernel-xen
-        if (file_exists("/etc/yum.repos.d/centos-5-openvz.repo.template")) {
-            unlink("/etc/yum.repos.d/centos-5-openvz.repo.template");
+        if (file_exists("/etc/yum.repos.d/openvz.repo")) {
+            unlink("/etc/yum.repos.d/openvz.repo");
         }
 
 	$list = array("kernel-xen", "xen", "virt-manager");
