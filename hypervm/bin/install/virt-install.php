@@ -48,7 +48,11 @@ function openvz_install($installtype)
 		$list = array("vzctl", "vzquota", "ovzkernel-PAE");
 	}
 
-	lxfile_cp("../file/openvz.repo", "/etc/yum.repos.d/openvz.repo");
+    if (is_centossix()) {
+        lxfile_cp("../file/centos-6-centos-5-openvz.repo.template.template", "/etc/yum.repos.d/centos-5-openvz.repo.template");
+    } else {
+        lxfile_cp("../file/centos-5-centos-5-openvz.repo.template.template", "/etc/yum.repos.d/centos-5-openvz.repo.template");
+    }
 
 	run_package_installer($list);
 
@@ -75,10 +79,11 @@ function xen_install($installtype)
 {
 
         // newest OpenVZ kernels comes provides kernel-xen (!?) which breaks RHEL5 instalations
-        // If openvz.repo file exist remove it imediately before install kernel-xen
-        if (file_exists("/etc/yum.repos.d/openvz.repo")) {
-            unlink("/etc/yum.repos.d/openvz.repo");
+        // If centos-5-openvz.repo.template file exist remove it imediately before install kernel-xen
+        if (file_exists("/etc/yum.repos.d/centos-5-openvz.repo.template")) {
+            unlink("/etc/yum.repos.d/centos-5-openvz.repo.template");
         }
+
 	$list = array("kernel-xen", "xen", "virt-manager");
 	run_package_installer($list);
 	if (file_exists("/boot/vmlinuz-2.6-xen") && !file_exists("/boot/hypervm-xen-vmlinuz")) {
