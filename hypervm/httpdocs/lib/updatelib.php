@@ -419,7 +419,7 @@ function updateApplicableToSlaveToo()
 	system("chmod o+t /tmp");
 	print("Create script dir\n");
 	copy_script();
-	if (!lxfile_exists("/usr/local/lxlabs/kloxo/")) {
+	if (lxfile_exists("/usr/local/lxlabs/kloxo/")) {
 	print("Remove /usr/local/lxlabs/kloxo/ as it should not be here!\n");
 	system("rmdir /usr/local/lxlabs/kloxo/httpdocs/ >/dev/null 2>&1");
 	system("rmdir /usr/local/lxlabs/kloxo/ >/dev/null 2>&1");
