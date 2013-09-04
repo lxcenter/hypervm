@@ -9,4 +9,4 @@ if (!os_isSelfSystemOrLxlabsUser()) {
 }
 initProgram('admin');
 license::doupdateLicense();
-print("License Successfully updated\n");
+print("License Checked. HyperVM is free.\n");
