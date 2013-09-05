@@ -202,14 +202,13 @@ function os_service_manage($serv, $act)
 function os_create_program_service()
 {
 	global $gbl, $sgbl, $login, $ghtml; 
-	$AppName = $sgbl->__var_program_name;
 
-	$CoreInit = '__path_program_htmlbase/htmllib/filecore/$AppName.init.program';
-    lxfile_cp($CoreInit, "/etc/init.d/$AppName");
-    lxfile_unix_chmod("/etc/init.d/$AppName", "0755");
+	$CoreInit = '__path_program_htmlbase/htmllib/filecore/hypervm.init.program';
+    lxfile_cp($CoreInit, '/etc/init.d/hypervm');
+    lxfile_unix_chmod('/etc/init.d/hypervm', '0755');
 
     $CorePHP = '__path_program_htmlbase/htmllib/filecore/php.ini';
-	lxfile_cp($CorePHP, "__path_lxlabs_base/ext/php/etc/php.ini");
+	lxfile_cp($CorePHP, '__path_lxlabs_base/ext/php/etc/php.ini');
 }
 
 

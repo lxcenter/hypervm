@@ -383,8 +383,12 @@ function updateApplicableToSlaveToo()
 	}
 	
 	print("Fixing openvz repo\n");
-	// add openvz.repo
-	lxfile_cp("../file/openvz.repo", "/etc/yum.repos.d/openvz.repo");
+	// add centos-5-openvz.repo.template
+    if (is_centossix()) {
+        lxfile_cp("../file/centos-6-openvz.repo.template", "/etc/yum.repos.d/openvz.repo");
+    } else {
+        lxfile_cp("../file/centos-5-openvz.repo.template", "/etc/yum.repos.d/openvz.repo");
+    }
 	print("Fixing lxcenter repo\n");
 	// add lxcenter.repo
 	$osversion = find_os_version();
@@ -415,7 +419,7 @@ function updateApplicableToSlaveToo()
 	system("chmod o+t /tmp");
 	print("Create script dir\n");
 	copy_script();
-	if (!lxfile_exists("/usr/local/lxlabs/kloxo/")) {
+	if (lxfile_exists("/usr/local/lxlabs/kloxo/")) {
 	print("Remove /usr/local/lxlabs/kloxo/ as it should not be here!\n");
 	system("rmdir /usr/local/lxlabs/kloxo/httpdocs/ >/dev/null 2>&1");
 	system("rmdir /usr/local/lxlabs/kloxo/ >/dev/null 2>&1");

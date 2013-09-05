@@ -21,6 +21,7 @@
 #
 #    Install and deploy a develoment version on a local enviroment
 #
+#    Version 0.3 Added perl-ExtUtils-MakeMaker as requirement to install_GIT [ Danny Terweij <d.terweij@lxcenter.org> ]
 #    Version 0.2 Changed git version [ Danny Terweij <d.terweij@lxcenter.org> ]
 #    Version 0.1 Initial release [ Ángel Guzmán Maeso <angel.guzman@lxcenter.org> ]
 #
@@ -38,7 +39,7 @@ install_GIT()
 	# Redhat based
 	if [ -f /etc/redhat-release ] ; then
 		# Install git with curl and expat support to enable support on github cloning
-		yum install -y gcc gettext-devel expat-devel curl-devel zlib-devel openssl-devel
+		yum install -y gcc gettext-devel expat-devel curl-devel zlib-devel openssl-devel perl-ExtUtils-MakeMaker
 	# Debian based
 	elif [ -f /etc/debian_version ] ; then
 		# No tested
