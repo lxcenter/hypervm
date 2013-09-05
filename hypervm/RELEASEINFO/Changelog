@@ -23,11 +23,13 @@ dterweij 	- NewInstall/Update: Minor fixes not need to mention
 dterweij	- Update-Slave - Changed message slave_upgrading_try_again_after_few_mins to a better one
 dterweij	- SVN - Created install packager and hypervm packager scripts
 dterweij	- general - Add RELEASEINFO Dir to /usr/local/lxlabs/hypervm/ with info :)
-dterweij	- general - Cleanup of sourcedirs (removed frontpage data files, not used files, 					etc)
+dterweij	- general - Cleanup of sourcedirs (removed frontpage data files, not used files, etc)
 dterweij	- default skin - fixed a lot missing images at development version.
 dterweij	- default skin - changed image path from kloxo to hypervm (css, image paths)
 ToDo #304: Fix thirdparty hardcoded version numbers
 dterweij    - Moved all C sources to one place and Fixed Compile warnings.
+dterweij    - Cleanups
+-- add here project website info from roadmap 2.1.0
 
 
 ################

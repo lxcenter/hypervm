@@ -183,11 +183,12 @@ function lxins_main()
     passthru("/usr/local/lxlabs/ext/php/php ../bin/install/virt-install.php --install-type=$installtype --virtualization-type=$virtualization $skiparg");
 
 
-    print("Congratuations. HyperVM has been installed succesfully on your server as $installtype \n");
+    print("\n\n\nCongratulations!. HyperVM has been installed successfully on your server as $installtype \n");
 
     if ($installtype === 'master') {
-        print("You can connect to the server at https://<ip-address>:8887 or http://<ip-address>:8888\n");
-        print("Please note that first is secure ssl connection, while the second is normal one.\n");
+        print("\nYou can browse to the administration interface at:\n";
+        print("Secure - https://<ip-address>:8887\n");
+        print("Normal -  http://<ip-address>:8888\n\n");
         print("The login and password are 'admin' 'admin'. After Logging in, you will have to change your password to something more secure.\n");
         print("Thanks for choosing HyperVM to manage your Server, and allowing us to be of service.\n");
     } else {
@@ -204,10 +205,11 @@ function lxins_main()
     print("\n\nExtra note:\n");
     print("To install extra XEN and/or OpenVZ OS templates please run:\n\n");
     print("sh /script/install-extra-ostemplates\n");
-    print("\nThese template are left out the install process to speed up the HyperVM installation. By default only CentOS 5 and HostInBox(Kloxo) OS templates are installed.\n\n");
+    print("\nThese templates are left out the install process to speed up the HyperVM installation. By default only CentOS 5 and HostInBox(Kloxo) OS templates are installed.\n\n");
+    print("\n#!# Reboot your system to boot into the right kernel #!#\n\n");
 
     if (file_exists('/usr/local/lxlabs/.git')) {
-        echo 'Remember, you installed a Development version. Do not use it on production servers!';
+        print("Remember, you installed a Development version. Do not use it on production servers!\n\n");
     }
 
 
