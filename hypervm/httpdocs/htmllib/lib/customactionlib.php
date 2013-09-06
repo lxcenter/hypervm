@@ -1,6 +1,5 @@
 <?php 
 
-exit;
 
 class customaction extends lxdb {
 
