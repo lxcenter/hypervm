@@ -80,10 +80,6 @@ class lxadminconfig_b extends lxaclass
     static $__desc_installapp_url = array("", "", "Url_for_remote_installapp");
 }
 
-class customaction_b extends lxaclass {
-    static $__desc_vps__update__rebuild = array('', '', "rebuild_vps", "");
-}
-
 class hackbuttonconfig_b extends lxaclass
 {
     static $__desc_nomonitor = array('f', '', 'dont_show_monitor_server', '');
