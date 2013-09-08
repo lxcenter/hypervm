@@ -186,7 +186,7 @@ function lxins_main()
     print("\n\n\nCongratulations!. HyperVM has been installed successfully on your server as $installtype \n");
 
     if ($installtype === 'master') {
-        print("\nYou can browse to the administration interface at:\n";
+        print("\nYou can browse to the administration interface at:\n");
         print("Secure - https://<ip-address>:8887\n");
         print("Normal -  http://<ip-address>:8888\n\n");
         print("The login and password are 'admin' 'admin'. After Logging in, you will have to change your password to something more secure.\n");
