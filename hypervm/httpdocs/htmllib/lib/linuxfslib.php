@@ -574,16 +574,7 @@ function do_exec_system($username, $dir, $cmd, &$out, &$err, &$ret, $input)
 
 	global $global_dontlogshell;
 
-	$path = "$sgbl->__path_lxmisc";
-
 	$fename = tempnam($sgbl->__path_tmp, "system_errr");
-
-	$execcmd = null;
-	if ($username !== '__system__') {
-		$execcmd = "$path -u $username";
-		chmod($path, 0700);
-	}
-
 
 	$oldpath = null;
 	if ($dir) {

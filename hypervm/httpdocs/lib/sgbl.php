@@ -180,8 +180,6 @@ class Sgbl extends Sgbllib
         $this->__path_sql_file = "$this->__path_program_htmlbase/sql/full";
         $this->__path_sql_file_common = "$this->__path_program_htmlbase/sql/common";
 
-        $this->__path_lxmisc = $this->__path_program_root . "/sbin/lxmisc";
-
         $this->__var_action_class = array('vps');
 
 
