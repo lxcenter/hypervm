@@ -202,14 +202,6 @@ function install_yum_repo($osversion)
 	$cont = str_replace("%distro%", $osversion, $cont);
 	our_file_put_contents("/etc/yum.repos.d/lxcenter.repo", $cont);
 
-// Wrong place for this code. If type is openvz it wants to install also this one.
-// Also there is a bug, there is not a Xen4 32Bit kernel! so Arch should also be checked!
-// DT
-//	if ($osversion === 'centos-6') {
-//                $cont = our_file_get_contents("CentOS-Xen.repo.template");
-//                our_file_put_contents("/etc/yum.repos.d/CentOS-Xen.repo", $cont);
-//        }
-        
 }
 
 function find_os_version()
