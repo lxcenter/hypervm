@@ -96,13 +96,20 @@ function download_thirdparty()
 {
     global $sgbl;
     $prgm = $sgbl->__var_program_name;
-    // Fixes #303 and #304
-    $string = file_get_contents("http://download.lxcenter.org/download/thirdparty/$prgm-version.list");
-    if ($string != "") {
-        $string = trim($string);
-        $string = str_replace("\n", "", $string);
-        $string = str_replace("\r", "", $string);
-        core_installWithVersion("/usr/local/lxlabs/$prgm/", "$prgm-thirdparty", $string);
+
+    // TODO: remove this when hypervm 2.1.0 is released
+    // Check for git because we dont want a old 2009 package version into hypervm development!
+    if (file_exists('/usr/local/lxlabs/.git')) {
+        echo 'Development GIT version found. Skipping download from LxCenter.';
+    } else {
+        // Fixes #303 and #304
+        $string = file_get_contents("http://download.lxcenter.org/download/thirdparty/$prgm-version.list");
+        if ($string != "") {
+            $string = trim($string);
+            $string = str_replace("\n", "", $string);
+            $string = str_replace("\r", "", $string);
+            core_installWithVersion("/usr/local/lxlabs/$prgm/", "$prgm-thirdparty", $string);
+        }
     }
 }
 
