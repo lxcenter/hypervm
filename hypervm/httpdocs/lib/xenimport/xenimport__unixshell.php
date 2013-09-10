@@ -21,6 +21,7 @@ function isXencfgSkip($l)
 	if (csa($l, "windows.hvm")) {
 		return true;
 	}
+    return false;
 }
 
 

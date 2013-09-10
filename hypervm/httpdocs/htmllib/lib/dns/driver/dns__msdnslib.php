@@ -26,45 +26,7 @@ function createDnsData()
 
 	$this->createPrimaryZone($this->main->nname);
 	lfile_put_contents("c:/Windows/System32/drivers/etc/hosts", "127.0.0.1 {$this->main->nname}", FILE_APPEND);
-	return;
-
-    if($this->main->ns_rec_a != ''){
-		foreach($this->main->ns_rec_a as $value){
-			$this->createNSRecord($this->main->nname, $value->nname);
-		}
-	}
-
-    if($this->main->mx_rec_a != ''){
-		foreach($this->main->mx_rec_a as $o){
-			$this->createMxRecord($this->main->nname, 'something', $o->param, $o->nname);
-		}
-	}
-    if($this->main->a_rec_a){
-		foreach($this->main->a_rec_a as $o){
-			$key = $o->nname;
-			$value = $o->param;
-			if($o->param === null) continue;	
-
-
-			$this->createARecord($this->main->nname, $key, $value);
-		}
-	}
-
-	if($this->main->cn_rec_a !=''){ 
-		foreach($this->main->cn_rec_a as $o){
-			$key = $o->nname;
-			$value = $o->param;
-			if($o->param === null) continue;	
-			$key .= ".{$this->main->nname}.";
-
-			if ($value !== "__base__") {
-				$value = "$value.{$this->main->nname}.";
-			} else {
-				$value = "{$this->main->nname}.";
-			}
-			$fdata .= $tmp;
-		}
-	}
+	return null;
 }
 
 
@@ -253,8 +215,8 @@ function deleteARecord()
 		$strDomain = $this->resolveBase($this->main->nname, $o->nname);
 		$ownerstring = "ownername='$strDomain'";
 		$colItems = $objWMIService->ExecQuery("Select * from MicrosoftDNS_AType where $ownerstring");
-		foreach ($colItems as $o) {
-			$o->delete_();
+		foreach ($colItems as $p) {
+			$p->delete_();
 		}
 	}
 }
@@ -309,8 +271,8 @@ function deleteCNameRecord($strDomain , $primaryName_Old)
 		$strDomain = $this->resolveBase($this->main->nname, $o->nname);
 		$ownerstring = "ownername='$strDomain'";
 		$colItems = $objWMIService->ExecQuery("Select * from MicrosoftDNS_CNAMEType where $ownerstring");
-		foreach ($colItems as $o) {
-			$o->delete_();
+		foreach ($colItems as $p) {
+			$p->delete_();
 		}
 	}
 }

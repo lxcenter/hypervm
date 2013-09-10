@@ -1186,7 +1186,7 @@ class vps__xen extends Lxdriverclass {
 	{
 		$vfile = "{$this->main->configrootdir}/$file";
 		if (!lxfile_exists($vfile)) {
-			return ;
+			return null;
 		}
 		$v = lfile_get_contents($vfile);
 		lunlink($vfile);
@@ -1354,12 +1354,7 @@ class vps__xen extends Lxdriverclass {
 	public function mount_this_guy()
 	{
 		$this->stop();
-	
-		if ($this->main->isWindows()) {
-			return;
-			throw new lxException("trying_to_mount_windows_image", '', '');
-		}
-	
+
 		$mountpoint = "{$this->main->configrootdir}/mnt";
 		if ($this->isMounted()) {
 			return $mountpoint;

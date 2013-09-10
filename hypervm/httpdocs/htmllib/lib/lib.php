@@ -96,13 +96,20 @@ function download_thirdparty()
 {
     global $sgbl;
     $prgm = $sgbl->__var_program_name;
-    // Fixes #303 and #304
-    $string = file_get_contents("http://download.lxcenter.org/download/thirdparty/$prgm-version.list");
-    if ($string != "") {
-        $string = trim($string);
-        $string = str_replace("\n", "", $string);
-        $string = str_replace("\r", "", $string);
-        core_installWithVersion("/usr/local/lxlabs/$prgm/", "$prgm-thirdparty", $string);
+
+    // TODO: remove this when hypervm 2.1.0 is released
+    // Check for git because we dont want a old 2009 package version into hypervm development!
+    if (file_exists('/usr/local/lxlabs/.git')) {
+        echo 'Development GIT version found. Skipping download from LxCenter.';
+    } else {
+        // Fixes #303 and #304
+        $string = file_get_contents("http://download.lxcenter.org/download/thirdparty/$prgm-version.list");
+        if ($string != "") {
+            $string = trim($string);
+            $string = str_replace("\n", "", $string);
+            $string = str_replace("\r", "", $string);
+            core_installWithVersion("/usr/local/lxlabs/$prgm/", "$prgm-thirdparty", $string);
+        }
     }
 }
 
@@ -2253,16 +2260,7 @@ function appvault_dbfilter($inputfile, $outputfile, $cont)
 
 function installLxetc()
 {
-    return; //TODO: Remove this
-	if (!lxfile_exists("/root/.etc/pfixed")) {
-		if (lxfile_exists("/root/.etc/")) {
-			lxfile_rm_rec("/root/.etc/");
-		}
-	}
-
-	if (!lxfile_exists("/root/.etc/")) {
-		lxshell_background("lphp.exe", "../bin/common/misc/lxetc.php");
-	}
+    return null;
 }
 
 function lightyApacheLimit($server, $var)
@@ -2944,17 +2942,7 @@ function copy_script()
 // dterweij
 function copy_image()
 {
-// TODO Remove this
-    return ;
-
-	global $gbl, $sgbl, $login, $ghtml;
-	$prgm = $sgbl->__var_program_name;
-
-	lxfile_cp_content("tmpimg/", "img/image/collage/button/");
-	$list = lscandir_without_dot("img/skin/$prgm/feather/");
-	foreach($list as $l) {
-		lxfile_cp_content("tmpskin/", "img/skin/$prgm/feather/$l");
-	}
+    return null;
 }
 
 function getAdminDbPass()
@@ -4125,7 +4113,7 @@ function find_hop($l)
 		$l = trimSpaces($l);
 		$ll = explode(" ", $l);
 		$lll = explode("/", $ll[3]);
-		return round($lll[1], 1);;
+		return round($lll[1], 1);
 	}
 }
 
@@ -4285,7 +4273,6 @@ function get_last_month_and_year()
 		$year = $year - 1; 
 	} else {
 		$month = $month - 1;
-		$year = $year;
 	}
 	return array($month, $year);
 }

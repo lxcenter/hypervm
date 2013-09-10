@@ -3,8 +3,7 @@
 }
 
 .LoginScreenBgRpt {
-    background: url("/img/skin/hypervm/default/default/background.gif");
-    background-repeat: repeat;
+    background: url("/img/skin/hypervm/default/default/background.gif") repeat;
 }
 
 .LoginScreenTextHeader {
@@ -393,19 +392,18 @@ fieldset {
 }
 
 .helparea {
-    font-family: arial, verdana;
+    font-family: Arial, Verdana, monospace;
     font-weight: normal;
     font-size: 10px;
-    height: 85;
-    width: 140;
+    height: 85px;
+    width: 140px;
     border-style: groove;
-    border-width: 0px;
-    text: 10%;
+    border-width: 0;
 }
 
 .icontextlink {
     color: #000000;
-    font-family: arial;
+    font-family: Arial, Verdana, monospace;
     font-weight: normal;
     font-size: 10px;
     cursor: pointer;
@@ -418,13 +416,13 @@ fieldset {
 }
 
 .searchtext {
-    font-family: arial, verdana;
+    font-family: Arial, Verdana, monospace;
     font-size: 12px;
     color: #000000;
 }
 
 .pagetext {
-    font-family: arial, verdana;
+    font-family: Arial, Verdana, monospace;
     font-size: 10px;
     color: #000000;
     font-weight: bold;
@@ -435,7 +433,7 @@ fieldset {
 }
 
 .submitbutton {
-    font-family: arial;
+    font-family: Arial, Verdana, monospace;
     font-size: 8pt;
     font-weight: bold;
     color: #000000;
@@ -443,17 +441,16 @@ fieldset {
 }
 
 .submitupdatebutton {
-    padding: 0 5 0 20;
-    font-family: arial;
+    font-family: Arial, Verdana, monospace;
     font-size: 8pt;
     font-weight: bold;
-    padding: 0 0 0 0;
+    padding: 0 5px 0 20px;
     background-color: #FFFFFF;
     /*background         : url('/img/skin/hypervm/default/default/btn_ok_bg.gif'); */
 }
 
 .submitbuttonlogout {
-    font-family: arial;
+    font-family: Arial, Verdana, monospace;
     font-size: 8pt;
     font-weight: bold;
     color: #bb3333;
@@ -462,7 +459,7 @@ fieldset {
 
 .tableheadtext {
     font-size: 11px;
-    font-family: Arial;
+    font-family: Arial, Verdana, monospace;
     font-weight: bold;
     text-decoration: none;
 }
@@ -473,12 +470,12 @@ fieldset {
 }
 
 .sortby {
-    padding-left: 5;
+    padding-left: 5px;
 }
 
 .detailtablehead {
     font-size: 11px;
-    font-family: Arial;
+    font-family: Arial, Verdana, monospace;
     font-weight: bold;
     text-decoration: none;
 }
@@ -486,8 +483,9 @@ fieldset {
 .detailleft {
     color: #003366;
     background-color: #7db3ee;
-    padding-left: 5;
-    padding-right: 5;
+    padding-left: 5px;
+    padding-right: 5px
+;
 }
 
 .rowpoint {
@@ -505,7 +503,7 @@ fieldset {
 .tablerowdetail0 {
     font-weight: normal;
     font-size: 11px;
-    font-family: arial;
+    font-family: Arial, Verdana, monospace;
     color: #000000;
 }
 
@@ -516,36 +514,36 @@ fieldset {
 .tablerowdetail1 {
     font-weight: normal;
     font-size: 11px;
-    font-family: arial;
+    font-family: Arial, Verdana, monospace;
     color: #000000;
 }
 
 .hiliterowdetail {
     font-weight: normal;
     font-size: 11px;
-    font-family: arial;
+    font-family: Arial, Verdana, monospace;
 }
 
 .detailother {
-    padding-left: 5;
-    padding-right: 5;
+    padding-left: 5px;
+    padding-right: 5px;
     background-color: #eeeeee;
 }
 
 .col {
-    padding: 7 5 7 10;
+    padding: 7px 5px 7px 10px;
     vertical-align: middle;
 
 }
 
 .collist {
-    padding: 0 5 0 5;
+    padding: 0 5px 0 5px;
     vertical-align: middle;
 
 }
 
 .filebox {
-    font-family: arial;
+    font-family: Arial, Verdana, monospace;
     color: #000000;
     font-size: 9px;
     font-weight: normal;
@@ -554,15 +552,15 @@ fieldset {
 }
 
 .coldetail {
-    padding-left: 15;
+    padding-left: 15px;
 }
 
 .colHighLight {
-    padding-left: 5;
+    padding-left: 5px;
 }
 
 .copyright {
-    font-family: Arial;
+    font-family: Arial, Verdana, monospace;
     font-weight: normal;
     padding-left: 20px;
 }
@@ -572,8 +570,7 @@ fieldset {
 }
 
 .smallroundedmodule div {
-    border-style: solid;
-    border-width: 1px;
+    border: 1px solid;
     margin: -2px -4px;
     height: 1em;
 }
@@ -583,8 +580,7 @@ html>body .smallroundedmodule div {
 }
 
 .smallroundedmodule div div {
-    border-style: none;
-    border-width: 0;
+    border: 0 none;
     margin: 0 4px;
 }
 
@@ -611,7 +607,7 @@ html>body .smallroundedmodule div {
 }
 
 .smallroundedmodule .first .first, .smallroundedmodule .first .last, .smallroundedmodule .last .first, .smallroundedmodule .last .last {
-    border: 0px none;
+    border: 0 none;
     position: absolute;
     z-index: 1;
     width: 4px;
@@ -623,7 +619,7 @@ html>body .smallroundedmodule div {
 }
 
 .smallroundedmodule .first .last, .smallroundedmodule .last .last {
-    right: 0px;
+    right: 0;
     margin-right: -4px;
 }
 
@@ -632,8 +628,7 @@ div.lowquota span#quotausagebar span.first {
 }
 
 div#quotameter div {
-    border-width: 0;
-    border-color: #ffffff;
+    border: 0 #ffffff;
 }
 
 #quotausagebar {
@@ -643,8 +638,7 @@ div#quotameter div {
 #quotausagebar {
     position: relative;
     display: block;
-    border-style: solid;
-    border-width: 1px;
+    border: 1px solid;
     margin: 2px 4px;
     height: 1em;
 }

@@ -78,24 +78,36 @@ function installOstemplates($virtualization)
 function xen_install($installtype)
 {
 
-        // newest OpenVZ kernels comes provides kernel-xen (!?) which breaks RHEL5 instalations
-        // If centos-5-openvz.repo.template file exist remove it imediately before install kernel-xen
-        if (file_exists("/etc/yum.repos.d/openvz.repo")) {
-            unlink("/etc/yum.repos.d/openvz.repo");
-        }
+    // If openvz.repo file exist remove it imediately before install Xen
+    if (file_exists("/etc/yum.repos.d/openvz.repo")) {
+        unlink("/etc/yum.repos.d/openvz.repo");
+    }
 
-	$list = array("kernel-xen", "xen", "virt-manager");
-	run_package_installer($list);
-	if (file_exists("/boot/vmlinuz-2.6-xen") && !file_exists("/boot/hypervm-xen-vmlinuz")) {
-		system("cd /boot ; ln -s vmlinuz-2.6-xen hypervm-xen-vmlinuz; ln -s initrd-2.6-xen.img hypervm-xen-initrd.img");
-	}
-        if (file_exists("/etc/init.d/libvirtd")) {
-            system("chkconfig libvirtd off");
+    if (is_centossix()) {
+        $arch = `arch`;
+        $arch = trim($arch);
+
+        if ($arch === 'x86_64') {
+            $cont = our_file_get_contents("centos-6-xen.repo.template");
+            our_file_put_contents("/etc/yum.repos.d/CentOS-Xen.repo", $cont);
+        } else {
+            echo "Sorry, installation aborted. Xen is not supported at CentOS 6 32bit.";
+            exit;
         }
-	system("chkconfig xendomains on");
-        if (is_centossix()) {
-        	system("../bin/grub-bootxen.sh");            
-        }
+    }
+
+    $list = array("kernel-xen", "xen", "virt-manager");
+    run_package_installer($list);
+    if (file_exists("/boot/vmlinuz-2.6-xen") && !file_exists("/boot/hypervm-xen-vmlinuz")) {
+        system("cd /boot ; ln -s vmlinuz-2.6-xen hypervm-xen-vmlinuz; ln -s initrd-2.6-xen.img hypervm-xen-initrd.img");
+    }
+    if (file_exists("/etc/init.d/libvirtd")) {
+        system("chkconfig libvirtd off");
+    }
+    system("chkconfig xendomains on");
+    if (is_centossix()) {
+        system("../bin/grub-bootxen.sh");
+    }
 }
 
 

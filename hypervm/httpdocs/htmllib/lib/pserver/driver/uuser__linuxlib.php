@@ -7,35 +7,13 @@ class Uuser__Linux  extends lxDriverClass {
 
 function createUser()
 {
-	global $gbl, $sgbl, $login, $ghtml;
-	global $global_shell_out, $global_shell_error, $global_shell_ret;
-
-	return;
-	$mn = $this->main;
-    $passwd = $mn->password;
-	lxfile_mkdir("__path_httpd_root/" .$mn->getParentName());
-	$cmd = "useradd"; 
-	$shell = fix_disabled($this->main->shell, $sgbl->__var_noaccess_shell);
-
-	$ret = lxshell_return($cmd, "-m", '-c', uuser::getUserDescription($this->main->getParentName()), "-k","__path_program_root/file/user-skel/", "-d", "{$mn->getParentName()}/", "-s", $shell, "-p", $passwd, $mn->nname);
-
-	if ($ret) {
-		// Error... Do a lot of stuff;
-		log_error($global_shell_out);
-		throw new lxexception('user_create', 'web_s_uuser_s_nname', $this->main->nname);
-	}
-
-	/*
-	if($mn->quota != "Unlimited"){
-		lxshell_return("setquota", "-ur", "-F", "vfsv0" , $mn->nname, "0", $mn->quota,"200", "0" ,"0", "-a" , "ext3"); 
-	}
-*/
-	return 1;
+	return null;
 }
 
 
 function createShowAlist(&$alist, $subaction = null)
 {
+    return null;
 }
 
 static function getShellList()

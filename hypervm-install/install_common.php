@@ -17,9 +17,7 @@
 //
 //    You should have received a copy of the GNU Affero General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-?>
 
-<?php 
 class remote { }
 // PHp4, without the lxlabs infrastructure...
 
@@ -201,11 +199,7 @@ function install_yum_repo($osversion)
 
 	$cont = str_replace("%distro%", $osversion, $cont);
 	our_file_put_contents("/etc/yum.repos.d/lxcenter.repo", $cont);
-	if ($osversion === 'centos-6') {
-                $cont = our_file_get_contents("CentOS-Xen.repo.template");
-                our_file_put_contents("/etc/yum.repos.d/CentOS-Xen.repo", $cont);
-        }
-        
+
 }
 
 function find_os_version()

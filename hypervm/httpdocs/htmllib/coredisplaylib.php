@@ -722,15 +722,6 @@ function get_return_url($action)
 
 	$url = $gbl->getSessionV("lx_http_referer");
 	return $url;
-
-	if ($gbl->isetSessionV($var)) {
-		$url = $gbl->getSessionV($var);
-		$gbl->unsetSessionV($var);
-	} else {
-		$url = $gbl->getSessionV("lx_http_referer");
-		$gbl->unsetSessionV($var);
-	}
-	return $url;
 }
 
 function __ac_desc_showform($object)
@@ -1957,39 +1948,16 @@ function main_system_lock()
 
 	// Not needed for hyperVM. HyperVM has more intelligent per vps locking.
 	if ($sgbl->isHyperVm()) {
-		return;
+		return null;
 	}
-
-	return;
-	$lname = null;
-	/*
-	if (is_object($gbl->__c_object)) {
-		$lname = $gbl->__c_object->getClName();
-		if (isModifyAction() && lx_core_lock($lname)) {
-			$ghtml->print_redirect_back('system_is_locked', '');
-			exit;
-		}
-	}
-*/
-	$nlname = $login->getClName();
-	if ($nlname !== $lname && isModifyAction() && lx_core_lock($nlname)) {
-		$ghtml->print_redirect_back('system_is_locked_by_u', '');
-		exit;
-	}
-
+	return null;
 }
 
 function display_init()
 {
 	global $gbl, $sgbl, $login, $ghtml; 
-
-
-
-
 	initProgram();
-
 	init_language();
-
 
 	if ($sgbl->is_this_slave()) { print("This is a Slave Server. You control it at the Master Server.\n"); exit; }
 

@@ -85,7 +85,7 @@ function print_a_right_button($something, $ttype, $id, $pos)
 	$skindir = $login->getSkinDir();
 	?> 
 	
-	<table border="0" cellspacing=0 cellpadding=0 style='font-size:11;color:#004466;height:34;width:73;background:url(<?php echo $skindir ?>/right_btn.gif);' OnMouseOver="style.cursor='pointer'; top.mainframe.changeContent('help','<?php echo $name?>');"  <?php echo $onclickstring ?> onmouseout="changeContent('help','helparea')">
+	<table border='0' cellspacing='0' cellpadding='0' style='font-size:8pt;color:#004466;height:34;width:73;background:url(<?php echo $skindir; ?>right_btn.gif);' OnMouseOver="style.cursor='pointer'; top.mainframe.changeContent('help','<?php echo $name; ?>');"  <?php echo $onclickstring ?> onmouseout="changeContent('help','helparea')">
         <tr>
             <td valign=bottom width=17 height=34 align=left style='padding-bottom:5;padding-left:6'>
             <img height=8 width=8 src='/img/image/<?php echo $login->getSpecialObject('sp_specialplay')->icon_name ?>/button/<?php echo $icon ?>'></td>
@@ -168,23 +168,23 @@ function changeLogo(flag)
 
 }
 </script>
-<body topmargin=0 bottommargin=0 leftmargin=0 rightmargin=0 border=0>
+<body style='body: margin: 0;'>
 <!-- httpdocs/lib/oldheader.php -->
-<table width=100% height="59" border="0" valign=top align="center" cellpadding="0" cellspacing="0" >
+<table width='100%' height='59' border='0' valign='top' align='center' cellpadding='0' cellspacing='0'>
 <tr>
-    <td width=100% style='background:url(<?php echo $login->getSkinDir() ?>/header_top_bg.gif)'> </td>
-    <td width=326 style='background:url(<?php echo $login->getSkinDir() ?>/header_top_rt.gif);background-repeat:no-repeat'>
-        <table width=326>
-            <tr align=right>
-                <td width=200> &nbsp; &nbsp; </td>
-                <td align=right> <img id=main_logo width=136 height=33 src="<?php echo $logo_loading?>"></td>
-                <td width=10%> &nbsp; &nbsp; </td>
+    <td width='100%' style='background: url(<?php echo $login->getSkinDir(); ?>header_top_bg.gif)'></td>
+    <td width='326' style='background: url(<?php echo $login->getSkinDir(); ?>header_top_rt.gif); background-repeat: no-repeat'>
+        <table width='326>
+            <tr align='right'>
+                <td width='200'>&nbsp;</td>
+                <td align='right'><img id='main_logo' width='136' height='33' src='<?php echo $logo_loading; ?>'></td>
+                <td width='10%'>&nbsp;</td>
             </tr>
         </table>
     </td>
 </tr>
 </table>
-<table border="0" width=100%  cellspacing=0 cellpadding=0 background="<?php echo $login->getSkinDir() ?>/header_panel_bg.gif">
+<table border='0' width='100%' cellspacing='0' cellpadding='0' background='<?php echo $login->getSkinDir(); ?>header_panel_bg.gif'>
  <tbody>
   <tr>
   <td>
@@ -199,7 +199,7 @@ function changeLogo(flag)
 
 	print_left_panel($ttype, $count);
 
-	print("<td width=100%></td>\n<td>\n");
+	print("<td width='100%'></td>\n<td>\n");
 
 	if (!$login->is__table('mailaccount')) {
 

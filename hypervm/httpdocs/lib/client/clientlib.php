@@ -88,10 +88,6 @@ function getQuickClass()
 static function addform($parent, $class, $typetd = null)
 {
 	return parent::addform($parent, $class, $typetd);
-	$vlist[''] = array('M', 'disabled. Use_vps_as_login');
-	$ret['variable'] = $vlist;
-	//$ret['action'] = 'add';
-	return $ret;
 }
 
 function getVpsServers($type)
@@ -439,7 +435,7 @@ function createShowInfoList($subaction)
 {
 	global $gbl, $sgbl, $login, $ghtml; 
 	if ($subaction) {
-		return;
+		return null;
 	}
 	$this->getLastLogin($ilist);
 	return $ilist;

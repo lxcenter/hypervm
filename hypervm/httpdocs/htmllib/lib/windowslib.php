@@ -9,12 +9,6 @@ function os_get_user_from_uid($uid)
 }
 function os_isSelfSystemUser()
 {
-	//return true;
-	return false;
-	$wsh = new COM("Wscript.Network");
-	if ($wsh->UserName === 'SYSTEM') {
-		return true;
-	}
 	return false;
 }
 

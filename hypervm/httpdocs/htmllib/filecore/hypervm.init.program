@@ -1,4 +1,10 @@
 #!/bin/bash
+# hypervm       Startup script for HyperVM
+#
+# chkconfig: 2345 96 20
+# description: HyperVM Server Virtualization GUI for  \
+#              OpenVZ and Xen Containers.
+# processname: hypervm
 #
 #    HyperVM, Server Virtualization GUI for OpenVZ and Xen
 #

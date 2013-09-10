@@ -243,36 +243,9 @@ function getRowsGeneric($string, $list = null)
 	$query = "select $select from $this->__sqtable $string;";
 	$fulresult = $this->rl_query($query);
 
-
 	/// The ser varialbles are now handled in the setfromarraa, and this saves us a lot time.
 
 	return $fulresult;
-
-
-
-	foreach((array) $fulresult as $result) {
-		foreach($result as $key => $value) {
-
-			if (!strncmp($key, "ser_", 4)) {
-				$key = substr($key, 4);
-				if ($value) {
-					$res[$key] = unserialize(base64_decode($value));
-					//$res[$key] = unserialize($value);
-					if (!$res[$key] && strlen($value) > 30) {
-						log_database("Unserialize failed for $value");
-					}
-				} else {
-					//dprint("Serialized Value for $key  Null <br> ", 2);
-					$res[$key] = NULL;
-				}
-			} else {
-				$res[$key] = $value;
-			}
-		}
-		$ret[] = $res;
-	}
-
-	return $ret;
 }
 
 

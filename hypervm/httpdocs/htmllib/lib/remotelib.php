@@ -51,18 +51,6 @@ function do_do_the_action($rmt)
 {
 	global $gbl, $sgbl, $login, $ghtml; 
 	return do_local_action($rmt);
-
-	if ($rmt->action == "set" || $rmt->action == 'get') {
-		if (isLocalhost($rmt->slaveserver)) {
-		} else {
-			//return rl_exec(null, $rmt->slaveserver, $rmt);
-		}
-	} else if ($rmt->action == 'dowas') {
-		$object = $rmt->robject;
-		$object->__masterserver = null;
-		dprint("in dowas\n");
-		return $object->doWas();
-	}
 }
 
 function do_the_action($rmt, $res)
@@ -810,25 +798,7 @@ function rl_exec_set($masterserver, $slaveserver, $object)
 
 function myclone($object)
 {
-
 	return clone $object;
-
-	if (!is_subclass_of($object, "lxclass")) {
-		return clone $object;
-	}
-	$class = $object->get__table();
-
-	$newobject = new $class($object->__masterserver, $object->__readserver, $object->nname);
-
-	foreach($object as $k => $v) {
-		/*
-		if (is_object($v)) {
-			continue;
-		}
-	*/
-		$newobject->$k = $v;
-	}
-	return $newobject;
 }
 
 
