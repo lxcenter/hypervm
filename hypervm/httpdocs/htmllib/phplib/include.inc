@@ -10,9 +10,7 @@ function windowsOs()
 
 function getOs()
 {
-	// A bug... Php crashes whern php_uname is called. Man!!!!!!
 	return false;
-	return (substr(php_uname(), 0, 7) == "Windows")? "windows": "linux";
 }
 
 if(!isset($_SERVER['DOCUMENT_ROOT']))

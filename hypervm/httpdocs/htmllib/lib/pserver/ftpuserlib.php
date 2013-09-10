@@ -139,11 +139,6 @@ function createShowPropertyList(&$alist)
 function createShowAlist(&$alist, $subaction = null)
 {
 	return null;
-	$alist['__title_main'] = $this->getTitleWithSync();
-	//$this->getCPToggleUrl($alist);
-	$alist[] = "a=show&l[class]=ffile&l[nname]=/";
-	return $alist;
-
 }
 }
 

@@ -86,7 +86,7 @@ static function  getEachfileqouta($file , $domainname , $oldtime , $newtime)
 
 	if ($ret < 0) {
 		dprint("Could not find position\n");
-		return;
+		return null;
 	}
 
 

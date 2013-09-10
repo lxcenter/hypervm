@@ -68,9 +68,6 @@ function updateform($subaction, $param)
 function createShowUpdateform()
 {
 	return null;
-	$uflist[] = 'a=addform&dta[var]=atype&dta[val]=standard&c=monitorport';
-	$uflist[] = 'a=addform&dta[var]=atype&dta[val]=general&c=monitorport';
-	return $uflist;
 }
 
 

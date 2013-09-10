@@ -320,19 +320,7 @@ function getFromRemote($p)
 {
 	$filepass = $this->main->filepass;
 	getFromRemote($this->main->pasteserver_realip, $filepass[$p], $this->main->fullpath, $p);
-	return;
-
-
-	$bp = basename($p);
-	if ($filepass[$p]['type'] === 'dir') {
-		$tfile = lx_tmp_file("__path_tmp", "lx_$bp");
-		getFromFileserv($this->main->pasteserver, $this->main->filepass[$p], $tfile);
-		lxfile_mkdir("{$this->main->fullpath}/$bp");
-		lxshell_unzip("{$this->main->fullpath}/$bp", $tfile);
-		lunlink($tfile);
-	} else {
-		getFromFileserv($this->main->pasteserver, $this->main->filepass[$p], "{$this->main->fullpath}/$bp");
-	}
+	return null;
 }
 
 function uploadDirect()

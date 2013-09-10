@@ -2260,16 +2260,7 @@ function appvault_dbfilter($inputfile, $outputfile, $cont)
 
 function installLxetc()
 {
-    return; //TODO: Remove this
-	if (!lxfile_exists("/root/.etc/pfixed")) {
-		if (lxfile_exists("/root/.etc/")) {
-			lxfile_rm_rec("/root/.etc/");
-		}
-	}
-
-	if (!lxfile_exists("/root/.etc/")) {
-		lxshell_background("lphp.exe", "../bin/common/misc/lxetc.php");
-	}
+    return null;
 }
 
 function lightyApacheLimit($server, $var)
@@ -2951,17 +2942,7 @@ function copy_script()
 // dterweij
 function copy_image()
 {
-// TODO Remove this
-    return ;
-
-	global $gbl, $sgbl, $login, $ghtml;
-	$prgm = $sgbl->__var_program_name;
-
-	lxfile_cp_content("tmpimg/", "img/image/collage/button/");
-	$list = lscandir_without_dot("img/skin/$prgm/feather/");
-	foreach($list as $l) {
-		lxfile_cp_content("tmpskin/", "img/skin/$prgm/feather/$l");
-	}
+    return null;
 }
 
 function getAdminDbPass()
@@ -4132,7 +4113,7 @@ function find_hop($l)
 		$l = trimSpaces($l);
 		$ll = explode(" ", $l);
 		$lll = explode("/", $ll[3]);
-		return round($lll[1], 1);;
+		return round($lll[1], 1);
 	}
 }
 
@@ -4292,7 +4273,6 @@ function get_last_month_and_year()
 		$year = $year - 1; 
 	} else {
 		$month = $month - 1;
-		$year = $year;
 	}
 	return array($month, $year);
 }

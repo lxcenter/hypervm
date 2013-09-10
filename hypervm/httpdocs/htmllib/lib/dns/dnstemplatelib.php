@@ -68,13 +68,6 @@ function display($var)
 function isSelect()
 {
 	return true;
-	$this->createUsed();
-	if ($this->isOn('used_f')) {
-		return false;
-	} 
-
-	return $this->isRightParent();
-	return true;
 }
 
 static function add($parent, $class, $param)

@@ -85,7 +85,7 @@ static function isIPV6($ip)
     
       throw new lxException('Invalid IP address: ' . $ip . ' Contains both dot and colon!', $variable);
           return false;  
-          }
+}
           
           
 static function findTotaltrafficUsage($list, $oldtime, $newtime)

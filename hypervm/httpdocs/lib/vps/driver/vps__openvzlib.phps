@@ -1047,7 +1047,7 @@ class vps__openvz extends Lxdriverclass {
 	{ 
 	
 		if (self::getStatus($this->main->vpsid, $this->main->corerootdir) === 'on') {
-			return;
+			return null;
 		}
 		return lxshell_return("/usr/sbin/vzctl", "start", $this->main->vpsid); 
 	}
@@ -1158,13 +1158,7 @@ class vps__openvz extends Lxdriverclass {
 	function setIptables()
 	{
 		$this->removeConf("IPTABLES");
-		return;
-	
-		if ($this->main->priv->isOn('iptables_flag')) {
-			$this->changeConf("IPTABLES", "iptable_filter iptable_mangle ipt_limit ipt_multiport ipt_tos ipt_TOS ipt_REJECT ipt_TCPMSS ipt_tcpmss ipt_ttl ipt_LOG ipt_length ip_conntrack ip_conntrack_ftp ip_conntrack_irc ipt_conntrack ipt_state  ipt_helper  iptable_nat ip_nat_ftp ip_nat_irc ipt_REDIRECT");
-		} else {
-			$this->changeConf("IPTABLES", "");
-		}
+		return null;
 	}
 	
 	function enableSecondLevelQuota()

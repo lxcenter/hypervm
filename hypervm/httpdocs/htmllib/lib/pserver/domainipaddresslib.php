@@ -134,9 +134,7 @@ function createShowPropertyList(&$alist)
 
 function createShowAlist(&$alist, $subaction = null)
 {
-	global $gbl, $sgbl, $login, $ghtml; 
 	return null;
-	return $alist;
 }
 
 }

@@ -302,7 +302,7 @@ class HtmlLib
 				$descr[2] = getNthToken($descr[2], 1);
 				?>
 				<td width="16%" align="left">
-					<span style="color: bb3333; ">
+					<span style="color: #bb3333; ">
 						<b><?=$descr[2] ?>: <?= $obj->display($i) ?></b>
 					</span>
 				</td>
@@ -743,7 +743,7 @@ class HtmlLib
 
 		.trigger a:hover
 		{
-			cursor: poiner;
+			cursor: pointer;
 		}
 
 		.trigger
@@ -1945,9 +1945,8 @@ class HtmlLib
 
 		div.demo div.example span
 		{
-			margin: 0px;
-			margin-bottom: 0px;
-			padding: 0px;
+            margin: 0px;
+            padding: 0px;
 			font-size: 1.0em;
 			text-align: center;
 			display: block;
@@ -2243,41 +2242,7 @@ class HtmlLib
 
 	function save_non_existant_image($path)
 	{
-		global $gbl, $sgbl, $login, $ghtml;
-
-		return; #[FIXME]
-
-		// We need only the form images, and the normal non form action images need not be saved.
-		if (!csa($path, "list") && !csa($path, "form")) {
-			return;
-		}
-
-		if ($sgbl->dbg <= 1) {
-			return;
-		}
-
-		if (lfile_exists(getreal($path))) {
-			return;
-		}
-
-		$cont = null;
-		$icon = $login->getSpecialObject('sp_specialplay')->icon_name;
-
-		$file = "__path_program_htmlbase/$icon.missing_image.txt";
-
-		if (lfile_exists($file)) {
-			$cont = lfile($file);
-			foreach ($cont as $k => &$__c) {
-				$__c = trim($__c);
-				if (!$__c) {
-					unset($cont[$k]);
-				}
-			}
-		}
-		$cont = array_push_unique($cont, $path);
-		$cont = implode("\n", $cont);
-		$cont .= "\n";
-		lfile_put_contents($file, $cont);
+		return null;
 	}
 
 	function get_date()
@@ -4282,7 +4247,7 @@ class HtmlLib
 
 
 	<fieldset
-			style='<?=$backgroundnullstring?> padding: 0 ; text-align: middle ; margin: 0; border: 0px; border-top: 1px solid <?= $bordertop ?> '>
+			style='<?=$backgroundnullstring?> padding: 0 ; text-align: center ; margin: 0; border: 0px; border-top: 1px solid <?= $bordertop ?> '>
 		<legend><font style='font-weight:bold'>Advanced Search <a
 				href="javascript:toggleVisibility('search_<?=$unique_name?>');"><?=$showstring ?> </a> <?=$show_all_string?>
 		</font></legend>
@@ -4556,8 +4521,10 @@ class HtmlLib
 		} else {
 			$upper = $pagesize * $cgi_pagenum;
 		}
-		$total_page = strtil($total_num / $pagesize, ".") + 1;
-		$perpageof = "$lower to $upper of ";
+		$total_page = strtil($total_num / $pagesize, ".");
+        $total_page = intval($total_page) + 1;
+
+        $perpageof = "$lower to $upper of ";
 
 		if ($sgbl->isBlackBackground()) {
 			$backgroundstring = "background:#222222;";
@@ -6103,23 +6070,7 @@ class HtmlLib
 
 	function createEncForm_name($name)
 	{
-		global $gbl, $sgbl;
-
-		return $name;
-		if ($sgbl->dbg > 0) {
-			return $name;
-		}
-
-		$name = str_replace("_", "", $name);
-		$name = str_replace("php", "", $name);
-		$name = str_replace("a", "z", $name);
-		$name = str_replace("e", "r", $name);
-		$name = str_replace("i", "x", $name);
-		$name = str_replace("s", "q", $name);
-		$name = str_replace("o", "p", $name);
-		$name = str_replace("r", "j", $name);
-
-		return $name;
+	    return $name;
 	}
 
 	function resolve_int_ext(&$url, &$psuedourl, &$target)
@@ -7120,7 +7071,6 @@ class HtmlLib
 
 		$imgheadleft = "{$login->getSkinDir()}top_lt.gif";
 		$imgheadright = "{$login->getSkinDir()}top_rt.gif";
-		$imgheadleft = "{$login->getSkinDir()}top_lt.gif";
 		$imgtablerowhead = "{$login->getSkinDir()}tablerow_head.gif";
 		$imgheadbg = "{$login->getSkinDir()}top_bg.gif";
 		$imgtopline = "{$login->getSkinDir()}top_line.gif";
@@ -7384,7 +7334,7 @@ class HtmlLib
 					{
 						display: block;
 						margin: 0;
-						font-style: Helvetica;
+						font-style: normal;
 						border: 1px solid #666;
 						border-right: none;
 						background: #<?=$skincolor?> ;
@@ -7786,7 +7736,7 @@ class HtmlLib
 		?>
 	<div style='background-color:#ffffff' id="tabs1">
 		<div id="script"
-			 style="overflow:no; height:100%;width:218px;border-bottom:1px solid #c3daf9; border-right:1px solid #c3daf9;"
+			 style="overflow:auto; height:100%;width:218px;border-bottom:1px solid #c3daf9; border-right:1px solid #c3daf9;"
 			 class="tab-content">
 			<br>
 			<?$ghtml->xp_panel($login);?>
@@ -8521,10 +8471,7 @@ function print_menulist($name, $alist, $base, $type)
 			continue;
 		}
 		if (is_array($a)) {
-			// Dont print property etc...
 			continue;
-			$aa = $this->getFullUrl($a[0], $base);
-			print("$name.addMenuItem($name$k, frame1+\"$aa\", 'Properties', 'mainframe');\n");
 		} else {
 			// Hack hack...  NOt showing addforms in the top Menu... Also not showing in the tree view..
 			if (csa(strtolower($a), "addform") || (csa(strtolower($a), 'update') && !csa(strtolower($a), 'updateform'))) {
@@ -8750,11 +8697,10 @@ function print_splash_old()
 	?> 
 	<style>
 	.splashscreen {
-		font-style: Helvetica;
+		font-style: normal;
 		font-size: 10pt;
-		border-width: 0px;
-		border-color: black;
-	}
+        border: 0px black;
+    }
 
 	.coverscreen {
 		filter:alpha(opacity=50);                                                                              
@@ -8902,18 +8848,9 @@ function print_end()
 	return;
 	
 	?> 
-	
-<!-- 
-    </td><td width=5 class=bordermain>&nbsp;</td>
-	</tr> 
-    </table>
-	<table cellspacing=0 cellpadding=0 border=0  width=100% height=5>
-	<tr><td class=bordermain height=100%></font></td></tr>
-	</table> 
--->
 
     </td><td width=5 rowspan=2>&nbsp;</td> </tr> 
-	<tr><td background="<?=$tbg; ?>"></td> <td height=20 class=copyright valign=top align=right> � 2007 Copyright Lxlabs</td></tr>
+	<tr><td background="<? echo $tbg; ?>"></td> <td height=20 class=copyright valign=top align=right> � 2007 Copyright Lxlabs</td></tr>
   	<tr><td colspan=3 background=<?=$imgbordermain ?> height=5> </td></tr>
 	</table> 
 
@@ -9041,9 +8978,9 @@ function oldlpanel_help()
 	?>
 <table cellpadding="0" width=100% cellspacing="0" border="0" align=center>
 
-		<tr>  <td align=center> <br>  <table cellpadding=0 cellspacing=0 border=0 align=center> <tr align=center><td> <img id=helppic name=namepic  src="<?=$helpimg; ?>/help_head.gif" style="cursor:pointer" onclick="javascript:window.open('<?=$this->get_help_url() ?>')"></td></tr></table></td></td></tr> 
+		<tr>  <td align=center> <br>  <table cellpadding=0 cellspacing=0 border=0 align=center> <tr align=center><td> <img id=helppic name=namepic  src="<? echo $helpimg; ?>/help_head.gif" style="cursor:pointer" onclick="javascript:window.open('<?=$this->get_help_url() ?>')"></td></tr></table></td></td></tr>
 		
-		<tr align=center><td align=center> <table cellpadding=0 cellspacing=0 border=0 align=center> <tr><td><img src="<?=$helpimg; ?>/help_edge.gif" ></td> <td background="<?=$helpimg; ?>/help_bg.gif" width=170> <table cellpadding=0 cellspacing=0 border=0> <tr><td width=10 ></td><td> <div id=help class=helparea><script> document.write(help_data['helparea']) </script></div> </td></tr></table> </td> <td><img src="<?=$helpimg; ?>/help_edge.gif" ></td> </tr> </table> </td></tr>
+		<tr align=center><td align=center> <table cellpadding=0 cellspacing=0 border=0 align=center> <tr><td><img src="<? echo $helpimg; ?>/help_edge.gif" ></td> <td background="<? echo $helpimg; ?>/help_bg.gif" width=170> <table cellpadding=0 cellspacing=0 border=0> <tr><td width=10 ></td><td> <div id=help class=helparea><script> document.write(help_data['helparea']) </script></div> </td></tr></table> </td> <td><img src="<? echo $helpimg; ?>/help_edge.gif" ></td> </tr> </table> </td></tr>
 
 
 

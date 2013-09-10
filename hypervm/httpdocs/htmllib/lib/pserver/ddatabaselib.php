@@ -138,9 +138,6 @@ function createShowUpdateform()
 function createShowRlist($subaction)
 {
 	return null;
-	$rlist['priv'] = null;
-	return $rlist;
-
 }
 
 function getDbAdminUrl()
@@ -156,14 +153,6 @@ function getDbAdminUrl()
 	} else {
 		return "/thirdparty/phpMyAdmin/";
 	}
-
-	if ($this->dbtype === 'mysql') {
-		return "/thirdparty/phpMyAdmin/";
-	}
-	if ($this->dbtype === 'pgsql') {
-		return "/thirdparty/phpPgAdmin/";
-	}
-	return null;
 }
 
 
@@ -214,12 +203,6 @@ function isSelect()
 		return false;
 	} 
 	return true;
-
-	if ($this->isOn('installapp_flag')) {
-		return false;
-	}
-	return true;
-
 }
 static function createListNlist($parent, $view)
 {
@@ -300,9 +283,7 @@ static function loadExtension($dbtype)
 	if (!extension_loaded($dbtype)) {
 		dprint("Warning No $dbtype <br> ");
 		exit;
-		dl("$dbtype.". PHP_SHLIB_SUFFIX);
 	}
-
 }
 
 function getDbAdminPass()

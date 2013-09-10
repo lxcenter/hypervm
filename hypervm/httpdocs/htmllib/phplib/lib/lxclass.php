@@ -344,16 +344,6 @@ function syncToSystem()
 function getCommandResource($resource)
 {
 	return null;
-
-	$list = $this->getList($resource);
-
-	if (!$list) {
-		throw new lxexception('resource_doesnt_exist', '', $resource);
-	}
-
-	$array = get_namelist_from_objectlist($list);
-
-	return $array;
 }
 
 static function switchDriver($class, $old, $new)
@@ -495,26 +485,9 @@ function isLogin()
 final static function calldriverappFunc($class, $func)
 {
 	global $gbl, $sgbl;
-
 	print("I shouldn't get called\n");
 	debugBacktrace();
 	exit;
-
-	$driverapp = $gbl->getSyncClass(null, null, $class);
-
-	if (!$driverapp) {
-		dprint(" NO driverapp class for {$class}\n <br> ");
-		return;
-	}
-	$class = $class . "_" . $driverapp;
-
-	$start = 2;
-
-	eval($sgbl->arg_getting_string);
-
-
-	return call_user_func_array(array($class, $func), $arglist);
-
 }
 
 
@@ -1154,38 +1127,7 @@ static function filterFunc($op, $oval, $val)
 
 function isDisplay($filter = null) 
 {
-
-	global $gbl, $sgbl, $login;
 	return true;
-	if (!$filter)
-		return 1;
-
-
-	$class = lget_class($this);
-
-	$res = 1;
-	foreach($filter as $key => $val) {
-		if (char_search_a($key, "_o_")) {
-			$var = substr($key, 0, strpos($key, "_o_"));
-			$op = substr($key, strpos($key, "_o_") + 3);
-			//$op = $oplist[$op];
-
-			if (!isset($this->$var)) {
-				$oval = $a->display($var);
-			} else {
-				$oval = $this->$var;
-			}
-
-			$res &= self::filterFunc($op, $oval, $val);
-
-		} else {
-			$f = "__filter_{$key}_{$val}";
-			$string = get_real_class_variable($class, $f);
-			$res &= eval("return {$string};");
-		}
-	
-	}
-	return $res;
 }
 
 
@@ -2036,8 +1978,6 @@ function getTrueParentO()
 	if (!$this->parent_clname) {
 		print("Critical internal error. there is no parent_clname for {$this->getClname()} \n<br> ");
 		exit;
-		return $this->getParentO();
-		return null;
 	}
 
 	list ($pclass, $pname) = getParentNameAndClass($this->parent_clname);
@@ -2793,7 +2733,7 @@ function checkForConsistency($tree, $trulist, $real = false)
 
 	if ($this->isCoreBackup() && $trulist && ($trulist[0] !== 'all') && !array_search_bool($this->getClName(), $trulist)) {
 		$this->AddMEssageOnlyIfClientDomain("Not Selected");
-		$this->dbaction == 'clean';
+		$this->dbaction = 'clean';
 		$coreflag = true;
 		$return = true;
 	} else {
@@ -3319,7 +3259,7 @@ static function clearChildrenAndParent($object)
 		//unset($object->$obj);
 	}
 	if (isset($obj->sp_specialplay_o)) {
-		$obj->sp_specialplay_o == null;
+		$obj->sp_specialplay_o = null;
 	}
 	if (isset($obj->sp_childSpecialPlay)) {
 		$obj->sp_childSpecialPlay_o = null;
@@ -4216,15 +4156,7 @@ function checkIfEnoughParentQuota($parent)
 
 function getSwitchServerUrl(&$alist)
 {
-	global $gbl, $sgbl, $login, $ghtml; 
-
-	return;
-	if ($login->isAdmin()) {
-		if (check_if_many_server()) {
-			$alist[] = "n={$this->getClass()}&a=updateform&sa=switchserver";
-		}
-	}
-
+	return null;
 }
 
 static function fixListVariable($v)
@@ -5861,7 +5793,14 @@ class misc_b extends lxaclass {
 class listpriv extends lxaclass {
 
 
-// listpriv is a bit trickier than we first thought. For the admin, the quota is actually dynamic, and is equal to the list of pservers, and their corresponding ip addresses. For other clients, the listquota is static. To get this dynamic list quota for the admin, you need to access the parent (admin) object from inside listpriv, which is actually impossible, since listpriv, being an internal object, is automatically initialiazed when the database is loaded. Anyway, currently I have just added listpriv->__parent_o = $this inside the getThisFromDb->setFromArray() in the lxdb. This is actually not a hack, and should work pretty much fine, since setFromArray is a fundamental function and called by everyone to initialize the objects.
+// listpriv is a bit trickier than we first thought. For the admin, the quota is actually dynamic,
+// and is equal to the list of pservers, and their corresponding ip addresses. For other clients,
+// the listquota is static. To get this dynamic list quota for the admin,
+// you need to access the parent (admin) object from inside listpriv, which is actually impossible,
+// since listpriv, being an internal object, is automatically initialiazed when the database is loaded.
+// Anyway, currently I have just added listpriv->__parent_o = $this inside the getThisFromDb->setFromArray()
+// in the lxdb. This is actually not a hack, and should work pretty much fine,
+// since setFromArray is a fundamental function and called by everyone to initialize the objects.
 function __get($var)
 {
 	global $gbl, $sgbl, $login, $ghtml; 
@@ -5940,22 +5879,23 @@ function __get($var)
 }
 
 
-class LxMailClass extends Lxaclass {
-
-static function createListAlist($parent, $class)
-{
-	global $gbl, $sgbl, $login, $ghtml; 
-
-	$alist[] = "a=list&c={$class}";
-	return $alist;
-}
-
-static function createListAddForm($parent, $class)
-{
-	return true;
-}
-
-}
+// Todo: needed? Gives php error tho.
+//class LxMailClass extends Lxaclass {
+//
+//static function createListAlist($parent, $class)
+//{
+//	global $gbl, $sgbl, $login, $ghtml;
+//
+//	$alist[] = "a=list&c={$class}";
+//	return $alist;
+//}
+//
+//static function createListAddForm($parent, $class)
+//{
+//	return true;
+//}
+//
+//}
 
 
 

@@ -9,11 +9,8 @@ $cgi_class = $ghtml->frm_class;
 $cgi_password = $ghtml->frm_password;
 $cgi_forgotpwd = $ghtml->frm_forgotpwd;
 $cgi_email = $ghtml->frm_email;
-
 $cgi_classname = 'client';
-if ($cgi_class) {
-    $cgi_classname = $cgi_classname;
-}
+
 ob_start();
 include_once "htmllib/lib/indexcontent.php";
 
