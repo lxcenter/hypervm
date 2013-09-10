@@ -32,11 +32,7 @@ function createShowPropertyList(&$alist)
 
 function createShowAlist(&$alist, $subaction = null)
 {
-	global $gbl, $sgbl, $login, $ghtml; 
 	return $alist;
-	if (checkIfLatest() && !if_demo()) {
-		return null;
-	} 
 }
 
 function createShowUpdateform()

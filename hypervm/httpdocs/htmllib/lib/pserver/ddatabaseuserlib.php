@@ -75,7 +75,7 @@ static function addform($parent, $class, $typetd = null)
 {
 	$dbprefix = databasecore::fixDbname($parent->getParentName());
 
-	$vlist['dbtype'] === 'mysql';
+	$vlist['dbtype'] = 'mysql';
 	$vlist['nname'] = array('m', array('pretext' => $dbprefix));
 	$vlist['dbpassword'] = null;
 	$res['variable'] = $vlist;

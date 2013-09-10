@@ -151,9 +151,7 @@ function syncAddFile($domainname)
 				$value = $o->param;
 
 
-				if ($value !== "__base__") {
-					$value = $value;
-				} else {
+				if ($value === "__base__") {
 					$value = "$domainname";
 				}
 

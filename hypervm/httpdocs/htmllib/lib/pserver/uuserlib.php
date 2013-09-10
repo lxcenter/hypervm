@@ -47,8 +47,6 @@ static function createListNlist($parent, $view)
 function createShowRlist($subaction)
 {
 	return null;
-	$vlist['priv'] = null;
-	return $vlist;
 }
 static function add($parent, $class, $param)
 {
@@ -138,15 +136,6 @@ function createShowAlist(&$alist, $subaction = null)
 	}
 	$this->driverApp->createShowAlist($alist);
 	return $alist;
-	$alist['__title_main'] =  $this->getTitleWithSync();
-	$alist[] = "a=show&l[class]=ffile&l[nname]=/";
-	$this->getToggleUrl($alist);
-	//$this->getCPToggleUrl($alist);
-
-	//$alist[] = "a=list&c=ticket";
-	//$this->getListActions($alist, 'utmp');
-	return $alist;
-
 }
 
 

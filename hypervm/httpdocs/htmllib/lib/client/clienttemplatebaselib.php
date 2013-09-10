@@ -127,10 +127,6 @@ static function continueForm($parent, $class, $param, $continueaction)
 function createShowImageList()
 {
 	return null;
-	$vlist['owner_f'] = null;
-	//$vlist['share_status'] = null;
-	return $vlist;
-
 }
 
 static function addform($parent, $class, $typetd = null)

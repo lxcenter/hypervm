@@ -68,50 +68,7 @@ function display($var)
 
 static function continueFormlistpriv($parent, $class, $param, $continueaction)
 {
-
 	$ret = exec_class_method('client', 'continueFormClientFinish', $parent, $class, $param, $continueaction);
-	return $ret;
-
-	$totallist = null;
-
-	$array = client::getPserverListPriv();
-
-	$listpriv = $parent->listpriv;
-	$more = false;
-	foreach($array as $a) {
-		$list = $a . "_list";
-		if (count($listpriv->$list) > 1) {
-			$more = true;
-			break;
-		}
-	}
-	if ($more) {
-		$vlist['server_detail_f'] = null;
-		foreach($array as $a) {
-			$v = "{$a}_list";
-			if (!$parent->listpriv->$v) {
-				throw new lxException ("no_server_pool", $v);
-			}
-			$totallist = lx_merge_good($totallist, $parent->listpriv->$v);
-			$vlist["{$a}_list"] = "";
-		}
-		$vlist['server_detail_f'] = array('M', pservercore::createServerInfo($totallist));
-		$ret["param"] = $param;
-		$ret["variable"] = $vlist;
-		$ret["action"] = "add";
-		//$ret["continueaction"] = "clientfinish";
-	} else {
-		// All are $singstringle arrays, so just implode with "". the actually arrays are indexed u$singstring the name itself.
-		foreach($array as $a) {
-			$v = "{$a}_list";
-			if (!$parent->listpriv->$v) {
-				throw new lxException ("no_server_pool", $v);
-			}
-			$param["listpriv_s_{$a}_list"] = implode("", $parent->listpriv->$v);
-		}
-		//$param['listpriv_s_dbtype_list'] = implode($parent->listpriv->dbtype_list);
-
-	}
 	return $ret;
 }
 

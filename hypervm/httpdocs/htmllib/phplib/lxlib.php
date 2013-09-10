@@ -1,14 +1,10 @@
 <?php
 
-if (windowsOs()) {
-	include_once "htmllib/lib/windowslib.php";
-	include_once "lib/windowsproglib.php";
-} else {
-	include_once "htmllib/lib/linuxlib.php";
-	include_once "lib/linuxproglib.php";
-}
+date_default_timezone_set("UTC");
 
-// Don't remove this. This is used for slave upgrade.
+include_once "htmllib/lib/linuxlib.php";
+include_once "lib/linuxproglib.php";
+
 function remotetestfunc()
 {
 }
@@ -17,7 +13,10 @@ define('S_IFDIR', 00040000);
 define('S_ISUID', 00004000);
 define('S_ISGID', 00002000);
 
-// This is the only function that exectues during the initialization... The rest of the whle library exists as functions that can be called... Nothing gets executed on their own... Execept this.. So it makes this sort of special... very special..
+// This is the only function that executes during the initialization...
+// The rest of the whole library exists as functions that can be called...
+// Nothing gets executed on their own... Except this..
+// So it makes this sort of special... very special..
 
 init_global();
 
@@ -30,16 +29,22 @@ function init_global()
 	$gbl = new Gbl();
 	$gbl->get();
 
+    date_default_timezone_set("UTC");
+
 //
-// Turn on demo version by putting a empty file called demo in the etc dir
+// Turn on demo version by putting a empty file called demo in the etc dir.
+// More info about enable a demo server soon at our wiki
 //
 	if (lfile_exists("__path_program_etc/demo")) {
 		$g_demo = 1;
 	}
+
+	check_for_debug("/usr/local/lxlabs/hypervm/httpdocs/commands.php");
+    $sgbl->method = ($sgbl->dbg >= 1) ? "get" : "post";
+
 //
 // ### LxCenter
 //
-
 // Check for Development/Debug version
 // If file not exists, Production mode (-1)
 // If file exists it can have the following numbers to enable
@@ -50,32 +55,24 @@ function init_global()
 // 5  = Debug mode 5
 // -1 = Turn Off and go to production mode
 
-	check_for_debug("/commands.php");
-
-// Disabled by LxCenter, we are not at PHP version with number 1 at postition N ( x.N.x )
-//  $v = explode(".", PHP_VERSION);
-//  if ($v[1] == "1" && $sgbl->isDebug()) {
-//      date_default_timezone_set("UTC");
-//  }
-
-	$sgbl->method = ($sgbl->dbg >= 1) ? "get" : "post";
 }
 
 function debug_for_backend()
 {
 	global $gbl, $sgbl, $login, $ghtml;
-	check_for_debug("/commands.php");
+    check_for_debug("/usr/local/lxlabs/hypervm/httpdocs/commands.php");
 	if ($sgbl->isDebug()) {
-		return;
+		return null;
 	}
-	check_for_debug("/backend.php");
+    check_for_debug("/usr/local/lxlabs/hypervm/httpdocs/backend.php");
+    return null;
 }
 
 function check_for_debug($file)
 {
 	global $gbl, $sgbl, $login, $ghtml;
-	if (file_exists(getreal($file))) {
-		$sgbl->dbg = file_get_contents(getreal($file));
+	if (lfile_exists($file)) {
+		$sgbl->dbg = trim(file_get_contents($file));
 		if ($sgbl->dbg != "1" && $sgbl->dbg != "2" && $sgbl->dbg != "3" && $sgbl->dbg != "4" && $sgbl->dbg != "5") {
 			$sgbl->dbg = -1;
 		}
@@ -92,6 +89,7 @@ function check_for_debug($file)
 		ini_set("display_errors", "Off");
 		ini_set("log_errors", "On");
 	}
+    return null;
 }
 
 function isUpdating()
@@ -1188,20 +1186,11 @@ function isLicensed($var)
 function is_composite($class)
 {
 	return false;
-	return csa($class, "__");
 }
 
 function get_composite($class)
 {
 	return array(null, null, $class);
-
-	$list = explode("__", $class);
-
-	if (count($list) === 2) {
-		return array($list[0], null, $list[1]);
-	}
-
-	return array($list[0], $list[1], $list[2]);
 }
 
 // Set unlicensed to Unlimited usage
@@ -1545,20 +1534,11 @@ function get_general_image_path($v = null)
 */
 function add_http_host($elem)
 {
-	global $gbl, $sgbl, $login, $ghtml;
 	return $elem;
-
-	$host = $_SERVER['SERVER_NAME'];
-	//$port = $sgbl->__var_prog_port;
-	//$host = "http://" . $host . ":" .  "$port";
-	//$host = "https://" . $host . ":" .  "$port";
-	return $host . $elem;
 }
 
 function get_image_path($path = null)
 {
-	global $gbl, $sgbl;
-
 	global $gbl, $sgbl, $login;
 
 	//Return path of the encrypted images in the deployment version.
@@ -1857,24 +1837,6 @@ function lx_error_handler($errno, $errstr, $file, $line)
 */
 function createEncName($name)
 {
-	global $gbl;
-
-	return $name;
-
-	if ($sgbl->dbg > 0) {
-		return $name;
-	}
-
-	$name = str_replace("_", "", $name);
-	$name = str_replace("php", "", $name);
-	$name = str_replace("a", "r", $name);
-	$name = str_replace("e", "z", $name);
-	$name = str_replace("i", "q", $name);
-	$name = str_replace("o", "j", $name);
-	$name = str_replace("t", "y", $name);
-	$name = str_replace("s", "x", $name);
-	$name = str_replace("r", "p", $name);
-
 	return $name;
 }
 

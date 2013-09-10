@@ -19,7 +19,6 @@ function dbactionAdd()
 	if (!$req) {
 
 		throw new lxException('MsSql Connection is Failed', '', '');
-		print("Could not Connect to Database on localhost using root user\n");
 	}
 	$loginname=$this->main->username;
 	$dbname=$loginname;
@@ -31,9 +30,9 @@ function dbactionAdd()
 	if( !$row ){
 		mssql_query("sp_addlogin '$loginname', '$pass'");
 	} else {
-		throw new Exception("couldn't create $loginname--already user exist\n");
-		print("user already exist by this name\n");
-	}	
+        print("user already exist by this name\n");
+        throw new Exception("couldn't create $loginname--already user exist\n");
+	}
  print("executing\n");
 	try{
 		mssql_query("create database $dbname");

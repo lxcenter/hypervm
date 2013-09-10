@@ -24,12 +24,27 @@ class ippoolexceptionip_a extends Lxaclass {
 static $__desc = array("", "", "exception_ip");
 static $__desc_nname = array("n", "", "ipaddress");
 
+    /**
+     * @return void
+     * @param unknown
+     * @param unknown
+     * @desc Can this be removed? It looks stupid to me :)
+     */
 static function createListAlist($parent, $class = NULL)
 {
 	return ippoolextraip_a::createListAlist($parent, $class);
-	return $alist;
 }
-static function createListAddForm($parent, $class) { return true;}
+
+    /**
+     * @return void
+     * @param unknown
+     * @param unknown
+     * @desc Can be removed?
+     */
+static function createListAddForm($parent, $class)
+{
+    return true;
+}
 }
 
 
@@ -37,12 +52,15 @@ class ippoolpingip_a extends Lxaclass {
 static $__desc = array("", "", "pinged_ip");
 static $__desc_nname = array("n", "", "ipaddress");
 
-
-
+    /**
+     * @return void
+     * @param unknown
+     * @param unknown
+     * @desc Can this be removed? It looks stupid to me :)
+     */
 static function createListAlist($parent, $class = NULL)
 {
 	return ippoolextraip_a::createListAlist($parent, $class);
-	return $alist;
 }
 }
 
@@ -63,8 +81,16 @@ static function initThisList($parent, $class)
 	$parent->setListFromArray($parent->__masterserver, $parent->__readserver, 'ippoolip', $result);
 
 }
-
-function isSelect() { return false ; }
+    /**
+     * @return void
+     * @param unknown
+     * @param unknown
+     * @desc Can this be removed?
+     */
+function isSelect()
+{
+    return false ;
+}
 static function createListNlist($parent, $view = NULL)
 {
 	$nlist['nname'] = '100%';
