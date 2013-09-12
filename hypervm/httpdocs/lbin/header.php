@@ -11,6 +11,7 @@ function header_main()
     init_language();
     print_meta_lan();
 
+    // Load default skin or feather skin
     if ($login->isDefaultSkin()) {
         print_header_old_default();
     } else {

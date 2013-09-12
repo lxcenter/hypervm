@@ -1,5 +1,80 @@
-<?php 
+<?php
 
+function print_header_old_default()
+{
+    global $gbl, $login, $ghtml;
+
+    createOldHeaderData();
+
+    $ghtml->print_include_jscript("header");
+    $logo = $login->getSpecialObject('sp_specialplay')->logo_image;
+    $logo_loading = $login->getSpecialObject('sp_specialplay')->logo_image_loading;
+    ?>
+    <script>
+
+        function changeLogo(flag)
+        {
+            imgob = document.getElementById('main_logo');
+            if (!imgob) {
+                return;
+            }
+            if (flag) {
+                imgob.src = '<?php echo $logo_loading; ?>';
+            } else {
+                imgob.src = '<?php echo $logo; ?>';
+            }
+
+        }
+    </script>
+    <body style='body: margin: 0;'>
+    <!-- httpdocs/lib/oldheader.php -->
+    <table width='100%' height='59' border='0' valign='top' align='center' cellpadding='0' cellspacing='0'>
+        <tr>
+            <td width='100%' style='background: url(<?php echo $login->getSkinDir(); ?>header_top_bg.gif)'></td>
+            <td width='326' style='background: url(<?php echo $login->getSkinDir(); ?>header_top_rt.gif); background-repeat: no-repeat'>
+                <table width='326'>
+                    <tr align='right'>
+                        <td width='200'>&nbsp;</td>
+                        <td align='right'><img id='main_logo' width='136' height='33' src='<?php echo $logo_loading; ?>'></td>
+                        <td width='10%'>&nbsp;</td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+    <table border='0' width='100%' cellspacing='0' cellpadding='0' background='<?php echo $login->getSkinDir(); ?>header_panel_bg.gif'>
+    <tbody>
+    <tr>
+    <td>
+    <?php
+
+    print( "</td>\n<td>\n");
+
+    print_a_button("left", "home");
+    print_left_panel();
+
+    print("<td width='100%'></td>\n<td>\n");
+
+    if (!$login->is__table('mailaccount')) {
+
+        if (!$login->is__table('ticket')) {
+            print_a_right_button("ticket");
+            print("</td>\n<td>\n");
+        }
+
+        print_a_right_button("ssession");
+
+        print("</td>\n<td>\n");
+
+        print_a_right_button("help");
+
+        print("</td>\n<td>\n");
+    }
+
+    print_a_right_button("logout");
+
+    print("</td>\n");
+}
 
 function createOldHeaderData()
 {
@@ -65,11 +140,11 @@ function createOldHeaderData()
 		"ssession" => array($ssessiondesc, "/display.php?frm_action=list&frm_o_cname=ssessionlist", "ssession_list.gif"),
 		"about" => array($aboutdesc, "/display.php?frm_action=about", "ssession_list.gif"),
 		"help" => array($helpdesc, "javascript:window.open('$helpurl')", "ssession_list.gif"),
-		"logout" => array("<font color=red>$logoutdesc<font >", "javascript:top.mainframe.logOut();", "delete.gif")
+		"logout" => array($logoutdesc, "javascript:top.mainframe.logOut();", "delete.gif")
 	);
 }
 
-function print_a_right_button($something, $ttype, $id, $pos)
+function print_a_right_button($id)
 {
 	global $gbl, $login, $ghtml, $gdata; 
 
@@ -83,172 +158,91 @@ function print_a_right_button($something, $ttype, $id, $pos)
 		$onclickstring = "onClick=\"top.mainframe.location='$url';\"";
 	}
 	$skindir = $login->getSkinDir();
-	?> 
-	
-	<table border='0' cellspacing='0' cellpadding='0' style='font-size:8pt;color:#004466;height:34;width:73;background:url(<?php echo $skindir; ?>right_btn.gif);' OnMouseOver="style.cursor='pointer'; top.mainframe.changeContent('help','<?php echo $name; ?>');"  <?php echo $onclickstring ?> onmouseout="changeContent('help','helparea')">
+
+    $fontStyle = "style='font-weight:bold;'";
+    if ($id === 'logout')
+    {
+        $fontStyle = "style='font-weight:bold;color:red;'";
+    }
+
+	?>
+
+    <table border='0' cellspacing='0' cellpadding='0'
+           style='font-size:8pt;color:#004466;height:34px;width:73px;background:url(<?php echo $skindir; ?>right_btn.gif);'
+           OnMouseOver="style.cursor='pointer'; top.mainframe.changeContent('help','<?php echo $name; ?>');"<?php echo $onclickstring ?>
+           OnMouseOut="changeContent('help','helparea')">
         <tr>
-            <td valign=bottom width=17 height=34 align=left style='padding-bottom:5;padding-left:6'>
-            <img height=8 width=8 src='/img/image/<?php echo $login->getSpecialObject('sp_specialplay')->icon_name ?>/button/<?php echo $icon ?>'></td>
-        <td valign=bottom width=53 style='padding-left:3;padding-bottom:3;' align=left><b><?php echo  $name ?> </font> </b></td>
-    </tr>
+            <td valign='bottom' width='17' height='34' align='left' style='padding-bottom:2px;padding-left:4px'>
+                <img height='12' width='12'
+                     src='/img/image/<?php echo $login->getSpecialObject('sp_specialplay')->icon_name ?>/button/<?php echo $icon; ?>'>
+            </td>
+            <td valign='bottom' width='53' style='padding-left:3px;padding-bottom:3px;' align='left'>
+                <p <?php echo $fontStyle; ?>><?php echo $name; ?></p></td>
+        </tr>
     </table>
 
 	<?php
 }
 
 
-function print_a_button($side, $ttype, $id, $pos, $menupos = 0)
+function print_a_button($side, $id)
 {
 	global $gbl, $login, $ghtml, $gdata; 
 	$name = $gdata[$id][0];
 	$url = $gdata[$id][1];
 	$icon = $gdata[$id][2];
-	// Menus are now in the left panel, and since there is no space for more than 1, all menus have to start at position 0; No longer done... Removed the properties from menus..
 
+    // Right is not used, still uses print_a_right_button()
 	if ($side === 'right') {
-		$imgprop = "height=8 width=8";
-		$menu = "rightmenu";
+		$imgprop = "height='10' width='10'";
 		$bgimg = "right_btn.gif";
-		$imgtdprop = "width=17";
-		$tdstyle = "style='padding-top:10";
-		$arg = "0, $menupos";
+		$imgtdprop = "width='17'";
+		$tdstyle = "style='padding-top:10px;'";
+        $fontstyle = "style='font-weight:bold;'";
 	} else {
 		$bgimg = "left_btn.gif";
-		$imgprop = "height=15 width=13";
-		$menu = "showMenuInFrame";
-		$imgtdprop = "width=25";
-		$tdstyle = "style='padding-top:1";
-		$arg = "$menupos, 0";
+		$imgprop = "style='padding-left:7px;' height='15' width='15'";
+		$imgtdprop = "width='25'";
+		$tdstyle = "style='padding-top:1px;'";
+        $fontstyle = "style='font-weight:bold;'";
 	}
 	?>
-			<table width=85 cellspacing=0 cellpadding=0 border=0 style='font-size:11;color:#004466;height:34;margin:0 0 0 0;background:url(<?php echo $login->getSkinDir() ?>/<?php echo $bgimg ?>)' OnMouseOver="style.cursor='pointer' ;  top.mainframe.changeContent('help','<?php echo $name?>');" onClick="top.mainframe.location='<?php echo $url ?>';" onmouseout="top.mainframe.changeContent('help','helparea')">
+			<table width='85' cellspacing='0' cellpadding='0' border='0' style='font-size:8pt;color:#004466;height:34px;margin:0;background:url(<?php echo $login->getSkinDir(); echo $bgimg; ?>)' OnMouseOver="style.cursor='pointer' ;  top.mainframe.changeContent('help','<?php echo $name; ?>');" onClick="top.mainframe.location='<?php echo $url; ?>';" OnMouseOut="top.mainframe.changeContent('help','helparea')">
                 <tr>
-                    <td <?php echo $imgtdprop ?>  align=center <?php echo $tdstyle ?>'>
-                    <img <?php echo $imgprop ?>  src='/img/image/<?php echo $login->getSpecialObject('sp_specialplay')->icon_name ?>/button/<?php echo $icon ?>'></td>
-                    <td <?php $tdstyle ?> valign=middle align=center>
-                        <b><?php echo $name ?>&nbsp;</b></td>
+                    <td <?php echo $imgtdprop; ?> align='center' <?php echo $tdstyle; ?>>
+                    <img <?php echo $imgprop; ?> src='/img/image/<?php echo $login->getSpecialObject('sp_specialplay')->icon_name; ?>/button/<?php echo $icon; ?>'></td>
+                    <td <?php $tdstyle; ?> valign='middle' align='center'>
+                    <p <?php echo $fontstyle; ?>><?php echo $name; ?></p></td>
                 </tr>
             </table>
 			<?php 
 }
 
-
-function print_header_old_default()
-
-{
-	global $gbl, $login, $ghtml;
-
-	//check_if_disabled_and_exit();
-
-	$ttype = $login->cttype;
-
-	createOldHeaderData();
-
-    $ghtml->print_include_jscript("header");
-	$skin = $login->getSkinDir();
-	$logo = $login->getSpecialObject('sp_specialplay')->logo_image;
-	$logo_loading = $login->getSpecialObject('sp_specialplay')->logo_image_loading;
-?>
-<script>
-if (document.captureEvents) {
-	document.captureEvents(Event.MOUSEUP);
-}
-
-function changeLogo(flag)
-{
-	imgob = document.getElementById('main_logo');
-	if (!imgob) {
-		return;
-	}
-	if (flag) {
-		imgob.src = '<?php echo $logo_loading ?>';
-	} else {
-		imgob.src = '<?php echo $logo ?>';
-	}
-
-}
-</script>
-<body style='body: margin: 0;'>
-<!-- httpdocs/lib/oldheader.php -->
-<table width='100%' height='59' border='0' valign='top' align='center' cellpadding='0' cellspacing='0'>
-<tr>
-    <td width='100%' style='background: url(<?php echo $login->getSkinDir(); ?>header_top_bg.gif)'></td>
-    <td width='326' style='background: url(<?php echo $login->getSkinDir(); ?>header_top_rt.gif); background-repeat: no-repeat'>
-        <table width='326>
-            <tr align='right'>
-                <td width='200'>&nbsp;</td>
-                <td align='right'><img id='main_logo' width='136' height='33' src='<?php echo $logo_loading; ?>'></td>
-                <td width='10%'>&nbsp;</td>
-            </tr>
-        </table>
-    </td>
-</tr>
-</table>
-<table border='0' width='100%' cellspacing='0' cellpadding='0' background='<?php echo $login->getSkinDir(); ?>header_panel_bg.gif'>
- <tbody>
-  <tr>
-  <td>
-  <?php 
-	
-	$count = 1;
-	$button_width = 85;
-	$count += 83;
-	print( "</td>\n<td>\n");
-	print_a_button("left", $ttype, "home", $count, 1);
-	$count += 83;
-
-	print_left_panel($ttype, $count);
-
-	print("<td width='100%'></td>\n<td>\n");
-
-	if (!$login->is__table('mailaccount')) {
-
-		if (!$login->is__table('ticket')) {
-			print_a_right_button("right", $ttype, "ticket", 294);
-			print("</td>\n<td>\n");
-		}
-
-		print_a_right_button("right", $ttype, "ssession", 150);
-
-        print("</td>\n<td>\n");
-
-        print_a_right_button("right", $ttype, "help", 150);
-
-        print("</td>\n<td>\n");
-	}
-
-	print_a_right_button("right", $ttype, "logout", 190);
-
-    print("</td>\n");
-}
-
-
-
-function print_left_panel($ttype, $count)
+function print_left_panel()
 {
 	global $gbl, $login, $ghtml; 
 
 	if($login->isLte('reseller')) {
 		print("</td>\n<td>\n");
-		print_a_button("left", $ttype, "client", $count);
+		print_a_button("left", "client");
 	}
 
 	print("</td>\n<td>\n");
 
 	if($login->isLte('reseller')) {
-		print_a_button("left", $ttype, "all", $count);
+		print_a_button("left", "all");
 	} 
 
 	print("</td>\n<td>\n");
 
 	if($login->isAdmin()) {
-		print_a_button("left", $ttype, "pserver", $count);
+		print_a_button("left", "pserver");
 	} 
 
 	print("</td>\n<td>\n");
 
 	if ($login->isLte('customer') && $login->priv->isOn('webhosting_flag')) {
-		print_a_button("left", $ttype, "ffile",$count);
+		print_a_button("left", "ffile");
 	}
 
 }
