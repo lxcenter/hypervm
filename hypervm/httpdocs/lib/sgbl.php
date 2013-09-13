@@ -124,6 +124,9 @@ class Sgbl extends Sgbllib
 
         $conffile = "$this->__path_program_root/file/conf/os.conf";
 
+        // Make help url user configurable if needed (see $conffile above for overriding settings)
+        $this->__url_help = 'http://wiki.lxcenter.org/';
+
 /*
  * Turned off as its usage is useless for one supported OS.
  *       if (!file_exists($conffile)) {
@@ -158,7 +161,7 @@ class Sgbl extends Sgbllib
             }
         }
 
-
+        // Below are the settings not override by $conffile
         $this->__path_dbschema = "$this->__path_program_root/file/.db_schema";
 
 

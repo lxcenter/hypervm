@@ -95,10 +95,8 @@ function createOldHeaderData()
 	$alldesc = $login->getKeywordUc('all');
 
 	if ($login->isAdmin()) {
-		$doctype = "admin";
 		$domainclass = "vps";
 	} else  {
-		$doctype = "client";
 		$domainclass = "vps";
 	}
 
@@ -125,7 +123,7 @@ function createOldHeaderData()
 		$ticket_url = "/display.php?frm_action=list&frm_o_cname=ticket";
 	}
 
-	$helpurl = "http://wiki.lxcenter.org/";
+	$helpurl = $sgbl->__url_help;
 
 	$gdata = array(
 		"desktop" => array($deskdesc, "/display.php?frm_action=desktop", "client_list.gif"),
