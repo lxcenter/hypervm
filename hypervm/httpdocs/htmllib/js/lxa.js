@@ -126,6 +126,7 @@ function createTextAreaWithLines(id)
 	var ta = document.getElementById(id);
 
 	var string = '';
+    //See also project issue #439 there is some bug in this function!
 	for(var no=1;no<300;no++){
 		if(string.length>0)string += '\n';
 		string += no;
