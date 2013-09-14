@@ -18,11 +18,13 @@ function preloadImages()
 	}
 }
 
-function loadImage(im, source)
-{
-	im = new Image;
-	im.src = source;
-}
+// removed function because generated 404 not found error and without this function the GUI loads a few milisecs faster.
+// removed the call to this script in htmllib.php and html.php
+//function loadImage(im, source)
+//{
+//	im = new Image;
+//	im.src = source;
+//}
 
 function findObj(n, d) { 
   var p,i,x;  if(!d) d=document; if((p=n.indexOf("?"))>0&&parent.frames.length) {

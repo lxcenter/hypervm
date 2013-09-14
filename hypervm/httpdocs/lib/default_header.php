@@ -1,10 +1,28 @@
 <?php
-
-function print_header_old_default()
+//
+//    HyperVM, Server Virtualization GUI for OpenVZ and Xen
+//
+//    Copyright (C) 2000-2009     LxLabs
+//    Copyright (C) 2009-2013     LxCenter
+//
+//    This program is free software: you can redistribute it and/or modify
+//    it under the terms of the GNU Affero General Public License as
+//    published by the Free Software Foundation, either version 3 of the
+//    License, or (at your option) any later version.
+//
+//    This program is distributed in the hope that it will be useful,
+//    but WITHOUT ANY WARRANTY; without even the implied warranty of
+//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//    GNU Affero General Public License for more details.
+//
+//    You should have received a copy of the GNU Affero General Public License
+//    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+function CreateDefaultHeaderMenu()
 {
     global $gbl, $login, $ghtml;
 
-    createOldHeaderData();
+    CreateHeaderData();
 
     $ghtml->print_include_jscript("header");
     $logo = $login->getSpecialObject('sp_specialplay')->logo_image;
@@ -27,7 +45,7 @@ function print_header_old_default()
         }
     </script>
     <body style='body: margin: 0;'>
-    <!-- httpdocs/lib/oldheader.php -->
+    <!-- httpdocs/lib/default_header.php -->
     <table width='100%' height='59' border='0' valign='top' align='center' cellpadding='0' cellspacing='0'>
         <tr>
             <td width='100%' style='background: url(<?php echo $login->getSkinDir(); ?>header_top_bg.gif)'></td>
@@ -50,99 +68,33 @@ function print_header_old_default()
 
     print( "</td>\n<td>\n");
 
-    print_a_button("left", "home");
-    print_left_panel();
+    CreateMenuItem("left", "home");
+    CreateMenuLeft();
 
     print("<td width='100%'></td>\n<td>\n");
 
     if (!$login->is__table('mailaccount')) {
 
         if (!$login->is__table('ticket')) {
-            print_a_right_button("ticket");
+            CreateMenuItemRightSide("ticket");
             print("</td>\n<td>\n");
         }
 
-        print_a_right_button("ssession");
+        CreateMenuItemRightSide("ssession");
 
         print("</td>\n<td>\n");
 
-        print_a_right_button("help");
+        CreateMenuItemRightSide("help");
 
         print("</td>\n<td>\n");
     }
 
-    print_a_right_button("logout");
+    CreateMenuItemRightSide("logout");
 
     print("</td>\n");
 }
 
-function createOldHeaderData()
-{
-	global $gbl, $sgbl, $login, $ghtml, $gdata;
-
-	$homedesc = $login->getKeywordUc('home');
-	$deskdesc = $login->getKeywordUc('desktop');
-	$aboutdesc = $login->getKeywordUc('about');
-	$domaindesc = get_plural(get_description('vps'));
-	$clientdesc = get_plural(get_description('client'));
-	$slavedesc = get_description('pserver');
-	$ticketdesc = get_plural(get_description('ticket'));
-	$ssessiondesc = get_description('ssession');
-	$systemdesc = $login->getKeywordUc('system');
-	$logoutdesc = $login->getKeywordUc('logout');
-	$helpdesc = $login->getKeywordUc('help');
-	$ffiledesc = get_plural(get_description("ffile"));
-	$alldesc = $login->getKeywordUc('all');
-
-	if ($login->isAdmin()) {
-		$domainclass = "vps";
-	} else  {
-		$domainclass = "vps";
-	}
-
-	if (check_if_many_server()) {
-		$serverurl = $ghtml->getFullUrl('a=list&c=pserver');
-		$slavedesc = get_plural($slavedesc);
-	} else {
-		$serverurl = $ghtml->getFullUrl('k[class]=pserver&k[nname]=localhost&a=show');
-	}
-
-	if ($login->is__table('client')) {
-		$ffileurl = $ghtml->getFullUrl('k[class]=ffile&k[nname]=/&a=show');
-	} else {
-		$ffileurl = $ghtml->getFullUrl('n=web&k[class]=ffile&k[nname]=/&a=show');
-	}
-
-	$gob = $login->getObject('general')->generalmisc_b;
-
-	if (isset($gob->ticket_url) && $gob->ticket_url) {
-		$url = $gob->ticket_url;
-		$url = add_http_if_not_exist($url);
-		$ticket_url = "javascript:window.open('$url')";
-	} else {
-		$ticket_url = "/display.php?frm_action=list&frm_o_cname=ticket";
-	}
-
-	$helpurl = $sgbl->__url_help;
-
-	$gdata = array(
-		"desktop" => array($deskdesc, "/display.php?frm_action=desktop", "client_list.gif"),
-		"home" => array($homedesc, "/display.php?frm_action=show", "client_list.gif"),
-		"all" => array($alldesc, "/display.php?frm_action=list&frm_o_cname=all_vps", "client_list.gif"),
-		"domain" => array($domaindesc, "/display.php?frm_action=list&frm_o_cname=$domainclass", "domain_list.gif"),
-		"system" => array($systemdesc, "/display.php?frm_action=show&frm_o_o[0][class]=pserver&frm_o_o[0][nname]=localhost", "pserver_list.gif"),
-		"client" => array($clientdesc, "/display.php?frm_action=list&frm_o_cname=client", "client_list.gif"),
-		"ffile" => array($ffiledesc, $ffileurl, "client_list.gif"),
-		"pserver" => array($slavedesc, $serverurl, "pserver_list.gif"),
-		"ticket" => array($ticketdesc, $ticket_url, "ticket_list.gif"),
-		"ssession" => array($ssessiondesc, "/display.php?frm_action=list&frm_o_cname=ssessionlist", "ssession_list.gif"),
-		"about" => array($aboutdesc, "/display.php?frm_action=about", "ssession_list.gif"),
-		"help" => array($helpdesc, "javascript:window.open('$helpurl')", "ssession_list.gif"),
-		"logout" => array($logoutdesc, "javascript:top.mainframe.logOut();", "delete.gif")
-	);
-}
-
-function print_a_right_button($id)
+function CreateMenuItemRightSide($id)
 {
 	global $gbl, $login, $ghtml, $gdata; 
 
@@ -183,7 +135,7 @@ function print_a_right_button($id)
 }
 
 
-function print_a_button($side, $id)
+function CreateMenuItem($side, $id)
 {
 	global $gbl, $login, $ghtml, $gdata; 
 	$name = $gdata[$id][0];
@@ -216,31 +168,31 @@ function print_a_button($side, $id)
 			<?php 
 }
 
-function print_left_panel()
+function CreateMenuLeft()
 {
 	global $gbl, $login, $ghtml; 
 
 	if($login->isLte('reseller')) {
 		print("</td>\n<td>\n");
-		print_a_button("left", "client");
+		CreateMenuItem("left", "client");
 	}
 
 	print("</td>\n<td>\n");
 
 	if($login->isLte('reseller')) {
-		print_a_button("left", "all");
+		CreateMenuItem("left", "all");
 	} 
 
 	print("</td>\n<td>\n");
 
 	if($login->isAdmin()) {
-		print_a_button("left", "pserver");
+		CreateMenuItem("left", "pserver");
 	} 
 
 	print("</td>\n<td>\n");
 
 	if ($login->isLte('customer') && $login->priv->isOn('webhosting_flag')) {
-		print_a_button("left", "ffile");
+		CreateMenuItem("left", "ffile");
 	}
 
 }

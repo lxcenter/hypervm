@@ -1,19 +1,37 @@
 <?php
-
+//
+//    HyperVM, Server Virtualization GUI for OpenVZ and Xen
+//
+//    Copyright (C) 2000-2009     LxLabs
+//    Copyright (C) 2009-2013     LxCenter
+//
+//    This program is free software: you can redistribute it and/or modify
+//    it under the terms of the GNU Affero General Public License as
+//    published by the Free Software Foundation, either version 3 of the
+//    License, or (at your option) any later version.
+//
+//    This program is distributed in the hope that it will be useful,
+//    but WITHOUT ANY WARRANTY; without even the implied warranty of
+//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//    GNU Affero General Public License for more details.
+//
+//    You should have received a copy of the GNU Affero General Public License
+//    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
 chdir("..");
 include_once "htmllib/lib/displayinclude.php";
-include_once "lib/oldheader.php";
 
 function header_main()
 {
     global $gbl, $sgbl, $login, $ghtml;
     initProgram();
-    init_language();
-    print_meta_lan();
+    initLanguage();
+    initLanguageCharset();
 
     // Load default skin or feather skin
     if ($login->isDefaultSkin()) {
-        print_header_old_default();
+        include_once "lib/default_header.php";
+        CreateDefaultHeaderMenu();
     } else {
         print_header();
     }
@@ -45,7 +63,7 @@ function print_header()
 {
     global $gbl, $sgbl, $login, $ghtml;
     $lightskincolor = $login->getLightSkinColor();
-    createHeaderData();
+    CreateHeaderData();
     print("<body topmargin=0 leftmargin=0>\n");
     print("\n<!-- httpdocs/lbin/header.php -->\n");
     print("<div id=statusbar  style='background:#$lightskincolor;scroll:auto;height:26;width:100%;border-bottom:4px solid #b1cfed;margin:2 2 2 2:vertical-align:top;text-align:top'>\n");
@@ -88,7 +106,6 @@ function print_header()
     ?>
 <body topmargin=0 bottommargin=0 leftmargin=0 rightmargin=0 class="bdy1" onload="foc()">
 <!-- httpdocs/lbin/header.php -->
-<link href="/htmllib/css/header_new.css" rel="stylesheet" type="text/css"/>
 <table id="tab1" border="0" cellpadding="0" cellspacing="0">
     <tr>
         <td class="top2">
@@ -124,14 +141,13 @@ function print_header()
 
 }
 
-function createHeaderData()
+function CreateHeaderData()
 {
-    global $gbl, $sgbl, $login, $ghtml;
-    global $gdata;
+    global $gbl, $sgbl, $login, $ghtml, $gdata;
+
     $homedesc = $login->getKeywordUc('home');
     $deskdesc = $login->getKeywordUc('desktop');
     $aboutdesc = $login->getKeywordUc('about');
-
     $domaindesc = get_plural(get_description('vps'));
     $clientdesc = get_plural(get_description('client'));
     $slavedesc = get_description('pserver');
@@ -143,12 +159,10 @@ function createHeaderData()
     $ffiledesc = get_plural(get_description("ffile"));
     $alldesc = $login->getKeywordUc('all');
 
-    $domainclass = "vps";
-
     if ($login->isAdmin()) {
-        $doctype = "admin";
-    } else {
-        $doctype = "client";
+        $domainclass = "vps";
+    } else  {
+        $domainclass = "vps";
     }
 
     if (check_if_many_server()) {
@@ -163,7 +177,9 @@ function createHeaderData()
     } else {
         $ffileurl = $ghtml->getFullUrl('n=web&k[class]=ffile&k[nname]=/&a=show');
     }
+
     $gob = $login->getObject('general')->generalmisc_b;
+
     if (isset($gob->ticket_url) && $gob->ticket_url) {
         $url = $gob->ticket_url;
         $url = add_http_if_not_exist($url);
@@ -171,26 +187,25 @@ function createHeaderData()
     } else {
         $ticket_url = "/display.php?frm_action=list&frm_o_cname=ticket";
     }
-    $helpurl = "http://wiki.lxcenter.org/";
 
+    $helpurl = $sgbl->__url_help;
 
     $gdata = array(
         "desktop" => array($deskdesc, "/display.php?frm_action=desktop", "client_list.gif"),
-        "home" => array($homedesc, "/display.php?frm_action=show", "home.png"),
-        "all" => array($alldesc, "/display.php?frm_action=list&frm_o_cname=all_vps", "file.png"),
-        "vps" => array($domaindesc, "/display.php?frm_action=list&frm_o_cname=$domainclass", "vps_list.gif"),
+        "home" => array($homedesc, "/display.php?frm_action=show", "client_list.gif"),
+        "all" => array($alldesc, "/display.php?frm_action=list&frm_o_cname=all_vps", "client_list.gif"),
+        "domain" => array($domaindesc, "/display.php?frm_action=list&frm_o_cname=$domainclass", "domain_list.gif"),
         "system" => array($systemdesc, "/display.php?frm_action=show&frm_o_o[0][class]=pserver&frm_o_o[0][nname]=localhost", "pserver_list.gif"),
-        "client" => array($clientdesc, "/display.php?frm_action=list&frm_o_cname=client", "file.png"),
-        "ffile" => array($ffiledesc, $ffileurl, "file.png"),
+        "client" => array($clientdesc, "/display.php?frm_action=list&frm_o_cname=client", "client_list.gif"),
+        "ffile" => array($ffiledesc, $ffileurl, "client_list.gif"),
         "pserver" => array($slavedesc, $serverurl, "pserver_list.gif"),
-        "ticket" => array($ticketdesc, $ticket_url, "ticket.png"),
-        "ssession" => array($ssessiondesc, "/display.php?frm_action=list&frm_o_cname=ssessionlist", "session.png"),
+        "ticket" => array($ticketdesc, $ticket_url, "ticket_list.gif"),
+        "ssession" => array($ssessiondesc, "/display.php?frm_action=list&frm_o_cname=ssessionlist", "ssession_list.gif"),
         "about" => array($aboutdesc, "/display.php?frm_action=about", "ssession_list.gif"),
-        "help" => array($helpdesc, "javascript:window.open('$helpurl')", "help.png"),
-        "logout" => array("$logoutdesc", "javascript:top.mainframe.logOut();", "logout.png")
+        "help" => array($helpdesc, "javascript:window.open('$helpurl')", "ssession_list.gif"),
+        "logout" => array($logoutdesc, "javascript:top.mainframe.logOut();", "delete.gif")
     );
 }
-
 
 header_main();
 

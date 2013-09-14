@@ -3,7 +3,7 @@
 chdir("..");
 include_once "htmllib/lib/displayinclude.php";
 
-init_language();
+initLanguage();
 $cgi_clientname = $ghtml->frm_clientname;
 $cgi_class = $ghtml->frm_class;
 $cgi_password = $ghtml->frm_password;

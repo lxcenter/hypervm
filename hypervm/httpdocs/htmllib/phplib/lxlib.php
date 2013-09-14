@@ -1739,7 +1739,7 @@ function get_charset()
 	return $charset;
 }
 
-function print_meta_lan()
+function initLanguageCharset()
 {
 	global $gbl, $sgbl, $login, $ghtml;
 	$lan = get_language();
@@ -1753,7 +1753,7 @@ function print_meta_lan()
 	}
 }
 
-function init_language()
+function initLanguage()
 {
 	global $gbl, $sgbl, $login, $ghtml;
 	global $g_language_mes, $g_language_desc;

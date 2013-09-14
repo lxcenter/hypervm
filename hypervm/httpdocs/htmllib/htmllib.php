@@ -4788,8 +4788,6 @@ class HtmlLib
 			$rowuniqueid = "tr$unique_name$rowcount";
 
 			?>
-			<script> loadImage('<?=$imgpointer?>') </script>
-			<script> loadImage('<?=$imgblank?>') </script>
 
             <tr height=22 id=<?=$rowuniqueid ?>  class=tablerow<?=$count; ?>
 				onmouseover=" swapImage('imgpoint<?=$rowcount; ?>','','<?=$imgpointer; ?>',1);document.getElementById('<?=$rowuniqueid ?>').className='tablerowhilite';"

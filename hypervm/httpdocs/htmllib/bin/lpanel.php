@@ -11,8 +11,8 @@ function lpanel_main()
 	global $gbl, $login, $ghtml; 
 
 	initProgram();
-	init_language();
-	print_meta_lan();
+	initLanguage();
+	initLanguageCharset();
 
 	$gbl->__navigmenu = null;
 	$gbl->__navig = null;
