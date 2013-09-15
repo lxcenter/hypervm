@@ -1063,6 +1063,7 @@ function calculateRealTotal($inout)
 
 function mysql_upload_file_to_db($dbhost, $dbuser, $dbpassword, $dbname, $file)
 {
+    // TODO: REPLACE MYSQL_CONNECT
 	$rs = mysql_connect($dbhost, $dbuser, $dbpassword);
 
 	if (!$rs) {

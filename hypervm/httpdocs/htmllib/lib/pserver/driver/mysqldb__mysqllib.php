@@ -112,6 +112,7 @@ static function take_dump($dbname, $dbuser, $dbpass, $docf)
 
 static function drop_all_table($dbname, $dbuser, $dbpass)
 {
+    // TODO: REPLACE MYSQL_CONNECT
 	$con = mysql_connect("localhost", $dbuser, $dbpass);
 	mysql_select_db($dbname);
 	$query = mysql_query("show tables");

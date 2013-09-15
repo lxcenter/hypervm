@@ -19,6 +19,7 @@ function dbactionAdd()
 {
 	$dbadmin = $this->main->dbadmin_name;
 	$dbpass = $this->main->dbpassword;
+    // TODO: REPLACE MYSQL_CONNECT
 	$rdb = mysql_connect('localhost', $dbadmin, $dbpass);
 	if (!$rdb) {
 		log_error(mysql_error());
@@ -44,6 +45,7 @@ function mysql_reset_pass()
 
 function lx_mysql_connect($server, $dbadmin, $dbpass) 
 {
+    // TODO: REPLACE MYSQL_CONNECT
 	$rdb = mysql_connect('localhost', $dbadmin, $dbpass);
 	if (!$rdb) {
 		log_error(mysql_error());

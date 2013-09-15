@@ -13,6 +13,7 @@ $username = $sgbl->__var_program_name;
 $program = $username;
 $newpass = randomString(9);
 $newpass = client::createDbPass($newpass);
+// TODO: REPLACE MYSQL_CONNECT
 mysql_connect("localhost", "root", $mysqlpass);
 $cmd = "grant all on $db.* to $username@localhost identified by '$newpass'";
 print("$cmd\n");

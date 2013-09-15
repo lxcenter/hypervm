@@ -9,6 +9,7 @@ function create_mysql_db($type, $opt, $admin_pass)
 		exit;
 	}
 	if ($sgbl->__var_database_type === 'mysql') {
+        // TODO: REPLACE MYSQL_CONNECT
 		$req = mysql_connect('localhost', $opt['db-rootuser'], $opt['db-rootpassword']);
 	} else if ($sgbl->__var_database_type === 'mssql') {
 		$req = mssql_connect("localhost,$sgbl->__var_mssqlport");

@@ -30,6 +30,7 @@ function __construct($readserver, $table, $force = false)
 		$db = $sgbl->__var_dbf;
 		$pass = getAdminDbPass();
 
+        // TODO: REPLACE MYSQL_CONNECT
 		if ($sgbl->__var_database_type === 'mysql') {
 			$gbl->$fdbvar = mysql_connect($readserver, $user, $pass);
                         if(!mysql_query("SET NAMES 'utf8'",$gbl->$fdbvar))
@@ -94,6 +95,7 @@ function reconnect()
 
 	log_log("database_reconnect", "Reconnecting again");
 
+    // TODO: REPLACE MYSQL_CONNECT
 	if ($sgbl->__var_database_type === 'mysql') {
 		$gbl->$fdbvar = mysql_connect($readserver, $user, $pass);
 		mysql_select_db($db);

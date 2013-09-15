@@ -30,6 +30,7 @@ class dns__powerdns extends lxDriverClass {
     {
 
 	include_once "/usr/local/lxlabs/kloxo/etc/powerdns.conf.inc";
+    // TODO: REPLACE MYSQL_CONNECT
 	mysql_connect($power_sql_host,$power_sql_user,$power_sql_pwd);
 	mysql_select_db($power_sql_db);
 
