@@ -17,8 +17,8 @@ function pmaster_main()
 	$slavepass = $list['slavepass'];
 	add_line_to_master_mycnf();
     // TODO: REPLACE MYSQL_CONNECT
-	mysql_connect("localhost", "root", $pass);
-	mysql_query("grant replication slave on *.* to lxlabsslave@'%' identified by '$slavepass'");
+	$dblink = mysqli_connect("localhost", "root", $pass, $dbf);
+	mysqli_query($dblink,"GRANT REPLICATION SLAVE ON *.* TO lxlabsslave@'%' IDENTIFIED BY '$slavepass'");
 	system("mysqldump --master-data -u root '-p$pass' $dbf > $tfile");
 	ob_clean();
 	readfile($tfile);

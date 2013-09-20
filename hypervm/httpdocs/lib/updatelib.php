@@ -31,8 +31,8 @@ function fixExtraDB()
 	$sq->rawQuery("update vps set priv_q_swap_usage = 'Unlimited' where priv_q_swap_usage = 0");
 	$sq->rawQuery("update vps set priv_q_centralbackup_flag = centralbackup_flag where priv_q_centralbackup_flag = ''");
 	$sq->rawQuery("update vps set priv_q_centralbackup_flag = centralbackup_flag where priv_q_centralbackup_flag is null");
-	$sq->rawQuery("update vps set kloxo_flag = lxadmin_flag where kloxo_flag is null");
-	$sq->rawQuery("update vps set kloxo_flag = lxadmin_flag where kloxo_flag = ''");
+//	$sq->rawQuery("update vps set kloxo_flag = lxadmin_flag where kloxo_flag is null");
+//	$sq->rawQuery("update vps set kloxo_flag = lxadmin_flag where kloxo_flag = ''");
 
 
 	db_set_default('vps', 'kloxo_flag', 'on');
@@ -234,16 +234,17 @@ function convertIpaddressToComa()
 {
 	global $gbl, $sgbl, $login, $ghtml; 
 	initProgram('admin');
-	if (!$ret) {
-		return;
-	}
-	$login->loadAllObjects('vps');
-	$list = $login->getList('vps');
 
-	foreach($list as $l) {
-		$vpsiplist = $l->getList('vpsipaddress_a');
+	$login->loadAllObjects('vps');
+	$VPSList = $login->getList('vps');
+
+    if (!isset($VPSList)) { return; };
+
+	foreach($VPSList as $Convert) {
+
+		$vpsiplist = $Convert->getList('vpsipaddress_a');
 		if (!$vpsiplist) {
-			dprint("No ip for $l->nname\n");
+			dprint("No ip for $Convert->nname\n");
 			return;
 		}
 		$vmlist = null;
@@ -251,9 +252,9 @@ function convertIpaddressToComa()
 			$vmip = new vmipaddress_a(null, null, $vpsip->nname);
 			$vmlist[$ip->nname] = $vmip;
 		}
-		$l->vmipaddress_a = $vmlist;
-		$l->setUpdateSubaction();
-		$l->write();
+        $Convert->vmipaddress_a = $vmlist;
+        $Convert->setUpdateSubaction();
+        $Convert->write();
 	}
 }
 
@@ -389,13 +390,15 @@ function updateApplicableToSlaveToo()
     } else {
         lxfile_cp("../file/centos-5-openvz.repo.template", "/etc/yum.repos.d/openvz.repo");
     }
+    if (!lxfile_exists("/etc/yum.repos.d/lxcenter.repo")) {
 	print("Fixing lxcenter repo\n");
 	// add lxcenter.repo
 	$osversion = find_os_version();
 	print("- Your OS $osversion\n");
 	$cont = our_file_get_contents("../file/lxcenter.repo");
 	$cont = str_replace("%distro%", $osversion, $cont);
-	our_file_put_contents("/etc/yum.repos.d/lxcenter.repo", $cont);	
+	our_file_put_contents("/etc/yum.repos.d/lxcenter.repo", $cont);
+    }
 	print("Fix RHN\n");
 	fix_rhn_sources_file();
 	print("Fix ipconntrack\n");
@@ -458,11 +461,13 @@ function add_vps_backup_dir()
 	$sq = new Sqlite(null, 'vps');
 
 	$res = $sq->getTable(array('nname'));
-	foreach($res as $r) {
-		lxfile_mkdir("__path_program_home/vps/{$r['nname']}/__backup");
-	$vpsbackupdirname = $r['nname'];
-	print("Backup dir created for $vpsbackupdirname \n");
-	}
+    if (isset($res)) {
+	    foreach($res as $r) {
+		    lxfile_mkdir("__path_program_home/vps/{$r['nname']}/__backup");
+	        $vpsbackupdirname = $r['nname'];
+	        print("Backup dir created for $vpsbackupdirname \n");
+	    }
+    }
 }
 
 function convert_ipaddress()

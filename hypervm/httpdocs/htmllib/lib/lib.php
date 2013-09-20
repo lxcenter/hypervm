@@ -1064,17 +1064,17 @@ function calculateRealTotal($inout)
 function mysql_upload_file_to_db($dbhost, $dbuser, $dbpassword, $dbname, $file)
 {
     // TODO: REPLACE MYSQL_CONNECT
-	$rs = mysql_connect($dbhost, $dbuser, $dbpassword);
+	$rs = mysqli_connect($dbhost, $dbuser, $dbpassword,$dbname);
 
 	if (!$rs) {
 		throw new lxException('no_mysql_connection_while_uploading_file,', '');
 	}
 
-	mysql_select_db($dbname);
+	mysqli_select_db($dbname);
 
 	$res = lfile_get_contents($file);
 
-	$res = mysql_query($res);
+	$res = mysqli_query($rs,$res);
 	if (!$res) {
 		throw new lxException('no_mysql_connection_while_uploading_file,', '');
 	}
