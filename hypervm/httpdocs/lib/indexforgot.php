@@ -26,7 +26,7 @@
                     <table>
                     <tr>
                       <td>
-                        <img src="/img/loginskin/user_icon.png" height="20" />
+                        <img src="/img/loginskin/mail_icon.png" height="20" />
                       </td>
                       <td>
                         <input name="frm_email" type="text" class="inputbox" size=30 placeholder="Email Id" />
