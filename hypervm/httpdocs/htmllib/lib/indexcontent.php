@@ -35,8 +35,8 @@ if (!$cgi_forgotpwd) {
     } else {
 
 
-      if (lxfile_exists("__path_program_htmlbase/lib/indextruecontent.html")) {
-          lreadfile("__path_program_htmlbase/lib/indextruecontent.html");
+      if (lxfile_exists("lib/indextruecontent.php")) {
+          include("lib/indextruecontent.php");
       } else {
           ?>
 
@@ -89,53 +89,56 @@ if (!$cgi_forgotpwd) {
 
 }
 elseif ($cgi_forgotpwd == 1) {
-    ?>
+      if (lxfile_exists("lib/indexforgot.php")) {
+          include("lib/indexforgot.php");
+      } else {
+          ?>
 
-<!-- httpdocs/htmllib/lib/indexcontent.php -->
+          <!-- httpdocs/htmllib/lib/indexcontent.php -->
 
 
-<style type="text/css">
-    @import url("/htmllib/lib/admin_login.css");
-</style>
-<div id="ctr" align="center">
-    <div class="login">
-        <div class="login-form">
-            <div align="center" class="LoginScreenTextHeader">Forgot Password</div>
-            <br>
+          <style type="text/css">
+              @import url("/htmllib/lib/admin_login.css");
+          </style>
+          <div id="ctr" align="center">
+              <div class="login">
+                  <div class="login-form">
+                      <div align="center" class="LoginScreenTextHeader">Forgot Password</div>
+                      <br>
 
-            <form name=sendmail action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
-                <div class="form-block">
+                      <form name=sendmail action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
+                          <div class="form-block">
 
-                    <div class="inputlabel">Username</div>
-                    <input name="frm_clientname" type="text" class="inputbox" size="30"/>
+                              <div class="inputlabel">Username</div>
+                              <input name="frm_clientname" type="text" class="inputbox" size="30"/>
 
-                    <div class="inputlabel">Email Id</div>
-                    <input name="frm_email" type="text" class="passbox" size="30"/><br>
+                              <div class="inputlabel">Email Id</div>
+                              <input name="frm_email" type="text" class="passbox" size="30"/><br>
 
-                    <div align="left"><input type="submit" class="button" name="forgot" value="Send"></div>
-                </div>
-        </div>
-        <div class="login-text">
-            <div class="ctr"><img src="/img/login/icon1.gif" width="64" height="64" alt="security"/></div>
-            <p>Welcome to <?php echo  $sgbl->__var_program_name?></p>
+                              <div align="left"><input type="submit" class="button" name="forgot" value="Send"></div>
+                          </div>
+                  </div>
+                  <div class="login-text">
+                      <div class="ctr"><img src="/img/login/icon1.gif" width="64" height="64" alt="security"/></div>
+                      <p>Welcome to <?php echo  $sgbl->__var_program_name?></p>
 
-            <p>Use a valid username and email-id to get password.</p><br>
+                      <p>Use a valid username and email-id to get password.</p><br>
 
-            <a class="forgotpwd" href="javascript:history.go(-1);">Back to login</a>
+                      <a class="forgotpwd" href="javascript:history.go(-1);">Back to login</a>
 
-            <input type="hidden" name="frm_forgotpwd" value="2">
-            </form>
-            <script> document.sendmail.frm_clientname.focus(); </script>
+                      <input type="hidden" name="frm_forgotpwd" value="2">
+                      </form>
+                      <script> document.sendmail.frm_clientname.focus(); </script>
 
-        </div>
-        <div class="clr"></div>
-    </div>
-</div>
-<div id="break"></div>
+                  </div>
+                  <div class="clr"></div>
+              </div>
+          </div>
+          <div id="break"></div>
 
 
 <?php
-
+  }
 } elseif ($cgi_forgotpwd == 2) {
 
 
