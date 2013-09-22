@@ -2,7 +2,7 @@
 $accountlist = array('client' => "Kloxo Account", 'domain' => 'Domain Owner', 'mailaccount' => "Mail Account");
 $progname = $sgbl->__var_program_name;
 
-// If existing, use a own header for the header page else use the default.
+// If existing, use a own header for the login page else use the default.
 if (lxfile_exists("__path_program_htmlbase/lib/indexheader_vendor.html")) {
     lreadfile("__path_program_htmlbase/lib/indexheader_vendor.html");
 } else {
@@ -14,18 +14,7 @@ $ghtml->print_jscript_source("/htmllib/js/lxa.js");
 
 // Is this a Slave server?
 if ($sgbl->is_this_slave()) {
-    // If existing, use a own header for the slave page else use the default.
-    if (lxfile_exists("__path_program_htmlbase/lib/indexslave_vendor.html")) {
-        lreadfile("__path_program_htmlbase/lib/indexslave_vendor.html");
-    } else {
-        lreadfile("__path_program_htmlbase/lib/indexslave.html");
-    }
-    // If existing, use a own footer for the footer page else use the default.
-    if (lxfile_exists("__path_program_htmlbase/lib/indexfooter_vendor.html")) {
-        lreadfile("__path_program_htmlbase/lib/indexfooter_vendor.html");
-    } else {
-        lreadfile("__path_program_htmlbase/lib/indexfooter.html");
-    }
+    print("This is a HyperVM Slave Server. Operate it at the Master.\n");
     exit;
 }
 
@@ -44,52 +33,57 @@ if (!$cgi_forgotpwd) {
     if (if_demo()) {
         include_once("lib/demologins.php");
     } else {
-        ?>
-
-    <!-- httpdocs/htmllib/lib/indexcontent.php -->
-
-    <style type="text/css">
-        @import url("/htmllib/lib/admin_login.css");
-    </style>
-    <div id="ctr" align="center">
-        <div class="login">
-            <div class="login-form">
-                <div align="center" class="LoginScreenTextHeader">Login</div>
-                <br>
-
-                <form name="loginform" action="/htmllib/phplib/"
-                      onsubmit="encode_url(loginform) ; return fieldcheck(this);" method="post">
-                    <div class="form-block">
-                        <div class="inputlabel">Username</div>
-                        <input name="frm_clientname" type="text" class="inputbox" size="30"/>
-
-                        <div class="inputlabel">Password</div>
-                        <input name="frm_password" type="password" class="passbox" size="30"/> <br>
 
 
-                        <input type=hidden name=id value="<?php echo mt_rand() ?>">
+      if (lxfile_exists("__path_program_htmlbase/lib/indextruecontent.html")) {
+          lreadfile("__path_program_htmlbase/lib/indextruecontent.html");
+      } else {
+          ?>
 
-                        <div align="left"><input type="submit" class="button" name="login" value="Login"></div>
-                    </div>
-                </form>
-            </div>
-            <div class="login-text">
-                <div class="ctr"><img src="/img/login/icon.gif" width="64" height="64" alt="security"/></div>
-                <?=$logfo?>
-                <a class="forgotpwd" href="javascript:document.forgotpassword.submit()">Forgot Password?</a>
+          <!-- httpdocs/htmllib/lib/indexcontent.php -->
 
-                <form name="forgotpassword" method="post" action="/login/">
-                    <input type="hidden" name="frm_forgotpwd" value="1">
-                </form>
-                <script> document.loginform.frm_clientname.focus(); </script>
-            </div>
-            <div class="clr"></div>
-        </div>
-    </div>
-    <div id="break"></div>
+          <style type="text/css">
+              @import url("/htmllib/lib/admin_login.css");
+          </style>
+          <div id="ctr" align="center">
+              <div class="login">
+                  <div class="login-form">
+                      <div align="center" class="LoginScreenTextHeader">Login</div>
+                      <br>
 
-    <?php
+                      <form name="loginform" action="/htmllib/phplib/"
+                            onsubmit="encode_url(loginform) ; return fieldcheck(this);" method="post">
+                          <div class="form-block">
+                              <div class="inputlabel">Username</div>
+                              <input name="frm_clientname" type="text" class="inputbox" size="30"/>
 
+                              <div class="inputlabel">Password</div>
+                              <input name="frm_password" type="password" class="passbox" size="30"/> <br>
+
+
+                              <input type=hidden name=id value="<?php echo mt_rand() ?>">
+
+                              <div align="left"><input type="submit" class="button" name="login" value="Login"></div>
+                          </div>
+                      </form>
+                  </div>
+                  <div class="login-text">
+                      <div class="ctr"><img src="/img/login/icon.gif" width="64" height="64" alt="security"/></div>
+                      <?=$logfo?>
+                      <a class="forgotpwd" href="javascript:document.forgotpassword.submit()">Forgot Password?</a>
+
+                      <form name="forgotpassword" method="post" action="/login/">
+                          <input type="hidden" name="frm_forgotpwd" value="1">
+                      </form>
+                      <script> document.loginform.frm_clientname.focus(); </script>
+                  </div>
+                  <div class="clr"></div>
+              </div>
+          </div>
+          <div id="break"></div>
+
+          <?php
+          }
     }
 
 
@@ -192,7 +186,7 @@ elseif ($cgi_forgotpwd == 1) {
         }
     }
 }
-// If existing, use a own footer for the footer page else use the default.
+// If existing, use a own footer for the login page else use the default.
 if (lxfile_exists("__path_program_htmlbase/lib/indexfooter_vendor.html")) {
     lreadfile("__path_program_htmlbase/lib/indexfooter_vendor.html");
 } else {
