@@ -1,6 +1,6 @@
 body {
-        margin: 0px;
-        padding: 0px;
+        margin: 0;
+        padding: 0;
         color: #333;
         background: url(/img/loginskin/polaroid/polaroid.png) repeat;
         font-size: 14px;
@@ -11,7 +11,7 @@ header {
         background-color: #E2EAF0;
 }
 form {
-        margin: 0px;
+        margin: 0;
 }
 .button {
         border: hidden;
@@ -60,7 +60,7 @@ form {
         border: hidden;
         width: 100%;
         padding: 5px 5px 5px 5px;
-        margin: 0px 5px 0px 5px;
+        margin: 0 5px 0 5px;
 }
 .copy {
         padding-top: 20px;
