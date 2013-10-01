@@ -12,5 +12,5 @@ $cgi_email = $ghtml->frm_email;
 $cgi_classname = 'client';
 
 ob_start();
-include_once "htmllib/lib/indexcontent.php";
+include_once "login/indexcontent.php";
 
