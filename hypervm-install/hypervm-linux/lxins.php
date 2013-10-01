@@ -92,7 +92,8 @@ function lxins_main()
     exec("groupadd lxlabs");
     exec("useradd lxlabs -g lxlabs -s '/sbin/nologin'");
 
-    $list = array("which", "lxlighttpd", "zip", "unzip", "lxphp", "curl");
+    // New since HyperVM 2.1.0 hypervm-core-php yum-plugin-replace
+    $list = array("which", "lxlighttpd", "zip", "unzip", "hypervm-core-php", "curl","yum-plugin-replace");
 
     if ($installtype !== 'slave') {
         $mysql = array("mysql", "mysql-server", "mysqlclient*");
