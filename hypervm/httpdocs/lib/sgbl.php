@@ -97,7 +97,11 @@ class Sgbl extends Sgbllib
         $this->__path_program_htmlbase = "/usr/local/lxlabs/hypervm/httpdocs";
         $this->__path_php_path = $this->__path_lxlabs_base . "/ext/php/php";
 
+        // internal name
         $this->__var_program_name = 'hypervm';
+        // nice name (used since version 2.1.0)
+        $this->__var_program_name_nice = 'HyperVM';
+
 
         $this->__path_serverfile = $this->__path_lxlabs_base . "/hypervm/serverfile";
         $this->__path_download_dir = $this->__path_lxlabs_base . "/hypervm/download";
@@ -181,7 +185,7 @@ class Sgbl extends Sgbllib
 
         $this->__path_sql_file_supernode = "$this->__path_program_htmlbase/sql/supernode";
         $this->__path_sql_file = "$this->__path_program_htmlbase/sql/full";
-        $this->__path_sql_file_common = "$this->__path_program_htmlbase/sql/common";
+        $this->__path_sql_file_common = "$this->__path_program_htmlbase/htmllib/sql/common";
 
         $this->__var_action_class = array('vps');
 
