@@ -7,5 +7,5 @@ if (lxfile_exists("__path_slave_db")) {
 	$type = 'master';
 }
 
-system("/usr/local/lxlabs/ext/php/php ../bin/common/tmpupdatecleanup.php --type=$type");
+system("/usr/local/lxlabs/ext/php/php ../bin/common/updatecleanup-main.php --type=$type");
 

@@ -382,10 +382,8 @@ function printSelectObjectTable($name_list, $parent, $class, $blist = array(), $
 
 		?>
 
-		<script> loadImage('<?php echo $imgpointer?>') </script>
-		<script> loadImage('<?php echo $imgblank?>') </script>
 
-			<tr id=tr<?php echo $unique_name.$rowcount; ?> class=tablerow<?php echo $count; ?> onmouseover=" swapImage('imgpoint<?php echo $rowcount; ?>','','<?php echo $imgpointer; ?>',1);" onmouseout="swapImgRestore();">
+		<tr id=tr<?php echo $unique_name.$rowcount; ?> class=tablerow<?php echo $count; ?> onmouseover=" swapImage('imgpoint<?php echo $rowcount; ?>','','<?php echo $imgpointer; ?>',1);" onmouseout="swapImgRestore();">
 		<td id=td<?php echo $unique_name.$rowcount; ?> width=5 class=rowpoint><img name=imgpoint<?php echo $rowcount; ?> src="<?php echo $imgblank; ?>"></td>
 		<?php   
 		$colcount = 1;

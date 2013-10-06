@@ -1897,7 +1897,7 @@ function do_display_init()
 	createPrincipleObject();
 
 
-	print_meta_lan();
+	initLanguageCharset();
 	$ghtml->print_real_beginning();
 
 	if (!$login->isDefaultSkin()) {
@@ -1957,7 +1957,7 @@ function display_init()
 {
 	global $gbl, $sgbl, $login, $ghtml; 
 	initProgram();
-	init_language();
+	initLanguage();
 
 	if ($sgbl->is_this_slave()) { print("This is a Slave Server. You control it at the Master Server.\n"); exit; }
 

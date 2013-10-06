@@ -2,7 +2,7 @@
 ob_start();
 
 initProgram();
-init_language();
+initLanguage();
 check_if_disabled_and_exit();
 
 $gbl->__inside_ajax = true;

@@ -33,11 +33,11 @@ function create_main()
 		create_servername();
 		lxshell_return("__path_php_path", "../bin/collectquota.php");
 		print("Updating the system. Will take a while\n");
-		system("/usr/local/lxlabs/ext/php/php ../bin/common/tmpupdatecleanup.php --type=master");
+		system("/usr/local/lxlabs/ext/php/php ../bin/common/updatecleanup-main.php --type=master");
 	} else if ($opt['install-type'] == 'slave') {
 		init_slave($admin_pass);
 		print("Updating the system. Will take a while\n");
-		system("/usr/local/lxlabs/ext/php/php ../bin/common/tmpupdatecleanup.php --type=slave");
+		system("/usr/local/lxlabs/ext/php/php ../bin/common/updatecleanup-main.php --type=slave");
 	} else {
 		print("Unknown Install type\n");
 		flush();

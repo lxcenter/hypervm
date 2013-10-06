@@ -5,9 +5,9 @@ class Mysqldb__mysql extends lxDriverClass {
 
 function lx_mysql_connect($server, $dbadmin, $dbpass) 
 {
-	$rdb = mysql_connect('localhost', $dbadmin, $dbpass);
+	$rdb = mysqli_connect('localhost', $dbadmin, $dbpass);
 	if (!$rdb) {
-		log_error(mysql_error());
+		log_error(mysqli_error($rdb));
 		throw new lxException('could_not_connect_to_db', '', '');
 	}
 	return $rdb;
@@ -17,11 +17,11 @@ function createDatabase()
 {
 	dprint("here\n");
 	$rdb = $this->lx_mysql_connect('localhost', $this->main->__var_dbadmin, $this->main->__var_dbpassword);
-	mysql_query("use mysql");
-	$res = mysql_query("select * from user where User = '{$this->main->username}'");
+	mysqli_query($rdb,"use mysql");
+	$res = mysqli_query($rdb,"select * from user where User = '{$this->main->username}'");
 	$ret = null;
 	if ($res) {
-		$ret = mysql_fetch_row($res);
+		$ret = mysqli_fetch_row($res);
 	}
 
 
@@ -29,57 +29,57 @@ function createDatabase()
 		throw new lxException("database_user_already_exists__{$this->main->username}", 'username', '');
 	}
 
-	mysql_query("create database {$this->main->dbname};");
-	$this->log_error_messages();
+	mysqli_query($rdb,"create database {$this->main->dbname};");
+	$this->log_error_messages($rdb);
 
-	mysql_query("grant all on {$this->main->dbname}.* to '{$this->main->username}'@'%' identified by '{$this->main->dbpassword}';");
-	mysql_query("grant all on {$this->main->dbname}.* to '{$this->main->username}'@'localhost' identified by '{$this->main->dbpassword}';");
+	mysqli_query($rdb,"grant all on {$this->main->dbname}.* to '{$this->main->username}'@'%' identified by '{$this->main->dbpassword}';");
+	mysqli_query($rdb,"grant all on {$this->main->dbname}.* to '{$this->main->username}'@'localhost' identified by '{$this->main->dbpassword}';");
 
 	if ($this->main->__var_primary_user) {
 		$parentname = $this->main->__var_primary_user;
-		mysql_query("grant all on {$this->main->dbname}.* to '{$parentname}'@'localhost';");
-		mysql_query("grant all on {$this->main->dbname}.* to '{$parentname}'@'%';");
+		mysqli_query($rdb,"grant all on {$this->main->dbname}.* to '{$parentname}'@'localhost';");
+		mysqli_query($rdb,"grant all on {$this->main->dbname}.* to '{$parentname}'@'%';");
 	}
-	$this->log_error_messages(false);
-	mysql_query("flush privileges;");
+	$this->log_error_messages($rdb,false);
+	mysqli_query($rdb,"flush privileges;");
 }
 
 function extraGrant()
 {
 	//mysql_query("revoke show databases on *.* from '{$this->main->username}'@'%' identified by '{$this->main->dbpassword}';");
-	$this->log_error_messages(false);
+	//$this->log_error_messages($rdb,false);
 	//mysql_query("grant SELECT,INSERT,UPDATE,DELETE,CREATE,DROP,ALTER on {$this->main->dbname}.* to '{$this->main->username}'@'localhost' identified by '{$this->main->dbpassword}';");
-	$this->log_error_messages(false);
+	//$this->log_error_messages($rdb,false);
 	//mysql_query("revoke show databases on *.* from '{$this->main->username}'@'localhost' identified by '{$this->main->dbpassword}';");
-	$this->log_error_messages(false);
+	//$this->log_error_messages($rdb,false);
 }
 
 function deleteDatabase()
 {
 	$rdb = $this->lx_mysql_connect('localhost', $this->main->__var_dbadmin, $this->main->__var_dbpassword);
-	mysql_query("drop database {$this->main->dbname};");
-	$this->log_error_messages(false);
-	mysql_query("delete from mysql.user where user = '{$this->main->username}';");
-	$this->log_error_messages(false);
-	mysql_query("flush privileges;");
+	mysqli_query($rdb,"drop database {$this->main->dbname};");
+	$this->log_error_messages($rdb,false);
+	mysqli_query($rdb,"delete from mysql.user where user = '{$this->main->username}';");
+	$this->log_error_messages($rdb,false);
+	mysqli_query($rdb,"flush privileges;");
 }
 
 function updateDatabase()
 {
 	$rdb = $this->lx_mysql_connect('localhost', $this->main->__var_dbadmin, $this->main->__var_dbpassword);
-	mysql_query("update mysql.user set password = PASSWORD('{$this->main->dbpassword}') where user = '{$this->main->username}';");
-	$this->log_error_messages();
-	mysql_query("flush privileges;");
+	mysqli_query($rdb,"update mysql.user set password = PASSWORD('{$this->main->dbpassword}') where user = '{$this->main->username}';");
+	$this->log_error_messages($rdb);
+	mysqli_query($rdb,"flush privileges;");
 
 }
 
-function log_error_messages($throwflag = true)
+function log_error_messages($link, $throwflag = true)
 {
-	if (mysql_errno()) {
-		dprint(mysql_error());
-		log_error(mysql_error());
+	if (mysqli_errno($link)) {
+		dprint(mysqli_error($link));
+		log_error(mysqli_error($link));
 		if ($throwflag) {
-			throw new lxException('mysql_error', '', mysql_error());
+			throw new lxException('mysql_error', '', mysqli_error($link));
 		}
 	}
 }
@@ -112,16 +112,17 @@ static function take_dump($dbname, $dbuser, $dbpass, $docf)
 
 static function drop_all_table($dbname, $dbuser, $dbpass)
 {
-	$con = mysql_connect("localhost", $dbuser, $dbpass);
-	mysql_select_db($dbname);
-	$query = mysql_query("show tables");
-	while($res = mysql_fetch_array($query, MYSQL_ASSOC)) {
+    // TODO: REPLACE MYSQL_CONNECT
+	$con = mysqli_connect("localhost", $dbuser, $dbpass,$dbname);
+	mysqli_select_db($dbname);
+	$query = mysqli_query($con,"show tables");
+	while($res = mysqli_fetch_array($query)) {
 		$total[] = getFirstFromList($res);
 	}
 	foreach($total as $k => $v) {
-		mysql_query("drop table $v");
+		mysqli_query($con,"drop table $v");
 	}
-	mysql_close($con);
+	mysqli_close($con);
 }
 
 static function restore_dump($dbname, $dbuser, $dbpass, $docf)
@@ -184,8 +185,8 @@ function do_backup_cleanup($list)
 function fix_grant_all()
 {
 	$rdb = $this->lx_mysql_connect('localhost', $this->main->__var_dbadmin, $this->main->__var_dbpassword);
-	mysql_query("grant all on {$this->main->dbname}.* to '{$this->main->username}'@'%'");
-	mysql_query("grant all on {$this->main->dbname}.* to '{$this->main->username}'@'localhost'");
+	mysqli_query($rdb,"grant all on {$this->main->dbname}.* to '{$this->main->username}'@'%'");
+	mysqli_query($rdb,"grant all on {$this->main->dbname}.* to '{$this->main->username}'@'localhost'");
 }
 
 function do_restore($docd)

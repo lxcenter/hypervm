@@ -1739,7 +1739,7 @@ function get_charset()
 	return $charset;
 }
 
-function print_meta_lan()
+function initLanguageCharset()
 {
 	global $gbl, $sgbl, $login, $ghtml;
 	$lan = get_language();
@@ -1753,7 +1753,7 @@ function print_meta_lan()
 	}
 }
 
-function init_language()
+function initLanguage()
 {
 	global $gbl, $sgbl, $login, $ghtml;
 	global $g_language_mes, $g_language_desc;
@@ -2937,7 +2937,10 @@ function critical_change_db_pass()
 			change_db_pass();
 		} catch (exception $e) {
 		}
+        return true;
 	}
+
+    return false;
 }
 
 function change_db_pass()
@@ -2991,8 +2994,8 @@ function parse_sql_data()
 	$majmin = $sgbl->__ver_major_minor;
 	$trel = $sgbl->__ver_release;
 
-	$rpath = "sql/full.lxsql";
-	$pathc = "htmllib/sql/common.lxsql";
+	$rpath = $sgbl->__path_sql_file . ".lxsql";
+	$pathc = $sgbl->__path_sql_file_common . ".lxsql";
 	include $rpath;
 	include $pathc;
 

@@ -6,7 +6,7 @@ index_main();
 
 function index_main()
 {
-	init_language();
+	initLanguage();
 	print_index();
 }
 

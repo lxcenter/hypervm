@@ -30,14 +30,15 @@ class dns__powerdns extends lxDriverClass {
     {
 
 	include_once "/usr/local/lxlabs/kloxo/etc/powerdns.conf.inc";
-	mysql_connect($power_sql_host,$power_sql_user,$power_sql_pwd);
-	mysql_select_db($power_sql_db);
+    // TODO: REPLACE MYSQL_CONNECT
+	$dblink = mysqli_connect($power_sql_host,$power_sql_user,$power_sql_pwd,$power_sql_db);
+	mysqli_select_db($power_sql_db);
 
     }
 
     function dbClose() 
     {
-	@mysql_close();
+	@mysqli_close($dblink);
     }
 
     function dbactionAdd()
@@ -45,7 +46,7 @@ class dns__powerdns extends lxDriverClass {
 	$this->dbConnect();
 
 		$domainname = $this->main->nname;
-		mysql_query("INSERT INTO domains (name,type) values('$domainname','NATIVE')");
+		mysqli_query($dblink,"INSERT INTO domains (name,type) values('$domainname','NATIVE')");
 
 		if(mysql_affected_rows()) {
 			$this_domain_id = mysql_insert_id();

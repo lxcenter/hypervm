@@ -5,6 +5,7 @@ class Mysqldbuser__mysql extends lxDriverClass {
 
 function lx_mysql_connect($server, $dbadmin, $dbpass) 
 {
+    // TODO: REPLACE MYSQL_CONNECT
 	$rdb = mysql_connect('localhost', $dbadmin, $dbpass);
 	if (!$rdb) {
 		log_error(mysql_error());
