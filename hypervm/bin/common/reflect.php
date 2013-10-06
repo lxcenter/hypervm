@@ -3,7 +3,7 @@
 include_once "htmllib/lib/include.php"; 
 
 initProgram('admin');
-init_language();
+initLanguage();
 
 if (!isset($argv[2])) {
 	print("Usage: reflect --type=add --parent-class= --parent-name= --class= [--v-var= --v-val=]\n");

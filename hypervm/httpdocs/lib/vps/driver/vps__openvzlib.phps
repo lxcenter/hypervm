@@ -812,7 +812,7 @@ class vps__openvz extends Lxdriverclass {
 	}
 
 	// temproary version without quotes...
-	function staticChangeConf($file, $var, $val)
+public static function staticChangeConf($file, $var, $val)
 	{
 		$list = lfile_trim($file);
 		$match = false;

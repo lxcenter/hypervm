@@ -33,13 +33,14 @@ function setupsecondary_main()
 	print("Setting up mysql to receive data from master\n");
 	add_line_to_secondary_mycnf($master, $slavepass);
 	$pass = slave_get_db_pass();
-	mysql_connect("localhost", "root", $pass);
-	mysql_query("stop slave");
+    // TODO: REPLACE MYSQL_CONNECT
+	$dblink = mysqli_connect("localhost", "root", $pass, $dbf);
+	mysqli_query($dblink,"STOP SLAVE");
 	print("Getting initial data from the master\n");
 	system("ssh -p $sshport $master \"(cd /usr/local/lxlabs/$prgm/httpdocs ; lphp.exe ../bin/common/setupprimarymaster.php --slavepass=$slavepass)\" | mysql -u root -p$pass $dbf");
 	print("starting mysql data getting process\n");
-	mysql_query("change master to master_host='$master', master_password='$slavepass'");
-	mysql_query("start slave");
+	mysqli_query($dblink,"CHANGE MASTER TO master_host='$master', master_password='$slavepass'");
+	mysqli_query($dblink,"START SLAVE");
 	lxfile_touch("../etc/secondary_master");
 	lxfile_touch("../etc/running_secondary");
 }

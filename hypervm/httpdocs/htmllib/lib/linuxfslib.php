@@ -72,8 +72,10 @@ function lxfile_symlink($src, $dst)
 	if (is_dir($dst)) {
 		$dst = "$dst/" . basename($src);
 	}
+    if (!lxfile_exists($dst)) {
 	log_filesys("Linking $src to $dst");
 	symlink($src, $dst);
+    }
 }
 
 
@@ -439,11 +441,13 @@ function lxfile_cp_content_file($dirsource, $dirdest)
 
 	$list = lscandir_without_dot($dirsource);
 
-	foreach($list as $l) {
-		if (!is_dir("$dirsource/$l")) {
-			lxfile_cp("$dirsource/$l", "$dirdest/$l");
-		}
-	}
+    if (isset($list)) {
+	    foreach($list as $l) {
+		    if (!is_dir("$dirsource/$l")) {
+			    lxfile_cp("$dirsource/$l", "$dirdest/$l");
+		    }
+	    }
+    }
 }
 
 
