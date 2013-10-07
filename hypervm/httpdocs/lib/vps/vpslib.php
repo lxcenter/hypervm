@@ -1182,6 +1182,7 @@ function postAdd()
 			$ipadd = new vmipaddress_a(null, $this->syncserver, $ip);
 			$this->vmipaddress_a[$ipadd->nname] = $ipadd;
 			ippool::addToTmpIpAssign($ip);
+<<<<<<< .merge_file_oGKEao
 
 		}
 	}
@@ -1203,6 +1204,8 @@ function postAdd()
 			$ipadd = new vmipaddress_a(null, $this->syncserver, $ip);
 			$this->vmipaddress_a[$ipadd->nname] = $ipadd;
 			ippool::addToTmpIpAssign($ip);
+=======
+>>>>>>> .merge_file_kZ12En
 
 		}
 	}
@@ -1278,7 +1281,10 @@ function setUpOsTemplateDownloadParam()
 * @throws lxException
 * @return void
 */
+<<<<<<< .merge_file_oGKEao
 >>>>>>> .merge_file_DQXLJe
+=======
+>>>>>>> .merge_file_kZ12En
 function checkVPSLock($vpsid = NULL)
 {
 	$file = 'vpslock_' . $vpsid . '.pid';
