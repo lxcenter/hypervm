@@ -1181,7 +1181,7 @@ function postAdd()
 		if ($totallist) foreach($totallist as $ip) {
 			$ipadd = new vmipaddress_a(null, $this->syncserver, $ip);
 			$this->vmipaddress_a[$ipadd->nname] = $ipadd;
-			ippool::addToTmpIpAssign($l);
+			ippool::addToTmpIpAssign($ip);
 
 		}
 	}
@@ -1252,6 +1252,7 @@ function setUpOsTemplateDownloadParam()
 	$this->__var_masterip = getOneIPForLocalhost($this->syncserver);
 }
 
+<<<<<<< .merge_file_THkdqf
     /**
      * Check the existance of a VPS lock running.
      *
@@ -1265,6 +1266,19 @@ function setUpOsTemplateDownloadParam()
      * @throws lxexception
      * @return void
      */
+=======
+/**
+* Check the existance of a VPS lock running.
+* 
+* Throws a exception if someone else is using a VPS.
+*
+* @author Anonymous <anonymous@lxcenter.org>
+* @author Ángel Guzmán Maeso <angel.guzman@lxcenter.org>
+*
+* @throws lxException
+* @return void
+*/
+>>>>>>> .merge_file_DQXLJe
 function checkVPSLock($vpsid = NULL)
 {
 	$file = 'vpslock_' . $vpsid . '.pid';
