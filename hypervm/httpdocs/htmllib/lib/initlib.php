@@ -4,16 +4,19 @@ function create_mysql_db($type, $opt, $admin_pass)
 {
 	global $gbl, $sgbl, $login, $ghtml; 
 	$progname = $sgbl->__var_program_name;
+    $db = $sgbl->__var_dbf;
+
 	if (!isset($opt['db-rootuser']) || !isset($opt['db-rootpassword'])) {
 		print("Need db Root User and password --db-rootuser, --db-rootpassword \n");
 		exit;
 	}
 	if ($sgbl->__var_database_type === 'mysql') {
-		$req = mysql_connect('localhost', $opt['db-rootuser'], $opt['db-rootpassword']);
+        // TODO: REPLACE MYSQL_CONNECT
+		$req = mysqli_connect('localhost', $opt['db-rootuser'], $opt['db-rootpassword'],$db);
 	} else if ($sgbl->__var_database_type === 'mssql') {
 		$req = mssql_connect("localhost,$sgbl->__var_mssqlport");
 	} else {
-		$req = new PDO("sqlite:$sgbl->__var_dbf");
+		$req = new PDO("sqlite:$db");
 	}
 
 
@@ -29,8 +32,8 @@ function create_mysql_db($type, $opt, $admin_pass)
 	$dbname = $sgbl->__var_dbf;
 	$pguser = $sgbl->__var_admin_user;
 	if ($sgbl->__var_database_type === 'mysql') {
-		@ mysql_query("create database $dbname");
-		mysql_query("grant all on $dbname.* to '$pguser'@'localhost' identified by '$dbadminpass';");
+		@ mysqli_query($req,"CREATE DATABASE $dbname");
+		mysqli_query($req,"GRANT ALL ON $dbname.* TO '$pguser'@'localhost' IDENTIFIED BY '$dbadminpass';");
 	} else if ($sgbl->__var_database_type === 'mssql') {
 		 mssql_query("create database $dbname;");
 		 mssql_query("use master ");

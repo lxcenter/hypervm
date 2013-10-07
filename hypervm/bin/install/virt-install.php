@@ -33,7 +33,7 @@ function virt_install_main()
 	}
 
 	print("Executing Update Cleanup... Will take a long time to finish....\n");
-	lxshell_return("__path_php_path", "../bin/common/updatecleanup.php", "--type=$installtype");
+	lxshell_return("__path_php_path", "../bin/common/updatecleanup-installer.php", "--type=$installtype");
 
 }
 

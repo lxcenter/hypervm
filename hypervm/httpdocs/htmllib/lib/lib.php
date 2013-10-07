@@ -92,29 +92,6 @@ function core_installWithVersion($path, $file, $ver)
     }
 }
 
-function download_thirdparty()
-{
-    global $sgbl;
-    $prgm = $sgbl->__var_program_name;
-
-    // TODO: remove this when hypervm 2.1.0 is released
-    // Check for git because we dont want a old 2009 package version into hypervm development!
-    if (file_exists('/usr/local/lxlabs/.git')) {
-        echo 'Development GIT version found. Skipping download from LxCenter.';
-    } else {
-        // Fixes #303 and #304
-        $string = file_get_contents("http://download.lxcenter.org/download/thirdparty/$prgm-version.list");
-        if ($string != "") {
-            $string = trim($string);
-            $string = str_replace("\n", "", $string);
-            $string = str_replace("\r", "", $string);
-            core_installWithVersion("/usr/local/lxlabs/$prgm/", "$prgm-thirdparty", $string);
-        }
-    }
-}
-
-
-
 function get_other_driver($class, $driverapp)
 {
 	include "../file/driver/rhel.inc";
@@ -896,10 +873,11 @@ function call_with_flag($func)
 {
 	$file = "__path_program_etc/flag/$func.flg";
 	if (lxfile_exists($file)) {
-		return;
+		return false;
 	}
 	call_user_func($func);
 	lxfile_touch($file);
+    return true;
 }
 
 
@@ -1063,17 +1041,18 @@ function calculateRealTotal($inout)
 
 function mysql_upload_file_to_db($dbhost, $dbuser, $dbpassword, $dbname, $file)
 {
-	$rs = mysql_connect($dbhost, $dbuser, $dbpassword);
+    // TODO: REPLACE MYSQL_CONNECT
+	$rs = mysqli_connect($dbhost, $dbuser, $dbpassword,$dbname);
 
 	if (!$rs) {
 		throw new lxException('no_mysql_connection_while_uploading_file,', '');
 	}
 
-	mysql_select_db($dbname);
+	mysqli_select_db($dbname);
 
 	$res = lfile_get_contents($file);
 
-	$res = mysql_query($res);
+	$res = mysqli_query($rs,$res);
 	if (!$res) {
 		throw new lxException('no_mysql_connection_while_uploading_file,', '');
 	}
@@ -2045,11 +2024,6 @@ function fix_rhn_sources_file()
 	lfile_put_contents("/etc/yum.repos.d/lxcenter.repo", $cont);
 }
 
-
-function mkdir_ifnotExist($name)
-{
-}
-
 function opt_get_single_flag($opt, $var)
 {
 	$ret = false;
@@ -2125,9 +2099,9 @@ function lx_core_lock($file = null)
 	if (lxfile_exists($pidfile)) {
 		$pid = lfile_get_contents($pidfile);
 	}
-	dprint($pid . "\n");
+	dprint("PID number: " . $pid . "\n");
 	if (!$pid) {
-		dprint("$prog:$file No pid file $pidfile detected..\n");
+		dprint("\n$prog:$file No pid file $pidfile detected..\n");
 		lfile_put_contents($pidfile, os_getpid());
 		return false;
 	}
@@ -2141,9 +2115,9 @@ function lx_core_lock($file = null)
 
 	if (!$name || $name !== $prog) {
 		if (!$name) {
-			dprint("$prog:$file Stale Lock file $pidfile detected..., removing\n");
+			dprint("\n$prog:$file Stale Lock file $pidfile detected..., removing\n");
 		} else {
-			dprint("$prog:$file Stale lock file... Another program $name is running on it..\n");
+			dprint("\n$prog:$file Stale lock file... Another program $name is running on it..\n");
 		}
 
 		lxfile_rm($pidfile);
@@ -2171,7 +2145,7 @@ function lx_core_lock_check_only($prog, $file = null)
 	$pid = lfile_get_contents($pidfile);
 	dprint($pid . "\n");
 	if (!$pid) {
-		dprint("$prog:$file No pid in filedetected..\n");
+		dprint("\n$prog:$file No PID in $pidfile detected..\n");
 		return false;
 	}
 
@@ -2184,9 +2158,9 @@ function lx_core_lock_check_only($prog, $file = null)
 
 	if (!$name || $name !== $prog) {
 		if (!$name) {
-			dprint("$prog:$file Stale Lock file detected..., removing\n");
+			dprint("\n$prog:$file Stale Lock file detected..., removing\n");
 		} else {
-			dprint("$prog:$file Stale lock file... Another program $name is running on it..\n");
+			dprint("\n$prog:$file Stale lock file... Another program $name is running on it..\n");
 		}
 
 		lxfile_rm($pidfile);
@@ -2255,12 +2229,6 @@ function appvault_dbfilter($inputfile, $outputfile, $cont)
 	//dprint("Writing to file {$cont['output']}\n");
 	//dprint("{$cont['output']} : $val\n");
 	lfile_put_contents($outputfile, $val);
-}
-
-
-function installLxetc()
-{
-    return null;
 }
 
 function lightyApacheLimit($server, $var)
@@ -2511,13 +2479,31 @@ function curl_get_file_contents($file)
 	return $retrievedhtml;
 }
 
-function install_if_package_not_exist($name)
+function install_if_package_not_exist($package)
 {
-	$ret = lxshell_return("rpm", "-q", $name);
+	$ret = lxshell_return("rpm", "-q", $package);
 	if ($ret) {
-		lxshell_return("yum", "-y", "install", $name);
+		lxshell_return("yum", "-y", "install", $package);
 	}
+    return $ret;
 }
+
+// New function since HyperVM 2.1.0
+function replace_rpm_package($replace,$replacewith)
+{
+    $ret = lxshell_return("rpm", "-q", "yum-plugin-replace");
+    if ($ret)
+    {
+        lxshell_return("yum", "-y", "install", "yum-plugin-replace");
+    }
+
+    $ret = lxshell_return("rpm", "-q", $replacewith);
+    if ($ret) {
+        lxshell_return("yum", "-y", "replace", $replace, "--replace-with", $replacewith);
+    }
+    return $ret;
+}
+
 
 function curl_general_get($url)
 {
@@ -2934,15 +2920,6 @@ function copy_script()
 
 	lfile_put_contents("/script/programname", $sgbl->__var_program_name);
 	lxfile_unix_chmod_rec("/script", "0755");
-}
-
-// 
-// This function realy needed?
-// removed tmpimg and tmpskin dirs in some revisions back
-// dterweij
-function copy_image()
-{
-    return null;
 }
 
 function getAdminDbPass()
@@ -3916,20 +3893,6 @@ function addLineIfNotExistPattern($filename, $searchpattern, $pattern)
 		dprint("Pattern '$searchpattern' Already present in $filename\n");
 	}
 
-}
-
-function fix_self_ssl()
-{
-	global $gbl, $sgbl, $login, $ghtml; 
-//
-//  Removed because not needed anymore.
-//	$pgm = $sgbl->__var_program_name;
-//	$ret = lxshell_return("diff", "../etc/program.pem", "htmllib/filecore/old.program.pem");
-//
-//	if (!$ret) {
-//		lxfile_cp("htmllib/filecore/program.pem", "../etc/program.pem");
-//	}
-//	//system("/etc/init.d/$pgm restart");
 }
 
 function remove_line($filename, $pattern)

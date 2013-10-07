@@ -1,10 +1,11 @@
 <?php 
 
+// Update some packages when running cleanup/scavenge
 function os_update_server()
 {
 //    Removed lxzend package (not needed anymore since opensourced version)
 //    $list = array("rrdtool", "lxlighttpd", "lxphp", "lxzend");
-	$list = array("rrdtool", "lxlighttpd", "lxphp");
+	$list = array("rrdtool", "lxlighttpd", "hypervm-core-php");
 	$package = implode(" ", $list);
 	system("yum -y install $package > /dev/null 2>&1 &");
 }

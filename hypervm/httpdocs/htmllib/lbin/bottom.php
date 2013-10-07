@@ -4,7 +4,6 @@ chdir("../../");
 include_once "htmllib/lib/displayinclude.php";
 //initProgram();
 ?> 
-	<link href="/htmllib/css/header_new.css" rel="stylesheet" type="text/css" />
 	<link href="/htmllib/css/common.css" rel="stylesheet" type="text/css" />
 	<?php 
 $ghtml->print_jscript_source("/htmllib/js/lxa.js");
