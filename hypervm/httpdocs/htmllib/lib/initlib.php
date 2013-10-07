@@ -129,7 +129,6 @@ function create_general()
 function create_servername()
 {
 	
-print("\n creating pserver \n\n");
 	$pserver = new pserver(null, 'localhost', "localhost");
 	$pserver->initThisDef();
 	$pserver->rolelist = array("web", "dns");
@@ -137,7 +136,6 @@ print("\n creating pserver \n\n");
 		$pserver->realpass = 'admin';
 		$pserver->password = crypt("admin");
 		$pserver->cpstatus = 'on';
-print(" DEMO????? \n");
 	}
 	$pserver->dbaction = "add";
 	$pserver->postAdd();
