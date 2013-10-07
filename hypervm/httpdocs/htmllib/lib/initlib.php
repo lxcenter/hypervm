@@ -12,7 +12,8 @@ function create_mysql_db($type, $opt, $admin_pass)
 	}
 	if ($sgbl->__var_database_type === 'mysql') {
         // TODO: REPLACE MYSQL_CONNECT
-		$req = mysqli_connect('localhost', $opt['db-rootuser'], $opt['db-rootpassword'],$db);
+	// TUT TUT naughty programmer... We are creating the db now XD
+		$req = mysqli_connect('localhost', $opt['db-rootuser'], $opt['db-rootpassword']);
 	} else if ($sgbl->__var_database_type === 'mssql') {
 		$req = mssql_connect("localhost,$sgbl->__var_mssqlport");
 	} else {
@@ -21,7 +22,7 @@ function create_mysql_db($type, $opt, $admin_pass)
 
 
 	if (!$req) {
-		print("Could not Connect to Database on localhost using root user\n");
+		print("Could not Connect to Database on localhost using root user: ".mysqli_connect_error()."\n");
 	}
 	//$sqlcm = lfile_get_contents("__path_program_root/httpdocs/sql/init/$type.sql");
 
@@ -127,7 +128,7 @@ function create_general()
 
 function create_servername()
 {
-
+	
 	$pserver = new pserver(null, 'localhost', "localhost");
 	$pserver->initThisDef();
 	$pserver->rolelist = array("web", "dns");
