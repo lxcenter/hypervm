@@ -30,21 +30,22 @@ function __construct($readserver, $table, $force = false)
 		$db = $sgbl->__var_dbf;
 		$pass = getAdminDbPass();
 
-        // TODO: REPLACE MYSQL_CONNECT
+	        // TODO: REPLACE MYSQL_CONNECT
 		if ($sgbl->__var_database_type === 'mysql') {
-            $gbl->$fdbvar = mysqli_connect($readserver, $user, $pass,$db);
 
-            if(!$gbl->$fdbvar)
-            {
-                print("\nMySQL-ERROR: Can not connect to the MySQL server at ($readserver).\n");
-                exit;
-            }
+            	$gbl->$fdbvar = mysqli_connect($readserver, $user, $pass,$db);
 
-            mysqli_query($gbl->$fdbvar,"SET CHARACTER SET 'utf8'");
-            mysqli_query($gbl->$fdbvar,"SET character_set_connection= 'utf8'");
-			mysqli_select_db($gbl->$fdbvar,$db);
+        	if(!$gbl->$fdbvar)
+	            {
+	                print("\nMySQL-ERROR: Can not connect to the MySQL server at ($readserver): ".mysqli_connect_error().".\n");
+	                exit;
+	            }
 
-			self::$__database = 'mysql';
+		mysqli_query($gbl->$fdbvar,"SET CHARACTER SET 'utf8'");
+	        mysqli_query($gbl->$fdbvar,"SET character_set_connection= 'utf8'");
+		mysqli_select_db($gbl->$fdbvar,$db);
+
+		self::$__database = 'mysql';
 
 		} else if ($sgbl->__var_database_type === 'mssql')
                 {

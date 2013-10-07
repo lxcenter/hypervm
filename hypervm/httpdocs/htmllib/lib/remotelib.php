@@ -764,6 +764,7 @@ function do_local_action($rmt)
 			$class = $rmt->func[0];
 			$tmp = new $class(null, null, 'dummy');
 		}
+		if($rmt->arglist == NULL) $rmt->arglist= array();
 		return call_user_func_array($rmt->func, $rmt->arglist);
 
 	}
