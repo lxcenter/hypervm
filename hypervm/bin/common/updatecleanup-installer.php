@@ -1,4 +1,6 @@
 <?php 
+include_once "htmllib/lib/include.php";
+include_once "htmllib/lib/updatelib.php";
 
 exit_if_not_system_user();
 
