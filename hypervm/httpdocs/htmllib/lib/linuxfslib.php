@@ -72,8 +72,10 @@ function lxfile_symlink($src, $dst)
 	if (is_dir($dst)) {
 		$dst = "$dst/" . basename($src);
 	}
+    if (!lxfile_exists($dst)) {
 	log_filesys("Linking $src to $dst");
 	symlink($src, $dst);
+    }
 }
 
 
@@ -439,11 +441,13 @@ function lxfile_cp_content_file($dirsource, $dirdest)
 
 	$list = lscandir_without_dot($dirsource);
 
-	foreach($list as $l) {
-		if (!is_dir("$dirsource/$l")) {
-			lxfile_cp("$dirsource/$l", "$dirdest/$l");
-		}
-	}
+    if (isset($list)) {
+	    foreach($list as $l) {
+		    if (!is_dir("$dirsource/$l")) {
+			    lxfile_cp("$dirsource/$l", "$dirdest/$l");
+		    }
+	    }
+    }
 }
 
 
@@ -600,9 +604,13 @@ function do_exec_system($username, $dir, $cmd, &$out, &$err, &$ret, $input)
 		}
 		fclose($pipes[0]);
 
-		while (!feof($pipes[1])) {
-			$out .= fgets($pipes[1], 1024);
-		}
+//		while (!feof($pipes[1])) {
+//			$out .= fgets($pipes[1], 1024);
+//		}
+
+                // OA 20130920 Current solution from php.net
+		$out= stream_get_contents($pipes[1]);
+                                
 		fclose($pipes[1]);
 		// It is important that you close any pipes before calling
 		// proc_close in order to avoid a deadlock

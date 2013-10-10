@@ -98,7 +98,7 @@ case $1 in
 		echo "Installing branch hypervm/dev"
 		git clone git://github.com/lxcenter/hypervm.git ${HYPERVM_PATH}
 		cd ${HYPERVM_PATH}
-		git checkout dev
+		git checkout dev -f
 		cd hypervm-install
 		sh ./make-distribution.sh
 		cd ../hypervm
