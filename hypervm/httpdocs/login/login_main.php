@@ -10,7 +10,7 @@
                   <div class="inputfield"><table><tr><td><img
           src="/img/loginskin/password_icon.png" height="20" /></td><td><input name="frm_password" type="password" class="inputbox" size=30 placeholder="Password" /></td></tr></table></div><br>
                   <input type=hidden name=id value="<?php echo mt_rand() ?>">
-                  <div class="central"><input type="submit" name="login" class="button" value="Login" /></div>
+                  <div class="central"><input type="submit" name="login" class="button_wide" value="Login" /></div>
           </form>
   <div class="forgotpassword"><a class="forgotpwd"  href="javascript:document.forgotpassword.submit()"><font color=black><u>Forgot Password?</u></a> 
           <form name="forgotpassword" method="post"  action="/login/">

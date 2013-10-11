@@ -28,6 +28,18 @@ form {
         margin-right: auto;
 		font-family: 'Raleway', sans-serif;
 }
+.button_wide {
+    border: hidden;
+    border-radius: 5px;
+    background: #BAE2EB;
+    font-size: 14px;
+    width: 40%;
+    min-width: 60px;
+    padding: 5px 5px 5px 5px;
+    margin-left: auto;
+    margin-right: auto;
+    font-family: 'Raleway', sans-serif;
+}
 .content {
         margin: 10% auto 0 auto;
         width: 40%;
