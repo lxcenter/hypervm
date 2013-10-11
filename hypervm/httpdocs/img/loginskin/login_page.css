@@ -49,6 +49,9 @@ form {
         padding-top: 15px;
 		font-family: 'Raleway', sans-serif;
 }
+.forgotpwd {
+        font-family: 'Raleway', sans-serif;
+}
 .login {
         text-align: left;
 }
