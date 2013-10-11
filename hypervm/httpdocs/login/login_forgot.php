@@ -6,7 +6,6 @@
 <div class="content">
 <div class="logo"><img src="/img/loginskin/hypervm.png"></div>
       <div class="login">
-          <div class="loginform">
               <form name=sendmail action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
                   <div class="inputfield">
 
@@ -33,7 +32,6 @@
 
                   </div>
                   <div class="central"><input type="submit" name="login" class="button" value="Reset Password" /></div>
-          </div>
           <div class="forgotpasswd">
               <a class="forgotpwd" href="javascript:history.go(-1);">Back to Login</a>
 
