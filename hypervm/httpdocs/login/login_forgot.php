@@ -31,7 +31,7 @@
                     </table>
 
                   </div>
-                  <div class="central"><input type="submit" name="login" class="button" value="Reset Password" /></div>
+                  <div class="central"><input type="submit" name="login" class="button_wide" value="Reset Password" /></div>
           <div class="forgotpasswd">
               <a class="forgotpwd" href="javascript:history.go(-1);">Back to Login</a>
 
