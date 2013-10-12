@@ -110,8 +110,6 @@ if (lxfile_exists("__path_program_htmlbase/login/login_footer_vendor.html")) {
 } else {
     lreadfile("__path_program_htmlbase/login/login_footer.html");
 }
-
-include("login/login_credit.php");
 ?>
 </body>
 </html>
