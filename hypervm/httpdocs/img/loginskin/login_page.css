@@ -7,6 +7,9 @@ body {
         font-family: 'Raleway', sans-serif;
         text-align: center;
 }
+a {
+        font-family: 'Raleway', sans-serif;
+}
 header {
         background-color: #E2EAF0;
 }
@@ -23,6 +26,19 @@ form {
         padding: 5px 5px 5px 5px;
         margin-left: auto;
         margin-right: auto;
+		font-family: 'Raleway', sans-serif;
+}
+.button_wide {
+    border: hidden;
+    border-radius: 5px;
+    background: #BAE2EB;
+    font-size: 14px;
+    width: 40%;
+    min-width: 60px;
+    padding: 5px 5px 5px 5px;
+    margin-left: auto;
+    margin-right: auto;
+    font-family: 'Raleway', sans-serif;
 }
 .content {
         margin: 10% auto 0 auto;
@@ -43,6 +59,11 @@ form {
 .forgotpassword {
         text-align: center;
         padding-top: 15px;
+		font-family: 'Raleway', sans-serif;
+}
+.forgotpwd {
+        font-family: 'Raleway', sans-serif;
+        text-align: center;
 }
 .login {
         text-align: left;
@@ -63,8 +84,13 @@ form {
         margin: 0 5px 0 5px;
 }
 .copy {
+		font-family: 'Raleway', sans-serif;
         padding-top: 20px;
-        font-size: 12px;
+        font-size: 13px;
+}
+.copy a {
+        padding-top: 20px;
+        font-size: 13px;
 }
 .version {
         font-size: 0.8em;
