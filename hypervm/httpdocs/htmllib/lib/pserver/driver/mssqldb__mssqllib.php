@@ -5,15 +5,12 @@ class Mssqldb__mssql extends LxDriverclass {
 
 function dbactionAdd()
 {
-//<<<<<<< mssqldb__mssqllib.php
 	print("starting\n");
-//=======
 
 	if (!windowsOs()) {
 		throw new lxException('mssql_is_only_on_windows', '', '');
 	}
 	print("\n mantu\n");
-//>>>>>>> 1.1.2.8
 	$req = mssql_connect("localhost,1433");
 
 	if (!$req) {
