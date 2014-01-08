@@ -355,6 +355,7 @@ class vps__openvz extends Lxdriverclass {
 	
 		$username = vps::create_user($this->main->username, $this->main->password, $this->main->vpsid, "/usr/bin/lxopenvz");
 			
+                // OA proposed patch to remove this and revert to foreground create
 		if ($sgbl->isDebug()) {
 			$this->doRealCreate();
 		} else {
@@ -536,6 +537,7 @@ class vps__openvz extends Lxdriverclass {
 			lunlink("/etc/vz/conf/{$this->main->vpsid}.conf");
 		}
 		//lxfile_rm_rec("__path_program_home/vps/{$this->main->nname}");
+		$this->setUplinkUsage();
 	}
 
 	function toggleStatus()
