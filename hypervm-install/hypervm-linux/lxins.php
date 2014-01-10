@@ -3,7 +3,7 @@
 //    HyperVM, Server Virtualization GUI for OpenVZ and Xen
 //
 //    Copyright (C) 2000-2009     LxLabs
-//    Copyright (C) 2009-2013     LxCenter
+//    Copyright (C) 2009-2014     LxCenter
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU Affero General Public License as
@@ -96,7 +96,7 @@ function lxins_main()
     $list = array("which", "lxlighttpd", "zip", "unzip", "hypervm-core-php", "curl","yum-plugin-replace");
 
     if ($installtype !== 'slave') {
-        $mysql = array("mysql", "mysql-server", "mysqlclient*");
+        $mysql = array("mysql", "mysql-server");
         $list = array_merge($list, $mysql);
     }
 
@@ -146,7 +146,7 @@ function lxins_main()
     system("unzip -oq hypervm-current.zip", $return);
 
     if ($return) {
-        print("Unzipping the core Failed.. Most likely it is corrupted. Please contact the support personnel\n");
+        print("\nUnzipping the core Failed.. Most likely it is corrupted. Please contact the support personnel\n");
         exit;
     }
     unlink("hypervm-current.zip");
@@ -184,33 +184,33 @@ function lxins_main()
     passthru("/usr/local/lxlabs/ext/php/php ../bin/install/virt-install.php --install-type=$installtype --virtualization-type=$virtualization $skiparg");
 
 
-    print("\n\n\nCongratulations!. HyperVM has been installed successfully on your server as $installtype \n");
+    echo smart_wordwrap("\n\n\nCongratulations!.\nHyperVM has been installed successfully on your server as $installtype \n");
 
     if ($installtype === 'master') {
-        print("\nYou can browse to the administration interface at:\n");
-        print("Secure - https://<ip-address>:8887\n");
-        print("Normal -  http://<ip-address>:8888\n\n");
-        print("The login and password are 'admin' 'admin'. After Logging in, you will have to change your password to something more secure.\n");
-        print("Thanks for choosing HyperVM to manage your Server, and allowing us to be of service.\n");
+        echo smart_wordwrap("\nYou can browse to the administration interface at:\n");
+        echo smart_wordwrap("Secure - https://<ip-address>:8887\n");
+        echo smart_wordwrap("Normal -  http://<ip-address>:8888\n\n");
+        echo smart_wordwrap("The login and password are 'admin' 'admin'. After Logging in, you will have to change your password to something more secure.\n");
+        echo smart_wordwrap("Thanks for choosing HyperVM to manage your Server, and allowing us to be of service.\n");
     } else {
-        print("You should open the port 8889 on this server, since this is used for the communication between master and slave.\n");
-        print("To access this slave, go admin->slaves->add slave, give the ip/machine name of this server. The password is 'admin'. The slave will appear in the list of slaves, and you can access it just like you access localhost.\n");
+        echo smart_wordwrap("You should open the port 8889 on this server, since this is used for the communication between master and slave.\n");
+        echo smart_wordwrap("To access this slave, go admin->slaves->add slave, give the ip/machine name of this server. The password is 'admin'. The slave will appear in the list of slaves, and you can access it just like you access localhost.\n");
     }
 
     if ($virtualization === 'openvz') {
-        print("\n***There is one more step you have to do to make this complete. Open /etc/grub.conf, and change the 'default=1' line to 'default=0', and reboot this machine. You will be rebooted into the OpenVZ kernel and will able to manage VPSes from the HyperVM interface.\n");
+        echo smart_wordwrap("\n***There is one more step you have to do to make this complete. Open /etc/grub.conf, and change the 'default=1' line to 'default=0', and reboot this machine. You will be rebooted into the OpenVZ kernel and will able to manage VPSes from the HyperVM interface.\n");
     } else if ($virtualization === 'xen') {
-        print("\n**** You will have to reboot for the XEN kernel to take effect. Once rebooted, you will able to manage XEN virtual machines using the HyperVM interface.\n");
+        echo smart_wordwrap("\n**** You will have to reboot for the XEN kernel to take effect. Once rebooted, you will able to manage XEN virtual machines using the HyperVM interface.\n");
     }
 
-    print("\n\nExtra note:\n");
-    print("To install extra XEN and/or OpenVZ OS templates please run:\n\n");
-    print("sh /script/install-extra-ostemplates\n");
-    print("\nThese templates are left out the install process to speed up the HyperVM installation. By default only CentOS 5 and HostInBox(Kloxo) OS templates are installed.\n\n");
-    print("\n#!# Reboot your system to boot into the right kernel #!#\n\n");
+    echo smart_wordwrap("\n\nExtra note:\n");
+    echo smart_wordwrap("To install extra XEN and/or OpenVZ OS templates please run:\n\n");
+    echo smart_wordwrap("sh /script/install-extra-ostemplates\n");
+    echo smart_wordwrap("\nThese templates are left out the install process to speed up the HyperVM installation. By default only CentOS 5 and HostInBox(Kloxo) OS templates are installed.\n\n");
+    echo smart_wordwrap("\n#!# Reboot your system to boot into the right kernel #!#\n\n");
 
     if (file_exists('/usr/local/lxlabs/.git')) {
-        print("Remember, you installed a Development version. Do not use it on production servers!\n\n");
+        echo smart_wordwrap("Remember, you installed a Development version. Do not use it on production servers!\n\n");
     }
 
 
