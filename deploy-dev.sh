@@ -69,10 +69,12 @@ require_root()
 	fi
 }
 
-require_reqirements()
+require_requirements()
 {
-    yum -y install which zip unzip
+    #
     # without them, it will compile each run git and does not create/unzip the development files.
+    #
+    yum -y install which zip unzip
 }
 
 
