@@ -2,7 +2,7 @@
 #    HyperVM, Server Virtualization GUI for OpenVZ and Xen
 #
 #    Copyright (C) 2000-2009	LxLabs
-#    Copyright (C) 2009-2013	LxCenter
+#    Copyright (C) 2009-2014	LxCenter
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -21,6 +21,7 @@
 #
 #    Install and deploy a develoment version on a local enviroment
 #
+#    Version 0.4 Added which, zip and unzip as requirement [ Danny Terweij <d.terweij@lxcenter.org> ]
 #    Version 0.3 Added perl-ExtUtils-MakeMaker as requirement to install_GIT [ Danny Terweij <d.terweij@lxcenter.org> ]
 #    Version 0.2 Changed git version [ Danny Terweij <d.terweij@lxcenter.org> ]
 #    Version 0.1 Initial release [ Ángel Guzmán Maeso <angel.guzman@lxcenter.org> ]
@@ -68,7 +69,16 @@ require_root()
 	fi
 }
 
+require_reqirements()
+{
+    yum -y install which zip unzip
+    # without them, it will compile each run git and does not create/unzip the development files.
+}
+
+
 require_root
+
+require_requirements
 
 echo 'Installing HyperVM development version.'
 
@@ -87,11 +97,11 @@ case $1 in
 		git clone git://github.com/lxcenter/hypervm.git ${HYPERVM_PATH}
 		cd ${HYPERVM_PATH}
 		git checkout master
-		cd hypervm-install
+		cd ${HYPERVM_PATH}/hypervm-install
 		sh ./make-distribution.sh
-		cd ../hypervm
+		cd ${HYPERVM_PATH}/hypervm
 		sh ./make-development.sh
-		printf "Done. For install run:\ncd ${HYPERVM_PATH}/hypervm-install/hypervm-linux/; sh hypervm-install-[master|slave].sh with args\n"
+		printf "Done.\nInstall HyperVM:\ncd ${HYPERVM_PATH}/hypervm-install/hypervm-linux/\nsh hypervm-install-[master|slave].sh with args\n"
 		;;
 	dev )
 		# Clone from GitHub the last version using git transport (no http or https)
@@ -99,11 +109,11 @@ case $1 in
 		git clone git://github.com/lxcenter/hypervm.git ${HYPERVM_PATH}
 		cd ${HYPERVM_PATH}
 		git checkout dev -f
-		cd hypervm-install
+		cd ${HYPERVM_PATH}/hypervm-install
 		sh ./make-distribution.sh
-		cd ../hypervm
+		cd ${HYPERVM_PATH}/hypervm
 		sh ./make-development.sh
-		printf "Done. For install run:\ncd ${HYPERVM_PATH}/hypervm-install/hypervm-linux/; sh hypervm-install-[master|slave].sh with args\n"
+		printf "Done.\nInstall HyperVM:\ncd ${HYPERVM_PATH}/hypervm-install/hypervm-linux/\nsh hypervm-install-[master|slave].sh with args\n"
 		;;
 	*   )
 		usage
