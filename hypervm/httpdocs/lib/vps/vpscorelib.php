@@ -75,6 +75,7 @@ static $__acdesc_update_reboot =  array("","",  "Reboot");
 static $__acdesc_update_changenname =  array("","",  "Change Name"); 
 
 static $__desc_sp_specialplay_o = array("db", "",  "");
+static $__desc_notification_o = array("db", "",  "");
 
 
 function getSyncserverIP()
