@@ -1688,11 +1688,12 @@ function print_navigation($navig)
 	print("</table> </td> </tr> </table> </td>");
 	
 	if ($login->getSpecialObject('sp_specialplay')->isOn('simple_skin')) {
-
-		if ($login->getSpecialObject('sp_specialplay')->isOn('show_thin_header')) {
+// For clients with simple skin this hides the logout button. 
+// The logout link is nowhere. 
+//		if ($login->getSpecialObject('sp_specialplay')->isOn('show_thin_header')) {
 			$v =  create_simpleObject(array('url' => "javascript:top.mainframe.logOut()", 'purl' => '&a=updateform&sa=logout', 'target' => null));
 			$ghtml->print_div_button_on_header(null, true, $k, $v);
-		}
+//		}
 	} else {
 
 		$imgstring = "<img width=18 height=18 src=/img/general/button/star.gif>";
@@ -1905,7 +1906,9 @@ function do_display_init()
 	}
 
 
-
+	// OA: Why only kloxo? Because of this there is no Logout text link on 
+	// simple skin for end users (with thin header) 
+	// anyway, I like the door icon better, so I leave this alone and enablo the door
 	if ($sgbl->isKloxo() && $gbl->c_session->ssl_param) {
 		$url = $gbl->c_session->ssl_param['backurl'];
 		$parent = $gbl->c_session->ssl_param['parent_clname'];
