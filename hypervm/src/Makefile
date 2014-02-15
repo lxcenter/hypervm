@@ -43,7 +43,7 @@ restart:
 backend:
 	${CC} ${CFLAGS} -o hypervm.exe program-backend.c ${LIBS}
 
-closeallinputs:
+closeallinput:
 	${CC} ${CFLAGS} -o closeallinput closeallinput.c ${LIBS}
 	
 
