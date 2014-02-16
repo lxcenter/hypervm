@@ -76,6 +76,7 @@ class Sgbl extends Sgbllib
         $this->__var_noaccess_shell = '/sbin/nologin';
         $this->__path_named_path = "/var/named";
         $this->__path_iptraffic_file = "/var/log/lxiptraffic.log";
+        $this->__path_iptraffic_filev6 = "/var/log/lxiptrafficv6.log";
         $this->__path_vps_root = "/vz/private/";
 
         $this->__path_home_dir = "/home";

@@ -136,8 +136,8 @@ function iptraffic_main()
 {
 	global $global_dontlogshell;
 
-
-
+	$retv6 = iptraffic_main_v6();
+	
 	$res = lxshell_output("iptables", "-nvx", "-L", "FORWARD");
 
 	$res = explode("\n", $res);
@@ -185,6 +185,7 @@ function iptraffic_main()
 		}
 	}
 
+
 	if (!$outgoing) {
 		return;
 	}
@@ -214,6 +215,17 @@ function iptraffic_main()
 
 
 	foreach($vpsincoming as $k => $v) {
+		if(isset($retv6)){
+			if(isset($retv6[$k]))
+			{
+				// We collected IPv6 traffic info for this VM
+				// adding it here to total
+				$vpsincoming[$k] += $retv6[$k]['in'];
+				$vpsoutgoing[$k] += $retv6[$k]['out'];
+			
+			}
+		
+		}
 		$tot = $vpsincoming[$k] + $vpsoutgoing[$k];
 		execRrdTraffic("openvz-$k", $tot, "-$vpsincoming[$k]", $vpsoutgoing[$k]);
 		$stringa[] = time() . " " . date("d-M-Y:H:i") . " openvz-$k $tot $vpsincoming[$k] $vpsoutgoing[$k]";
@@ -223,7 +235,106 @@ function iptraffic_main()
 		$string = implode("\n", $stringa);
 		lfile_put_contents("__path_iptraffic_file", "$string\n", FILE_APPEND);
 	}
-	lxshell_return("iptables", "-Z");
+	lxshell_return("iptables", "-Z", "FORWARD");
+}
+
+function iptraffic_main_v6()
+{
+	global $global_dontlogshell;
+
+	$res = lxshell_output("ip6tables", "-nvx", "-L", "FORWARD");
+
+	$res = explode("\n", $res);
+
+
+	$outgoing = null;
+	foreach($res as $r) {
+		// First column may have spaces because of the number of digits in the column
+                $r = trim($r, ' ');
+                // Trim internal spaces
+		$r = trimSpaces($r);
+
+		$list = explode(' ', $r);
+
+	        if(stripos($r, "source") !== false && stripos($r, "destination") !== false)
+	        {
+	          // header, get important columns number
+	          for ($i=0; $i<count($list);$i++)
+	          {
+	            if($list[$i] == "bytes") $byteIdx=$i;
+	            // Removing 1, because the header has an extra field cause of 'target' column
+	            // FIXME: any better idea? 
+	            if($list[$i] == "source") $srcIdx=$i-1;
+	            if($list[$i] == "destination") $dstIdx=$i-1;
+	          }
+	        }
+
+
+		if (count($list) !=7) {
+			continue;
+		}
+                $list[$dstIdx] = explode("/", $list[$dstIdx])[0];
+                $list[$srcIdx] = explode("/", $list[$srcIdx])[0];
+                
+		if (csb($list[$dstIdx], "::")) {
+			// Just make sure that we don't calculate this goddamn thing twice, which would happen if there are multiple copies of the same rule. So mark that we have already read it in the sourcelist.
+			// OA: Since we dont care lines that have a rule set (fixed above), this wont happen
+			if (!isset($sourcelist[$list[$srcIdx]])) {
+				$outgoing[$list[$srcIdx]][] = $list[$byteIdx];
+				$sourcelist[$list[$srcIdx]] = true;
+			}
+		} else if(csb($list[$srcIdx], "::")) {
+			if (!isset($dstlist[$list[$dstIdx]])) {
+				$incoming[$list[$dstIdx]][] = $list[$byteIdx];
+				$dstlist[$list[$dstIdx]] = true;
+			}
+		}
+	}
+
+
+	if (!$outgoing) {
+		return;
+	}
+
+	if (!isset($incoming)) {
+		return;
+	}
+
+
+	$realtotalincoming = calculateRealTotal($incoming);
+	$realtotaloutgoing = calculateRealTotal($outgoing);
+
+	foreach($realtotaloutgoing as $k => $v) {
+
+		$vpsid = get_vpsid_from_ipaddress($k);
+
+		if ($vpsid === 0) {
+			continue;
+		}
+
+		if (!isset($vpsoutgoing[$vpsid])) { $vpsoutgoing[$vpsid] = 0; }
+		if (!isset($vpsincoming[$vpsid])) { $vpsincoming[$vpsid] = 0; }
+
+		$vpsoutgoing[$vpsid] += $realtotaloutgoing[$k];
+		$vpsincoming[$vpsid] += $realtotalincoming[$k];
+	}
+
+	$ret= array();
+	foreach($vpsincoming as $k => $v) {
+		$ret[$k]['in'] = $vpsincoming[$k];
+		$ret[$k]['out'] = $vpsoutgoing[$k];
+		
+		$tot = $vpsincoming[$k] + $vpsoutgoing[$k];
+		execRrdTraffic("openvzv6-$k", $tot, "-$vpsincoming[$k]", $vpsoutgoing[$k]);
+		$stringa[] = time() . " " . date("d-M-Y:H:i") . " openvzv6-$k $tot $vpsincoming[$k] $vpsoutgoing[$k]";
+	}
+
+	if ($stringa) {
+		$string = implode("\n", $stringa);
+		lfile_put_contents("__path_iptraffic_file"."v6", "$string\n", FILE_APPEND);
+	}
+	lxshell_return("ip6tables", "-Z", "FORWARD");
+	return $ret;
 }
 
 
