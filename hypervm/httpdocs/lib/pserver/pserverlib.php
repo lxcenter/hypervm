@@ -21,6 +21,7 @@ static $__desc_button_graph_f = array("b", "",  "", 'a=graph&sa=vpsbase');
 
 static $__acdesc_graph_vpsbase	 = array("", "",  "vps_graphs");
 static $__acdesc_graph_vpstraffic	 = array("", "",  "vps_traffic");
+static $__acdesc_graph_vpsv6traffic	 = array("", "",  "vps_v6traffic");
 static $__acdesc_graph_vpscpuusage	 = array("", "",  "vps_cpu");
 static $__acdesc_graph_vpsmemoryusage	 = array("", "",  "vps_memory");
 static $__acdesc_update_centralbackupconfig	 = array("", "",  "central_backup_config");
@@ -85,6 +86,7 @@ function createGraphList()
 {
 	global $gbl, $sgbl, $login, $ghtml; 
 	$alist[] = "a=graph&sa=vpstraffic";
+	$alist[] = "a=graph&sa=vpsv6traffic";
 	$driverapp = $gbl->getSyncClass(null, $this->nname, 'vps');
 	if ($driverapp === 'xen') {
 	} else {

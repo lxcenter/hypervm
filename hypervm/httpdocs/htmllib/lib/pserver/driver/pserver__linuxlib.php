@@ -91,6 +91,9 @@ function dbactionUpdate($subaction)
 		case "graph_vpstraffic":
 			return rrd_graph_server("traffic", $this->main->__var_graph_list, $this->main->rrdtime);
 			break;
+		case "graph_vpsv6traffic":
+			return rrd_graph_server("v6traffic", $this->main->__var_graph_list, $this->main->rrdtime);
+			break;
 
 		case "graph_vpscpuusage":
 			return rrd_graph_server("cpu", $this->main->__var_graph_list, $this->main->rrdtime);

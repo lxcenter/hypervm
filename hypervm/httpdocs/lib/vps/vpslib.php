@@ -197,6 +197,7 @@ static $__acdesc_update_timezone	 = array("", "",  "set_timezone");
 static $__acdesc_update_boot	 = array("", "",  "boot");
 static $__acdesc_graph_base	 = array("", "",  "graphs");
 static $__acdesc_graph_traffic	 = array("", "",  "traffic");
+static $__acdesc_graph_v6traffic	 = array("", "",  "v6traffic");
 static $__acdesc_graph_cpuusage	 = array("", "",  "Cpuusage");
 static $__acdesc_graph_memoryusage	 = array("", "",  "Memory");
 static $__acdesc_update_livemigrate	 = array("", "",  "live_migrate");
@@ -307,6 +308,15 @@ static function findVpsGraph($server, $type)
 				}
 			}
 			break;
+		case "vpsv6traffic":
+			if ($driverapp === 'xen') {
+			} else {
+				foreach($list as $l) {
+					$ret[$l['nname']] = "openvzv6-{$l['vpsid']}";
+				}
+			}
+			break;
+
 
 		default:
 			if ($driverapp === 'xen') {
@@ -1686,8 +1696,10 @@ static function getVpsOsimage($parent, $driver, $type = "add")
 function createGraphList()
 {
 	$alist[] = "a=graph&sa=traffic";
+
 	if ($this->isXen()) {
 	} else {
+		$alist[] = "a=graph&sa=v6traffic";
 		$alist[] = "a=graph&sa=memoryusage";
 	}
 
