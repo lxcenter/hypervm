@@ -121,12 +121,11 @@ function setPassword($newp)
 
 function real_escape_string($string)
 {
-    global $gbl;
-    $fdbvar = "__fdb_localhost";
+     global $gbl, $sgbl, $login, $ghtml;
+     $fdbvar = "__fdb_" . $this->__readserver;
+     return mysqli_real_escape_string($gbl->$fdbvar,$string);
 
-    return mysqli_real_escape_string($gbl->$fbdvar, $string);
 }
-
 
 function database_query($res, $string)
 {

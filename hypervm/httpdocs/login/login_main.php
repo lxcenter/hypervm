@@ -12,7 +12,7 @@
                   <input type=hidden name=id value="<?php echo mt_rand() ?>">
                   <div class="central"><input type="submit" name="login" class="button" value="Login" /></div>
           </form>
-  <div class="forgotpassword"><a class="forgotpwd"  href="javascript:document.forgotpassword.submit()"><font color=black><u>Forgot Password?</u></a> 
+  <div class="forgotpassword"><a class="forgotpwd"  href="javascript:document.forgotpassword.submit()"><font color="black">Forgot Password?</a>
           <form name="forgotpassword" method="post"  action="/login/">
                   <input type="hidden" name="frm_forgotpwd" value="1">
           </form>
