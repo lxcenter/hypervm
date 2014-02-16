@@ -119,6 +119,13 @@ function setPassword($newp)
 	return $this->rawQuery("set password=Password('$newp');");
 }
 
+function real_escape_string($string)
+{
+     global $gbl, $sgbl, $login, $ghtml;
+     $fdbvar = "__fdb_" . $this->__readserver;
+     return mysqli_real_escape_string($gbl->$fdbvar,$string);
+
+}
 
 function database_query($res, $string)
 {
