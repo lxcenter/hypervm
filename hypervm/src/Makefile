@@ -43,7 +43,11 @@ restart:
 backend:
 	${CC} ${CFLAGS} -o hypervm.exe program-backend.c ${LIBS}
 
-all: xen openvz freeloop restart backend
+closeallinput:
+	${CC} ${CFLAGS} -o closeallinput closeallinput.c ${LIBS}
+	
+
+all: xen openvz freeloop restart backend closeallinput
 
 install: 
 	cp ${PREFIX}xen ../sbin/lxxen
@@ -60,5 +64,7 @@ install:
 	cp hypervm.exe ../sbin/hypervm.exe.core
 	mv hypervm.exe ../sbin/hypervm.exe
 
+	mv closeallinput ../cexe/closeallinput
+
 clean:
-	\rm -rf *.o *~ ${PREFIX}xen ${PREFIX}openvz ${PREFIX}restart findfreeloop hypervm.exe
+	\rm -rf *.o *~ ${PREFIX}xen ${PREFIX}openvz ${PREFIX}restart findfreeloop hypervm.exe closeallinput

@@ -31,6 +31,9 @@ static $__desc_openvzostemplate_o = array("", "", "", "");
 static $__desc_ippool_l = array("db", "", "", "");
 static $__desc_auxiliary_l = array("db", "", "", "");
 
+static $__desc_sp_childspecialplay_o = array("db", "",  "");
+
+
 function updateMultiVpsCreate($param)
 {
 	global $gbl, $sgbl, $login, $ghtml; 
