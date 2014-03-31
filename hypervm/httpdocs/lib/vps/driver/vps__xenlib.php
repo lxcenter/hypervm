@@ -1089,7 +1089,7 @@ class vps__xen extends Lxdriverclass {
 		}
 		$string .= "vncunused=0\n";
 		$string .= "vncdisplay={$this->main->vncdisplay}\n";
-	
+                $string .= "usbdevice='tablet'";
 		if ($this->main->text_xen_config) {
 			$string .= "{$this->main->text_xen_config}\n";
 		}
