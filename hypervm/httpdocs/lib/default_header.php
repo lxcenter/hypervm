@@ -44,7 +44,7 @@ function CreateDefaultHeaderMenu()
 
         }
     </script>
-    <body style='body: margin: 0;'>
+    <body style='margin: 0;'>
     <!-- httpdocs/lib/default_header.php -->
     <table width='100%' height='59' border='0' valign='top' align='center' cellpadding='0' cellspacing='0'>
         <tr>
