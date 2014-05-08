@@ -1119,7 +1119,27 @@ class vps__xen extends Lxdriverclass {
 	
 		$string  = null;
 	
-		//Add pygrub configuration if template name contains pygrub
+	        /* Commented to allow the below if else to handel pygrub & xvd
+		$sk = "/boot/hypervm-xen-vmlinuz-{$this->main->nname}";
+	
+		if (lxfile_exists($sk)) {
+			$kern = $sk;
+		} else {
+			$kern = "/boot/hypervm-xen-vmlinuz";
+		}
+		$string .= "kernel     = '$kern'\n";
+	
+	
+		$customram = "/boot/hypervm-xen-initrd-{$this->main->nname}.img";
+	
+		if (lxfile_exists($customram)) {
+			$string .= "ramdisk    = '$customram'\n";
+		} else if (lxfile_exists('/boot/hypervm-xen-initrd.img')) {
+			$string .= "ramdisk    = '/boot/hypervm-xen-initrd.img'\n";
+		}
+		*/
+	
+	//Add pygrub configuration if template name contains pygrub
         $pygrub_record = explode('-', $this->main->ostemplate);
         if (stripos($pygrub_record[3], 'pygrub') !== FALSE) {
             $string .= "bootloader = '/usr/bin/pygrub'\n";
