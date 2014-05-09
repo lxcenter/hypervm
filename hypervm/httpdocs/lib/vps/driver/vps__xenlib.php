@@ -1139,31 +1139,28 @@ class vps__xen extends Lxdriverclass {
 		}
 		*/
 	
-	//Add pygrub configuration if template name contains pygrub
+        //Add pygrub configuration if template name contains pygrub
         $pygrub_record = explode('-', $this->main->ostemplate);
         if (stripos($pygrub_record[3], 'pygrub') !== FALSE) {
             $string .= "bootloader = '/usr/bin/pygrub'\n";
-        }
-        else {
+        } else {
 
             $string .= "kernel = '/boot/hypervm-xen-vmlinuz'\n";
             $string .= "ramdisk = '/boot/hypervm-xen-initrd.img'\n";
-
         }
 
         //Add xvd configuration if template name contains xvd
         $xvd_record = explode('-', $this->main->ostemplate);
         if (stripos($xvd_record[4], 'xvd') !== FALSE) {
             $string .= "disk       = ['$loc:{$this->main->maindisk},xvda1,w', '$loc:{$this->main->swapdisk},xvdb1,w']\n";
-			$string .= "root = '/dev/xvda1 ro selinux=0'\n";
-        }
-        else {
+            $string .= "root = '/dev/xvda1 ro selinux=0'\n";
+        } else {
 
             $string .= "disk       = ['$loc:{$this->main->maindisk},sda1,w', '$loc:{$this->main->swapdisk},sda2,w']\n";
-			$string .= "root = '/dev/sda1 ro selinux=0'\n";
+            $string .= "root = '/dev/sda1 ro selinux=0'\n";
         }
-	
-		if ($this->isUnlimited($this->main->priv->cpu_usage)) {
+
+        if ($this->isUnlimited($this->main->priv->cpu_usage)) {
 			$cpu = "100" * os_getCpuNum();;
 		} else {
 			$cpu = $this->main->priv->cpu_usage;
