@@ -1120,6 +1120,12 @@ class vps__xen extends Lxdriverclass {
 		$string  = null;
 	
 	        /* Commented to allow the below if else to handel pygrub & xvd
+	        
+	        OSTemplates should follow this format 
+	        
+	        With pygrub   =centos-5-x86-pygrub-xvd.tar.gz
+	        without pygrub=centos-5-x86-default-xvd.tar.gz
+	        
 		$sk = "/boot/hypervm-xen-vmlinuz-{$this->main->nname}";
 	
 		if (lxfile_exists($sk)) {
