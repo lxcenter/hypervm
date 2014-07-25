@@ -21,3 +21,4 @@ hypervm/src/lxxen
 
 #Ignore PHPStorm files
 .idea/
+/nbproject/private/
