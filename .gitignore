@@ -1,0 +1,23 @@
+# Ignore config files from Eclipse IDE
+.buildpath
+.project
+.settings/
+.externalToolBuilders/
+
+# Ignore binaries if already compiled
+hypervm/src/findfreeloop
+hypervm/src/hypervm.exe
+hypervm/src/lxlogin
+hypervm/src/lxopenvz
+hypervm/src/lxrestart
+hypervm/src/lxxen
+
+# Ignore .diff files on development
+*.diff
+
+# Ignore files from patches
+*.orig
+*.rej
+
+#Ignore PHPStorm files
+.idea/
