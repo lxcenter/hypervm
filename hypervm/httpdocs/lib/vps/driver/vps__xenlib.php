@@ -442,7 +442,7 @@ class vps__xen extends Lxdriverclass {
 		// Check if the Xen virtual machine is windows based
 		if($is_windows)
 		{
-			$result = $this->getDiskUsageWindows($disk, $root_path);
+			$result = self::getDiskUsageWindows($disk, $root_path);
 		}
 		else { // For Unix based Xen virtual machine
 			// @todo Check if the dumpe2fs it's available to use and exists (never trusts on users)
