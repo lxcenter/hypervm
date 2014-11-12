@@ -131,5 +131,5 @@ fi
 cd ${HYPERVM_PATH}/hypervm-install
 sh ./make-distribution.sh
 cd ${HYPERVM_PATH}/hypervm
-sh ./make-distribution.sh
+sh ./make-development.sh
 printf "Done.\nInstall HyperVM:\ncd ${HYPERVM_PATH}/hypervm-install/hypervm-linux\nsh hypervm-install-master.sh with args\n"
