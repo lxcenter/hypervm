@@ -118,7 +118,7 @@ else
     install_GIT
 fi
 
-ca# Clone from GitHub the last version using git transport (no http or https)
+# Clone from GitHub the last version using git transport (no http or https)
 echo "Cleaning up old installs"
 rm -Rf /usr/local/lxlabs.bak
 mv /usr/local/lxlabs /usr/local/lxlabs.bak
