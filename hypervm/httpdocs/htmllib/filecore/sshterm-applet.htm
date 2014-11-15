@@ -9,14 +9,15 @@
 <body>
 
 <p align="center"> 
-  <applet width="640" height="480" archive="SSHTermApplet-signed.jar,SSHTermApplet-jdkbug-workaround-signed.jar,SSHTermApplet-jdk1.3.1-dependencies-signed.jar" code="com.sshtools.sshterm.SshTermApplet" codebase="/thirdparty/sshterm-applet/" style="border-style: solid; border-width: 1; padding-left: 4; padding-right: 4; padding-top: 1; padding-bottom: 1">
+  
+  <applet width="640" height="480" <applet code="com.jcraft.jcterm.JCTermApplet.class"
+           archive="jcterm-0.0.10.jar?4,jsch-0.1.46.jar?4,jzlib-1.1.1.jar?4"  style="border-style: solid; border-width: 1; padding-left: 4; padding-right: 4; padding-top: 1; padding-bottom: 1">
 
-  <param name=sshapps.connection.host value=%host%>
-  <param name=sshapps.connection.port value=%port%>
-  <param name=sshapps.connection.userName value=%username%>
-  <param name=sshapps.connection.authenticationMethod value=password>
-  <param name=sshapps.connection.connectImmediately value=%connectimmediately%>
-  </applet>
+  <param name="jcterm.JSchSession.hostname" value=%host%>
+  <param name="jcterm.JSchSession.port" value=%port%>
+  <param name="jcterm.JSchSession.username" value=%username%>
+    </applet>
+
 </p>
 
 </body>
