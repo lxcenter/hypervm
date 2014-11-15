@@ -1,0 +1,16 @@
+Introduction
+------------
+
+J2SSH Maverick is the successor to the original J2SSH API and includes a complete and stable implementation of an SSH2 client. Originally built from the ground up by the original author back in 2003, this product has, until now, only been available under a commercial license. With the development and pending release of a third generation SSH API, this legacy API has now been released under the GPLv3 and will continue to be maintained by the core author as a contribution to the open source community.
+
+Getting Started
+---------------
+
+You need to include the core j2ssh-maverick-${version}.jar from this archives dist folder, along with any dependency jar files found in the lib folder.
+
+Check out the examples folder for a number of useful working examples.
+
+Support
+-------
+
+The author does not guarantee to provide timely support for this project. Please post your question on stack overflow with 'j2ssh' tag.

@@ -1,0 +1,1244 @@
+=================
+=  CHANGE LOG   =
+=================
+
+J2SSH Maverick 1.5.0 - Aug 28, 2014
+
+Features
+    o New open source branch converted to maven.
+    o Converted source to 1.5 source compatibility. 
+    o Renamed all base packages to com.sshtools.
+    o Re-factored logging interface, removed used of event service and replaced with custom interface.
+    
+Bug Fixes
+	o Automatically attempt to add BouncyCastle JCE provider if found in class path. If not installed, there may no large prime support for some Diffie Hellman algorithms.
+	o Evaluated and removed all java warnings through either re-factor or suppression.
+	
+=================
+=  HISTORY      =
+=================
+
+J2SSH Maverick 1.4.53 - Aug 19, 2014
+
+Bug Fixes
+    o HTTP / SOCKS proxy classes missing connection timeout support.
+    o Added synchronization to license validation to prevent possible corruption of license information under load.
+    o Ssh2Channel sendRequest incorrectly synchronizes on connection instance rather than channel instance.
+    
+------------------
+    
+J2SSH Maverick 1.4.52 - Jun 11, 2014
+
+Bug Fixes
+    o Server disconnects and does not accept client connection when client identification string is sent optimistically.  
+    o Last CR in file is not replaced in SftpClient text mode transfers.
+    o jakarta-oro jar file missing from dependencies.
+    
+------------------
+
+J2SSH Maverick 1.4.51 - Mar 31, 2014
+
+Features
+    o Added acceptLocalForwarding method to ForwardingClientListener.
+
+Bug Fixes
+    o Potential memory leak fixed when using pooled SftpClients with non-pooled SftpClient instances.
+    o Subsequent call to ForwardingClient.stopLocalForwarding with a key that had previously been used to stop listening but not kill active tunnels should kill any remaining tunnels if the killActiveTunnels flag is true.
+    o Changed default cipher to aes128-ctr.
+    o Added back processStandardData protected method of byte[],int,int to prevent backwards compatibility issues.
+    o Socket timeout applied via use of Ssh2Context.setSocketTimeout is not applied until after identification exchange.
+
+-------------------
+
+J2SSH Maverick 1.4.50 - Nov 20, 2013
+
+Bug Fixes
+    o Ssh2Session incorrectly defaults send keep-alive packet on idle to true, causing connections to remain active when the expected result was a timeout.
+	o Made SftpClient.matchRemoteFiles method public to allow wildcard searches to be performed on remote directory.
+	o SftpFileInputStream calls getAttributes on file but its no longer needed.
+	o umask not being applied to default file permissions when put through SftpClient.
+	
+-----------------
+
+J2SSH Maverick 1.4.49 - Oct 5, 2013
+
+Bug Fixes
+    o Start of key exchange was not synchronized until SSH_KEX_INIT had been received allowing non key exchange message to be sent in error.
+    o Support for larger N sizes in DSA key signatures allowing > 1024 bit DSA keys to be utilised.
+    o Added hmac-sha2-256 algorithm to supported Hmacs 
+    o copyRemoteDirectory/copyLocalDirectory flatten copied directory structure.
+    o Internal cache of SFTP file handles uses unsafe conversion from byte[] to String.
+    o Under load ConnectionProtocol was able to send a message during key re-exchange.
+    o SftpSubsystemChannel does not provide a method to perform SSH_FXP_LSTAT.
+    o Added statLink method to SftpClient to get attributes of a link.
+	o SftpClient symlink method passes target and link paths to createSymbolicLink in the wrong order. 
+	o Added support for larger DH key sizes in diffie-hellman-group-exchange-sha1 and diffie-hellman-group-exchange-sha256.   
+	
+------------------
+
+J2SSH Maverick 1.4.48 - July 18, 2013
+
+Bug Fixes
+    o Ssh2Channel checkCloseStatus call in close method does not pass correct remote closure state causing potential lockup in close method.
+    
+------------------
+
+J2SSH Maverick 1.4.47 - July 5, 2013
+
+Features
+    o Added SshConnector.enableFIPSMode to configure the client to only use FIPS supported algorithms. This requires a JCE that supports 2048 bit DH primes so is incompatible with SunJCE, use BouncyCastle JCE to support this or a FIPS certified JCE.
+    
+Bug Fixes
+    o When no default JCE provider is specified on JCEComponentManager, for diffie-hellman-group14-sha1 only, default to BouncyCastle JCE if it is an installed Provider. 
+    o AbstractJCECipher IV is now initialized with getBlockSize, allowing it to be overridden to prevent NPE with NSS/JSS crypto.
+    o Erroneous inclusion of Jakarta ORO .class files in maverick-all.jar. Use dependency if you need to depend on Jakarta ORO (regex matching in ScpClient/SftpClient).
+    o SftpFileInputStream does not implement available causing issues with GZIPInputStream and BufferedInputStream.
+    
+-----------------
+
+J2SSH Maverick 1.4.46 - Apr 26, 2013
+
+Bug Fixes
+    o Ssh2Session.close now attempts to ensure the remote SSH_MSG_CHANNEL_CLOSE is received before returning to ensure session exit code is processed correctly.
+    o Attempts to read non-existent data from SFTP v4 file attributes ACL.
+    
+-----------------
+
+J2SSH Maverick 1.4.45 - Mar 13, 2013
+
+Bug Fixes
+    o Timeout support introduced in Ssh2Client.openSessionChannel to prevent buffered mode clients from hanging. This currently requires that you call the specific openSessionChannel method in Ssh2Client with a reasonable timeout value.
+    o Forwarding client bottleneck fix in local forwarding socket listener.
+    o Better handling of channel EOF messages, forcing channel close when both sides are EOF.
+    o Channel is now freed only after all listener events have been fired.
+    o Debug mode now logs command input/output in log.
+    o SftpClient fails to throw SftpStatusException on put when server returns SSH_FXP_STATUS other than SSH_FX_OK in response to SSH_FXP_CLOSE message.
+    o License verification made less sensitive to whitespace changes.
+    o Removed use of circular buffer in Ssh2Channel to provide more flexible support for larger window sizes.
+    o OpenSSHPublicKeyFile performs unnecessary check against key algorithm name preventing further supported types being used.
+    o GlobRegExpMatching fails to process match if file is a directory.
+    o SSH1 RSA private keys fails to authenticate with 'unknown block type' or 'Data must start with zero' exception.
+    
+----------------
+
+J2SSH Maverick 1.4.44 - Dec 5, 2012
+
+Features
+    o Allow X11 fake cookie to be set rather than relying on random value. Normally this would not be desired but allows a scenario where J2SSH is used to bridge X11 in a server environment and needs to use fake cookie supplied by bridged client.
+    
+Bug Fixes
+    o ScpClient creates file before parsing entire response; in the event response is incorrect create file after complete parsing of response.
+    o AbstractKnownHostsKeyVerification fails to process known_hosts ` line with multiple host names for public key.
+
+-----------------
+
+J2SSH Maverick 1.4.43 - Oct 12, 2012
+    
+Bug Fixes
+    o Text mode file transfer incorrectly defaults to processing all EOL types and not just system EOL types.
+    o SftpClient block and maximum packet settings brought into line with other implementations as our larger (but still technically within protocol limits) were causing problems with some servers.  
+   
+-----------------
+
+J2SSH Maverick 1.4.42 - Sept 19, 2012
+    
+Features
+    o AES-128-CBC encryption now supported in OpenSSH private key files.
+    
+Bug Fixes
+    o Workaround for WS_FTP causes error retrieving root path.
+
+------------------
+
+J2SSH Maverick 1.4.41 - Sept 3, 2012
+
+Features
+    o Ability to change default hash algorithm for SSH key fingerprints.
+    
+Bug Fixes
+    o AbstractKnownHostsKeyVerification falls into infinite loop if known_hosts file does not exist.
+    
+------------------
+
+J2SSH Maverick 1.4.40 - August 27, 2012
+
+Features
+    o diffie-hellman-group-exchange-sha256 now supported with JCE provider.
+    
+Bug Fixes
+    o SFTP hangs on very large packet size. Added more restrictive check, size can be configured with system property maverick.sftp.maxPacketSize.
+    o Race condition causes short lived channel to remain open if server closes before client has updated channel from uninitialized to open.
+    o Zero length channel data packet causes EOF exception when channel int read() is used to return data from channel InputStream.
+    o AbstractKnownHostsKeyVerification requires synchronization to ensure thread safety.
+  
+------------------
+
+J2SSH Maverick 1.4.39 - June 28, 2012
+
+Features
+    o Added system property maverick.debug.dsa.rvalue to allow output of DSA r value received from server in host key verification
+      for testing that no repeated r value is seen.
+      
+Bug Fixes
+    o X509 DSA certificate fails to be initialized from public key blob.
+    
+------------------
+
+J2SSH Maverick 1.4.38 - June 9, 2012
+
+Bug Fixes
+    o Diffie Hellman key exchange components were not fully utilising JCE DH algorithms for key agreement.
+    o Vulnerability in internal cryptographic DSA provider fixed. http://rdist.root.org/2010/11/19/dsa-requirements-for-random-k-value/
+    
+------------------
+
+J2SSH Maverick 1.4.37 - May 1, 2012
+
+Features
+    o Added support for Connection, Server and Protocol licenses.
+    
+Bug Fixes
+    o Workaround for WS_FTP returning file not found when directory ends in / 
+    o Removed broken J2ME build
+    
+-----------------
+
+J2SSH Maverick 1.4.36 - Mar 26, 2012
+
+Features
+    o Added getLength method to ScpClientIO to allow length of file to be determined over SCP. 
+    
+Bug Fixes
+    o Possible signed bit conversion in ByteArrayReader causes NumberFormatException whilst reading file attributes
+    o Removed finalize operation from SftpSubsystemChannel and SftpClient and ensured responses are cleared when channel is closed.
+    
+-----------------
+
+J2SSH Maverick 1.4.35 - Feb 6, 2012
+
+Features
+    o Now supports known_hosts files generated using OpenSSH configuration HashKnownHosts=yes
+    
+Bug Fixes
+    o SftpMessage cleanup in SftpSubsystem channel to help prevent potential memory leak when connection is dropped uncleanly.
+    o Formatting on long filename in SftpClient incorrectly labels file as FIFO when no IF_MT value is passed by server.
+    o copyRemoteDirectory incorrectly copies all files to base directory.
+    o OpenSSH cannot read private keys encrypted by API.
+    o AbstractKnownHostsKeyVerification chokes on invalid host key entry, invalid hosts are now ignored by default and delegated to subclass in onInvalidHostEntry function. ConsoleKnownHostsKeyVerification now outputs the line as a warning but does not fail.
+    o rsa1 key is incorrectly encoded by JCEComponentManager in knownhosts file.      
+
+-----------------
+
+J2SSH Maverick 1.4.34 - Sept 25, 2011
+
+Bug Fixes
+    o Channel request failure does not include remote sides channel id
+    
+    
+-----------------    
+
+J2SSH Maverick 1.4.33 - Sept 14, 2011
+
+Bug Fixes
+    o ScpClient does not complete transfers when profile echos out during session initialization.
+    o openRemoteClient does not open buffered mode client
+    o TransportProtocol selectNegotiatedComponent made more tolerant of spaces in algorithm strings.
+    
+-----------------
+
+J2SSH Maverick 1.4.32 - June 3, 2011
+
+Features
+    o Added support for MD5 signatures in RSA certificates.
+    
+Bug Fixes
+    o Additional cleanup code added for SftpClient/SftpSubsystemClient to remove references to SftpMessage objects remaining in buffer.
+    o Ssh1RhostsRsaAuthentication fails to default client username to value set in SshConnector.connect call.
+    
+-----------------
+
+J2SSH Maverick 1.4.31 - April 20, 2011
+
+Bug Fixes
+    o Added check to ensure number of asynchronous requests never reaches zero. 
+    
+-----------------
+
+J2SSH Maverick 1.4.30 - February 7, 2011
+    
+Features
+    o Added support for newline@vandyke.com SFTP extension for text mode transfers with SFTP version <= 3. 
+    o Added support for hmac-sha256. 
+    o Added support for x509v3-sign-dss public/private keys & certificates.
+    o SftpClient will attempt to resolve actual username/group of UID/GID on directory file listing.
+
+Bug Fixes
+    o x509v3-sign-rsa made compatible with older version of specification.
+    o Changed log statement description for invalid message length; removed mention of possible DoS attack.
+    o SocketWrapper.getHost potentially generates reverse DNS request, causing startup delays.
+    o putFiles/getFiles behavior is inconsistent; fixed errors in path validation and pattern matching.
+    o ScpClient issue with Windows path separator fixed.
+    
+------------------
+
+
+J2SSH Maverick 1.4.29 - September 16, 2010
+    
+Bug Fixes
+    o Race condition in key exchange allows client to send message out of sequence, before messages that have been queued during key exchange.
+    o Synchronization of Ssh2Channel.sendRequest causes deadlock when command execution request fails on Maverick SSHD server. 
+    
+------------------
+
+J2SSH Maverick 1.4.28 - Sept 2, 2010
+    
+Features                       
+    o Added missing hmac-md5-96 and hmac-sha1-96 HMACs to JCE provider.
+    o Added enableCompression/disableCompression methods to Ssh2Context for easy configuration of zlib compression.
+
+Bug Fixes
+    o New socket timeout behaviour causes deadlock when timeout occurs during session channel initialisation. New behaviour is not enabled by default and so this problem will only affect those customers that have enabled the new behaviour.
+    o Text mode performance fix fails to flush OutputStream causing small files to be uploaded as zero bytes.
+    
+------------------
+
+J2SSH Maverick 1.4.27 - July 14, 2010
+    
+Bug Fixes                       
+    o Text mode transfers suffer from performance problem due to writing single bytes to an unbuffered file.
+        
+------------------
+
+J2SSH Maverick 1.4.26 - May 24, 2010
+    
+Features                       
+    o Support for zlib@openssh.com compression added.
+    
+------------------
+
+J2SSH Maverick 1.4.25 - April 8, 2010
+    
+Bug Fixes                        
+    o SocketTransport.getHost() changed to return the stored hostname value instead of calling
+      Socket.getInetAddress().getHostName(). This call could initiate DNS calls that can
+      cause connection startup delays after a connection has been made due to it's use in 
+      logging statements.
+      
+-----------------
+
+J2SSH Maverick 1.4.24 - March 26, 2010
+
+Features
+    o Added option to Ssh2Context to support socket timeouts and idle events through TransportProtocolListener
+      this includes an option to send SSH_MSG_IGNORE packet on idle as well as disconnect on idle connection timeout.
+    
+Bug Fixes                        
+    o Fixed source code compile for Enterprise license.
+    o Added getModifiedDateTime/getCreationDateTime/getAccessedDateTime methods to return SftpFileAttributes times
+      as a java.util.Date object.
+    o Changed SftpClient internal calls to return attributes from getAttributes rather than stat to prevent
+      multiple calls to resolveRemotePath().
+    o Use of OPEN_EXCL flag in put() method and getOutputStream() removed in favour of OPEN_TRUNCATE due to problems
+      with some servers handling OPEN_EXCL incorrectly. 
+    o SftpClient.get() should perform stat prior to creating local file. 
+    
+-------------------
+
+J2SSH Maverick 1.4.23 - February 12, 2010
+
+Bug Fixes
+    o Added timeout to ThreadSyncronizer wait() call due to potential lockup issue.
+    o API cannot handle remote window space larger than 2^31 due to signed int conversion.
+    o Fixed NullPointerException on Ssh1Des initialization. 
+    o SSH2 channel open hangs under load when older closed channel with same id attempts to 
+      free itself again.
+    o Changed get() calls to return attributes from getAttributes rather than stat to prevent
+      multiple calls to resolveRemotePath().
+    o JCE provider RSA encoding problem causes SSH1 connections to randomly fail.  
+    
+-------------------
+
+J2SSH Maverick 1.4.22 - December 30, 2009
+
+Bug Fixes
+    o ScpClient put() incorrectly appends full absolute path to file's parent path.
+    o Uninitialised SecureRandom instance causes slow start-up due to delayed seed generation.                    
+    o ShellProcess readLine creates 1 second delay when process has closed.
+    
+-----------------
+
+J2SSH Maverick 1.4.21 - December 9, 2009
+
+Bug Fixes
+    o EventServiceImplementation made thread safe.
+    o Standalone hmac-sha96 implementation broken.  
+    
+-----------------
+
+J2SSH Maverick 1.4.20 - November 16, 2009
+    
+Bug Fixes
+    o SftpFileAttributes.getMaskString fails with NullPointerException when no 
+      permissions value is returned by the server. 
+    o Incorrect operator usage in standalone cryptography provider implementation of
+      Diffie Hellman key exchange could generate and use algorithm values that do not
+      conform to key exchange specification. 
+
+-----------------
+
+J2SSH Maverick 1.4.19 - November 6, 2009
+    
+Bug Fixes
+    o Fixed copyLocalDirectory, copyRemoteDirectory behaviour to copy contents
+      of folder into specified directory rather than placing new directory with
+      contents into specified directory.
+    o 3des CTR mode incorrectly reported itself as CBC mode
+    o SFTP read fails after one block of data when server incorrectly reports a file 
+      as having zero length in a stat request.
+      
+-----------------
+
+J2SSH Maverick 1.4.18 - August 6, 2009
+    
+Bug Fixes
+    o Fixed putFile, getFile behaviour in SftpClient.
+    o Added debug jar file for each version of release jar.
+    
+-----------------
+
+J2SSH Maverick 1.4.17 - July 29, 2009
+    
+Features
+    o Added method to enable 'none' cipher in ComponentFactory. 
+    o Added AES and 3DES CTR mode ciphers to JCE cryptography provider.
+
+Bug Fixes
+    o ShellProcess hangs when SshClient disconnects before closing session channel. 
+    o AES CTR ciphers incorrectly initialized in standalone cryptography provider
+    
+-----------------
+
+J2SSH Maverick 1.4.16 - July 20, 2009
+    
+Bug Fixes
+    o SubsystemChannel limited to message 131070 bytes long causing fatal errors 
+      with some servers.  
+    o JCE provider DSA implementation reports incorrect bit length for public keys.  
+
+------------------
+
+J2SSH Maverick 1.4.15 - June 24, 2009
+    
+Bug Fixes
+    o Forwarding client passes display value as screen number causing display numbers > 0
+      not to work. 
+      
+------------------
+
+J2SSH Maverick 1.4.14 - June 16, 2009
+    
+Bug Fixes
+    o ComponentFactory list method not synchronized causing ArrayIndexOutOfBounds
+      exception if algorithm order changed whilst method is invoked. 
+      
+------------------
+
+J2SSH Maverick 1.4.13 - June 9, 2009
+    
+Bug Fixes
+    o Fixed SftpFileInputStream read() method, returned int masked with 0x000000FF 
+      to return correct integer value. Problem can previously be seen when using
+      GZIPInputStream to uncompress file loaded with SFTPFileInputStream.
+      
+Features
+    o Added useful methods to SshPrivateKeyFileFactory and SshPublicKeyFileFactory 
+      to create a file directly from key objects and convert between file formats.
+      
+-------------------   
+      
+J2SSH Maverick 1.4.12 - May 28, 2009
+    
+Bug Fixes
+    o Fixed bug with setting current directory in ScpClient.
+    
+-------------------
+
+J2SSH Maverick 1.4.11 - May 15, 2009
+    
+Bug Fixes
+    o Fixed NullPointerException in SftpSubsystemChannel closeFile and openFile.
+    
+-------------------
+
+J2SSH Maverick 1.4.10 - May 8, 2009
+    
+Bug Fixes
+    o Fixed issue with custom default JCE provider not implementing secure random 
+      algorithm. API now defaults back to system default.
+            
+-------------------
+
+J2SSH Maverick 1.4.9 - May 4, 2009
+    
+Bug Fixes
+    o Fixed EOFException when extracting attributes from mySecureShell server.  
+    
+-------------------
+
+J2SSH Maverick 1.4.8 - April 17, 2009
+    
+Features
+    o Added new session init process object to Shell class that allows expect and input
+      operations on the session before the session sits at the prompt. This would 
+      typically be used to enter additional authentication information when a shell
+      initializes.
+    o Added arcfour, arcfour128 and arcfour256 ciphers to JCE provider. 
+    o Added new constructor to SftpClient for initialization from existing SshSession object.  
+
+Bug Fixes
+    o Removed System.out.println when no BannerDisplay is set. 
+    o FileTransferProgress variable not passed into recursive put or putFile calls. 
+    
+-------------------
+
+J2SSH Maverick 1.4.7 - February 14, 2009
+    
+Bug Fixes
+    o KBIRequestHandler showPrompts method changed to return boolean value. Implementations 
+      should return true to indicate prompts have been answered, or false to indicate that
+      the user has cancelled the authentication attempt. 
+    o X509 public key implementation fails signature validation due to incorrect algorithm
+      name in public key blob. 
+    o Adding algorithm implementations to context when not using per instance algorithm mode causes
+      multiple instances of same algorithm to be reported in key exchange. This causes long running
+      applications to degrade connection performance and eventually causes new connections to fail
+      with ArrayIndexOutOfBounds exception.
+      
+-----------------
+
+J2SSH Maverick 1.4.6 - January 7, 2009
+    
+Bug Fixes
+    o Serv-U FTP server returns blank string for FXP_REALNAME on default directory causing 
+      subsequent attributes request to fail with "Bad Message" error.
+    o Added tests for guessed key exchange first packet in some key exchange implementations.
+        
+-----------------
+
+J2SSH Maverick 1.4.5 - December 12, 2008
+
+Features
+    o System property maverick.knownHosts.enableReverseDNS added to allow user to 
+      disable reverse DNS lookup in AbstractKnownHostsKeyVerification.
+    
+Bug Fixes
+    o HttpProxyTransport.connectViaProxy method causes stack overflow error.
+    o Corrected change made to SftpClient rename which fails with file exists status
+      when new path parameter is a directory. The previous change caused the method 
+      to act differently than previous versions which allowed the file to be moved 
+      from one directory to another. 
+    o ScpClient.put throws NullPointerException when local path is absolute.
+    o ScpClient fails with unexpected termination exception after successful file transfer
+    o SSH v1 connections fail under JCE when BouncyCastle provider is not available on the 
+      classpath. BC provider is now added automatically, to disable set 
+      maverick.enableBCProvider=false. 
+	o X509 not automatically supported when running JCE cryptography provider.
+	
+-----------------
+
+J2SSH Maverick 1.4.4 - October 12, 2008
+
+Bug Fixes
+    o Last error in buffered/threaded mode causes calling thread to receive multiple notifications of exception.
+    
+--------------------------------
+
+J2SSH Maverick 1.4.3 - August 27, 2008
+
+Bug Fixes
+    o Fixed logging ClassCastException when parameter not a string
+    
+--------------------------------
+
+J2SSH Maverick 1.4.2 - July 29, 2008
+
+Features
+    o AbstractComponentFactory: implemented createInstance so it is not abstract anymore
+    o AbstractComponentFactory: class is not abstract anymore
+    o AbstractComponentFactory: renamed to ComponentFactory 
+    o ComponentManager: init() no longer overrides the createInstance() methods of each of the factories
+    o ComponentManager: added static setPerContextAlgorithmPreferences() and getPerContextAlgorithmPreferences methods.
+    o Ssh2Context: constructor no longer overrides createInstance when creating the compression factories.
+    o TransportProtocol: moved the if(!name.equals(COMPRESSION_NONE)) from the Ssh2Context constructor to the performKeyExchange(byte[]) method so that the condition is checked once instead of twice. 
+    o Ssh2Context: now supports per instance algorithm preferences.
+    o Provided additional method to pass optional headers through to HTTP proxy.  
+    
+Bug Fixes
+    o ScpClient get() and put() fails to process filenames with / correctly. 
+    o HTTP proxy headers now maintain their case correctly. 
+    o Server reporting version 2.99 will cause protocol version error.  
+
+-----------------------------------
+
+J2SSH Maverick 1.4.1 - July 09, 2008
+
+Features
+	o ComponentManager: changed to catch SecurityException on call to System.getProperty().
+	o StandaloneComponentManager: Added aes128-ctr, aes192-ctr, aes256-ctr ciphers.
+	o DiffieHellmanGroup1Sha1 and DiffieHellmanGroup14Sha1: have been tweaked to improve performance.
+	o DiffieHellmanGroup14Sha1: Added now that there is better code safety to prevent seemingly random errors when JCE'S are used that do not support it.
+	o JCEComponentManager: now tests each of the keyexchange algorithms before adding them to the list of supported algorithms, if the jce does not support the algorithm or the keysize it will not be added.	
+	o OpenSSHPublicKeyFile: this class is now public.
+	o ScpClient: now implements Client like the other services.
+	o SECSHPublicKeyFile: this class is now public.
+	o SshConnector: Changed addEventListener and removeEventListener methods to take a String threadPrefix parameter that allows listeners to be registered that will only listen to threads who's name starts with this string.
+	o SshMessageRouter: If the thread that creates the message pump thread has a "prefix-" the message pump thread name is now prefixed with the this prefix, to allow per Ssh connection instance logging.
+	o SftpSubsystemChannel: removed unused "longname" variable from the extractFiles(SftpMessage, String) method
+	o SftpSubsystemChannel: new constructor that allows the maximum sftp version to use to be specified SftpSubsystemChannel(SshSession session, int Max_Version)
+	o SftpSubsystemChannel: can now set the maximum sftp version to use on a per instance basis using the instance method setThisMaxSftpVersion(int MAX_VERSION)
+	o SftpClient: new constructor that allows the maximum sftp version to use to be specified SftpClient(SshClient ssh, int Max_Version)
+	o Ssh2Channel: now has a sendExtendedChannelData() method that allows non protocol messages to be sent over a channel.
+	o changed ForwardingClient, AbstractKnownHostsKeyVerification, ScpClient, SftpClient, ComponentManager to catch SecurityException on calls to System.getProperty and to use "" instead of the expected value.
+
+Bug Fixes
+	o ComponentManager: removed duplicated cipher and public key factory instantiations.
+	o Jars: Fixed problem with manifests that prevented them from being verified once signed using "jarsigner".
+	o J2SSHEventCodes: fixed conflicting event ids.
+	o IOStreamConnector: now uses the new event logging system
+	o SelectorThread: fixed closeAllChannels() so that it cleans up properly
+	o SftpFile: removed rename() method as it is not compatible with our sshd, as the sshd will have a file handle open and the rename message uses path not handle. (rename method fixed as it didn't work, then commented out).
+	o SftpClient: mkdir(String dir) now throws exception if a file with the name "dir" already exists, previously it would be overwritten.
+	o SftpClient: matchRemoteFiles now resolves paths correctly when no regular expression matching is used.
+	o SftpSubsystem: fixed file handle leak in onSubsystemFree().
+
+-----------------
+
+J2SSH Maverick 1.4.0 - May 08, 2008
+
+Features
+	o  Logging: All logging has been changed to use an event model.  Important events have their own event codes, less important events are wrapped using EventLog and use the "log event" code or the "debug" event code.
+	o  Logging: org.apache.log4j.BasicConfigurator.configure(); should still be used to configure log4j, but it is now only used in the LoggingListener an example implementation is provided "J2SSHLoggingListener".  The LoggingListener used should be set using SshConnector.addEventListener(new J2SSHLoggingListener());.
+	o  SshConnector: Added addEventListener and removeEventListener methods for use with the new logging event model.
+	o  AbstractComponentFactory: Recoded so that algorithm lists can be fully ordered, there is now a new changePositionofAlgorithm method which facilitates this.
+	o  AES192CBC and AES256CBC ciphers added.
+	o  ComponentManager: Recoded so that ciphers and MACs can have independent preferences for Server->Client and Client->Server communications.
+	o  ComponentManager: now tries JCE first if the "com.sshtools.ssh.components.ComponentManager.tryStandaloneCryptographyBeforeJCE" system property is set to false otherwise Standalone is tried first, this allows the choice to use JCE or Standalone cryptography to be made programatically instead of by changing the classpath or creating a class loader.
+	o  DiffieHellmanGroup14Sha1: Removed until better code safety is added in version 1.4.1 to prevent seemingly random errors when JCE'S are used that do not support it.
+	o  SftpClient, SshClient, Ssh2Client, Shell, ForwardingClient, now implement a new Client interface giving them all an exit() method with the same name.
+	o  Ssh1Client: Added exit method.
+	o  Added more logging to various classes.
+
+Bug Fixes
+	o  ForwardingClient: Wrapped com.sshtools.net.ForwardingClient.addListener(ForwardingClientListener listener) in an if(listener!=null)  {..} block.
+	o  ShellEnvironment: moved session.close();  statements so that it does not close already closed sessions.
+	o  ShellEnvironment: fixed so that when it detects 'cygwin' SSHD servers running on windows boxes it sets osDescription, previously only set osType.
+	o  Ssh2RsaPublicKey: Fixed com.sshtools.ssh.components.standalone.Ssh2RsaPublicKey equals method so that it is compatible with jce.Ssh2RsaPublicKey.
+	o  Ssh2Client: Removed an unused password variable in Ssh2Client.
+	o  ByteArrayReader: fixed com.sshtools.util.ByteArrayReader.readShort(byte[], int), it was treating the byte[] as having the 0 index byte as the least significant instead of the most significant byte.
+	o  IOStreamConnector: com.sshtools.util.IOStreamConnector.close() now sets the connectors state to closed even if it has not been started.
+	o  SftpClient: com.sshtools.sftp.SftpClient.rename() now doesn't attempt to rename to an existing filename.
+	o  AbstractComponentFactory: made AbstractComponentFactory's add,remove,clear methods synchronised.
+	o  SshMessageRouter: com.sshtools.ssh.message.SshMessageRouter.start() now only starts the messagepump if it has not already been started.
+	o  Fixed the word occurred which was misspelt as occured.
+	o  When the server required no authentication and therefore had no authentication methods, the message pump on buffered sessions was not started if authenticate() was not called.
+	o  fixed an scp absolute path problem
+	o  updated obfuscation software to fix preverification errors
+
+-----------------
+
+J2SSH Maverick 1.3.10 - November 14, 2007
+
+Features
+	o  Added getHost() method to AuthenticationProtocol which returns the host the underlying transport protocol has connected to
+	o  Added sendMessage() method to AuthenticationProtocol which sends a transport message.
+	o  Added getProvider() method to TransportProtocol which returns the underlying SshTransport
+	o  Added com.sshtools.ssh2.TransportProtocol.getContext() method that returns the current SshContext.
+	o  Added com.sshtools.ssh2.GSSCallback class.
+	o  Prepended "MessagePump" onto message pump thread name.
+	o  Refactored build file.
+	o  Added more debug information for when SshConnector fails to initialize Ssh2.
+	o  Cleaned ComponentManager.init so that it does not initialize components twice
+	o  Added getKeyExchange() method that returns the SshKeyExchangeClient in use to TransportProtocol
+	o  Added getKeyExchange() method that returns the SshKeyExchangeClient in use to AuthenticationProtocol
+	o  Added getKeyExchangeInstanceInUse() method that returns the SshKeyExchangeClient in use to Ssh2Client
+	o  Made AuthenticationResult public
+	o  Added listFiles() method to SftpClient as File.listFiles is not 1.1 compatible
+	o  Added getIgnoreHostKeyifEmpty() and setIgnoreHostKeyifEmpty() methods to TransportProtocol,
+	    when the ignoreHostKeyifEmpty is set to true performKeyExchange does not do any HostKeyVerification.
+	o  Added Arrayequals method to transport protocol from Java 1.2 to make keep 1.1. compatibility
+
+Bug Fixes
+	o  Fixed com.sshtools.util.IOStreamConnector.setBufferSize() so that an IllegalArgumentException is thrown for invalid sizes rather than valid sizes
+	o  Fixed synchronization issue in com.sshtools.ssh.components.ComponentManager.getInstance() so that 
+	    if first call to getInstance is made simultaneously by 2 threads it is only initialized once by making the second thread wait till the first has initialized it. 
+	o  Fixed bug in com.sshtools.ssh2.Ssh2Channel.processChannelMessage(SshChannelMessage) where 
+	    SSH_MSG_CHANNEL_CLOSE messages were being consumed once processed rather than passing back up the call chain.
+	o  Fixed some 1.1 compatibility problems.
+
+-----------------
+
+J2SSH Maverick 1.3.9 - September 19, 2007
+
+Features
+
+Bug Fixes
+	o  Openssh public keys now don't require comments.
+	o  Bug fix in SftpSubSystemChannel.performOptimizedRead relating to files that are not multiples of 32kb.
+	o  Synchronization issue fixed in com.sshtools.ssh2.Ssh2Channel.processChannelMessage(SshChannelMessage), 
+		so that it no longer attempts to close a channel twice.
+
+-----------------
+
+J2SSH Maverick 1.3.8 - September 3, 2007
+
+Features
+	o  Option added to Shell implementation to pre-configure the remote operating system type to prevent auto-detection.
+	o  Added hassize(), hasuid(), hasgid() methods to com.sshtools.sftp.SftpFileAttributes
+
+Bug Fixes
+	o  Removed unused private transferFile() method from SftpClient
+	o  Perl5RegExpMatching always threw ClassCastException
+	o  Changed com.sshtools.ssh.components.AbstractComponentFactory.createDelimitedList(String preferred, Enumeration names) 
+		so that if the preferred component is not contained within the enumeration, it is not prepended to the list.
+	o  Made Shell.setPromptTimeoutPeriod synchronized
+	o  Various low level code optimizations
+	o  Various code safety improvements.
+	o  ShellEnvironment fixed so that it detects 'cygwin' SSHD servers running on windows boxes
+	o  SftpSubsystemChannel.performOptimizedRead optimized for files smaller than the block size.
+	o  Tweaked order of code in SftpClient.get() so that local files are processed before remote files, this reduces server load, 
+    		in cases where either exceptions are thrown or the api is used badly.
+	o  ScpClient where relative paths were processed incorrectly
+	o  com.sshtools.ssh.CommandExecutor is now deprecated, the shell class should be used instead.
+	o  ScpClient.putFiles fixes.
+    
+-----------------
+
+J2SSH Maverick 1.3.7 - July 5, 2007
+
+Features
+    o  Added the ability to handle custom file system root formats such as "flash:"
+
+Bug Fixes
+    o  Removed all printStackTrace() calls.
+    o  ScpClient.put() now throws an exception when no local file exists/matches the regular expression.
+    o  Shell.exit() now closes the session even if the exit command hangs
+
+-----------------
+
+J2SSH Maverick 1.3.6 - June 19, 2007
+
+Bug Fixes
+    o  java.lang.ArrayIndexOutOfBoundsException in com.sshtools.scp.ScpClient.put
+      
+-----------------
+
+J2SSH Maverick 1.3.5 - June 18, 2007
+
+Features
+    o  The Ssh2Client now authenticates using KBI when password authentication is not available.
+    o  The SftpClient now has "getFiles" and "putFiles" methods that allow the use of regular expressions to copy multiple files.
+    o  The resume features should not be used simultaneously with the a regular expression that matches more than one file.
+    o  The ScpClient 'put' methods now allow the use of regular expressions to copy multiple files.
+    o  The resume features should not be used simultaneously with the a regular expression that matches more than one file.
+    
+Bug Fixes
+    o  Workaround for servers that do not conform to returning the number of bytes requested for SFTP read requests.
+    o  Workaround for RSA JCE that does not return valid mac length prior to initialisation.
+    o  CR in SSH identification string causes Invalid Checksum error when connecting to older 
+       SSH1 servers.
+
+-----------------
+J2SSH Maverick 1.3.4 - May 2, 2007
+
+Bug Fixes
+    o  Standalone provider Dsa module outputs debug information to System.out
+    o  PuTTY private key support broken due to missing dependency.
+    
+-----------------
+    
+J2SSH Maverick 1.3.3 - March 27, 2007
+
+Bug Fixes
+    o  Option to turn off pseudo terminal allocation in Shell class. This was required for 
+       correct identification of VShell servers. 
+    o  SftpFileInputStream uses SSH_FXP_FSTAT message for open files. Whilst this is not a 
+       problem for most SFTP servers the FreeFTPD server, for unknown reasons does not support 
+       this operation so prevents access using the API when attempting to use InputStream based 
+       code against this server implementation. Changed SftpFileInputStream to use SSH_FXP_STAT 
+       message to prevent this error.
+    o  SftpClient fails to release file handle for text mode files. 
+    o  SftpFile processes both \ and / as file separators causing problems with filenames that
+       contain \ as a valid character.
+
+-----------------
+
+J2SSH Maverick 1.3.2 - Febuary 20, 2007
+
+Bug Fixes
+    o  Scp file transfers fail with IndexOutOfBounds exception if small buffer size is used.
+
+-----------------
+J2SSH Maverick 1.3.1 - Febuary 12, 2007
+
+Features
+    o  Option to disable key re-exchange.       
+       
+Bug Fixes
+    o  SftpClient put to hidden files on Windows port of OpenSSH does not truncate file.
+    
+-----------------
+IMPORTANT NOTICE: 
+
+This version of J2SSH Maverick may not be compatible with source code developed using previous 
+versions of the API. Changes have been required to some package structures to enable the 
+cryptographic provider to be completely seperated from the API. These changes now allow us
+to provide seperate implementations of the API for the internal cryptographic provider and 
+the Java Cryptography Extensions provider. 
+
+J2SSH Maverick 1.3.0 - January 31, 2007
+
+Features
+    o  API can now be used exclusively with the Java Runtime JCE provider, or alternatively
+       the internal provider. Simply select the maverick-jce-only.jar file if you want to use
+       the JCE exclusively, or maverick-standalone-only.jar if you want to use the internal
+       provider. The maverick-all.jar contains all implementations and will default to the
+       internal provider. 
+
+-----------------
+       
+J2SSH Maverick 1.2.12 - November 12, 2006
+
+Features
+    o  Additional method added to SshConnector to allow SSH identification software/version/comments field
+       to be replaced by a custom value. 
+
+Bug Fixes
+    o  SSH identification string from OpenSSH server with trailing space character ' ' causes
+       Invalid Host Key Signature exception.
+    o  Shell exit method fails to close session channel if exit command fails. 
+    o  Public key authentication fails when using JCE versions of public key objects.
+    o  Server failing to respond to MSG_SSH_CHANNEL_CLOSE causes API to lockup.
+    o  Inconsistent SshException reason code returned when remote side terminates connection.
+
+-----------------
+
+J2SSH Maverick 1.2.11 - September 18, 2006
+
+Features
+    o  hmac-md5-96 and hmac-sha1-96 Message Authentication Code algorithms added
+    o  Support for x509v3-sign-rsa and x509v3-sign-rsa-sha1 certificates 
+    o  Added methods to SshConnector to return current product version and release date.
+    o  Added diffie-hellman-group14-sha1 key exchange as per SSH Transport Protocol specification. This 
+       implementation exists in both the internal crypto provider and JCE formats although it should be
+       noted that the default SUN reference JCE provider does not support 2048 bit primes required by
+       this key exchange method. The BouncyCastle JCE provider (www.bouncycastle.org) does and has been
+       used to test this algorithm works with JCE enabled.
+    o  Support for SSH1 challenge response authentication added.
+
+Bug Fixes
+    o  API now passes all SSHredder vulnerability checks (http://www.rapid7.com/info/sshredder.html)
+    o  Added partial message timeout setting to Ssh2Context in response to a number of vulnerabilties
+       identified by SSHredder. This timeout only applies once a message is received, and determines how
+       long the remote server has to send the remaining bytes of the message before a timeout exception is
+       thrown. This prevents the client locking up when the server does not send all of the data it declared
+       in the message header.
+    o  Shell class hangs on createSession due to prompt command being sent too quickly.
+    o  Timeout setting added to Shell class so that it does not get stuck waiting for a prompt that never arrives.
+    o  Initialization period setting added to Shell class to allow the shell to initialize correctly over a configurable period.
+    o  FileTransferProgress reports total transfer length of 0 for ASCII file transfers. 
+
+-----------------
+
+J2SSH Maverick 1.2.10 - July 22, 2006
+
+Bug Fixes
+    o  Shell class hangs when connecting to FreeSSHD Windows server. Whilst the actual problem seems to be a bug in 
+       the server implementation several workarounds have been added to the Shell class (see javadocs for further info).
+
+-----------------
+
+J2SSH Maverick 1.2.9 - June 8, 2006
+
+Bug Fixes
+    o  SCP time command is now ignored rather than throwing an exception to allow files to still be received
+       from servers sending a time command.
+    o  UTF-8 license encoding now supported.
+
+-----------------
+
+J2SSH Maverick 1.2.8 - May 3, 2006
+
+Bug Fixes
+    o  SftpFile getParent fix from 1.2.7 causes "No such file" error with filesystem root /
+    o  Exceptions caught by a subsystem was not being propagated correctly resulting in bad error messages.
+
+-----------------
+
+J2SSH Maverick 1.2.7 - March 17, 2006
+
+Features
+    o  FileTransferProgress interface can now be passed into the ScpClient methods to enable a transfer to be
+       tracked or cancelled.
+    o  Support for socket timeouts. Setting a timeout on the socket will now result in a non-fatal exception with 
+       a reason code of SOCKET_TIMEOUT. 
+    o  Simple CommandExecutor class added to allow multiple commands to be executed with a session. (Requires knowledge
+       of prompt format)
+    o  Additional executeCommand method added to SshSession interface to allow charset to be defined for the command.
+
+Bug Fixes
+    o  Shell class fails when remote environment cannot be determined, this has been changed to allow default behaviour.
+    o  SftpInputStream read() method always returns 1
+    o  SftpFile getParent method could return itself as the parent if path ends with /
+    o  AbstractKnownHostsKeyVerification fails to consult temporary keys before permanent keys causing host verification errors
+    o  Forwarding client could return tunnels that no longer exist.
+
+-----------------
+J2SSH Maverick 1.2.6 - October 13, 2005
+
+Bug Fixes
+    o  Directory operation methods would always report new file as an update file.
+    o  Directory operation remote copy always fetched unchanged files causing corruption of progress tracking.
+    o  Transport protocol failed to set maximum packet size to value configured in SshContext.
+    o  In some circumstances the ByteArrayReader could return an incorrect value for unsigned int causing very 
+       rare miscellaneous errors.
+
+-----------------
+
+J2SSH Maverick 1.2.5 - August 3, 2005
+
+Bug Fixes
+    o  UnsignedInteger32 could throw NumberFormatException even though value passed was a valid 32 bit unsigned integer.
+    o  SSH key fingerprint uses incorrect hash algorithm
+    o  Transport protocol fails with large number of padding bytes
+    o  Incompatibility issues with FOXIT WAC server fixed.
+    o  SftpInputStream returns corrupted data.
+
+-----------------
+
+J2SSH Maverick 1.2.4 - June 1, 2005
+
+Features
+    o  Methods in Ssh2Client to obtain the negotiated ciphers, macs, keyexchange, host key and compression algorithms.
+    o  copyLocalDirectory and copyRemoteDirectory now provide a list of failed transfers in the DirectoryOperation result.
+    o  Option to kill active tunnels added to ForwardingClient cancelRemoteForwarding and stopLocalForwarding methods.
+
+Bug Fixes
+    o  SftpInputStream and SftpOutputStream now perform optimized transfers providing similar performance to the
+       SftpClient's get and put methods.
+    o  stopLocalForwarding & cancelRemoteForwarding methods throw NPE when attempt is made to stop an invalid 
+       forwarding configuration
+    o  The maximum supported transport protocol packet was 35,000 bytes, this caused problems with Globalscape server which
+       sends packets larger than the recommended size. The API will now adapt to such errors by increasing the maximum packet
+       size when required. The limit forcing a protocol exception can now be set in the Ssh2Context setMaximumPacketLength 
+       method which defaults to 131072 bytes.
+    o  ANT task removed from distribution, use the free ANT download if required.
+    o  SshKeyPairGenerator class algorithm naming inconsistency removed.
+    o  AbstractKnownHostsKeyVerification and public key factories throw OutOfMemoryError when parsing a corrupted file.
+
+-----------------
+
+J2SSH Maverick 1.2.3 - April 6, 2005
+
+Features
+    o  SftpClient now attempts to locate the sftp-server binary for *unix SSH1 connections wanting to use SFTP.
+    o  InvalidPassphaseException added to help identify incorrect passphrase entry on private key files.
+    o  Shell class provides capture of individual command output from the users shell.
+    o  ShellEnvironment class provides information about the remote operating system and shell environment.
+    o  ShellProcess provides expect type functionality for enhanced shell automation.
+
+Bug Fixes
+    o  SftpClient rename method now attempts to find destination file and throw a more descriptive error.
+    o  copyRemoteDirectory fails to delete local file in synchronization mode.
+    o  HTTPProxyTransport fails with IndexOutOfBoundsException when realm not present in Proxy-Authenticate header.
+    o  Inbound compression error causes protocol violation.
+    o  AbstractKnownHostsKeyVerification saves temporary keys to known_hosts file.
+    o  Transport protocol fails to encrypt zero length array using JCE cipher.
+
+-----------------
+
+J2SSH Maverick 1.2.2 - February 7, 2005
+
+Bug Fixes
+    o  SftpClient.get method fails with "invalid resume state" exception when attempting to download 
+       a zero length file
+
+-----------------
+
+J2SSH Maverick 1.2.1 - January 11, 2005
+
+Features
+    o  Channel option to automatically consume input data when using event based channels
+
+Bug Fixes
+    o  Rare race condition causes deadlock of connection
+    o  SSH1 public key authentication fails with working private key
+    o  Data events do not fire correctly in buffered mode
+
+-----------------
+
+J2SSH Maverick 1.2.0 - January 2, 2005
+
+Features
+    o  Support for SFTP protocol version 4
+    o  SftpClient can now operate in text mode to support changing of EOL between systems
+    o  Option to buffer the connection with a single background thread
+    o  SftpClient now supports servers that incorrectly return windows style paths as absolute filenames
+    o  Refactored message routing
+    o  Utility class added to help encode pseudo terminal modes
+
+Bug Fixes
+    o  Adding a message to the SshMessageStore was not synchronized
+    o  Remote forwarding channels although closed are not being removed from the ForwardingClient
+    o  ChannelInputStream fails to return EOF after channel close operation.
+
+-----------------
+
+J2SSH Maverick 1.1.8 - November 29, 2004
+
+Features
+    o  Added openRemoteClient method to SshClient interface. This method creates an SSH client on the 
+       remote computer and connects to a further SSH server and is useful for situations where you cannot
+       get direct access to a server because it is behind a firewall.
+    o  JCE support added to SSH2 - You can now optionally use an external JCE provider for the following 
+       algorithms Blowfish, DESede, MD5, SHA1, SHA1withRSA, SHA1withDSA, RSA, DSA and DH (Diffie Hellman).
+
+Bug Fixes
+    o  diffie-hellman-group-exchange key exchange fails with old servers - method now uses backwards
+       compatibile version of the specification
+    o  Cancel remote forwarding request fails to reach server
+
+-----------------
+
+J2SSH Maverick 1.1.7 - October 29, 2004
+
+Bug Fixes
+    o  com.sshtools package source code missing from the enterprise distribution
+
+-----------------
+
+J2SSH Maverick 1.1.6 - October 20, 2004
+
+Bug Fixes
+    o  SCP implementation fails with IOS router because it does not send EOF message
+    o  diffie-hellman-group-exchange-sha1 key exchange fails if debug or ignore messages are received
+       during the initial exchange of messages
+
+-----------------
+
+J2SSH Maverick 1.1.5 - October 14, 2004
+
+Features
+    o  ForwardingClientListener is now notified when a tunnel fails to open
+    o  getPort method added to SshTransport
+
+Bug Fixes
+    o  Generated SSH1 RSA keys sometimes failed when re-loaded
+    o  Forwarding listeners would continue to operate even when the connection has been disconnected
+    o  BufferedSession caused possible deadlock when multiple threads attempted to close the channel
+
+-----------------
+
+J2SSH Maverick 1.1.4 - September 22, 2004
+
+Features
+    o  ChannelEventListener now receives extended data event
+    o  SFTP put/get methods now have option to resume an interrupted download
+
+Bug Fixes
+    o  Duplication of SSH1 connections would fail if connection had been disconnected.
+    o  RSA key signature fails when key is loaded from file
+
+-----------------
+
+J2SSH Maverick 1.1.3 - August 25, 2004
+
+Features
+    o  Secure Shell Public-Key Subsystem (Version 1)
+    o  diffie-hellman-group-exchange-sha1 key exchange
+    o  Rekeying recommendations from `SSH Transport Layer Encryption Modes` Internet Draft implemented
+    o  Stateful decryption counter (SDCTR) mode ciphers for AES
+    o  SshIO interface introduced as base interface for all SSH communication
+    o  Packet class introduced to provide more efficent use of memory resources in Subsystem Class
+
+Bug Fixes
+    o  "Invalid message type 36 received" Exception caused by SSH1 server sending a debug message 
+        as the client was waiting for SSH_SMSG_SUCCESS.
+
+----------------
+
+J2SSH Maverick 1.1.2 - July 26, 2004
+
+Bug Fixes
+    o  Reading of SSH_FXP_STATUS exception caused exception in server versions <= 2
+    o  AbstractKnownHostsKeyVerification failed to recognise IP address only entries.
+    o  PuTTY private key format throws OutOfMemoryError with invlaid passphrase
+    o  AbstractKnownHostsKeyVerification failed to throw an exception is host file could not
+       be saved.
+
+----------------
+
+J2SSH Maverick 1.1.1 - June 3, 2004
+
+Features
+    o  Added supportsPassphraseChange and getType methods to SshPrivateKeyFile interface
+    o  Reading of PuTTY private keys is now supported (PuTTY-User-Key-File-1 and PuTTY-User-Key-File-2 formats)
+    o  Reading of SSH Communications Security private keys is now supported.
+    o  cdup method added to SftpClient for changing the working directory to the parent directory
+    o  getFile method added to SftpSubsystemChannel for creating instances of SftpFile
+    o  getParent method added to SftpFile to return an SftpFile instance of the parent file
+
+----------------
+
+J2SSH Maverick 1.1.0 - April 30, 2004
+
+IMPORTANT NOTICE: This version of J2SSH Maverick may not be compatible with source code developed using 
+                  previous versions. 
+
+Features
+    o  Refactored exception handling introduces SshException to replace generic IOException usage
+    o  Support for hostbased authentication
+
+Bug Fixes
+    o  Incorrect permissions set when using umask on files
+
+----------------
+
+J2SSH Maverick 1.0.9 - April 20, 2004
+
+
+Bug Fixes
+    o  X Forwarding problem failed to open channel
+
+----------------
+
+J2SSH Maverick 1.0.8 - April 8, 2004
+
+
+Bug Fixes
+    o  Additional chmod operation removed from SftpClient put method
+    o  Improved exception handling
+    o  Closing channel OutputStream causes termination of connection
+
+----------------
+
+J2SSH Maverick 1.0.7 - Mar 29, 2004
+
+
+Features
+    o  X forwarding is now supported
+    o  Further enhancements to SFTP exception handling
+    o  SFTP provider fallback option for SSH2 connections.
+
+----------------
+
+J2SSH Maverick 1.0.6 - Mar 8, 2004
+
+
+Features
+    o  Added setting to configure SFTP filename charset encoding.
+    o  HTTP, SOCKS 4 and SOCKS 5 proxy SshTransport implementations added.
+
+----------------
+
+J2SSH Maverick 1.0.5 - Mar 2, 2004
+
+
+Features
+    o  Additional ciphers AES, Twofish and CAST have been added and may optionally be used for SSH2 connections.
+    o  ChannelEventListener now supports dataRecieved, dataSent events.
+    o  SSH1 PublicKeyAuthentication now supports testing of public key for authentication suitability
+    o  API random number generator modified to improve overall entropy of randomness.
+    o  SFTP support for SSH1 connections
+
+Bug Fixes:
+    o  Remote disconnection caused OutOfMemoryError.
+    o  Message router fails to release block after receiving message which causes the connection to lockup.
+    o  FileTransferProgress failed with SftpClient directory operations.
+    o  SftpClient directory operations failed to synchronize.
+
+-----------------
+
+J2SSH Maverick 1.0.4 - Feb 7, 2004
+
+Bug Fixes:
+    o  Reduced maximum packet size which was causing problems with some servers.
+    o  SFTP optimization block size could not be set at 4096 or below.
+
+-----------------
+
+J2SSH Maverick 1.0.3 - Feb 2, 2004
+
+Features
+    o  Additional methods in SftpSubsystemChannel to 'performOptimizedWrite' and 'performOptimizedRead'
+    o  Optimized SftpClient 'put' and 'get' methods.
+    o  SubsystemChannel moved to 'com.sshtools.ssh' package and refactored to enable operation over both SSH1 and SSH2.
+    o  SftpClient now operates over SSH1 by executing the subsystem directly. Use Ssh1Context's 'setSFTPProvider' to change the default binary location of '/usr/sbin/sftp-server'
+    o  SSHTools Licensing system has been integrated with the product.
+
+
+-----------------
+
+
+J2SSH Maverick 1.0.2 - Jan 16, 2004
+
+Features:
+    o  Duplicate method added to SshClient to create duplicate connections.
+    o  SSH1 support for multiple sessions.
+    o  BufferedSession added to provide optional threaded reading of session data into buffer.
+
+Bug Fixes:
+    o  AbstractKnownHostsKeyVerification writes key type instead of hostname into known_hosts file
+
+-----------------
+
+J2SSH Maverick 1.0.1 - Jan 10, 2004
+
+Bug Fixes:
+    o  SSH2 Transport could fail cipher negotiation, even if a valid cipher exists.
+
+-----------------
+
+J2SSH Maverick 1.0.0 - Jan 9, 2004
+
+Features:
+    o  Public/Private key file generation
+    o  DES cipher for SSH1
+    o  ZLIB Compression for SSH2
+
+-----------------
+
+J2SSH Maverick BETA 2 - Dec 7, 2003
+
+Features:
+    o  Port forwarding
+    o  SFTP
+    o  Public-key authentication
+    o  Keyboard-interactive authentication for SSH2
+    o  Private key supported formats include OpenSSH, SSHTools and SSH1 encrypted private keys.
+    o  Blowfish CBC mode cipher added for SSH2 connections.
+
+Bug Fixes:
+    o  ByteArrayReader failed when UTF-8 charset encoding was not available in J2ME phones.
+
+-----------------
+
+J2SSH Maverick BETA 1.1 - Nov 11, 2003 (bug fix release)
+
+Bug Fixes:
+    o  Ssh1Session InputStream could block endlessly even after data had arrived.
+    
+-----------------
+    
+J2SSH Maverick BETA 1.0 - Nov 7, 2003 (first public release)
+
+Features:
+    o  SSH1 and SSH2 support
+    o  Password authentication
+    o  3DES cipher
+    o  SHA1, MD5 message authentication (SSH2) 
+    o  Interactive Session's
+    o  Custom SSH2 Channels
+    o  SCP
+    o  Cross-platform
+
+-----------------
