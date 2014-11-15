@@ -20,10 +20,15 @@
 <TITLE>
 TightVNC desktop
 </TITLE>
-<APPLET CODE="VncViewer.class" ARCHIVE="/thirdparty/vncviewer/classes/VncViewer.jar"  WIDTH="800" HEIGHT="632">
-<PARAM NAME="PORT" VALUE="%port%">
-<PARAM NAME="host" VALUE="%host%">
+<body>    
+ <APPLET archive="/thirdparty/tvnjviewer/tightvnc-jviewer.jar"
+			code="com.glavsoft.viewer.Viewer"
+			width="800" height="632">   
+<param name="Host" value="%host%">
+<param name="Port" value="%port%">
+<param name="OpenNewWindow" value="no">
 </APPLET>
 <BR>
 <A href="http://www.tightvnc.com/">TightVNC site</A>
+</body>
 </HTML>

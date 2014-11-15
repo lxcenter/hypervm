@@ -1,0 +1,14 @@
+com.sshtools.events
+com.sshtools.logging
+com.sshtools.net
+com.sshtools.publickey
+com.sshtools.scp
+com.sshtools.sftp
+com.sshtools.ssh
+com.sshtools.ssh.components
+com.sshtools.ssh.components.jce
+com.sshtools.ssh.compression
+com.sshtools.ssh.message
+com.sshtools.ssh2
+com.sshtools.util
+com.sshtools.zlib
