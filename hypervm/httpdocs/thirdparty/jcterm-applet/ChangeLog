@@ -1,0 +1,65 @@
+ChangeLog of JCTerm
+====================================================================
+Last modified: Wed Apr 11 09:55:50 UTC 2012
+
+	
+Changes since version 0.0.9:
+- changing foreground and background colors dynamically.
+- changing the font size dynamically.
+- the prompt for the destination will list previous inputs.
+- settings will be saved in ~/.ssh/jcterm.properties
+  if the configuration repository using file-system is chosen;
+    JCTermSwing.setCR(new ConfigurationRepositoryFS());
+- added build.xml
+- introduced properties for applet
+    jcterm.font_size
+    jcterm.fg_bg
+    jcterm.destinations
+    jcterm.config.repository
+    jcterm.config.name
+
+
+Changes since version 0.0.8:
+- added color, bold, underline support.
+- added an implemetation by SWT.
+	
+	
+Changes since version 0.0.7:
+- JCTermMIDP supports public-key authentication.
+- JCTermMIDP can install remote private-keys by using remote exec on ssh2.
+- JCTermMIDP allow you to choose TCP port for the remote sshd;
+  user@host[:port]
+
+	
+Changes since version 0.0.6:
+- added JCTermMIDP, which is for J2ME/CLDC/MIDP2.0 platform.
+
+	
+Changes since version 0.0.5:
+- allowed to choose ssh port; user@host:port
+- added JCTermJ2MECDC, which is for J2ME CDC platform.
+
+	
+Changes since version 0.0.4:
+- improved vt100 terminal emulation.
+- added timeout in opening the socket. 
+- added 'About...' to menu-bar.
+- implemented JCTerm in AWT widgets(com.jcraft.jcterm.JCTermAWT).
+
+	
+Changes since version 0.0.3:
+- fixed a crash bug at the end of ssh session.
+- add the progress monitor on sftp session.
+
+	
+Changes since version 0.0.2:
+- added the packet compression support.
+
+	
+Changes since version 0.0.1:
+- function keys from F1 to F10.
+- arrow keys.
+- sftp support.
+- a switch to enable and disable anti-aliasing text.
+- some escape sequences support for vt100 emulation.
+- rendering speed is improved.

@@ -1,0 +1,68 @@
+<project name="jcterm" default="dist" basedir=".">
+    <description>
+    </description>
+
+  <!-- set global properties for this build -->
+  <property name="version" value="0.0.11"/>
+  <property name="src" location="src/main/java/"/>
+  <property name="build" location="build"/>
+  <property name="dist"  location="dist"/>
+  <property name="javadoc" location="javadoc"/>
+  <property name="javac.debug" value="true"/>
+
+  <property name="jcterm.jar"
+            value="jcterm-${version}.jar"/>
+
+  <!-- dependent jar files -->
+  <path id="project.class.path">
+    <fileset dir="lib" includes="*.jar"/>
+  </path>
+
+  <target name="init">
+    <tstamp/>
+    <mkdir dir="${build}"/>
+  </target>
+
+  <target name="compile" depends="init"
+        description="compile the source" >
+    <available property="jschagentproxy.available"
+               classname="com.jcraft.jsch.agentproxy.connector.PageantConnector">
+      <classpath refid="project.class.path"/>
+    </available>
+    <javac srcdir="${src}"
+           destdir="${build}"
+           classpathref="project.class.path"
+           includeantruntime="false"
+           debug="${javac.debug}">
+      <exclude name="**/JCTermIdentityRepository.java"
+               unless="jschagentproxy.available"/>
+      <exclude name="**/JCTermMIDP.java"/>
+      <exclude name="**/JCTermJ2MECDC.java"/>
+      <exclude name="**/JCTermSWT.java"/>
+    </javac>
+  </target>
+
+  <target name="dist" depends="compile"
+        description="generate the distribution" >
+
+    <mkdir dir="${dist}/lib"/>
+
+    <jar jarfile="${dist}/lib/${jcterm.jar}"
+         includes="com/jcraft/jcterm/*.class"
+         basedir="${build}"/>
+
+  </target>
+
+  <target name="clean" description="clean up" >
+    <delete dir="${build}"/>
+    <delete dir="${dist}"/>
+    <delete dir="${javadoc}"/>
+  </target>
+
+  <target name="javadoc">
+    <javadoc sourcepath="${src}"
+             destdir="${javadoc}">
+      <packageset dir="${src}"/>
+    </javadoc>
+  </target>
+</project>
