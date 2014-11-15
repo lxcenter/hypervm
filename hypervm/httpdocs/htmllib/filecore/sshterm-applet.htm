@@ -10,14 +10,17 @@
 
 <p align="center"> 
   
-  <applet width="640" height="480" <applet code="com.jcraft.jcterm.JCTermApplet.class"
-           archive="/thirdparty/jcterm-applet/jcterm-0.0.10.jar?4,/thirdparty/jcterm-applet/jsch-0.1.46.jar?4,/thirdparty/jcterm-applet/jzlib-1.1.1.jar?4"  
-           style="border-style: solid; border-width: 1; padding-left: 4; padding-right: 4; padding-top: 1; padding-bottom: 1">
-
-  <param name="jcterm.JSchSession.hostname" value=%host%>
-  <param name="jcterm.JSchSession.port" value=%port%>
-  <param name="jcterm.JSchSession.username" value=%username%>
-    </applet>
+  <applet width="640" height="480" 
+          archive="/thirdparty/j2ssh-maverick-applet/dist/j2ssh-maverick-1.5.0.jar,/thirdparty/j2ssh-maverick-applet/lib/jzlib-1.1.3.jar,/thirdparty/j2ssh-maverick-applet/dist/lib/oro-2.0.8.jar" 
+          code="com.sshtools.sshterm.SshTermApplet" codebase="/thirdparty/j2ssh-maverick-applet/" 
+          style="border-style: solid; border-width: 1; padding-left: 4; padding-right: 4; padding-top: 1; padding-bottom: 1">
+    
+    <param name=sshapps.connection.host value=%host%>
+    <param name=sshapps.connection.port value=%port%>
+    <param name=sshapps.connection.userName value=%username%>
+    <param name=sshapps.connection.authenticationMethod value=password>
+    <param name=sshapps.connection.connectImmediately value=%connectimmediately%>
+  </applet>
 
 </p>
 
