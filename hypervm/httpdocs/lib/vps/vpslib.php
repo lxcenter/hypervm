@@ -1589,8 +1589,8 @@ static function continueForm($parent, $class, $param, $continueaction)
 
 static function addCommand($parent, $class, $p)
 {
-
-	checkIfVariablesSet($p, array('name', 'v-password', 'v-num_ipaddress_f', 'v-contactemail', 'v-syncserver', 'v-ostemplate'));
+        //need to handel v-num_ipv6address = NULL as it currently breaks the creation API
+	checkIfVariablesSet($p, array('name', 'v-password', 'v-num_ipaddress_f', 'v-num_ipv6address_f', 'v-contactemail', 'v-syncserver', 'v-ostemplate'));
 
 	checkIfVariablesSetOr($p, $param, 'resourceplan_f', array('v-plan_name'));
 	checkIfVariablesSetOr($p, $param, 'ttype', array('v-type'));
