@@ -1089,7 +1089,7 @@ class vps__xen extends Lxdriverclass {
 		}
 		$string .= "vncunused=0\n";
 		$string .= "vncdisplay={$this->main->vncdisplay}\n";
-	
+                $string .= "usbdevice='tablet'";
 		if ($this->main->text_xen_config) {
 			$string .= "{$this->main->text_xen_config}\n";
 		}
@@ -1119,6 +1119,13 @@ class vps__xen extends Lxdriverclass {
 	
 		$string  = null;
 	
+	        /* Commented to allow the below if else to handel pygrub & xvd
+	        
+	        OSTemplates should follow this format 
+	        
+	        With pygrub   =centos-5-x86-pygrub-xvd.tar.gz
+	        without pygrub=centos-5-x86-default-xvd.tar.gz
+	        
 		$sk = "/boot/hypervm-xen-vmlinuz-{$this->main->nname}";
 	
 		if (lxfile_exists($sk)) {
@@ -1136,8 +1143,30 @@ class vps__xen extends Lxdriverclass {
 		} else if (lxfile_exists('/boot/hypervm-xen-initrd.img')) {
 			$string .= "ramdisk    = '/boot/hypervm-xen-initrd.img'\n";
 		}
+		*/
 	
-		if ($this->isUnlimited($this->main->priv->cpu_usage)) {
+        //Add pygrub configuration if template name contains pygrub
+        $pygrub_record = explode('-', $this->main->ostemplate);
+        if (stripos($pygrub_record[3], 'pygrub') !== FALSE) {
+            $string .= "bootloader = '/usr/bin/pygrub'\n";
+        } else {
+
+            $string .= "kernel = '/boot/hypervm-xen-vmlinuz'\n";
+            $string .= "ramdisk = '/boot/hypervm-xen-initrd.img'\n";
+        }
+
+        //Add xvd configuration if template name contains xvd
+        $xvd_record = explode('-', $this->main->ostemplate);
+        if (stripos($xvd_record[4], 'xvd') !== FALSE) {
+            $string .= "disk       = ['$loc:{$this->main->maindisk},xvda1,w', '$loc:{$this->main->swapdisk},xvdb1,w']\n";
+            $string .= "root = '/dev/xvda1 ro selinux=0'\n";
+        } else {
+
+            $string .= "disk       = ['$loc:{$this->main->maindisk},sda1,w', '$loc:{$this->main->swapdisk},sda2,w']\n";
+            $string .= "root = '/dev/sda1 ro selinux=0'\n";
+        }
+
+        if ($this->isUnlimited($this->main->priv->cpu_usage)) {
 			$cpu = "100" * os_getCpuNum();;
 		} else {
 			$cpu = $this->main->priv->cpu_usage;
@@ -1163,15 +1192,10 @@ class vps__xen extends Lxdriverclass {
 	
 		$string .= "vncviewer  = 0\n";
 		$string .= "serial     = 'pty'\n";
-		$string .= "disk       = ['$loc:{$this->main->maindisk},sda1,w', '$loc:{$this->main->swapdisk},sda2,w']\n";
-		$string .= "root = '/dev/sda1 ro'\n";
 		
-		//Add pygrub configuration if template name contains pygrub
-		$pygrub_record = explode('-', $this->main->ostemplate);
-		if (stripos($pygrub_record[3], 'pygrub') !== FALSE) {
-			$string .= "kernel = '';\nroot = '';\nbootloader = '/usr/bin/pygrub'\n";
-		}
-	
+
+
+			
 		if ($this->main->text_xen_config) {
 			$string .= "{$this->main->text_xen_config}\n";
 		}
@@ -1181,7 +1205,7 @@ class vps__xen extends Lxdriverclass {
 	
 	
 	}
-
+	
 	public function getValueFromFile($file)
 	{
 		$vfile = "{$this->main->configrootdir}/$file";
