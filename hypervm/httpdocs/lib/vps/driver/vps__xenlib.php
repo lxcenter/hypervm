@@ -1633,11 +1633,11 @@ class vps__xen extends Lxdriverclass {
 				//lxshell_return("tar", "-C", $mountpoint, "-xzf", "__path_program_home/xen/template/{$this->main->ostemplate}.tar.gz", "etc/rc.d", "sbin", "etc/hotplug.d", "etc/dev.d", "etc/udev", "lib", "usr", "bin", "etc/inittab", "etc/sysconfig");
 				//lxshell_return("tar", "-C", $mountpoint, "-xzf", "__path_program_home/xen/template/{$this->main->ostemplate}.tar.gz", "etc/rc.d", "sbin", "etc/hotplug.d", "etc/dev.d", "etc/udev", "lib", "usr", "bin", "etc/inittab");
 				// Changes below to determin if template is pygrub, and apply a pygrub style fstab, else use the standard one
-                                if (stripos($xvd_record[4], 'xvd') !== FALSE) {
+                                if (stripos($xvd_record) !== FALSE) {
 					lxfile_cp("../file/sysfile/xen/pyfstab", "$mountpoint/etc/fstab");
                                 } else {
 					lxfile_cp("../file/sysfile/xen/fstab", "$mountpoint/etc/fstab");	
-					}
+				       }
 									
 				
 				lxfile_cp("__path_program_root/file/sysfile/xen/inittab", "$mountpoint/etc/inittab");
