@@ -8558,7 +8558,7 @@ function print_real_beginning()
 	if ($login->getSpecialObject('sp_specialplay')->isOn('simple_skin')) {
 		print("<div id=mmm leftmargin=0 rightmargin=0 $func height=100% align=center style='background:#$lightskincolor' >");
 		print("<table cellpadding=0 cellspacing=0 height=10> <tr> <td > </td> </tr> </table> ");
-		print("<div id=mainbodyd style='padding:4 4 4 4;background:#fff;width:861;border:1px solid #000'>");
+		print("<div id=mainbodyd style='padding:4 4 4 4;background:#fff;width:975;border:1px solid #000'>");
 		print("<div id=mainbodynext style='background:#fff;border:1px solid #000'>");
 	}
 	return;
