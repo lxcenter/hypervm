@@ -17,7 +17,7 @@ class vps__openvz extends Lxdriverclass {
 				continue;
 			}
 	
-			$load = explode(" ", $l);
+			$load = explode(" "f, $l);
 			$mem = round(($load[1]/256) * 1024 * 1024);
 			execRrdSingle("memory", "GAUGE", "openvz-$vpsid", $mem);
 		}
@@ -505,7 +505,7 @@ class vps__openvz extends Lxdriverclass {
 	
 		dprint($templatefile . "\n");
 	
-		$ret = lxshell_return("nice", "-n", "19", "/usr/sbin/vzctl", "--verbose", "create", $this->main->vpsid, "--private", "{$this->main->corerootdir}/{$this->main->vpsid}", "--ostemplate", $this->main->ostemplate);
+		$ret = lxshell_return("nice", "-n", "19", "/usr/sbin/vzctl", "--verbose", "create", $this->main->vpsid, "--private", "{$this->main->corerootdir}/{$this->main->vpsid}", "--ostemplate", $this->main->ostemplate, "--layout", "simfs");
 	
 		if ($ret) {
 			lunlink("__path_program_root/tmp/$vpsid.create");
@@ -1346,7 +1346,7 @@ public static function staticChangeConf($file, $var, $val)
 	* @todo UNDOCUMENTED
 	*
 	* @author Anonymous <anonymous@lxcenter.org>
-	* @author Ángel Guzmán Maeso <angel.guzman@lxcenter.org>
+	* @author �?ngel Guzmán Maeso <angel.guzman@lxcenter.org>
 	*
 	* @return void
 	*/
