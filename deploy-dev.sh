@@ -2,7 +2,7 @@
 #    HyperVM, Server Virtualization GUI for OpenVZ and Xen
 #
 #    Copyright (C) 2000-2009	LxLabs
-#    Copyright (C) 2009-2011	LxCenter
+#    Copyright (C) 2009-2014	LxCenter
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -21,7 +21,11 @@
 #
 #    Install and deploy a develoment version on a local enviroment
 #
-
+#    Version 0.4 Added which, zip and unzip as requirement [ Danny Terweij <d.terweij@lxcenter.org> ]
+#    Version 0.3 Added perl-ExtUtils-MakeMaker as requirement to install_GIT [ Danny Terweij <d.terweij@lxcenter.org> ]
+#    Version 0.2 Changed git version [ Danny Terweij <d.terweij@lxcenter.org> ]
+#    Version 0.1 Initial release [ Ángel Guzmán Maeso <angel.guzman@lxcenter.org> ]
+#
 HYPERVM_PATH='/usr/local/lxlabs'
 
 usage(){
@@ -36,15 +40,15 @@ install_GIT()
 	# Redhat based
 	if [ -f /etc/redhat-release ] ; then
 		# Install git with curl and expat support to enable support on github cloning
-		yum install -y gcc gettext-devel expat-devel curl-devel zlib-devel openssl-devel
+		yum install -y gcc gettext-devel expat-devel curl-devel zlib-devel openssl-devel perl-ExtUtils-MakeMaker
 	# Debian based
 	elif [ -f /etc/debian_version ] ; then
 		# No tested
 		apt-get install gcc
 	fi
 	
-	# @todo Try to get the lastest version from some site. LASTEST file?
-	GIT_VERSION='1.7.9.1'
+	# @todo Try to get the lastest version from some site. LATEST file?
+	GIT_VERSION='1.8.3.4'
 	
 	echo "Downloading and compiling GIT ${GIT_VERSION}"
 	wget http://git-core.googlecode.com/files/git-${GIT_VERSION}.tar.gz
@@ -65,7 +69,18 @@ require_root()
 	fi
 }
 
+require_requirements()
+{
+    #
+    # without them, it will compile each run git and does not create/unzip the development files.
+    #
+    yum -y install which zip unzip
+}
+
+
 require_root
+
+require_requirements
 
 echo 'Installing HyperVM development version.'
 
@@ -84,23 +99,23 @@ case $1 in
 		git clone git://github.com/lxcenter/hypervm.git ${HYPERVM_PATH}
 		cd ${HYPERVM_PATH}
 		git checkout master
-		cd hypervm-install
+		cd ${HYPERVM_PATH}/hypervm-install
 		sh ./make-distribution.sh
-		cd ../hypervm
+		cd ${HYPERVM_PATH}/hypervm
 		sh ./make-development.sh
-		echo "Done. For install run:\ncd ${HYPERVM_PATH}/hypervm-install/hypervm-linux/; sh hypervm-install-[master|slave].sh with args"
+		printf "Done.\nInstall HyperVM:\ncd ${HYPERVM_PATH}/hypervm-install/hypervm-linux/\nsh hypervm-install-[master|slave].sh with args\n"
 		;;
 	dev )
 		# Clone from GitHub the last version using git transport (no http or https)
 		echo "Installing branch hypervm/dev"
 		git clone git://github.com/lxcenter/hypervm.git ${HYPERVM_PATH}
 		cd ${HYPERVM_PATH}
-		git checkout dev
-		cd hypervm-install
+		git checkout dev -f
+		cd ${HYPERVM_PATH}/hypervm-install
 		sh ./make-distribution.sh
-		cd ../hypervm
+		cd ${HYPERVM_PATH}/hypervm
 		sh ./make-development.sh
-		echo "Done. For install run:\ncd ${HYPERVM_PATH}/hypervm-install/hypervm-linux/; sh hypervm-install-[master|slave].sh with args"
+		printf "Done.\nInstall HyperVM:\ncd ${HYPERVM_PATH}/hypervm-install/hypervm-linux/\nsh hypervm-install-[master|slave].sh with args\n"
 		;;
 	*   )
 		usage

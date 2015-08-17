@@ -197,6 +197,7 @@ static $__acdesc_update_timezone	 = array("", "",  "set_timezone");
 static $__acdesc_update_boot	 = array("", "",  "boot");
 static $__acdesc_graph_base	 = array("", "",  "graphs");
 static $__acdesc_graph_traffic	 = array("", "",  "traffic");
+static $__acdesc_graph_v6traffic	 = array("", "",  "v6traffic");
 static $__acdesc_graph_cpuusage	 = array("", "",  "Cpuusage");
 static $__acdesc_graph_memoryusage	 = array("", "",  "Memory");
 static $__acdesc_update_livemigrate	 = array("", "",  "live_migrate");
@@ -307,6 +308,15 @@ static function findVpsGraph($server, $type)
 				}
 			}
 			break;
+		case "vpsv6traffic":
+			if ($driverapp === 'xen') {
+			} else {
+				foreach($list as $l) {
+					$ret[$l['nname']] = "openvzv6-{$l['vpsid']}";
+				}
+			}
+			break;
+
 
 		default:
 			if ($driverapp === 'xen') {
@@ -643,6 +653,7 @@ function perDisplay($var)
 		case "traffic_usage_per":
 			return array($this->priv->$realname, $this->used->$realname, "MB/Month");
 	}
+return null;
 }
 
 static function createListAlist($parent, $class = NULL)
@@ -958,6 +969,7 @@ function makeSureTheUserExists()
 	$res = rl_exec_get($this->__masterserver, $this->syncserver,  array("vps", 'create_user'), $arglist);
 	$this->username = $res;
 	$this->setUpdateSubaction();
+return null;
 }
 
 function syncCreateUser()
@@ -1070,12 +1082,6 @@ function getBestLocation()
 		}
 	}
 
-	if ($this->isWindows()) {
-		if (!$xenlvm) {
-			throw new lxException ("windows_needs_lvm", '');
-		}
-	}
-
 	$array = getBestLocationFromServer($this->syncserver, $nlist);
 	$this->corerootdir = $array['location'];
 
@@ -1093,15 +1099,10 @@ function getBestLocation()
 function getFullPathOstemplate()
 {
 	if ($this->isXen()) {
-		if ($this->isWindows()) {
-			return "/home/hypervm/xen/template/{$this->ostemplate}";
-		} else {
-			return "/home/hypervm/xen/template/{$this->ostemplate}.tar.gz";
-		}
+	    return "/home/hypervm/xen/template/{$this->ostemplate}.tar.gz";
 	} else {
-		return "/vz/template/cache/{$this->ostemplate}.tar.gz";
+	    return "/vz/template/cache/{$this->ostemplate}.tar.gz";
 	}
-
 }
 
 function getOsTemplateFromMaster($file)
@@ -1190,7 +1191,7 @@ function postAdd()
 		if ($totallist) foreach($totallist as $ip) {
 			$ipadd = new vmipaddress_a(null, $this->syncserver, $ip);
 			$this->vmipaddress_a[$ipadd->nname] = $ipadd;
-			ippool::addToTmpIpAssign($l);
+			ippool::addToTmpIpAssign($ip);
 
 		}
 	}
@@ -1238,18 +1239,6 @@ function postAdd()
 	$func = "postadd_$driverapp";
 	$this->$func();
 
-	// $this->distributeChildQuota();
-
-
-	////////////////////
-
-	/*
-	if (exists_in_db($this->__masterserver, "uuser", $uuser->nname)) {
-		throw new lxexception('user_exists_in_db', 'uuser');
-	}
-*/
-
-	
 	$this->setUpOsTemplateDownloadParam();
 	$backup = new LxBackup($this->__masterserver, $this->__readserver, $this->getClName());
 	$backup->initThisDef();
@@ -1553,12 +1542,6 @@ static function continueForm($parent, $class, $param, $continueaction)
 
 	global $gbl, $sgbl, $login, $ghtml; 
 
-	/*
-	if(!eregi("^[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,5})$", $param['nname'])) { 
-		throw new lxException('invalid_domain_name', 'nname');
-	}
-*/
-
 	if (!cse($param['nname'], ".vm")) {
 		$param['nname'] .= ".vm";
 	}
@@ -1569,14 +1552,6 @@ static function continueForm($parent, $class, $param, $continueaction)
 	if ($param['one_ipaddress_f']) {
 		full_validate_ipaddress($param['one_ipaddress_f']);
 	}
-
-	/*
-	if (!preg_match("/[a-zA-Z0-9\-]+\.[a-zA-Z0-9\-\.]+]/i", $param['nname'])) {
-		throw new lxException('domain_name_invalid', 'nname');
-	}
-*/
-
-
 
 	if (isOn($param['send_welcome_f'])) {
 		if (!$param['contactemail']) {
@@ -1614,17 +1589,11 @@ static function continueForm($parent, $class, $param, $continueaction)
 
 static function addCommand($parent, $class, $p)
 {
-
+        //need to handel v-num_ipv6address = NULL as it currently breaks the creation API
 	checkIfVariablesSet($p, array('name', 'v-password', 'v-num_ipaddress_f', 'v-num_ipv6address_f', 'v-contactemail', 'v-syncserver', 'v-ostemplate'));
 
 	checkIfVariablesSetOr($p, $param, 'resourceplan_f', array('v-plan_name'));
 	checkIfVariablesSetOr($p, $param, 'ttype', array('v-type'));
-
-	/*
-	if (!cse($p['name'], ".vm")) {
-		throw new lxexception("name_should_end_in_.vm", '', '');
-	}
-*/
 
 	$param['nname'] = $p['name'];
 	$param['nname'] = strtolower($param['nname']);
@@ -1651,23 +1620,20 @@ static function addform($parent, $class, $typetd = null)
 	$vlist['one_ipaddress_f'] = null;
 	$vlist['contactemail'] = "";
 	$vlist['send_welcome_f'] = "";
-
 	$vlist['__c_subtitle_info'] = "Info";
 	$vlist['hostname'] = "";
 
 	if ($typetd['val'] === 'xen') {
 		$vlist['networkgateway'] = null;
 	}
+
 	$vlist['nameserver'] = "";
 	$vlist['resourceplan_f'] = array('A', $nclist);
-
 	$vlist['__c_subtitle_server'] = "Server";
-	//var_dump($typetd['val']);
-	
-	// $typetd['val'] openvz or xen in clientlib.php
+
 	$serverlist = $parent->getVpsServers($typetd['val']);
 	if (!$serverlist) {
-		throw new lxexception('Server no configured for driver '. $typetd['val'] . '. You can use setdriver.php for configure a driver.
+		throw new lxexception('This server is not configured for driver '. $typetd['val'] . '. You can use setdriver.php for configure a driver.
 		 For example:
 		cd /usr/local/lxlabs/hypervm/httpdocs;
 		lphp.exe ../bin/common/setdriver.php --server=localhost --class=vps --driver='. $typetd['val'] . '', '', '');
@@ -1694,7 +1660,6 @@ function changePlanSpecific($plan)
 	$this->xenostemplate_list = $plan->xenostemplate_list;
 	$this->openvzostemplate_list = $plan->openvzostemplate_list;
 	$this->disable_per = $plan->disable_per;
-	//$this->centralbackup_flag = $plan->centralbackup_flag;
 }
 
 function getOstemplatePath()
@@ -1715,21 +1680,6 @@ static function getVpsOsimage($parent, $driver, $type = "add")
 
 	$list = exec_class_method($class, "getOsTemplatelist", $type);
 
-	/*
-	$obj = new Ostemplatelist(null, null, 'admin');
-	$obj->get();
-	$ostlist = get_namelist_from_objectlist($obj->$var);
-	// Filter only if not admin.
-	if (count($ostlist) > 0 && !$login->isAdmin()) {
-		foreach($list as $k => $v) {
-			if (!array_search_bool($k, $ostlist)) {
-				unset($list[$k]);
-			}
-		}
-	}
-*/
-
-
 	$ostlist = "{$driver}ostemplate_list";
 
 	if (!$login->isAdmin() && count($login->$ostlist) > 0) {
@@ -1741,14 +1691,15 @@ static function getVpsOsimage($parent, $driver, $type = "add")
 	}
 
 	return $list;
-
 }
 
 function createGraphList()
 {
 	$alist[] = "a=graph&sa=traffic";
+
 	if ($this->isXen()) {
 	} else {
+		$alist[] = "a=graph&sa=v6traffic";
 		$alist[] = "a=graph&sa=memoryusage";
 	}
 
@@ -1823,17 +1774,6 @@ function doKloxoInit($mountpoint)
 			lxfile_rm("$mountpoint/usr/local/lxlabs/kloxo/etc/remote_installapp");
 		}
 
-	}
-
-	if (lxfile_exists("$mountpoint/usr/local/lxlabs/lxadmin/")) {
-
-		lfile_put_contents("$mountpoint/usr/local/lxlabs/lxadmin/etc/authorized_keys", $this->text_public_key);
-
-		if ($this->isOn('__var_kloxo_remote_i_flag')) {
-			lfile_put_contents("$mountpoint/usr/local/lxlabs/lxadmin/etc/remote_installapp", $this->__var_kloxo_iapp_url);
-		} else {
-			lxfile_rm("$mountpoint/usr/local/lxlabs/lxadmin/etc/remote_installapp");
-		}
 	}
 }
 
@@ -1915,14 +1855,14 @@ function createShowAlist(&$alist, $subaction = null)
 	if ($this->status === 'create') {
 		$alist['__v_message'] = "<b> VM is being Created... Please Wait.. </b> \n";
 		$alist['__v_refresh'] = true;
-		return;
+		return null;
 	}
 
 
 	if ($this->status === 'createfailed') {
 		$alist['__v_message'] = "<b> VM creation has failed. Reason: $reason </b>\n";
 		$alist['__v_refresh'] = true;
-		return;
+		return null;
 	}
 
 	if ($this->checkIfLockedForAction('restore')) {
@@ -1958,19 +1898,10 @@ function createShowAlist(&$alist, $subaction = null)
 		$alist[] = "a=updateform&sa=rebuild";
 		return null;
 	}
-	/*
-	if ($this->getObject('lxbackup')->backupstage === 'doing') { 
-		$alist['__v_message'] = 'The VM is getting backed up, please wait...';
-		$alist['__v_refresh'] = true;
-		return $alist;
-	}
-*/
-
 
 	$this->makeSureTheUserExists();
 	$this->makeSureTheMacAddressExists();
 	$this->makeSureVifExists();
-
 
 	if ($subaction === 'config') {
 		return $this->createShowAlistConfig($alist);
@@ -1995,8 +1926,6 @@ function createShowAlist(&$alist, $subaction = null)
 	$alist['__v_dialog_info'] = "a=updateForm&sa=information";
 	$alist['__v_dialog_pass'] = "a=updateform&sa=password";
 	if (!$this->isWindows()) {
-	//$alist[] = "a=show&n=browsebackup&l[class]=ffile&l[nname]=/";
-
 
 		$bslave = $this->getBackupServer();
 
@@ -2012,8 +1941,8 @@ function createShowAlist(&$alist, $subaction = null)
 
 
 	$alist['__title_console'] = $login->getKeywordUc('console');
-	//$alist[] = "a=show&o=sshclient";
-	if ($this->isWindows()) {
+
+    if ($this->isWindows()) {
 		$alist[] = "a=show&o=vncviewer";
 	} else {
 		$alist[] = "a=show&o=consolessh";
@@ -2109,13 +2038,6 @@ function createShowAlist(&$alist, $subaction = null)
 	if (!$this->isXen()) {
 		$alist[] = "a=list&c=openvzqos";
 	}
-	//$this->getLxclientActions($alist);
-
-	/*
-	if ($this->priv->isOn('backup_flag')) {
-		$alist[] = "a=show&o=lxbackup";
-}
-	*/
 
 	$alist['__title_misc'] = "Extra";
 	$this->getListActions($alist, 'vpstraffichistory');
@@ -2424,7 +2346,7 @@ function createShowInfoList($subaction)
 
 	$gen = $login->getObject('general')->generalmisc_b;
 	if ($subaction) {
-		return;
+		return null;
 	}
 
 	if (!$this->isXen()) {

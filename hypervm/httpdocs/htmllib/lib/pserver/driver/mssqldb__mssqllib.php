@@ -5,21 +5,17 @@ class Mssqldb__mssql extends LxDriverclass {
 
 function dbactionAdd()
 {
-//<<<<<<< mssqldb__mssqllib.php
 	print("starting\n");
-//=======
 
 	if (!windowsOs()) {
 		throw new lxException('mssql_is_only_on_windows', '', '');
 	}
 	print("\n mantu\n");
-//>>>>>>> 1.1.2.8
 	$req = mssql_connect("localhost,1433");
 
 	if (!$req) {
 
 		throw new lxException('MsSql Connection is Failed', '', '');
-		print("Could not Connect to Database on localhost using root user\n");
 	}
 	$loginname=$this->main->username;
 	$dbname=$loginname;
@@ -31,9 +27,9 @@ function dbactionAdd()
 	if( !$row ){
 		mssql_query("sp_addlogin '$loginname', '$pass'");
 	} else {
-		throw new Exception("couldn't create $loginname--already user exist\n");
-		print("user already exist by this name\n");
-	}	
+        print("user already exist by this name\n");
+        throw new Exception("couldn't create $loginname--already user exist\n");
+	}
  print("executing\n");
 	try{
 		mssql_query("create database $dbname");

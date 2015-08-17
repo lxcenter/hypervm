@@ -5,6 +5,9 @@ class Sgbllib {
 function __construct()
 {
 
+        // OA remove this if everyone agrees. 
+        // http://hu1.php.net/func_num_args -> func_num_args() behaviour changed since 5.3
+        // Moving this inline instead of eval. 
 	$this->arg_getting_string = '
 	$arglist = array();
 	for ($i = $start; $i < func_num_args(); $i++) {
@@ -70,7 +73,6 @@ function isLxlabsClient()
 function isBlackBackground()
 {
 	return false;
-	return $this->isDebug();
 }
 function isKloxo()
 {

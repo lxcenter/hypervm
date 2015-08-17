@@ -1,1 +1,6 @@
- The ports %port% on your server %server% is down.
+Hello,
+
+The ports %port% on your server %server% is down.
+
+Kind regards,
+HyperVM

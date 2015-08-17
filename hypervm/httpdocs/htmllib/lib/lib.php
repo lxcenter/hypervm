@@ -92,22 +92,6 @@ function core_installWithVersion($path, $file, $ver)
     }
 }
 
-function download_thirdparty()
-{
-    global $sgbl;
-    $prgm = $sgbl->__var_program_name;
-    // Fixes #303 and #304
-    $string = file_get_contents("http://download.lxcenter.org/download/thirdparty/$prgm-version.list");
-    if ($string != "") {
-        $string = trim($string);
-        $string = str_replace("\n", "", $string);
-        $string = str_replace("\r", "", $string);
-        core_installWithVersion("/usr/local/lxlabs/$prgm/", "$prgm-thirdparty", $string);
-    }
-}
-
-
-
 function get_other_driver($class, $driverapp)
 {
 	include "../file/driver/rhel.inc";
@@ -889,10 +873,11 @@ function call_with_flag($func)
 {
 	$file = "__path_program_etc/flag/$func.flg";
 	if (lxfile_exists($file)) {
-		return;
+		return false;
 	}
 	call_user_func($func);
 	lxfile_touch($file);
+    return true;
 }
 
 
@@ -1056,17 +1041,18 @@ function calculateRealTotal($inout)
 
 function mysql_upload_file_to_db($dbhost, $dbuser, $dbpassword, $dbname, $file)
 {
-	$rs = mysql_connect($dbhost, $dbuser, $dbpassword);
+    // TODO: REPLACE MYSQL_CONNECT
+	$rs = mysqli_connect($dbhost, $dbuser, $dbpassword,$dbname);
 
 	if (!$rs) {
 		throw new lxException('no_mysql_connection_while_uploading_file,', '');
 	}
 
-	mysql_select_db($dbname);
+	mysqli_select_db($dbname);
 
 	$res = lfile_get_contents($file);
 
-	$res = mysql_query($res);
+	$res = mysqli_query($rs,$res);
 	if (!$res) {
 		throw new lxException('no_mysql_connection_while_uploading_file,', '');
 	}
@@ -1405,11 +1391,17 @@ function getFQDNforServer($v)
 	if ($servername) {
 		return $servername;
 	}
-
-	return getOneIPForServer($v);
-	
+    // Did not found a hostname in the database, getting a IP from the database
+    $ServerIP = getOneIPForServer($v);
+    // Try to find a hostname using the system tool host. When that fails it returns the IP
+    return getHostNameFromIP($ServerIP);
 }
 
+function getHostNameFromIP($ip)
+{
+    $host = `host $ip`;
+    return (($host ? end ( explode (' ', $host)) : $ip));
+}
 
 function getOneIPForServer($v)
 {
@@ -1462,11 +1454,7 @@ function get_admin_license_var()
 function get_license_resource()
 {
 	global $gbl, $sgbl, $login, $ghtml; 
-	if ($sgbl->isKloxo()) {
-		return array("maindomain_num");
-	} else {
-		return array("vps_num");
-	}
+	return array("vps_num");
 }
 
 function cp_fileserv_list($root, $list)
@@ -2036,11 +2024,6 @@ function fix_rhn_sources_file()
 	lfile_put_contents("/etc/yum.repos.d/lxcenter.repo", $cont);
 }
 
-
-function mkdir_ifnotExist($name)
-{
-}
-
 function opt_get_single_flag($opt, $var)
 {
 	$ret = false;
@@ -2116,9 +2099,9 @@ function lx_core_lock($file = null)
 	if (lxfile_exists($pidfile)) {
 		$pid = lfile_get_contents($pidfile);
 	}
-	dprint($pid . "\n");
+	dprint("PID number: " . $pid . "\n");
 	if (!$pid) {
-		dprint("$prog:$file No pid file $pidfile detected..\n");
+		dprint("\n$prog:$file No pid file $pidfile detected..\n");
 		lfile_put_contents($pidfile, os_getpid());
 		return false;
 	}
@@ -2132,9 +2115,9 @@ function lx_core_lock($file = null)
 
 	if (!$name || $name !== $prog) {
 		if (!$name) {
-			dprint("$prog:$file Stale Lock file $pidfile detected..., removing\n");
+			dprint("\n$prog:$file Stale Lock file $pidfile detected..., removing\n");
 		} else {
-			dprint("$prog:$file Stale lock file... Another program $name is running on it..\n");
+			dprint("\n$prog:$file Stale lock file... Another program $name is running on it..\n");
 		}
 
 		lxfile_rm($pidfile);
@@ -2162,7 +2145,7 @@ function lx_core_lock_check_only($prog, $file = null)
 	$pid = lfile_get_contents($pidfile);
 	dprint($pid . "\n");
 	if (!$pid) {
-		dprint("$prog:$file No pid in filedetected..\n");
+		dprint("\n$prog:$file No PID in $pidfile detected..\n");
 		return false;
 	}
 
@@ -2175,9 +2158,9 @@ function lx_core_lock_check_only($prog, $file = null)
 
 	if (!$name || $name !== $prog) {
 		if (!$name) {
-			dprint("$prog:$file Stale Lock file detected..., removing\n");
+			dprint("\n$prog:$file Stale Lock file detected..., removing\n");
 		} else {
-			dprint("$prog:$file Stale lock file... Another program $name is running on it..\n");
+			dprint("\n$prog:$file Stale lock file... Another program $name is running on it..\n");
 		}
 
 		lxfile_rm($pidfile);
@@ -2246,21 +2229,6 @@ function appvault_dbfilter($inputfile, $outputfile, $cont)
 	//dprint("Writing to file {$cont['output']}\n");
 	//dprint("{$cont['output']} : $val\n");
 	lfile_put_contents($outputfile, $val);
-}
-
-
-function installLxetc()
-{
-    return; //TODO: Remove this
-	if (!lxfile_exists("/root/.etc/pfixed")) {
-		if (lxfile_exists("/root/.etc/")) {
-			lxfile_rm_rec("/root/.etc/");
-		}
-	}
-
-	if (!lxfile_exists("/root/.etc/")) {
-		lxshell_background("lphp.exe", "../bin/common/misc/lxetc.php");
-	}
 }
 
 function lightyApacheLimit($server, $var)
@@ -2511,13 +2479,31 @@ function curl_get_file_contents($file)
 	return $retrievedhtml;
 }
 
-function install_if_package_not_exist($name)
+function install_if_package_not_exist($package)
 {
-	$ret = lxshell_return("rpm", "-q", $name);
+	$ret = lxshell_return("rpm", "-q", $package);
 	if ($ret) {
-		lxshell_return("yum", "-y", "install", $name);
+		lxshell_return("yum", "-y", "install", $package);
 	}
+    return $ret;
 }
+
+// New function since HyperVM 2.1.0
+function replace_rpm_package($replace,$replacewith)
+{
+    $ret = lxshell_return("rpm", "-q", "yum-plugin-replace");
+    if ($ret)
+    {
+        lxshell_return("yum", "-y", "install", "yum-plugin-replace");
+    }
+
+    $ret = lxshell_return("rpm", "-q", $replacewith);
+    if ($ret) {
+        lxshell_return("yum", "-y", "replace", $replace, "--replace-with", $replacewith);
+    }
+    return $ret;
+}
+
 
 function curl_general_get($url)
 {
@@ -2934,25 +2920,6 @@ function copy_script()
 
 	lfile_put_contents("/script/programname", $sgbl->__var_program_name);
 	lxfile_unix_chmod_rec("/script", "0755");
-}
-
-// 
-// This function realy needed?
-// removed tmpimg and tmpskin dirs in some revisions back
-// dterweij
-function copy_image()
-{
-// TODO Remove this
-    return ;
-
-	global $gbl, $sgbl, $login, $ghtml;
-	$prgm = $sgbl->__var_program_name;
-
-	lxfile_cp_content("tmpimg/", "img/image/collage/button/");
-	$list = lscandir_without_dot("img/skin/$prgm/feather/");
-	foreach($list as $l) {
-		lxfile_cp_content("tmpskin/", "img/skin/$prgm/feather/$l");
-	}
 }
 
 function getAdminDbPass()
@@ -3928,18 +3895,6 @@ function addLineIfNotExistPattern($filename, $searchpattern, $pattern)
 
 }
 
-function fix_self_ssl()
-{
-	global $gbl, $sgbl, $login, $ghtml; 
-	$pgm = $sgbl->__var_program_name;
-	$ret = lxshell_return("diff", "../etc/program.pem", "htmllib/filecore/old.program.pem");
-
-	if (!$ret) {
-		lxfile_cp("htmllib/filecore/program.pem", "../etc/program.pem");
-	}
-	//system("/etc/init.d/$pgm restart");
-
-}
 function remove_line($filename, $pattern)
 {
 	$list = lfile($filename);
@@ -4063,8 +4018,9 @@ function checkClusterDiskQuota()
 		}
 
 		foreach($list as $l) {
-			if (intval($l['pused']) >= 87) {
-				$mess .= "Filesystem  {$l['mountedon']} ({$l['nname']}) on {$mc->nname} is using {$l['pused']}%\n";
+            // Set warn level from 85% usage (was 87)
+			if (intval($l['pused']) >= 85) {
+				$mess .= "\nFilesystem  {$l['mountedon']} ({$l['nname']}) on {$mc->nname} is using {$l['pused']}% space.\n";
 			}
 		}
 	}
@@ -4073,7 +4029,7 @@ function checkClusterDiskQuota()
 	dprint($mess);
 	dprint("\n");
 	if ($mess) {
-		lx_mail(null, $login->contactemail, "Filesystem Warning" , $mess);
+		lx_mail(null, $login->contactemail, "Filesystem Warning on {$mc->nname}" , $mess);
 	}
 
 	lxfile_generic_chown("..", "lxlabs");
@@ -4120,7 +4076,7 @@ function find_hop($l)
 		$l = trimSpaces($l);
 		$ll = explode(" ", $l);
 		$lll = explode("/", $ll[3]);
-		return round($lll[1], 1);;
+		return round($lll[1], 1);
 	}
 }
 
@@ -4280,7 +4236,6 @@ function get_last_month_and_year()
 		$year = $year - 1; 
 	} else {
 		$month = $month - 1;
-		$year = $year;
 	}
 	return array($month, $year);
 }

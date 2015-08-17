@@ -187,7 +187,7 @@
     top: -10000px;
 	white-space: pre-wrap;
     white-space: -moz-pre-wrap;
-    white-space: -pre-wrap;
+    white-space: pre-wrap;
     white-space: -o-pre-wrap;
     word-wrap: break-word;
     zoom:1;
@@ -327,7 +327,7 @@
 }
 
 .x-form-cb-label {
-    width:'auto' !important;
+    width:auto !important;
     float:none !important;
     clear:none !important;
     display:inline !important;

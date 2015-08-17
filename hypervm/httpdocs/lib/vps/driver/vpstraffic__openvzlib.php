@@ -34,12 +34,15 @@ static function iptables_delete()
 		if (!$l) {
 			continue;
 		}
+		if(self::isIPV6($l)) $cmd= "ip6tables";
+		else $cmd="iptables";
+		
 		$count = 0;
 		while (true) {
 			$count++;
-			exec("iptables -nv -L FORWARD", $output);
+			exec("$cmd -nv -L FORWARD", $output);
 			$output = implode("\n", $output);
-			if ($count > 10) {
+			if ($count > 20) {
 				break;
 			}
 			if (!preg_match("/$l/", $output)) {
@@ -75,7 +78,16 @@ static function iptables_create()
 	}
 }
 
-
+static function isIPV6($ip)   
+{
+  if(strchr($ip, ':') && !strchr($ip, '.')) return true;
+    if(strchr($ip, '.') && !strchr($ip, ':')) return false;
+    
+      throw new lxException('Invalid IP address: ' . $ip . ' Contains both dot and colon!', $variable);
+          return false;  
+}
+          
+          
 static function findTotaltrafficUsage($list, $oldtime, $newtime)
 {
 	global $gbl, $sgbl, $login, $ghtml; 

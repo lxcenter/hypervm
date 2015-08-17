@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 #    HyperVM, Server Virtualization GUI for OpenVZ and Xen
 #
@@ -25,57 +25,47 @@
 #
 ######
 clear
-cat LICENSE
+cat LICENSE | more
 echo "--------------------------------------------"
 
 start() {
-
 	export PATH=/usr/sbin:/sbin:$PATH
 
-if ! [ -f /usr/bin/yum ] ; then
-      	echo You at least need yum installed for this to work...
-	echo Please contact us or visit the forum at http://forum.lxcenter.org
-	echo "                                "
-	exit
-fi
-#
-if [ -f /usr/bin/yum ] ; then
-	echo Installing some packages with yum
-	yum -y install php wget zip unzip 
-else 
-	echo Installing some packages with up2date
-	up2date --nox --nosig php wget zip unzip
-fi
-#
-	echo Checking if php is installed
-if ! [ -f /usr/bin/php ] ; then
-	echo Installing php failed. Please fix yum/up2date.
-	exit
-fi
-#
-if 	[ -f ./hypervm-install.zip ] ; then
-	echo Remove old installation package
-	rm -f hypervm-install.zip
-fi
+	if ! [ -f /usr/bin/yum ] ; then
+		echo "You at least need yum installed for this to work..."
+		echo "Please contact us or visit the forum at http://forum.lxcenter.org"
+		echo "                                "
+		exit
+	fi
 
-if [ ! -d '../../.git' ]; then
-	pwd
-	echo Downloading installation package from LxCenter
-	wget http://download.lxcenter.org/download/hypervm-install.zip
-else
-	echo 'Development GIT version found. Skipping download sources.'
-fi
-#
-	
+	echo "Installing some packages with yum"
+	yum -y install php wget zip unzip
+
+	echo Checking if php is installed
+	if ! [ -f /usr/bin/php ] ; then
+		echo "Installing php failed. Please fix yum."
+		exit
+	fi
+
 	if [ ! -d '../../.git' ]; then
-		echo "Unpacking installation package"	
+
+		if [ -f ./hypervm-install.zip ] ; then
+    		echo "Remove old installation package"
+    		rm -f hypervm-install.zip
+    	fi
+		pwd
+		echo "Downloading installation package from LxCenter"
+		wget http://download.lxcenter.org/download/hypervm-install.zip
+		echo "Unpacking installation package"
 		unzip -oq hypervm-install.zip
 	else
-		echo "Unpacking installation package from current development version"
+		echo "Development GIT version found. Skipping download sources."
+		echo "Unpacking installation package from current development version."
 		unzip -oq ../hypervm-install.zip
 	fi
+
 	cd hypervm-install/hypervm-linux
-	echo Starting main installation script
+	echo "Starting main installation script"
 	php lxins.php --install-type=master $1 $2 | tee hypervm_install.log
 }
 #

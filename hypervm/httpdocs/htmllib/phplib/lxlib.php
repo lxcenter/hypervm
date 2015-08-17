@@ -1,14 +1,10 @@
 <?php
 
-if (windowsOs()) {
-	include_once "htmllib/lib/windowslib.php";
-	include_once "lib/windowsproglib.php";
-} else {
-	include_once "htmllib/lib/linuxlib.php";
-	include_once "lib/linuxproglib.php";
-}
+date_default_timezone_set("UTC");
 
-// Don't remove this. This is used for slave upgrade.
+include_once "htmllib/lib/linuxlib.php";
+include_once "lib/linuxproglib.php";
+
 function remotetestfunc()
 {
 }
@@ -17,7 +13,10 @@ define('S_IFDIR', 00040000);
 define('S_ISUID', 00004000);
 define('S_ISGID', 00002000);
 
-// This is the only function that exectues during the initialization... The rest of the whle library exists as functions that can be called... Nothing gets executed on their own... Execept this.. So it makes this sort of special... very special..
+// This is the only function that executes during the initialization...
+// The rest of the whole library exists as functions that can be called...
+// Nothing gets executed on their own... Except this..
+// So it makes this sort of special... very special..
 
 init_global();
 
@@ -30,16 +29,22 @@ function init_global()
 	$gbl = new Gbl();
 	$gbl->get();
 
+    date_default_timezone_set("UTC");
+
 //
-// Turn on demo version by putting a empty file called demo in the etc dir
+// Turn on demo version by putting a empty file called demo in the etc dir.
+// More info about enable a demo server soon at our wiki
 //
 	if (lfile_exists("__path_program_etc/demo")) {
 		$g_demo = 1;
 	}
+
+	check_for_debug("/usr/local/lxlabs/hypervm/httpdocs/commands.php");
+    $sgbl->method = ($sgbl->dbg >= 1) ? "get" : "post";
+
 //
 // ### LxCenter
 //
-
 // Check for Development/Debug version
 // If file not exists, Production mode (-1)
 // If file exists it can have the following numbers to enable
@@ -50,32 +55,24 @@ function init_global()
 // 5  = Debug mode 5
 // -1 = Turn Off and go to production mode
 
-	check_for_debug("/commands.php");
-
-// Disabled by LxCenter, we are not at PHP version with number 1 at postition N ( x.N.x )
-//  $v = explode(".", PHP_VERSION);
-//  if ($v[1] == "1" && $sgbl->isDebug()) {
-//      date_default_timezone_set("UTC");
-//  }
-
-	$sgbl->method = ($sgbl->dbg >= 1) ? "get" : "post";
 }
 
 function debug_for_backend()
 {
 	global $gbl, $sgbl, $login, $ghtml;
-	check_for_debug("/commands.php");
+    check_for_debug("/usr/local/lxlabs/hypervm/httpdocs/commands.php");
 	if ($sgbl->isDebug()) {
-		return;
+		return null;
 	}
-	check_for_debug("/backend.php");
+    check_for_debug("/usr/local/lxlabs/hypervm/httpdocs/backend.php");
+    return null;
 }
 
 function check_for_debug($file)
 {
 	global $gbl, $sgbl, $login, $ghtml;
-	if (file_exists(getreal($file))) {
-		$sgbl->dbg = file_get_contents(getreal($file));
+	if (lfile_exists($file)) {
+		$sgbl->dbg = trim(file_get_contents($file));
 		if ($sgbl->dbg != "1" && $sgbl->dbg != "2" && $sgbl->dbg != "3" && $sgbl->dbg != "4" && $sgbl->dbg != "5") {
 			$sgbl->dbg = -1;
 		}
@@ -92,6 +89,7 @@ function check_for_debug($file)
 		ini_set("display_errors", "Off");
 		ini_set("log_errors", "On");
 	}
+    return null;
 }
 
 function isUpdating()
@@ -896,41 +894,6 @@ function kill_pid($name)
 	os_killpid($pid);
 }
 
-/************************************
-* HOW-TO GENERATE KEYPAIRS
-* //Passphrase is helloworld
-* $ openssl req -x509 -newkey rsa:1024 -keyout mykey.key -out mycert.crt
-*/
-
-function licenseDecrypt($license_content)
-{
-	global $gbl, $sgbl, $login, $ghtml;
-
-	$fp = lfopen("__path_program_root/file/lprogram.crt", "r");
-	$public_key = fread($fp, 8192);
-	fclose($fp);
-
-	openssl_get_publickey($public_key);
-
-	$list = explode("\n", $license_content);
-
-	// decrypt
-	print_time('decrypt');
-	$fullstring = null;
-	foreach ($list as $l) {
-		$l = trim($l);
-		if (!$l) {
-			continue;
-		}
-		$decrypted_string = null;
-		openssl_public_decrypt(base64_decode($l), $decrypted_string, $public_key);
-		//dprintr($decrypted_string . " $l<br> \n");
-		$fullstring .= $decrypted_string;
-	}
-	print_time('decrypt', "Time Taken For decrypt:", 3);
-	return $fullstring;
-}
-
 function lx_redefine_func($func)
 {
 	global $gbl, $sgbl, $login, $ghtml;
@@ -942,24 +905,6 @@ function lx_redefine_func($func)
 	$arglist[] = expand_real_root(func_get_arg($i));
 	
 	return call_user_func_array($func, $arglist);
-}
-
-function licenseEncrypt($string)
-{
-	global $gbl, $sgbl, $login, $ghtml;
-	$file = "$sgbl->__path_program_root/file/license_privatekey.key";
-	// encrypt
-	$pass = "helloworld";
-	$result = openssl_get_privatekey(array("file://" . $file, $pass));
-	$ar = str_split($string, 100);
-	$fullstring = null;
-	foreach ($ar as $s) {
-		openssl_private_encrypt($s, $encrypted_string, $result);
-		$fullstring .= base64_encode($encrypted_string) . "\n";
-	}
-	print(openssl_error_string());
-
-	return $fullstring;
 }
 
 function remove_unnecessary_stat(&$stat)
@@ -1211,12 +1156,12 @@ function char_search_end($haystack, $needle, $insensitive = 1)
 	}
 }
 
-function array_search_bool($needle, $haystack)
+function array_search_bool($needle, $haystack, $strict=false)
 {
 	if (!$haystack) {
 		return false;
 	}
-	if (array_search($needle, $haystack) !== false) {
+	if (array_search($needle, $haystack, $strict) !== false) {
 		return true;
 	}
 
@@ -1241,20 +1186,11 @@ function isLicensed($var)
 function is_composite($class)
 {
 	return false;
-	return csa($class, "__");
 }
 
 function get_composite($class)
 {
 	return array(null, null, $class);
-
-	$list = explode("__", $class);
-
-	if (count($list) === 2) {
-		return array($list[0], null, $list[1]);
-	}
-
-	return array($list[0], $list[1], $list[2]);
 }
 
 // Set unlicensed to Unlimited usage
@@ -1270,67 +1206,6 @@ function setLicenseTodefault()
 		$licv = "lic_$l";
 		$lic->$licv = $def[$l];
 	}
-	$license->setUpdateSubaction();
-	$license->write();
-}
-
-function decodeAndStoreLicense($ip, $license_content)
-{
-	global $gbl, $sgbl, $login, $ghtml;
-
-	$license = $login->getObject('license');
-	$license->parent_clname = $login->getClName();
-	$lic = $license->licensecom_b;
-	$get = licenseDecrypt($license_content);
-	$license->text_license_content = $license_content;
-
-	if (!$get) {
-		throw new lxException("could_not_decrypt_license");
-	}
-	$get = 'licence.php?' . $get;
-	$ghtml->get_post_from_get($get, $path, $post);
-
-	if (!isset($post['maindomain_num'])) {
-		$post['maindomain_num'] = $post['domain_num'];
-	}
-
-	if ($sgbl->isDebug()) {
-		$post['maindomain_num'] = '1000';
-	}
-
-	foreach ($post as $k => $v) {
-		$var = "lic_" . $k;
-		$lic->$var = $v;
-	}
-
-	$lic->lic_ipaddress .= " ($ip)";
-
-	$prilist = $login->getQuotaVariableList();
-
-	foreach ($prilist as $k => $v) {
-		if (cse($k, "_flag")) {
-			$login->priv->$k = 'On';
-		} else if (cse($k, "_usage")) {
-			$login->priv->$k = 'Unlimited';
-		} else if (cse($k, "_num")) {
-			$login->priv->$k = 'Unlimited';
-		}
-	}
-
-	$login->priv->client_num = $post['client_num'];
-
-	if (isset($post['maindomain_num'])) {
-		$login->priv->maindomain_num = $post['maindomain_num'];
-	}
-
-	if (isset($post['vps_num'])) {
-		$login->priv->vps_num = $post['vps_num'];
-	}
-
-	$login->priv->pserver_num = $post['pserver_num'];
-	$login->setUpdateSubaction();
-	$login->write();
-
 	$license->setUpdateSubaction();
 	$license->write();
 }
@@ -1659,20 +1534,11 @@ function get_general_image_path($v = null)
 */
 function add_http_host($elem)
 {
-	global $gbl, $sgbl, $login, $ghtml;
 	return $elem;
-
-	$host = $_SERVER['SERVER_NAME'];
-	//$port = $sgbl->__var_prog_port;
-	//$host = "http://" . $host . ":" .  "$port";
-	//$host = "https://" . $host . ":" .  "$port";
-	return $host . $elem;
 }
 
 function get_image_path($path = null)
 {
-	global $gbl, $sgbl;
-
 	global $gbl, $sgbl, $login;
 
 	//Return path of the encrypted images in the deployment version.
@@ -1873,7 +1739,7 @@ function get_charset()
 	return $charset;
 }
 
-function print_meta_lan()
+function initLanguageCharset()
 {
 	global $gbl, $sgbl, $login, $ghtml;
 	$lan = get_language();
@@ -1887,7 +1753,7 @@ function print_meta_lan()
 	}
 }
 
-function init_language()
+function initLanguage()
 {
 	global $gbl, $sgbl, $login, $ghtml;
 	global $g_language_mes, $g_language_desc;
@@ -1971,24 +1837,6 @@ function lx_error_handler($errno, $errstr, $file, $line)
 */
 function createEncName($name)
 {
-	global $gbl;
-
-	return $name;
-
-	if ($sgbl->dbg > 0) {
-		return $name;
-	}
-
-	$name = str_replace("_", "", $name);
-	$name = str_replace("php", "", $name);
-	$name = str_replace("a", "r", $name);
-	$name = str_replace("e", "z", $name);
-	$name = str_replace("i", "q", $name);
-	$name = str_replace("o", "j", $name);
-	$name = str_replace("t", "y", $name);
-	$name = str_replace("s", "x", $name);
-	$name = str_replace("r", "p", $name);
-
 	return $name;
 }
 
@@ -2036,7 +1884,7 @@ function check_raw_password($class, $client, $pass)
 	}
 
 	$rawdb = new Sqlite(null, $class);
-	$password = $rawdb->rawquery("select password from $class where nname = '$client'");
+        $password = $rawdb->rawquery("select password from ".$rawdb->real_escape_string($class)." where nname = '".$rawdb->real_escape_string($client)."'");
 	$enp = $password[0]['password'];
 	
 	if ($enp && check_password($pass, $enp)) {
@@ -3089,7 +2937,10 @@ function critical_change_db_pass()
 			change_db_pass();
 		} catch (exception $e) {
 		}
+        return true;
 	}
+
+    return false;
 }
 
 function change_db_pass()
@@ -3143,8 +2994,8 @@ function parse_sql_data()
 	$majmin = $sgbl->__ver_major_minor;
 	$trel = $sgbl->__ver_release;
 
-	$rpath = "sql/full.lxsql";
-	$pathc = "htmllib/sql/common.lxsql";
+	$rpath = $sgbl->__path_sql_file . ".lxsql";
+	$pathc = $sgbl->__path_sql_file_common . ".lxsql";
 	include $rpath;
 	include $pathc;
 

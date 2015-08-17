@@ -33,7 +33,7 @@ function virt_install_main()
 	}
 
 	print("Executing Update Cleanup... Will take a long time to finish....\n");
-	lxshell_return("__path_php_path", "../bin/common/updatecleanup.php", "--type=$installtype");
+	lxshell_return("__path_php_path", "../bin/common/updatecleanup-installer.php", "--type=$installtype");
 
 }
 
@@ -48,7 +48,11 @@ function openvz_install($installtype)
 		$list = array("vzctl", "vzquota", "ovzkernel-PAE");
 	}
 
-	lxfile_cp("../file/openvz.repo", "/etc/yum.repos.d/openvz.repo");
+    if (is_centossix()) {
+        lxfile_cp("../file/centos-6-openvz.repo.template", "/etc/yum.repos.d/openvz.repo");
+    } else {
+        lxfile_cp("../file/centos-5-openvz.repo.template", "/etc/yum.repos.d/openvz.repo");
+    }
 
 	run_package_installer($list);
 
@@ -74,47 +78,36 @@ function installOstemplates($virtualization)
 function xen_install($installtype)
 {
 
-        // newest OpenVZ kernels comes provides kernel-xen (!?) which breaks RHEL5 instalations
-        // If openvz.repo file exist remove it imediately before install kernel-xen
-        if (file_exists("/etc/yum.repos.d/openvz.repo")) {
-            unlink("/etc/yum.repos.d/openvz.repo");
-        }
-	$list = array("kernel-xen", "xen", "virt-manager", "e4fsprogs");
-	run_package_installer($list);
-	
-        // hypervm-xen-vmlinuz and lxxen-initrd.img must be created from last installed dom0 kernel
-        if (is_centosfive()) {
-            $kernel_installed = exec_with_all_closed_output('rpm -q kernel-xen --last | cut -f 1 -d " " | head -n 1 | sed "s/kernel-xen-//g"');
-            $kernel_name = "vmlinuz-".$kernel_installed."xen";
-        } else if(is_centossix()) {
-            $kernel_installed = exec_with_all_closed_output('rpm -q kernel-2.6.32 --last | cut -f 1 -d " " | head -n 1 | sed "s/kernel-//g"');        
-            $kernel_name = "vmlinuz-$kernel_installed";
+    // If openvz.repo file exist remove it imediately before install Xen
+    if (file_exists("/etc/yum.repos.d/openvz.repo")) {
+        unlink("/etc/yum.repos.d/openvz.repo");
+    }
+
+    if (is_centossix()) {
+        $arch = `arch`;
+        $arch = trim($arch);
+
+        if ($arch === 'x86_64') {
+            $cont = our_file_get_contents("centos-6-xen.repo.template");
+            our_file_put_contents("/etc/yum.repos.d/CentOS-Xen.repo", $cont);
         } else {
-            print("Unsupported OS\n");
-            die();
+            echo "Sorry, installation aborted. Xen is not supported at CentOS 6 32bit.";
+            exit;
         }
-        
-        if (file_exists("/boot/$kernel_name") && !file_exists("/boot/hypervm-xen-vmlinuz")) {
-		system("cd /boot ; ln -s $kernel_name hypervm-xen-vmlinuz;");
-                
-                if(is_centosfive()) {
-                    system("mkinitrd -f --with=ext4 --with=xennet --builtin=aic7xxx --builtin=serverworks --preload=xenblk --omit-raid-modules --omit-lvm-modules --fstab=../file/sysfile/xen/fstab  /boot/lxxen-initrd.img $kernel_installed"."xen");
-                }
-                if(is_centossix()) {
-                    system("mkinitrd -f --with=ext4 --with=xennet --builtin=aic7xxx --builtin=serverworks --preload=xenblk --omit-raid-modules --omit-lvm-modules --fstab=../file/sysfile/xen/fstab  /boot/lxxen-initrd.img $kernel_installed");
-                }
+    }
 
-                system("cd /boot ; ln -sf lxxen-initrd.img hypervm-xen-initrd.img");
-	}
-
-        if (file_exists("/etc/init.d/libvirtd")) {
-            system("chkconfig libvirtd off");
-        }
-	system("chkconfig xendomains on");
-        if (is_centossix()) {
-        	system("../bin/grub-bootxen.sh");
-                lxfile_cp("../file/sysfile/xen/xend-config.sxp", "/etc/xen/xend-config.sxp");
-        }
+    $list = array("kernel-xen", "xen", "virt-manager");
+    run_package_installer($list);
+    if (file_exists("/boot/vmlinuz-2.6-xen") && !file_exists("/boot/hypervm-xen-vmlinuz")) {
+        system("cd /boot ; ln -s vmlinuz-2.6-xen hypervm-xen-vmlinuz; ln -s initrd-2.6-xen.img hypervm-xen-initrd.img");
+    }
+    if (file_exists("/etc/init.d/libvirtd")) {
+        system("chkconfig libvirtd off");
+    }
+    system("chkconfig xendomains on");
+    if (is_centossix()) {
+        system("../bin/grub-bootxen.sh");
+    }
 }
 
 

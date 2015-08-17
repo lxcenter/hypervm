@@ -30,50 +30,34 @@ function __construct($readserver, $table, $force = false)
 		$db = $sgbl->__var_dbf;
 		$pass = getAdminDbPass();
 
+	        // TODO: REPLACE MYSQL_CONNECT
 		if ($sgbl->__var_database_type === 'mysql') {
-			$gbl->$fdbvar = mysql_connect($readserver, $user, $pass);
-                        if(!mysql_query("SET NAMES 'utf8'",$gbl->$fdbvar))
-                        {
-                                log_error(mysql_error());
-                                throw new lxException('could_set_names_on_db'. mysql_error($gbl->$fdbvar). "<<", '', '');
-                        }
-                        mysql_query("SET CHARACTER SET 'utf8'",$gbl->$fdbvar);
-                        if(!mysql_query("SET character_set_connection= 'utf8'",$gbl->$fdbvar)) 
-                        {
-                                log_error(mysql_error());
-                                throw new lxException('could_set_charset_on_db', '', '');
-                        }
-			mysql_select_db($db);
-			self::$__database = 'mysql';
-		} else if ($sgbl->__var_database_type === 'mssql') {
-			//print("$user, $pass <br> \n");
-			//$gbl->$fdbvar = mssql_connect('\\.\pipe\MSSQL$LXLABS\sql\query');
-			$gbl->$fdbvar = mssql_pconnect("$readserver,$sgbl->__var_mssqlport");
-			mssql_select_db($db);
-			self::$__database = 'mssql';
-		} else {
-			$gbl->$fdbvar = new PDO("sqlite:$db");
-			self::$__database = 'sqlite';
-		}
 
-	} 
+            	$gbl->$fdbvar = mysqli_connect($readserver, $user, $pass,$db);
 
+        	if(!$gbl->$fdbvar)
+	            {
+	                print("\nMySQL-ERROR: Can not connect to the MySQL server at ($readserver): ".mysqli_connect_error().".\n");
+	                exit;
+	            }
 
+		mysqli_query($gbl->$fdbvar,"SET CHARACTER SET 'utf8'");
+	        mysqli_query($gbl->$fdbvar,"SET character_set_connection= 'utf8'");
+		mysqli_select_db($gbl->$fdbvar,$db);
 
-	if (!$gbl->$fdbvar) {
-		print("Could not connect to Mysql server... <br> ");
-		//rl_exec_get("localhost", "localhost", "restart_mysql", null);
-		//sleep(8);
-		//print("<script> window.location.reload(false); </script>");
-		exit;
+		self::$__database = 'mysql';
 
-	}
+		} else if ($sgbl->__var_database_type === 'mssql')
+                {
+			        $gbl->$fdbvar = mssql_pconnect("$readserver,$sgbl->__var_mssqlport");
+			        mssql_select_db($db);
+			        self::$__database = 'mssql';
+		        } else {
+			        $gbl->$fdbvar = new PDO("sqlite:$db");
+			        self::$__database = 'sqlite';
+		        }
 
-
-
-	if (!$gbl->$fdbvar) {
-		die("could not Open Database Connection.... Exiting... <br> \n\n");
-	}
+	    }
 
 }
 
@@ -94,9 +78,10 @@ function reconnect()
 
 	log_log("database_reconnect", "Reconnecting again");
 
+    // TODO: REPLACE MYSQL_CONNECT
 	if ($sgbl->__var_database_type === 'mysql') {
-		$gbl->$fdbvar = mysql_connect($readserver, $user, $pass);
-		mysql_select_db($db);
+		$gbl->$fdbvar = mysqli_connect($readserver, $user, $pass, $db);
+		mysqli_select_db($gbl->$fdbvar,$db);
 		self::$__database = 'mysql';
 	} else if ($sgbl->__var_database_type === 'mssql') {
 		//print("$user, $pass <br> \n");
@@ -134,20 +119,28 @@ function setPassword($newp)
 	return $this->rawQuery("set password=Password('$newp');");
 }
 
+function real_escape_string($string)
+{
+     global $gbl, $sgbl, $login, $ghtml;
+     $fdbvar = "__fdb_" . $this->__readserver;
+     return mysqli_real_escape_string($gbl->$fdbvar,$string);
+
+}
 
 function database_query($res, $string)
 {
-	//log_log("dbquery", $string);
-	if (self::$__database == 'mysql') {
-		//print($string . "\n");
-		$res = mysql_query($string, $res);
+    global $gbl, $sgbl, $login, $ghtml;
+    $fdbvar = "__fdb_" . $this->__readserver;
+
+    if (self::$__database == 'mysql') {
+		$res = mysqli_query($gbl->$fdbvar,$string);
 		if (!$res) {
-			dprint("Mysql connection broken. Reconnecting..\n");
+			dprint("MySQL connection is broken. Reconnecting..\n");
 			debugBacktrace();
 			$this->reconnect();
-			$res = mysql_query($string, $res);
+			$res = mysqli_query($gbl->$fdbvar,$string);
 		}
-		dprint(mysql_error());
+		dprint(mysqli_error($gbl->$fdbvar));
 		return $res;
 	} else if (self::$__database == "mssql") {
 		return mssql_query($string, $res);
@@ -168,7 +161,7 @@ function database_query($res, $string)
 function database_fetch_array($query)
 {
 	if (self::$__database == 'mysql') {
-		return mysql_fetch_array($query, MYSQL_ASSOC);
+		return mysqli_fetch_array($query);
 	} else if (self::$__database === 'mssql') {
 		return mssql_fetch_array($query, MSSQL_ASSOC);
 	} else {
@@ -240,39 +233,10 @@ function getRowsGeneric($string, $list = null)
 	} else {
 		$select = "*";
 	}
-	$query = "select $select from $this->__sqtable $string;";
+	$query = "SELECT $select FROM $this->__sqtable $string";
 	$fulresult = $this->rl_query($query);
 
-
-	/// The ser varialbles are now handled in the setfromarraa, and this saves us a lot time.
-
 	return $fulresult;
-
-
-
-	foreach((array) $fulresult as $result) {
-		foreach($result as $key => $value) {
-
-			if (!strncmp($key, "ser_", 4)) {
-				$key = substr($key, 4);
-				if ($value) {
-					$res[$key] = unserialize(base64_decode($value));
-					//$res[$key] = unserialize($value);
-					if (!$res[$key] && strlen($value) > 30) {
-						log_database("Unserialize failed for $value");
-					}
-				} else {
-					//dprint("Serialized Value for $key  Null <br> ", 2);
-					$res[$key] = NULL;
-				}
-			} else {
-				$res[$key] = $value;
-			}
-		}
-		$ret[] = $res;
-	}
-
-	return $ret;
 }
 
 
@@ -335,18 +299,18 @@ function getTable($list = null)
 function getColumnTypes()
 {
 
-	//return getDbvariable("fieldvar", $this->__sqtable);
 	global $gbl, $sgbl, $login, $ghtml; 
 	$fdbvar = "__fdb_" . $this->__readserver;
-
+    $res = null;
 
 	if (!$this->__column_type) {
 		if ($sgbl->__var_database_type === 'mysql') {
-			$result = mysql_query("SHOW COLUMNS FROM $this->__sqtable", $gbl->$fdbvar);
+            $query = "SHOW COLUMNS FROM $this->__sqtable";
+			$result = mysqli_query($gbl->$fdbvar,$query);
 			if (!$result) {
-				dprint("Mysql connection broken. Reconnecting..\n");
+				dprint("MySQL connection is broken. Reconnecting.\n");
 				$this->reconnect();
-				$result = mysql_query("SHOW COLUMNS FROM $this->__sqtable", $gbl->$fdbvar);
+                $result = mysqli_query($gbl->$fdbvar,$query);
 			}
 		} else if ($sgbl->__var_database_type === 'mssql') {
 			$result = mssql_query("sp_columns $this->__sqtable", $gbl->$fdbvar);
@@ -358,13 +322,12 @@ function getColumnTypes()
 			}
 		}
 
-
 		if (!$result) {
 			return null;
 		}
 		
 		if ($sgbl->__var_database_type === 'mysql') {
-			while(($row = mysql_fetch_assoc($result))) {
+			while(($row = mysqli_fetch_assoc($result))) {
 				$res[$row['Field']] = $row['Field'];
 			}
 		} else if ($sgbl->__var_database_type === 'mssql') {
@@ -383,9 +346,7 @@ function getColumnTypes()
 
 
 		$this->__column_type = $res;
-	
-		//Fucking Buggy.
-		 //$this->__column_type = mssql_fetch_column_types($this->__sqtable, self::$__fdb);
+
 	}
 
 	return $this->__column_type;
@@ -467,7 +428,7 @@ function createQueryStringUpdate($array)
 function getCountWhere($query)
 {
 	global $gbl, $sgbl, $login, $ghtml; 
-	$countres = $this->rawquery("select count(*) from $this->__sqtable where $query");
+	$countres = $this->rawquery("SELECT COUNT(*) FROM $this->__sqtable WHERE $query");
 	if ($sgbl->__var_database_type === 'mysql') {
 		$countres = $countres[0]['count(*)'];
 	} else if ($sgbl->__var_database_type === 'mssql') {
@@ -484,8 +445,6 @@ function getToArray($object)
 {
 	$col = $this->getColumnTypes();
 
-
-	//dprint_r($array);
 	foreach($col as $key => $val) {
 		if (csb($key, "coma_")) {
 			$cvar = substr($key, 5);
@@ -512,7 +471,7 @@ function getToArray($object)
 			}
 
 			$ret[$key] = base64_encode(serialize($object->$cvar));
-			//$ret[$key] = serialize($object->$cvar);
+
 		} else if (csb($key, "priv_q_") || csb($key, "used_q_")) {
 			$qob = strtil($key, "_q_");
 			$qkey = strfrom($key, "_q_");
@@ -529,7 +488,6 @@ function getToArray($object)
 				$string = $object->$key;
 			}
 			$ret[$key] = str_replace("'", "\'", $string);
-			//$ret[$key] = $object->$key;
 		}
 	}
 	return $ret;
@@ -564,24 +522,19 @@ function setRow($nname, $value, $array)
 	$fdbvar = "__fdb_" . $this->__readserver;
 
 	if (!$this->isLocalhost()) {
-		print("Major Error\n");
+		print("Major error occured! This is not localhost?\n");
 		exit;
 	}
 
-
 	$string = $this->createQueryStringUpdate($array);
 
-	$update = "update $this->__sqtable set $string where $nname= '$value'";
+	$update = "UPDATE $this->__sqtable SET $string WHERE $nname= '$value'";
 
-	if ($array['nname'] === 'boxtrapper.com') {
-		//dprint($update);
-		//exit;
-	}
 	if (!($upd = $this->database_query($gbl->$fdbvar, $update)))
-		log_database("DbError: Update Failed for $update");
+		log_database("DB-Error: Update Failed for $update");
 	else  {
 		if ($this->__sqtable !== 'utmp') {
-			dprint("Success: updated " .$this->__sqtable . " for " .  $array['nname'] . "\n", 1);
+			dprint("DB-Success: Updated " .$this->__sqtable . " for " .  $array['nname'] . "\n", 1);
 		}
 	}
 
@@ -592,34 +545,24 @@ function setRow($nname, $value, $array)
 function addRow($array)
 {
 	global $gbl, $sgbl, $login, $ghtml; 
-
 	$fdbvar = "__fdb_" . $this->__readserver;
+
 	if (!$this->isLocalhost()) {
-		print("Major Error\n");
+        print("Major error occured! This is not localhost?\n");
 		exit;
 	}
 
-
 	$string = $this->createQueryStringAdd($array);
-
-	$insert = "insert into $this->__sqtable $string ;";
-
-	//dprint($insert, 2);
+	$insert = "INSERT INTO $this->__sqtable $string ;";
 
 	if ($ins = $this->database_query($gbl->$fdbvar, $insert)) {
-		dprint("Record inserted in $this->__sqtable for {$array['nname']}\n", 1);
-		//log_message("insert into {$this->__sqtable}:{$array['nname']} :::: $insert");
+		dprint("DB-Record: Inserted in $this->__sqtable for {$array['nname']}\n", 1);
 	} else {
-		log_database("DbError: Insert Failed for {$this->__sqtable}:{$array['nname']}");
-		log_bdatabase("DbError: Insert Failed for {$this->__sqtable}:{$array['nname']} $insert");
-		// Not imporant... I think.. This happens mostly when they try add something twice. Let us just ignore the second time, but log it properly.
-		if ($sgbl->dbg > 0) {
-			//throw new lxException("db_add_failed", "{$this->__sqtable}:{$array['nname']}");
-		}
+		log_database("DB-Error: Insert Failed for {$this->__sqtable}:{$array['nname']}");
+		log_bdatabase("DB-Error: Insert Failed for {$this->__sqtable}:{$array['nname']} $insert");
 		return true;
 	}
-
-
+    return false;
 }
 
 function delRow($nname, $value)
@@ -629,13 +572,13 @@ function delRow($nname, $value)
 
 	$fdbvar = "__fdb_" . $this->__readserver;
 
-	$delete = "delete from $this->__sqtable where $nname = '$value'";
+	$delete = "DELETE FROM $this->__sqtable WHERE $nname = '$value'";
 
 	$delresult = $this->database_query($gbl->$fdbvar, $delete);
 
 
 	 if(!$delresult) {
-		 log_database("DbError: delete Failed for $delete");
+		 log_database("DB-Error: Delete Failed for $delete");
 	 } else {
 		 dprint("Record deleted from $this->__sqtable for $nname <br>.");
 	 }

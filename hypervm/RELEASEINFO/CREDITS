@@ -2,16 +2,9 @@ Credits to LxCenter releases:
 
 K.T. Ligesh original developer of HyperVM/Kloxo/LxAdmin, rest in peace m8.. we miss you!
 
-
-Consortium:
-Brijesh			- India 		- Head (Cousin of Ligesh)	- brijesh@lxcenter.org
-S. Bhargava 	- India 		- General Leader			- bhargava@lxcenter.org
-Arthur Thornton	- USA 			- Leader					- arthur@lxcenter.org
-Danny Terweij 	- Netherlands	- Leader					- d.terweij@lxcenter.org
-
 Secretary
 ---------
-* Peter Jones	- peter.jones@lxcenter.org
+* Peter Jones			- peter.jones@lxcenter.org
 
 Project Manager
 ---------------
@@ -19,70 +12,45 @@ Project Manager
 
 System Operations LxCenter
 --------------------------
-* Danny Terweij
-* Arthur Thornton
+* Danny Terweij			- d.terweij@lxcenter.org
 
 Web Designers
 -------------
 * Peter Jones			- peter.jones@lxcenter.org
-* Walter Secco (GFX)	- walter.secco@lxcenter.org
+* Walter Secco (GFX)		- walter.secco@lxcenter.org
 
 Developers
 ----------
-* Joko Frank Octo		-
-* Deen Yusoff			- deen.yusoff@lxcenter.org
-* Martin Sefcik			- martin.sefcik@lxcenter.org
-* Michele Piperis		- michele@lxcenter.org
-* Walter Secco			- walter.secco@lxcenter.org
-* Reid Forrest			- reid.forrest@lxcenter.org
-* Harry Spink			- harry.spink@lxcenter.org
-* Angel Guzman Maeso	- angel.guzman@lxcenter.org
-* Dimitris Travlos		- dimitris.travlos@lxcenter.org
-* Mohamed Nabil			- mohamed.nabil@lxcenter.org
-* George Hafiz			- george.hafiz@lxcenter.org
-* Steve Amerige			- steve.amerige@lxcenter.org
-* Daniel Onisoru		-
-* Rene Nieuwburg		- rene.nieuwburg@lxcenter.org
-* Sai Krishna			-
-* Jean-Claude Richard	- jean-claude.richard@lxcenter.org
-* Eric Thygesen			- eric.thygesen@lxcenter.org
-* Jack John				- jack.john@lxcenter.org
-* Mustafa Ramadhan		- mustafa.ramadhan@lxcenter.org
-* William Leonard		- william.leonard@lxcenter.org
-* James Kennon			- james.kennon@lxcenter.org
+See at github.com for the contributors.
 
 Translators
 -----------
 * Angel Guzman Maeso 		- Kloxo ES
-* Marek Zakrzewski			- Kloxo PL
-* Rene Nieuwburg			- HyperVM ES
-* Danny Terweij				- Kloxo/HyperVM NL
-* George Hafiz				- en-gb corrector
-
-InstallApp software updater
----------------------------
-* lego (Forum name)
-* troylight (Forum Name)
-* Semir
+* Marek Zakrzewski		- Kloxo PL
+* Rene Nieuwburg		- HyperVM ES
+* Danny Terweij			- Kloxo/HyperVM NL
+* George Hafiz			- en-gb corrector
 
 Others
 ------
-* Steve Amerige	- Documentation
+* ?	- Documentation
 
 Sponsors
 --------
-* DMEHosting	- LxCenter main servers
-* Razorservers	- Test/Development servers
-* Spry/VPSLink	- Test/Development server
-* UBHosting		- Test/Development servers
-* Nuisoft		- Test/Development server
-* Axisnext		- Test/Development server
+* MercuryVPS			- LxCenter main servers
+* Serverel			- Test/Development server
+* Ch-Center			- Test/Development server - Download mirror - Secondary DNS
+* Spry/VPSLink			- Test/Development server - Download mirror
+* Castlegem			- Test/Development server - Download mirror
+* US Networks Data Center	- Test/Development server
 
- Special thanks
+Ex-Sponsor
+----------
+* DME Hosting			- Thank you for being the main sponsor till july 2013.
+
+Special thanks
 --------------
-* Andre Allen
-* Eduardo Silva
-* Keiran Smith
+* ?
 
 Software
 --------
@@ -99,5 +67,5 @@ Every cent helps!
 
 #################################################
 Developers, Translators,
-Please subscribe to the mailinglists. More info on main website and
+Please subscribe to the mailing lists. More info on main website and
 forum.

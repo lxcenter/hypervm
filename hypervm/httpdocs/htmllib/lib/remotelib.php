@@ -51,18 +51,6 @@ function do_do_the_action($rmt)
 {
 	global $gbl, $sgbl, $login, $ghtml; 
 	return do_local_action($rmt);
-
-	if ($rmt->action == "set" || $rmt->action == 'get') {
-		if (isLocalhost($rmt->slaveserver)) {
-		} else {
-			//return rl_exec(null, $rmt->slaveserver, $rmt);
-		}
-	} else if ($rmt->action == 'dowas') {
-		$object = $rmt->robject;
-		$object->__masterserver = null;
-		dprint("in dowas\n");
-		return $object->doWas();
-	}
 }
 
 function do_the_action($rmt, $res)
@@ -484,117 +472,18 @@ function send_to_some_stream_server($type, $size, $raddress, $var, $fd)
 
 }
 
-
-function some_server_windows()
-{
-
-	global $gbl, $sgbl, $login, $ghtml; 
-
-	dprint("In Windows Server\n");
-
-	$exitchar = $sgbl->__var_exit_char;
-	$con = $sgbl->__var_connection_type;
-	// Set the ip and port we will listen on
-
-	// Array that will hold client information
-	$clients = Array();
-
-	// Create a TCP Stream socket
-	//$sock = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
-
-	
-	$sockr = stream_socket_server("ssl://0.0.0.0:7779");
-	$sockl = stream_socket_server("tcp://127.0.0.1:7776");
-
-	if (!$sockr) {
-		die("Could not bind Remote address\n");
-	}
-	if (!$sockl) {
-		die("Could not local bind address\n");
-	}
-
-	stream_context_set_option($sockr, 'ssl', 'verify_peer', false);
-	stream_context_set_option($sockr, 'ssl', 'allow_self_signed', true);
-	//stream_context_set_option($sock, 'ssl', 'cafile', "/etc/httpd/conf/ssl.crt/server.crt");
-	stream_context_set_option($sockr, 'ssl', 'local_cert', "$sgbl->__path_program_root/file/program.key");
-	$client = null;
-	// Loop continuously
-
-
-	$client = null;
-	// Loop continuously
-	while (true) {
-		// Setup clients listen socket for reading
-		$read = null;
-		$read[0] = $sockr;
-		$read[1] = $sockl;
-		$writea = null;
-		$excpta = null;
-		/*
-		foreach((array) $client as $c) {
-			$read[] = $c['sock'];
-		}
-	*/
-		//dprint("Before: ");
-		//dprintr($read);
-		// Set up a blocking call to stream_select()
-		$ready = stream_select($read, $writea, $excpta, 30);
-
-		if ($ready === 0) {
-			continue;
-		}
-		//dprint("After: $ready");
-		//dprintr($read);
-
-		// This means that sock - which is our main master socket - is ready for reading, which in turn signifies that a NEW connection has arrived. The other members of the read array 
-		if (in_array($sockl, $read)) {
-			//dprint("Local:");
-			//dprintr($read);
-			$c = stream_socket_accept($sockl);
-		} else if (in_array($sockr, $read)) {
-			//dprint("Remote:");
-			//dprintr($read);
-			$c = stream_socket_accept($sockr);
-		}
-
-		// If a client is trying to write - handle it now
-
-
-		$total = null;
-		while (true) {
-			$input = fread($c, 8092);
-
-			if ($input == null) {
-				//fclose($c);
-				break;
-			}
-			//dprintr($input . "\n");
-			$total .= $input;
-			if (csa($total, $exitchar)) {
-				// requested disconnect
-				//dprint("got total $total\n");
-				$out = process_server_input($total);
-				fwrite($c, $out);
-				fwrite($c, "\n");
-				fwrite($c, $exitchar);
-				fwrite($c, "\n");
-				// Server shouldn't close the socket. It is the client's job to do so.
-				//fclose($c);
-				break;
-			} 
-		}
-	} // end while
-
-	// Close the master sockets
-	fclose($sock);
-
-}
-
-
 function createSslStream()
 {
 	global $gbl, $sgbl, $login, $ghtml; 
-	$sockr = stream_socket_server("ssl://0.0.0.0:{$sgbl->__var_remote_port}");
+
+
+        // CHECK FIXME TESTME
+        // this only listens on ipv4
+	//      $sockr = stream_socket_server("ssl://0.0.0.0:{$sgbl->__var_remote_port}");
+	// What will this cause on ipv4 only systems? 
+	$sockr = stream_socket_server("ssl://[::]:{$sgbl->__var_remote_port}");
+        
+                                
 	stream_context_set_option($sockr, 'ssl', 'verify_peer', false);
 	//stream_set_timeout($sockr, 30000000);
 	stream_context_set_option($sockr, 'ssl', 'allow_self_signed', true);
@@ -875,6 +764,7 @@ function do_local_action($rmt)
 			$class = $rmt->func[0];
 			$tmp = new $class(null, null, 'dummy');
 		}
+		if($rmt->arglist == NULL) $rmt->arglist= array();
 		return call_user_func_array($rmt->func, $rmt->arglist);
 
 	}
@@ -909,25 +799,7 @@ function rl_exec_set($masterserver, $slaveserver, $object)
 
 function myclone($object)
 {
-
 	return clone $object;
-
-	if (!is_subclass_of($object, "lxclass")) {
-		return clone $object;
-	}
-	$class = $object->get__table();
-
-	$newobject = new $class($object->__masterserver, $object->__readserver, $object->nname);
-
-	foreach($object as $k => $v) {
-		/*
-		if (is_object($v)) {
-			continue;
-		}
-	*/
-		$newobject->$k = $v;
-	}
-	return $newobject;
 }
 
 

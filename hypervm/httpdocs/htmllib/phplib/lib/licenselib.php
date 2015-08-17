@@ -124,8 +124,9 @@ class License extends Lxdb
 
 
 		$lic = $license->licensecom_b;
-		$def = array("vps_num" => "Unlimited", "client_num" => "Unlimited", "pserver_num" => "Unlimited", "vps_num" => "Unlimited");
-		$list = array("maindomain_num", "domain_num", "pserver_num", "vps_num");
+		$def = array("vps_num" => "Unlimited", "client_num" => "Unlimited", "pserver_num" => "Unlimited");
+//		$list = array("maindomain_num", "domain_num", "pserver_num", "vps_num");
+		$list = array("pserver_num", "vps_num");
 
 		foreach ($list as $l) {
 			$licv = "lic_$l";
@@ -142,4 +143,3 @@ class License extends Lxdb
 
 }
 
-?>

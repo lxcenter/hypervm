@@ -72,8 +72,10 @@ function lxfile_symlink($src, $dst)
 	if (is_dir($dst)) {
 		$dst = "$dst/" . basename($src);
 	}
+    if (!lxfile_exists($dst)) {
 	log_filesys("Linking $src to $dst");
 	symlink($src, $dst);
+    }
 }
 
 
@@ -439,11 +441,13 @@ function lxfile_cp_content_file($dirsource, $dirdest)
 
 	$list = lscandir_without_dot($dirsource);
 
-	foreach($list as $l) {
-		if (!is_dir("$dirsource/$l")) {
-			lxfile_cp("$dirsource/$l", "$dirdest/$l");
-		}
-	}
+    if (isset($list)) {
+	    foreach($list as $l) {
+		    if (!is_dir("$dirsource/$l")) {
+			    lxfile_cp("$dirsource/$l", "$dirdest/$l");
+		    }
+	    }
+    }
 }
 
 
@@ -552,7 +556,15 @@ function lxshell_background($cmd)
 	global $global_dontlogshell;
 	$username = '__system__';
 	$start = 1;
-	eval($sgbl->arg_getting_string);
+        $arglist = array();
+        for ($i = $start; $i < func_num_args(); $i++) {
+                if (isset($transforming_func)) {
+                        $arglist[] = $transforming_func(func_get_arg($i));
+                } else {
+                        $arglist[] = func_get_arg($i);
+        }
+}
+
 	$cmd = getShellCommand($cmd, $arglist);
 	$cmd .= " >/dev/null 2>&1 &";
 	$pwd = getcwd();
@@ -574,16 +586,7 @@ function do_exec_system($username, $dir, $cmd, &$out, &$err, &$ret, $input)
 
 	global $global_dontlogshell;
 
-	$path = "$sgbl->__path_lxmisc";
-
 	$fename = tempnam($sgbl->__path_tmp, "system_errr");
-
-	$execcmd = null;
-	if ($username !== '__system__') {
-		$execcmd = "$path -u $username";
-		chmod($path, 0700);
-	}
-
 
 	$oldpath = null;
 	if ($dir) {
@@ -609,9 +612,13 @@ function do_exec_system($username, $dir, $cmd, &$out, &$err, &$ret, $input)
 		}
 		fclose($pipes[0]);
 
-		while (!feof($pipes[1])) {
-			$out .= fgets($pipes[1], 1024);
-		}
+//		while (!feof($pipes[1])) {
+//			$out .= fgets($pipes[1], 1024);
+//		}
+
+                // OA 20130920 Current solution from php.net
+		$out= stream_get_contents($pipes[1]);
+                                
 		fclose($pipes[1]);
 		// It is important that you close any pipes before calling
 		// proc_close in order to avoid a deadlock

@@ -608,28 +608,13 @@ function check_for_license()
 	$lic = $login->getObject('license')->licensecom_b;
 
 	$prgm = $sgbl->__var_program_name;
-	if ($prgm === 'lxlabsclient') {
-		return;
-	}
-
 	$list = get_admin_license_var();
 
-	//dprintr($list);
 	foreach($list as $k => $l) {
 		$res = strfrom($k, "used_q_");
 		$licv = "lic_$res";
 		if ($licv === "lic_maindomain_num" && !isset($lic->$licv)) {
 			$lic->$licv = $lic->lic_domain_num;
-		}
-		if ($l > $lic->$licv) {
-			if ($login->isAdmin()) {
-		//		$mess = $ghtml->show_error_message("The system is not at present working because there is not enough license for $res. Please go to [b]  admin home -> advanced -> license update [/b]  and click on [b] get license from lxcenter [/b]. You will have to first create a valid license at client.lxlabs.com.");
-			} else {
-		//		$mess = $ghtml->show_error_message("The system is not at present working because there is not enough license for $res. Please contact your administrator.");
-			}
-//
-//			exit;
-// disabled by dterweij
 		}
 	}
 
@@ -736,15 +721,6 @@ function get_return_url($action)
 	$var = "lx_{$action}_return_url";
 
 	$url = $gbl->getSessionV("lx_http_referer");
-	return $url;
-
-	if ($gbl->isetSessionV($var)) {
-		$url = $gbl->getSessionV($var);
-		$gbl->unsetSessionV($var);
-	} else {
-		$url = $gbl->getSessionV("lx_http_referer");
-		$gbl->unsetSessionV($var);
-	}
 	return $url;
 }
 
@@ -1712,11 +1688,12 @@ function print_navigation($navig)
 	print("</table> </td> </tr> </table> </td>");
 	
 	if ($login->getSpecialObject('sp_specialplay')->isOn('simple_skin')) {
-
-		if ($login->getSpecialObject('sp_specialplay')->isOn('show_thin_header')) {
+// For clients with simple skin this hides the logout button. 
+// The logout link is nowhere. 
+//		if ($login->getSpecialObject('sp_specialplay')->isOn('show_thin_header')) {
 			$v =  create_simpleObject(array('url' => "javascript:top.mainframe.logOut()", 'purl' => '&a=updateform&sa=logout', 'target' => null));
 			$ghtml->print_div_button_on_header(null, true, $k, $v);
-		}
+//		}
 	} else {
 
 		$imgstring = "<img width=18 height=18 src=/img/general/button/star.gif>";
@@ -1921,7 +1898,7 @@ function do_display_init()
 	createPrincipleObject();
 
 
-	print_meta_lan();
+	initLanguageCharset();
 	$ghtml->print_real_beginning();
 
 	if (!$login->isDefaultSkin()) {
@@ -1929,7 +1906,9 @@ function do_display_init()
 	}
 
 
-
+	// OA: Why only kloxo? Because of this there is no Logout text link on 
+	// simple skin for end users (with thin header) 
+	// anyway, I like the door icon better, so I leave this alone and enablo the door
 	if ($sgbl->isKloxo() && $gbl->c_session->ssl_param) {
 		$url = $gbl->c_session->ssl_param['backurl'];
 		$parent = $gbl->c_session->ssl_param['parent_clname'];
@@ -1972,39 +1951,16 @@ function main_system_lock()
 
 	// Not needed for hyperVM. HyperVM has more intelligent per vps locking.
 	if ($sgbl->isHyperVm()) {
-		return;
+		return null;
 	}
-
-	return;
-	$lname = null;
-	/*
-	if (is_object($gbl->__c_object)) {
-		$lname = $gbl->__c_object->getClName();
-		if (isModifyAction() && lx_core_lock($lname)) {
-			$ghtml->print_redirect_back('system_is_locked', '');
-			exit;
-		}
-	}
-*/
-	$nlname = $login->getClName();
-	if ($nlname !== $lname && isModifyAction() && lx_core_lock($nlname)) {
-		$ghtml->print_redirect_back('system_is_locked_by_u', '');
-		exit;
-	}
-
+	return null;
 }
 
 function display_init()
 {
 	global $gbl, $sgbl, $login, $ghtml; 
-
-
-
-
 	initProgram();
-
-	init_language();
-
+	initLanguage();
 
 	if ($sgbl->is_this_slave()) { print("This is a Slave Server. You control it at the Master Server.\n"); exit; }
 

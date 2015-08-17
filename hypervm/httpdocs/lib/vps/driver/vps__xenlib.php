@@ -442,18 +442,14 @@ class vps__xen extends Lxdriverclass {
 		// Check if the Xen virtual machine is windows based
 		if($is_windows)
 		{
-			$result = $this->getDiskUsageWindows($disk, $root_path);
+			$result = self::getDiskUsageWindows($disk, $root_path);
 		}
 		else { // For Unix based Xen virtual machine
 			// @todo Check if the dumpe2fs it's available to use and exists (never trusts on users)
 			$global_dontlogshell = TRUE;
-                        if (is_centosfive()) {
-        			$output = lxshell_output('dumpe4fs', '-h', $disk);
-                        }
-                        if (is_centossix()) {
-        			$output = lxshell_output('dumpe2fs', '-h', $disk);
-                        }
+			$output = lxshell_output('dumpe2fs', '-h', $disk);
 			$global_dontlogshell = FALSE;
+			
 			if(!empty($output)) { // If no output returned we return 0 MBytes (fallback mode)
 				$ouput_lines = explode(PHP_EOL, $output);
 				
@@ -840,19 +836,13 @@ class vps__xen extends Lxdriverclass {
 	public function copyKernelModules()
 	{
                 // if template name contains pygrub then skip copying of kernel modules, 
-                // they should be already included into template
-		if (! self::isPygrubTemplate($this->main->ostemplate)) {
+                // they should be already included into template        
+		$pygrub_record = explode('-', $this->main->ostemplate);
+		if (stripos($pygrub_record[3], 'pygrub') == TRUE) {
                 
                     $mountpoint = $this->mount_this_guy();
-
-                        if (is_centosfive()) {
-                            $kernev = trim(`rpm -q kernel-xen --last | cut -f 1 -d " " | head -n 1 | sed "s/kernel-xen-//g"`);
-                        } else if(is_centossix()) {
-                            $kernev = trim(`rpm -q kernel-2.6.32 --last | cut -f 1 -d " " | head -n 1 | sed "s/kernel-//g"`);                        
-                        } else {
-                            $kernev = trim(`uname -r`);
-                        }
-                    	
+                    $kernev = trim(`uname -r`);
+	
                 	if (!lxfile_exists("$mountpoint/lib/modules/$kernev")) {
                         	lxfile_cp_rec("/lib/modules/$kernev", "$mountpoint/lib/modules/$kernev");
                         }
@@ -901,7 +891,7 @@ class vps__xen extends Lxdriverclass {
 		}
 	
 		if (!$this->main->isWindows()) {
-			lxshell_return("mkfs.ext4", "-F", $this->main->maindisk);
+			lxshell_return("mkfs.ext3", "-F", $this->main->maindisk);
 		}
 	}
 
@@ -1099,7 +1089,7 @@ class vps__xen extends Lxdriverclass {
 		}
 		$string .= "vncunused=0\n";
 		$string .= "vncdisplay={$this->main->vncdisplay}\n";
-	
+                $string .= "usbdevice='tablet'";
 		if ($this->main->text_xen_config) {
 			$string .= "{$this->main->text_xen_config}\n";
 		}
@@ -1129,6 +1119,13 @@ class vps__xen extends Lxdriverclass {
 	
 		$string  = null;
 	
+	        /* Commented to allow the below if else to handel pygrub & xvd
+	        
+	        OSTemplates should follow this format 
+	        
+	        With pygrub   =centos-5-x86-pygrub-xvd.tar.gz
+	        without pygrub=centos-5-x86-default-xvd.tar.gz
+	        
 		$sk = "/boot/hypervm-xen-vmlinuz-{$this->main->nname}";
 	
 		if (lxfile_exists($sk)) {
@@ -1146,8 +1143,30 @@ class vps__xen extends Lxdriverclass {
 		} else if (lxfile_exists('/boot/hypervm-xen-initrd.img')) {
 			$string .= "ramdisk    = '/boot/hypervm-xen-initrd.img'\n";
 		}
+		*/
 	
-		if ($this->isUnlimited($this->main->priv->cpu_usage)) {
+        //Add pygrub configuration if template name contains pygrub
+        $pygrub_record = explode('-', $this->main->ostemplate);
+        if (stripos($pygrub_record[3], 'pygrub') !== FALSE) {
+            $string .= "bootloader = '/usr/bin/pygrub'\n";
+        } else {
+
+            $string .= "kernel = '/boot/hypervm-xen-vmlinuz'\n";
+            $string .= "ramdisk = '/boot/hypervm-xen-initrd.img'\n";
+        }
+
+        //Add xvd configuration if template name contains xvd
+        $xvd_record = explode('-', $this->main->ostemplate);
+        if (stripos($xvd_record[4], 'xvd') !== FALSE) {
+            $string .= "disk       = ['$loc:{$this->main->maindisk},xvda1,w', '$loc:{$this->main->swapdisk},xvdb1,w']\n";
+            $string .= "root = '/dev/xvda1 ro selinux=0'\n";
+        } else {
+
+            $string .= "disk       = ['$loc:{$this->main->maindisk},sda1,w', '$loc:{$this->main->swapdisk},sda2,w']\n";
+            $string .= "root = '/dev/sda1 ro selinux=0'\n";
+        }
+
+        if ($this->isUnlimited($this->main->priv->cpu_usage)) {
 			$cpu = "100" * os_getCpuNum();;
 		} else {
 			$cpu = $this->main->priv->cpu_usage;
@@ -1173,18 +1192,10 @@ class vps__xen extends Lxdriverclass {
 	
 		$string .= "vncviewer  = 0\n";
 		$string .= "serial     = 'pty'\n";
-		$string .= "disk       = ['$loc:{$this->main->maindisk},xvda1,w', '$loc:{$this->main->swapdisk},xvda2,w']\n";
-                if (is_centosfive()) {
-                    $string .= "root = '/dev/xvda1 enforcing=0 console=xvc0 ro'\n";
-                } else {
-                    $string .= "root = '/dev/xvda1 enforcing=0 console=hvc0 ro'\n";                    
-                }
-                
-		//Add pygrub configuration if template name contains pygrub
-		if (self::isPygrubTemplate($this->main->ostemplate)) {
-			$string .= "kernel = '';\nroot = '';\nbootloader = '/usr/bin/pygrub'\n";
-		}
-	
+		
+
+
+			
 		if ($this->main->text_xen_config) {
 			$string .= "{$this->main->text_xen_config}\n";
 		}
@@ -1194,12 +1205,12 @@ class vps__xen extends Lxdriverclass {
 	
 	
 	}
-
+	
 	public function getValueFromFile($file)
 	{
 		$vfile = "{$this->main->configrootdir}/$file";
 		if (!lxfile_exists($vfile)) {
-			return ;
+			return null;
 		}
 		$v = lfile_get_contents($vfile);
 		lunlink($vfile);
@@ -1231,14 +1242,8 @@ class vps__xen extends Lxdriverclass {
 		if ($this->main->isWindows()) {
 			$this->expandPartitionToImage();
 		} else {
-                        if(is_centosfive()) {
-                            lxshell_return("e4fsck", "-f", "-y", $disk);
-                            lxshell_return("resize4fs", $disk);                            
-                        }
-                        if(is_centossix()) {
-                            lxshell_return("e2fsck", "-f", "-y", $disk);
-                            lxshell_return("resize2fs", $disk);
-                        }
+			lxshell_return("e2fsck", "-f", "-y", $disk);
+			lxshell_return("resize2fs", $disk);
 		}
 		if (!$this->isLVM()) { // @todo $this->createRootPath(); ?
 			//lo_remove($disk);
@@ -1373,12 +1378,7 @@ class vps__xen extends Lxdriverclass {
 	public function mount_this_guy()
 	{
 		$this->stop();
-	
-		if ($this->main->isWindows()) {
-			return;
-			throw new lxException("trying_to_mount_windows_image", '', '');
-		}
-	
+
 		$mountpoint = "{$this->main->configrootdir}/mnt";
 		if ($this->isMounted()) {
 			return $mountpoint;
@@ -1388,12 +1388,7 @@ class vps__xen extends Lxdriverclass {
 	
 	
 		$loop = $this->main->maindisk;
-                if(is_centosfive()) {
-                    lxshell_return("e4fsck", "-y", $loop);
-                }
-                if(is_centossix()) {
-                    lxshell_return("e2fsck", "-y", $loop);
-                }
+		lxshell_return("e2fsck", "-y", $loop);
 	
 		if ($this->isLVM()) {
 			$ret = lxshell_return("mount", $loop, $mountpoint);
@@ -1442,12 +1437,7 @@ class vps__xen extends Lxdriverclass {
 		}
 	
 		if (!$this->main->isWindows()) {
-                    if(is_centosfive()) {
-			lxshell_return("e4fsck", "-f", "-y", $sfpath);
-                    }
-                    if(is_centossix()) {
 			lxshell_return("e2fsck", "-f", "-y", $sfpath);
-                    }
 			lxshell_return("mount", "-o", "ro", $sfpath, $tmp);
 		} else {
 			$tmp = $sfpath;
@@ -1642,7 +1632,14 @@ class vps__xen extends Lxdriverclass {
 			*/
 				//lxshell_return("tar", "-C", $mountpoint, "-xzf", "__path_program_home/xen/template/{$this->main->ostemplate}.tar.gz", "etc/rc.d", "sbin", "etc/hotplug.d", "etc/dev.d", "etc/udev", "lib", "usr", "bin", "etc/inittab", "etc/sysconfig");
 				//lxshell_return("tar", "-C", $mountpoint, "-xzf", "__path_program_home/xen/template/{$this->main->ostemplate}.tar.gz", "etc/rc.d", "sbin", "etc/hotplug.d", "etc/dev.d", "etc/udev", "lib", "usr", "bin", "etc/inittab");
-				lxfile_cp("../file/sysfile/xen/fstab", "$mountpoint/etc/fstab");
+				// Changes below to determin if template is pygrub, and apply a pygrub style fstab, else use the standard one
+                                if (stripos($xvd_record) !== FALSE) {
+					lxfile_cp("../file/sysfile/xen/pyfstab", "$mountpoint/etc/fstab");
+                                } else {
+					lxfile_cp("../file/sysfile/xen/fstab", "$mountpoint/etc/fstab");	
+				       }
+									
+				
 				lxfile_cp("__path_program_root/file/sysfile/xen/inittab", "$mountpoint/etc/inittab");
 				lunlink("$mountpoint/etc/mtab");
 				lunlink("$mountpoint/etc/init.d/vzquota");
@@ -1790,7 +1787,7 @@ class vps__xen extends Lxdriverclass {
 	
 		if ($this->main->isNotWindows()) {
 			if ($this->isLvm()) {
-				lxshell_return("mkfs.ext4", "-F", $this->main->maindisk);
+				lxshell_return("mkfs.ext3", "-F", $this->main->maindisk);
 			} else {
 				lxfile_rm_rec($this->main->maindisk);
 				$this->createDisk();
@@ -2006,16 +2003,6 @@ class vps__xen extends Lxdriverclass {
 		return lxshell_return("xm", "create", "{$this->main->configrootdir}/{$this->main->nname}.cfg"); 
 	}
 
-        static function isPygrubTemplate($name)
-        {
-		$pygrub_record = explode('-', $name);
-		if (stripos($pygrub_record[3], 'pygrub') !== FALSE) {
-			return true;
-		} else {
-                        return false;
-                }
-        }
-        
 	public function setInternalParam($mountpoint)
 	{
 		$name = $this->main->ostemplate;
@@ -2026,7 +2013,7 @@ class vps__xen extends Lxdriverclass {
 	
 		if ($name === 'unknown') { return; }
 	
-
+	
 	
 		$name = strtolower($name);
 		$mountpoint = expand_real_root($mountpoint);

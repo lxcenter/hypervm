@@ -94,7 +94,7 @@ static function  getEachfileqouta($file, $iface, $oldtime, $newtime)
 
 	if ($ret < 0) {
 		dprint("Could not find position\n");
-		return;
+		return null;
 	}
 
 

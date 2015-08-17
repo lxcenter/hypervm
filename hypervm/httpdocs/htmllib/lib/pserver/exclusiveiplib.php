@@ -51,10 +51,7 @@ function createShowPropertyList(&$alist)
 
 function createShowAlist(&$alist, $subaction = null)
 {
-	global $gbl, $sgbl, $login, $ghtml; 
 	return null;
-	$alist['__title_main'] = $login->getKeywordUc('actions');
-	return $alist;
 }
 
 function createShowUpdateform()

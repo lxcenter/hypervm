@@ -140,6 +140,7 @@ function dbactionUpdate($subaction)
 			$this->save_myname();
 			$this->save_xinetd_qmail();
 			createRestartFile("qmail");
+            break;
 
 		case "spamdyke":
 			$this->savespamdyke();

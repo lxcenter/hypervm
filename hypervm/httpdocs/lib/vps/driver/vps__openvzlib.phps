@@ -46,6 +46,8 @@ class vps__openvz extends Lxdriverclass {
 	{
 		global $global_dontlogshell;
 	
+        	$retv6 = self::iptraffic_main_v6();
+        	
 		$res = lxshell_output("iptables", "-nxv", "-L", "FORWARD");
 
 		$res = explode("\n", $res);
@@ -73,7 +75,7 @@ class vps__openvz extends Lxdriverclass {
 			  }
 			}
 
-
+			if(!isset($dstIdx)) continue; // first line
 			if (count($list)-1>$dstIdx) {
 				continue;
 			}
@@ -122,6 +124,17 @@ class vps__openvz extends Lxdriverclass {
 	
 	
 		foreach($vpsincoming as $k => $v) {
+                        if(isset($retv6)){
+                                if(isset($retv6[$k]))
+                                {
+                                        // We collected IPv6 traffic info for this VM
+                                        // adding it here to total
+                                        $vpsincoming[$k] += $retv6[$k]['in'];
+                                        $vpsoutgoing[$k] += $retv6[$k]['out'];
+                                
+                                }
+                        
+                        }
 			$tot = $vpsincoming[$k] + $vpsoutgoing[$k];
 			execRrdTraffic("openvz-$k", $tot, "-$vpsincoming[$k]", $vpsoutgoing[$k]);
 			$stringa[] = time() . " " . date("d-M-Y:H:i") . " openvz-$k $tot $vpsincoming[$k] $vpsoutgoing[$k]";
@@ -131,8 +144,109 @@ class vps__openvz extends Lxdriverclass {
 			$string = implode("\n", $stringa);
 			lfile_put_contents("__path_iptraffic_file", "$string\n", FILE_APPEND);
 		}
-		lxshell_return("iptables", "-Z");
+                lxshell_return("iptables", "-Z", "FORWARD");
 	}
+
+        static function iptraffic_main_v6()
+        {
+                global $global_dontlogshell;
+
+                $res = lxshell_output("ip6tables", "-nvx", "-L", "FORWARD");
+
+                $res = explode("\n", $res);
+
+
+                $outgoing = null;
+                foreach($res as $r) {
+                        // First column may have spaces because of the number of digits in the column
+                        $r = trim($r, ' ');
+                        // Trim internal spaces
+                        $r = trimSpaces($r);
+
+                        $list = explode(' ', $r);
+
+                        if(stripos($r, "source") !== false && stripos($r, "destination") !== false)
+                        {
+                          // header, get important columns number
+                          for ($i=0; $i<count($list);$i++)
+                          {
+                            if($list[$i] == "bytes") $byteIdx=$i;
+                            // Removing 1, because the header has an extra field cause of 'target' column
+                            // FIXME: any better idea? 
+                            if($list[$i] == "source") $srcIdx=$i-2;
+                            if($list[$i] == "destination") $dstIdx=$i-2;
+                          }
+                        }
+
+			if(!isset($dstIdx)) continue; // first line
+
+                        if (count($list) !=7) {
+                                continue;
+                        }
+                        $list[$dstIdx] = explode("/", $list[$dstIdx])[0];
+                        $list[$srcIdx] = explode("/", $list[$srcIdx])[0];
+                        
+                        if (csb($list[$dstIdx], "::")) {
+                                // Just make sure that we don't calculate this goddamn thing twice, which would happen if there are multiple copies of the same rule. So mark that we have already read it in the sourcelist.
+                                // OA: Since we dont care lines that have a rule set (fixed above), this wont happen
+                                if (!isset($sourcelist[$list[$srcIdx]])) {
+                                        $outgoing[$list[$srcIdx]][] = $list[$byteIdx];
+                                        $sourcelist[$list[$srcIdx]] = true;
+                                }
+                        } else if(csb($list[$srcIdx], "::")) {
+                                if (!isset($dstlist[$list[$dstIdx]])) {
+                                        $incoming[$list[$dstIdx]][] = $list[$byteIdx];
+                                        $dstlist[$list[$dstIdx]] = true;
+                                }
+                        }
+                }
+
+
+                if (!$outgoing) {
+                        return;
+                }
+
+                if (!isset($incoming)) {
+                        return;
+                }
+
+
+                $realtotalincoming = calculateRealTotal($incoming);
+                $realtotaloutgoing = calculateRealTotal($outgoing);
+
+                foreach($realtotaloutgoing as $k => $v) {
+
+                        $vpsid = self::get_vpsid_from_ipaddress($k);
+
+                        if ($vpsid === 0) {
+                                continue;
+                        }
+
+                        if (!isset($vpsoutgoing[$vpsid])) { $vpsoutgoing[$vpsid] = 0; }
+                        if (!isset($vpsincoming[$vpsid])) { $vpsincoming[$vpsid] = 0; }
+
+                        $vpsoutgoing[$vpsid] += $realtotaloutgoing[$k];
+                        $vpsincoming[$vpsid] += $realtotalincoming[$k];
+                }
+
+                $ret= array();
+                foreach($vpsincoming as $k => $v) {
+                        $ret[$k]['in'] = $vpsincoming[$k];
+                        $ret[$k]['out'] = $vpsoutgoing[$k];
+                        
+                        $tot = $vpsincoming[$k] + $vpsoutgoing[$k];
+                        execRrdTraffic("openvzv6-$k", $tot, "-$vpsincoming[$k]", $vpsoutgoing[$k]);
+                        $stringa[] = time() . " " . date("d-M-Y:H:i") . " openvzv6-$k $tot $vpsincoming[$k] $vpsoutgoing[$k]";
+                }
+
+                if ($stringa) {
+                        $string = implode("\n", $stringa);
+                        lfile_put_contents("__path_iptraffic_file"."v6", "$string\n", FILE_APPEND);
+                }
+                lxshell_return("ip6tables", "-Z", "FORWARD");
+                return $ret;
+        }
+
 
 	static function get_vpsid_from_ipaddress($ip)
 	{
@@ -355,6 +469,7 @@ class vps__openvz extends Lxdriverclass {
 	
 		$username = vps::create_user($this->main->username, $this->main->password, $this->main->vpsid, "/usr/bin/lxopenvz");
 			
+                // OA proposed patch to remove this and revert to foreground create
 		if ($sgbl->isDebug()) {
 			$this->doRealCreate();
 		} else {
@@ -405,7 +520,6 @@ class vps__openvz extends Lxdriverclass {
 		$ret = lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--onboot", "yes", "--save");
 	
 		$this->setEveryThing();
-		$this->setUplinkUsage();
 
 		if (lxfile_exists("{$this->main->corerootdir}/{$this->main->vpsid}/etc/inithooks.conf"))
 		{
@@ -417,10 +531,12 @@ class vps__openvz extends Lxdriverclass {
 		$this->main->doKloxoInit("{$this->main->corerootdir}/{$this->main->vpsid}");
 		// It appears sometimes they don't setup the ostemplate properly.
 		$this->changeConf("OSTEMPLATE", $this->main->ostemplate);
-                // 20130722 OA - I cannot see it setting anywhere else at creation time
-                $this->setRootPassword();
+                // What is this stop here? it has never been started. was it?                 
 		$this->stop();
 		$this->start();
+                // 20130918 OA - This can only be run on a running vps. Perhaps we would need to wait for it to boot. 
+                sleep(10);
+                $this->setRootPassword();
 		lunlink("__path_program_root/tmp/$vpsid.create");
 		$this->postCreate();
 	}
@@ -535,6 +651,7 @@ class vps__openvz extends Lxdriverclass {
 			lunlink("/etc/vz/conf/{$this->main->vpsid}.conf");
 		}
 		//lxfile_rm_rec("__path_program_home/vps/{$this->main->nname}");
+		$this->setUplinkUsage();
 	}
 
 	function toggleStatus()
@@ -682,8 +799,7 @@ class vps__openvz extends Lxdriverclass {
 		lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--save", "--oomguarpages", "{$memory}M:".PHP_INT_MAX);
 		lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--save", "--shmpages", "{$memory}M:{$memory}M");
 		lxshell_return("/usr/sbin/vzctl", "set", $this->main->vpsid, "--save", "--physpages", "0:".PHP_INT_MAX);
-
-                $tcp = round(($memory * 1024)/5, 0);
+		$tcp = round(($memory * 1024)/5, 0);
 		$process = $this->main->priv->process_usage;
 		if (is_unlimited($process) || $process > 5555) {
 			$process = 5555;
@@ -812,7 +928,7 @@ class vps__openvz extends Lxdriverclass {
 	}
 
 	// temproary version without quotes...
-	function staticChangeConf($file, $var, $val)
+public static function staticChangeConf($file, $var, $val)
 	{
 		$list = lfile_trim($file);
 		$match = false;
@@ -1049,7 +1165,7 @@ class vps__openvz extends Lxdriverclass {
 	{ 
 	
 		if (self::getStatus($this->main->vpsid, $this->main->corerootdir) === 'on') {
-			return;
+			return null;
 		}
 		return lxshell_return("/usr/sbin/vzctl", "start", $this->main->vpsid); 
 	}
@@ -1121,6 +1237,7 @@ class vps__openvz extends Lxdriverclass {
 		$this->setGuarMemoryUsage();
 		$this->setSwapUsage();
 		$this->setIptables();
+		$this->setUplinkUsage();
 		$this->changeConf("OSTEMPLATE", $this->main->ostemplate);
 		$this->setRestUsage();
 	}
@@ -1159,13 +1276,7 @@ class vps__openvz extends Lxdriverclass {
 	function setIptables()
 	{
 		$this->removeConf("IPTABLES");
-		return;
-	
-		if ($this->main->priv->isOn('iptables_flag')) {
-			$this->changeConf("IPTABLES", "iptable_filter iptable_mangle ipt_limit ipt_multiport ipt_tos ipt_TOS ipt_REJECT ipt_TCPMSS ipt_tcpmss ipt_ttl ipt_LOG ipt_length ip_conntrack ip_conntrack_ftp ip_conntrack_irc ipt_conntrack ipt_state  ipt_helper  iptable_nat ip_nat_ftp ip_nat_irc ipt_REDIRECT");
-		} else {
-			$this->changeConf("IPTABLES", "");
-		}
+		return null;
 	}
 	
 	function enableSecondLevelQuota()
@@ -1216,7 +1327,10 @@ class vps__openvz extends Lxdriverclass {
 			foreach($v['ipaddress'] as $vip) {
 				$vip = trim($vip);
 				if (!$vip) continue;
-				$string .= "tc filter add dev $dev parent 1: protocol ip prio 16 u32 match ip src $vip flowid 1:$i\n";
+                                if(reversedns::isIPV6($vip))                                				
+				        $string .= "tc filter add dev $dev parent 1: protocol ip prio 16 u32 match ip6 src $vip flowid 1:$i\n";
+                                else
+				        $string .= "tc filter add dev $dev parent 1: protocol ip prio 16 u32 match ip src $vip flowid 1:$i\n";
 			}
 			$string .= "tc qdisc add dev $dev parent 1:$i sfq perturb 1\n";
 			$i++;
@@ -1458,6 +1572,9 @@ class vps__openvz extends Lxdriverclass {
 	
 			case "graph_traffic":
 				return rrd_graph_vps("traffic", "openvz-{$this->main->vpsid}.rrd", $this->main->rrdtime);
+				break;
+			case "graph_v6traffic":
+				return rrd_graph_vps("traffic", "openvzv6-{$this->main->vpsid}.rrd", $this->main->rrdtime);
 				break;
 	
 			case "graph_cpuusage":

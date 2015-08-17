@@ -71,13 +71,13 @@ fi
 #
 case "$1" in
   --virtualization-type=xen)
-    start
+    start $*
     ;;
   --virtualization-type=openvz)
-    start
+    start $*
     ;;
   --virtualization-type=NONE)
-    start
+    start $*
     ;;
   *)
    	echo $"This is the HyperVM Install script"
