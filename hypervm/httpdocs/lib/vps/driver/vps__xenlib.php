@@ -2049,6 +2049,22 @@ class vps__xen extends Lxdriverclass {
 	
 		$iplist = implode(" ", $iplist);
 	
+		$iplistnew  = preg_split('/ /', $iplist,-1,PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
+    		//counting the elements of the array aka ip
+		 $ipcnt = count($iplistnew);
+    
+    		for($i = 0; $i < $ipcnt ; $i++) {
+			 if (isIPV6($iplistnew[$i])) {
+			      $iplist6new[$i] = $iplistnew[$i];
+        		      $ip6list= implode(" ",$iplist6new);
+        	}elseif (!isIPV6($iplistnew[$i])){            
+                		 $iplist4new[$i] = $iplistnew[$i];
+                 		 $ip4list = implode(" ",$iplist4new);
+        	}else { 
+        			 throw new lxException("The Iplist does not contain any values");                 
+        		 }
+    		}
+	
 		$ipadd = $result['ADD_IP'];
 		$sethostname = $result['SET_HOSTNAME'];
 		$setuserpass = $result['SET_USERPASS'];
