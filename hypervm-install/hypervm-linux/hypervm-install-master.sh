@@ -86,8 +86,8 @@ case "$1" in
     ;;
   *)
    	echo $"This is the HyperVM Install script"
-    	echo $"The usage is:"
-    	echo $"sh $0 --virtualization-type=xen/openvz/NONE [--skipostemplate=true]"
+    echo $"The usage is:"
+    echo $"sh $0 --virtualization-type=xen/openvz/NONE [--skipostemplate=true]"
 	exit 1
 esac
 exit $?
