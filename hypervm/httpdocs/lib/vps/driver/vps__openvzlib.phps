@@ -1346,7 +1346,7 @@ public static function staticChangeConf($file, $var, $val)
 	* @todo UNDOCUMENTED
 	*
 	* @author Anonymous <anonymous@lxcenter.org>
-	* @author �?ngel Guzmán Maeso <angel.guzman@lxcenter.org>
+	* @author Ángel Guzmán Maeso <angel.guzman@lxcenter.org>
 	*
 	* @return void
 	*/
