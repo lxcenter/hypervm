@@ -213,7 +213,7 @@ function postUpdate()
 function recalibrate()
 {
 	$this->freeflag = 'on';
-	$fip = $this->getFreeIp(10000, 'any');
+	$fip = $this->getFreeIp(10000);
 	if ($fip) { 
 		$this->freeflag = 'on';
 	} else { 

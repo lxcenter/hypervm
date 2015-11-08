@@ -125,22 +125,25 @@ function lxins_main()
 
     $xenfailed = false;
 
-//  why is that?
-//	exec("killall wget");
+    // detect if it's a deployment from scratch or not
+    if (!file_exists('/usr/local/lxlabs')) {
+        chdir("/usr/local/lxlabs/hypervm");
 
-    system("mkdir -p /usr/local/lxlabs/hypervm");
-    chdir("/usr/local/lxlabs/hypervm");
-    system("mkdir -p /usr/local/lxlabs/hypervm/log");
+        // Prevents deleting the development package
+        if (!file_exists('/usr/local/lxlabs/.git')) {
+            @ unlink("hypervm-current.zip");
+        }
 
-    // Prevents deleting the development package
-    if (!file_exists('/usr/local/lxlabs/.git')) {
-        @ unlink("hypervm-current.zip");
-    }
-
-    if (file_exists('/usr/local/lxlabs/.git')) {
-        echo 'Development GIT version found. Skipping download from LxCenter.';
-    } else {
-        system("wget http://download.lxcenter.org/download/hypervm/production/hypervm/hypervm-current.zip");
+        if (file_exists('/usr/local/lxlabs/.git')) {
+            echo 'Development GIT version found. Skipping download from LxCenter.';
+        } else {
+            system("wget http://download.lxcenter.org/download/hypervm/production/hypervm/hypervm-current.zip");
+        }
+    } else { // ok, it's from scratch using deploy-local.sh script so let's use local zip file then
+        system("mkdir -p /usr/local/lxlabs/hypervm");
+        system("mkdir -p /usr/local/lxlabs/hypervm/log");
+        system("cp -a ../../hypervm/hypervm-current.zip /usr/local/lxlabs/hypervm/");
+        chdir("/usr/local/lxlabs/hypervm");
     }
 
     system("unzip -oq hypervm-current.zip", $return);
@@ -149,6 +152,7 @@ function lxins_main()
         print("\nUnzipping the core Failed.. Most likely it is corrupted. Please contact the support personnel\n");
         exit;
     }
+
     unlink("hypervm-current.zip");
     system("chown -R lxlabs:lxlabs /usr/local/lxlabs/");
     $dir_name = dirname(__FILE__);

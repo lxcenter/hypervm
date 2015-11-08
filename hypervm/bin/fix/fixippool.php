@@ -23,7 +23,7 @@ foreach($list as $l) {
 
 	$l->freeflag = 'on';
 
-	$fip = $l->getFreeIp(10000, 'any');
+	$fip = $l->getFreeIp(10000);
 
 
 	if ($fip) { 

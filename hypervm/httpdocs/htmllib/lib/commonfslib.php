@@ -192,7 +192,7 @@ function lxfile_mv($src, $dst)
 		log_filesys("Moving $src $dst");
 	}
 
-	if (!lxfile_cp($src, $dst)) {
+	if (lxfile_cp($src, $dst)) {
 		lxfile_rm($src);
 		return true;
 	}
