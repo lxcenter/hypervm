@@ -505,7 +505,7 @@ class vps__openvz extends Lxdriverclass {
 	
 		dprint($templatefile . "\n");
 	
-		$ret = lxshell_return("nice", "-n", "19", "/usr/sbin/vzctl", "--verbose", "create", $this->main->vpsid, "--private", "{$this->main->corerootdir}/{$this->main->vpsid}", "--ostemplate", $this->main->ostemplate);
+		$ret = lxshell_return("nice", "-n", "19", "/usr/sbin/vzctl", "--verbose", "create", $this->main->vpsid, "--private", "{$this->main->corerootdir}/{$this->main->vpsid}", "--ostemplate", $this->main->ostemplate, "--layout", "simfs");
 	
 		if ($ret) {
 			lunlink("__path_program_root/tmp/$vpsid.create");
