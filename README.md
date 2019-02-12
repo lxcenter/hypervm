@@ -1,4 +1,10 @@
+# out-of-date
+Not maintained anymore.
+Based on PHP 5.6 that is EOL.
+Do not use it.
+
 # HyperVM
+
 A complete virtualization manager. Some of the features:
 
 * OpenVZ and Xen virtualization support
@@ -30,7 +36,7 @@ And don't forget our [forums](http://forum.lxcenter.org)!
     HyperVM, Server Virtualization GUI for OpenVZ and Xen
 
     Copyright (C) 2000-2009	LxLabs
-    Copyright (C) 2009-2016	LxCenter
+    Copyright (C) 2009-2019	LxCenter
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
